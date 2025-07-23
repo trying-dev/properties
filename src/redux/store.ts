@@ -4,7 +4,6 @@ import type {
   Equipment,
   Maintenance,
   Service as ServicePrisma,
-  Information,
   Insurance,
   Legal as LegalPrisma,
   Tenant as TenantPrisma,
@@ -23,6 +22,7 @@ import type {
   Unit as UnitPrisma,
   SubTenant as SubTenantPrisma,
   User,
+  Property,
 } from "@prisma/client";
 
 export type Service = ServicePrisma & {
@@ -74,30 +74,20 @@ export type Legal = LegalPrisma & {
   usages: Usage[];
 };
 
+export type PropertyWithRelations = Property & {
+  legal?: Legal;
+  insurances: Insurance[];
+  services: Service[];
+  economy?: EconomyWithTransactions;
+  equipments: EquipmentWithMaintenance[];
+  architectures: ArchitectureWithMaintenance[];
+  notifications: Notification[];
+  Setting: Setting[];
+  units: Unit[];
+};
+
 export const initialState = {
-  property: {
-    id: undefined as string | undefined,
-
-    information: undefined as Information | undefined,
-
-    legal: undefined as Legal | undefined,
-
-    insurances: [] as Insurance[],
-    services: [] as Service[],
-
-    economy: undefined as EconomyWithTransactions | undefined,
-
-    equipments: [] as EquipmentWithMaintenance[],
-    architectures: [] as ArchitectureWithMaintenance[],
-
-    notifications: [] as Notification[],
-    Setting: [] as Setting[],
-
-    units: [] as Unit[],
-
-    createdAt: undefined as string | undefined,
-    updatedAt: undefined as string | undefined,
-  },
+  property: {} as PropertyWithRelations,
 };
 
 export type InitialState = typeof initialState;

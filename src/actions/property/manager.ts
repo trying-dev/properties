@@ -58,26 +58,11 @@ export class PropertyManager {
     }
   }
 
-  async getPropertiesWithAddress() {
-    try {
-      return await this.prisma.property.findMany({
-        include: {
-          information: {
-            select: { streetAndNumber: true, neighborhood: true },
-          },
-        },
-      });
-    } catch (error) {
-      throw error;
-    }
-  }
-
   async getPropertyForReduxWhenComponentLoad({ id }: { id: string }) {
     try {
       return await this.prisma.property.findUnique({
         where: { id },
         include: {
-          information: true,
           legal: {
             include: {
               fiscalDetails: true,

@@ -21,9 +21,31 @@ model Property {
     description String?
     status      PropertyStatus @default(ACTIVE)
 
+    // Address
+    streetAndNumber String
+    neighborhood    String
+    city            String
+    state           String
+    postalCode      String
+    gpsCoordinates  String? // Format: "lat,lng"
+    country         String  @default("Colombia") // Agregado para internacionalización
+
+    // Features
+    propertyType  PropertyType
+    totalLandArea Float? // En m²
+    builtArea     Float // En m²
+    floors        Int          @default(1)
+    age           Int // Años desde construcción
+
+    // Exterior
+    yardOrGarden         String?
+    parking              Int     @default(0)
+    parkingLocation      String?
+    balconiesAndTerraces String?
+    recreationalAreas    String?
+
     // Relations
     admin         Admin?         @relation(fields: [adminId], references: [id], onDelete: SetNull)
-    information   Information?
     economy       Economy?
     legal         Legal?
     units         Unit[]
@@ -50,6 +72,16 @@ enum PropertyStatus {
     INACTIVE
     MAINTENANCE
     SOLD
+}
+
+enum PropertyType {
+    HOUSE
+    APARTMENT
+    COMMERCIAL_SPACE
+    OFFICE
+    WAREHOUSE
+    LAND
+    MIXED_USE
 }
 
 // ========================================
@@ -92,16 +124,26 @@ enum UserStatus {
 }
 
 model Admin {
-    id          String @id @default(cuid())
-    userId      String @unique
-    permissions Json   @default("[]") // Array de permissions como JSON
+    id         String     @id @default(cuid())
+    userId     String     @unique
+    adminLevel AdminLevel @default(STANDARD)
 
     // Relations
-    user             User              @relation(fields: [userId], references: [id], onDelete: Cascade)
-    properties       Property[]
-    adminPermissions AdminPermission[] // Relación con el modelo intermedio
+    user        User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+    properties  Property[]
+    permissions AdminPermission[]
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
 
     @@map("admins")
+}
+
+enum AdminLevel {
+    SUPER_ADMIN
+    MANAGER
+    STANDARD
+    LIMITED
 }
 
 // Opción alternativa: Modelo intermedio para permissions
@@ -199,83 +241,24 @@ enum WorkerType {
 }
 
 // ========================================
-// PROPERTY INFORMATION
-// ========================================
-
-model Information {
-    id         String @id @default(cuid())
-    propertyId String @unique
-
-    // Address
-    streetAndNumber String
-    neighborhood    String
-    cityAndState    String
-    postalCode      String
-    gpsCoordinates  String? // Format: "lat,lng"
-    country         String  @default("Colombia") // Agregado para internacionalización
-
-    // Features
-    propertyType  PropertyType
-    totalLandArea Float? // En m²
-    builtArea     Float // En m²
-    floors        Int          @default(1)
-    orientation   Orientation?
-    age           Int // Años desde construcción
-
-    // Interior
-    bedrooms        Int     @default(0)
-    bathrooms       Int     @default(0)
-    halfBathrooms   Int?    @default(0)
-    kitchen         String?
-    livingAndDining String?
-    additionalRooms Json? // Array de objetos {name, description}
-
-    // Exterior
-    yardOrGarden         String?
-    parking              Int     @default(0)
-    parkingLocation      String?
-    balconiesAndTerraces String?
-    recreationalAreas    Json? // Array de áreas recreacionales
-
-    // Relations
-    property Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
-
-    @@map("property_information")
-}
-
-enum PropertyType {
-    HOUSE
-    APARTMENT
-    COMMERCIAL_SPACE
-    OFFICE
-    WAREHOUSE
-    LAND
-    MIXED_USE
-}
-
-enum Orientation {
-    NORTH
-    SOUTH
-    EAST
-    WEST
-    NORTHEAST
-    NORTHWEST
-    SOUTHEAST
-    SOUTHWEST
-}
-
-// ========================================
 // UNITS AND CONTRACTS
 // ========================================
 
 model Unit {
-    id          String   @id @default(cuid())
-    propertyId  String?
-    unitType    UnitType
-    unitNumber  String
-    isAvailable Boolean  @default(true)
-    area        Float? // Área de la unidad en m²
-    rent        Float? // Precio de alquiler
+    id              String   @id @default(cuid())
+    propertyId      String?
+    unitType        UnitType
+    unitNumber      String
+    isAvailable     Boolean  @default(true)
+    area            Float? // Área de la unidad en m²
+    rent            Float? // Precio de alquiler
+    description     String?
+    bedrooms        Int      @default(0)
+    bathrooms       Int      @default(0)
+    halfBathrooms   Int?     @default(0)
+    kitchen         String?
+    livingAndDining String?
+    additionalRooms String?
 
     // Relations
     property   Property?       @relation(fields: [propertyId], references: [id], onDelete: SetNull)
@@ -293,6 +276,8 @@ enum UnitType {
     OFFICE
     APARTMENT
     COMMERCIAL_UNIT
+    LOCAL
+    COMMON_AREA
     PARKING_SPOT
     STORAGE
 }

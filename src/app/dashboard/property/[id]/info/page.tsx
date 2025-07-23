@@ -1,51 +1,51 @@
 "use client";
 
+import InfoRow from " +/app/dashboard/fragments/InfoRow";
 import { useSelector } from " +/redux";
+import { capitalize } from " +/utils";
 
 export default function Information() {
-  const info = useSelector((s) => s.property.information);
+  const property = useSelector((s) => s.property);
 
-  if (!info) {
+  if (!property) {
     return <div>Loading...</div>;
   }
 
   return (
-    <div className="flex flex-col gap-5">
-      <h2 className="font-bold text-xl mb-3">Information</h2>
+    <div className="flex flex-col gap-6">
+      <h2 className="font-bold text-2xl">Información del inmueble</h2>
 
       <div className="flex flex-col gap-5">
         <div className="p-5 rounded-lg border">
-          <p>Street and Number: {info.streetAndNumber}</p>
-          <p>Neighborhood: {info.neighborhood}</p>
-          <p>City and State: {info.cityAndState}</p>
-          <p>Postal code: {info.postalCode}</p>
-          <p>GPS Coordinates: {info.gpsCoordinates}</p>
+          <InfoRow label="Nombre" value={property.name} />
+          <InfoRow label="Descripción" value={property.description} />
+          <InfoRow label="Estado" value={capitalize(property.status)} />
         </div>
 
         <div className="p-5 rounded-lg border">
-          <p>Property type: {info.propertyType}</p>
-          <p>Total land area: {info.totalLandArea} m²</p>
-          <p>Built area: {info.builtArea} m²</p>
-          <p>Floors: {info.floors}</p>
-          <p>Orientation: {info.orientation}</p>
-          <p>Age: {info.age} years</p>
+          <InfoRow label="Calle y número" value={property.streetAndNumber} />
+          <InfoRow label="Barrio" value={property.neighborhood} />
+          <InfoRow label="Ciudad" value={property.city} />
+          <InfoRow label="Estado" value={property.State} />
+          <InfoRow label="Código postal" value={property.postalCode} />
+          <InfoRow label="Coordenadas GPS" value={property.gpsCoordinates} />
+          <InfoRow label="País" value={property.country} />
         </div>
 
         <div className="p-5 rounded-lg border">
-          <p>Bedrooms: {info.bedrooms}</p>
-          <p>Bathrooms: {info.bathrooms}</p>
-          <p>Half bathrooms: {info.halfBathrooms}</p>
-          <p>Kitchen description: {info.kitchen}</p>
-          <p>Living and dining description: {info.livingAndDining}</p>
-          <p>Additional rooms: {JSON.stringify(info.additionalRooms)}</p>
+          <InfoRow label="Tipo de propiedad" value={capitalize(property.propertyType)} />
+          <InfoRow label="Área total" value={property.totalLandArea} postfix="m²" />
+          <InfoRow label="Área construida" value={property.builtArea} postfix="m²" />
+          <InfoRow label="Pisos" value={property.floors} />
+          <InfoRow label="Antigüedad" value={property.age} postfix="años" />
         </div>
 
         <div className="p-5 rounded-lg border">
-          <p>Yard or garden: {info.yardOrGarden}</p>
-          <p>Parking spots: {info.parking}</p>
-          <p>Parking location: {info.parkingLocation}</p>
-          <p>Balconies and terraces: {info.balconiesAndTerraces}</p>
-          <p>Recreational areas: {JSON.stringify(info.recreationalAreas)}</p>
+          <InfoRow label="Jardín o patio" value={property.yardOrGarden} />
+          <InfoRow label="Parqueaderos" value={property.parking} />
+          <InfoRow label="Ubicación de parqueadero" value={property.parkingLocation} />
+          <InfoRow label="Balcón o terraza" value={property.balconiesAndTerraces} />
+          <InfoRow label="Recreational areas" value={JSON.stringify(property.recreationalAreas)} />
         </div>
       </div>
     </div>

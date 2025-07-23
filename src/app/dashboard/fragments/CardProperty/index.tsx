@@ -15,22 +15,10 @@ const labels = [
   { src: "/icons/user.svg", alt: "dollar" },
 ];
 
-export interface PropertyWithAddress extends Property {
-  information: {
-    streetAndNumber: string;
-    neighborhood: string;
-  } | null;
-}
-
-interface Props {
-  property: PropertyWithAddress;
-}
-
-export default function CardProperty({ property }: Props) {
+export default function CardProperty({ property }: { property: Property }) {
   const dispatch = useDispatch();
   const router = useRouter();
-  const { information } = property;
-  const { streetAndNumber = "streetAndNumber", neighborhood = "neighborhood" } = information || {};
+  const { streetAndNumber = "streetAndNumber", neighborhood = "neighborhood" } = property;
   const address = `${streetAndNumber}, ${neighborhood}`;
 
   const clickHandler = async () => {

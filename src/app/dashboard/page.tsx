@@ -3,16 +3,17 @@
 import { useEffect, useState } from "react";
 
 import CardAdmin from "./fragments/CardAdmin";
-import CardProperty, { PropertyWithAddress } from "./fragments/CardProperty";
+import CardProperty from "./fragments/CardProperty";
+import { Property } from "@prisma/client";
 
-import { getPropertiesWithAddress } from " +/actions/property/actions_and_mutations";
+import { getProperties } from " +/actions/property/actions_and_mutations";
 
 export default function Dashboard() {
-  const [properties, setProperties] = useState<PropertyWithAddress[]>([]);
+  const [properties, setProperties] = useState<Property[]>([]);
 
   useEffect(() => {
     async function fetchProperties() {
-      const properties = await getPropertiesWithAddress();
+      const properties = await getProperties();
       setProperties(properties);
     }
     fetchProperties();

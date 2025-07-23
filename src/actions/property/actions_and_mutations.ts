@@ -57,15 +57,6 @@ export async function deleteProperty({ id }: { id: string }) {
   }
 }
 
-export async function getPropertiesWithAddress() {
-  try {
-    return await propertyManager.getPropertiesWithAddress();
-  } catch (error) {
-    console.error("Error fetching properties with address:", error);
-    throw error;
-  }
-}
-
 export async function getPropertyForReduxWhenComponentLoad({ id }: { id: string }) {
   try {
     const property = await propertyManager.getPropertyForReduxWhenComponentLoad({ id });
