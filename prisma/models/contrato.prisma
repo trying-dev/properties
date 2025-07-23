@@ -1,0 +1,163 @@
+// ========================================
+// CONTRACT
+// ========================================
+
+model Contract {
+    id String @id @default(cuid())
+
+    unitId   String
+    tenantId String
+    adminId  String
+
+    // Información financiera con validaciones
+    rent              Float // postgres @db.Decimal(10, 2) // Precisión monetaria
+    deposit           Float // postgres @db.Decimal(10, 2)
+    utilitiesIncluded Boolean @default(false)
+
+    // Campos adicionales importantes
+    securityDeposit Float? // postgres @db.Decimal(10, 2)
+    lateFeePenalty  Float? // postgres @db.Decimal(5, 2) // Porcentaje
+    gracePeriodDays Int    @default(5)
+
+    // Fechas con validación
+    startDate DateTime
+    endDate   DateTime
+
+    status ContractStatus @default(DRAFT) // Cambiar default a DRAFT
+
+    notes String?
+    terms String? // postgres @db.Text // Usar Text para contenido largo
+
+    autoRenewal   Boolean @default(false)
+    renewalPeriod Int?
+
+    // Campos de auditoría
+    signedAt          DateTime?
+    terminatedAt      DateTime?
+    terminationReason String?
+
+    unit   Unit   @relation(fields: [unitId], references: [id], onDelete: Restrict)
+    tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+
+    admins Admin[] @relation("ContractAdmins")
+
+    payments  Payment[]
+    documents ContractDocument[] // Nuevos documentos
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    @@unique([unitId, startDate])
+    @@index([adminId]) // Buscar contratos por admin (quién los gestiona)
+    @@index([endDate]) // Útil para contratos próximos a vencer
+    @@index([autoRenewal]) // Consultar contratos con renovación automática
+    @@index([tenantId, status]) // Filtrar contratos activos por inquilino
+    @@index([status])
+    @@index([tenantId])
+    @@index([startDate, endDate])
+    @@index([signedAt]) // Nuevo índice
+    @@map("contracts")
+}
+
+enum ContractStatus {
+    DRAFT // Borrador
+    ACTIVE // Activo
+    EXPIRED // Vencido
+    RENEWED // Renovado
+    TERMINATED // Terminado
+    CANCELLED // Cancelado
+}
+
+model ContractDocument {
+    id         String @id @default(cuid())
+    contractId String
+
+    fileName     String
+    fileType     String
+    filePath     String
+    fileSize     Int
+    documentType DocumentContractType
+
+    uploadedAt DateTime @default(now())
+
+    contract Contract @relation(fields: [contractId], references: [id], onDelete: Cascade)
+
+    @@map("contract_documents")
+}
+
+enum DocumentContractType {
+    CONTRACT_SIGNED
+    TENANT_ID
+    INCOME_PROOF
+    REFERENCES
+    INVENTORY
+    PHOTOS
+    OTHER
+}
+
+// ========================================
+// PAYMENTS
+// ========================================
+
+model Payment {
+    id         String @id @default(cuid())
+    contractId String
+
+    amount      Float // postgres @db.Decimal(10, 2)
+    dueDate     DateTime
+    paidDate    DateTime?
+    paymentType PaymentType
+    status      PaymentStatus @default(PENDING)
+
+    // Campos adicionales
+    paymentMethod PaymentMethod?
+    transactionId String? // ID de transacción bancaria
+    receiptNumber String? // Número de recibo
+
+    // Penalizaciones
+    lateFeeAmount  Float? // postgres @db.Decimal(8, 2)
+    lateFeeApplied Boolean @default(false)
+
+    reference String?
+    notes     String?
+
+    contract Contract @relation(fields: [contractId], references: [id], onDelete: Cascade)
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    @@index([contractId])
+    @@index([dueDate])
+    @@index([status])
+    @@index([paymentMethod])
+    @@index([contractId, dueDate]) // Filtrar pagos vencidos por contrato
+    @@index([status, paidDate]) // Consultar pagos pagados/pendientes con fechas
+    @@map("payments")
+}
+
+enum PaymentMethod {
+    CASH
+    BANK_TRANSFER
+    CHECK
+    CREDIT_CARD
+    DEBIT_CARD
+    DIGITAL_WALLET
+    OTHER
+}
+
+enum PaymentType {
+    RENT
+    DEPOSIT
+    UTILITIES
+    MAINTENANCE
+    LATE_FEE
+    OTHER
+}
+
+enum PaymentStatus {
+    PENDING // Pendiente
+    PAID // Pagado
+    OVERDUE // Vencido
+    PARTIAL // Parcial
+    CANCELLED // Cancelado
+}
