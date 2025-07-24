@@ -250,7 +250,7 @@ async function main() {
           email: "residente1@gmail.com",
           phone: "+57 300 666 6666",
           name: "Laura",
-          lastName: "Profesional",
+          lastName: "Hernandez",
           birthDate: new Date("1992-09-14"),
           documentType: DocumentType.CC,
           documentNumber: "67890123",
@@ -527,11 +527,57 @@ async function main() {
     },
   });
 
+  const additionalResidentsTenant1 = [
+    {
+      id: "user_carlos",
+      name: "Carlos",
+      lastName: "Perez",
+      email: "carlos.comerciante@gmail.com",
+      phone: "+57 300 555 5555",
+      documentNumber: "45678902",
+      birthDate: new Date("1985-05-15"),
+      profession: "Ingeniero",
+    },
+    {
+      id: "user_sofia",
+      name: "Sofia",
+      lastName: "Hernandez",
+      email: "sofia.comerciante@gmail.com",
+      documentNumber: "45678903",
+      birthDate: new Date("2010-08-20"),
+    },
+    {
+      id: "user_maria",
+      name: "Maria",
+      lastName: "Hernandez",
+      email: "maria.rodriguez@gmail.com",
+      phone: "+57 300 666 6666",
+      documentNumber: "45678904",
+      birthDate: new Date("1992-03-10"),
+      profession: "Diseñadora",
+    },
+  ];
+
   // Contrato 3: Apartamento 1
   const contract3 = await prisma.contract.create({
     data: {
       unit: { connect: { id: apartamento1.id } },
       tenant: { connect: { id: tenant3.id } },
+      additionalResidents: {
+        create: additionalResidentsTenant1.map((r) => ({
+          id: r.id,
+          name: r.name,
+          lastName: r.lastName,
+          email: r.email,
+          phone: r.phone,
+          documentNumber: r.documentNumber,
+          birthDate: r.birthDate,
+          profession: r.profession,
+          documentType: "CC",
+          gender: "OTHER",
+          maritalStatus: "SINGLE",
+        })),
+      },
       adminId: admin1.id,
       rent: 1800000,
       deposit: 3600000,

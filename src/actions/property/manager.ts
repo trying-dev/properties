@@ -1,4 +1,4 @@
-import { Prisma, PrismaClient, PropertyType, PropertyStatus } from "@prisma/client";
+import { Prisma, PrismaClient } from "@prisma/client";
 import { DefaultArgs } from "@prisma/client/runtime/library";
 
 export class PropertyManager {
@@ -27,8 +27,9 @@ export class PropertyManager {
               contracts: {
                 include: {
                   payments: true,
-                  tenant: { include: { user: true } },
                   admins: { include: { user: true } },
+                  tenant: { include: { user: true } },
+                  additionalResidents: true,
                 },
               },
             },

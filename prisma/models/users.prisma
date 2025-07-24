@@ -52,6 +52,8 @@ model User {
     admin  Admin?
     tenant Tenant?
 
+    additionalContracts Contract[] @relation("AdditionalResidents") // Contratos donde es residente adicional
+
     @@index([email])
     @@index([documentNumber])
     @@index([deletedAt])
@@ -131,13 +133,13 @@ model Tenant {
     references Reference[]
 
     user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
-    contracts Contract[]
+    contracts Contract[] // Contratos donde es el inquilino
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 
     @@index([userId]) // Relación directa
-    @@index([monthlyIncome]) // Para filtros económicos (si usas)
+    @@index([monthlyIncome]) // Para filtros económicos
     @@map("tenants")
 }
 

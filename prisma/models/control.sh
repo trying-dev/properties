@@ -227,7 +227,7 @@ concatenate_files() {
    
    rm -f "$MAIN_FILE"
    
-   find . -type f ! -name "$MAIN_FILE" ! -name "remplazando.sh" \
+   find . -type f ! -name "$MAIN_FILE" ! -name "$SCRIPT_FILE" \
        -exec bash -c ' \
            cat "$0" >> el_nuevo.txt && \
            echo -e "\n\n" >> el_nuevo.txt' \
@@ -393,6 +393,7 @@ TEMP_EXTRACT_RESULT=()
 MOVED_MODELS=()
 MOVED_ENUMS=()
 MAIN_FILE="el_nuevo.txt"
+SCRIPT_FILE="control.sh"
 
 # Ejecutar menú si el script se ejecuta directamente
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then

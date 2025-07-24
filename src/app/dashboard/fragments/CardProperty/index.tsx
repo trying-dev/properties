@@ -1,25 +1,13 @@
 import Image from "next/image";
 import { Property } from "@prisma/client";
-import { useDispatch } from "react-redux";
 
 import { useRouter } from "next/navigation";
 
-import { serialize } from " +/redux/utils";
-
-import { getPropertyForReduxWhenComponentLoad } from " +/actions/property/actions_and_mutations";
-import { setProperty } from " +/redux/slices/property";
-
 export default function CardProperty({ property }: { property: Property }) {
-  const dispatch = useDispatch();
   const router = useRouter();
   const { name = "Name", street = "Street", number = "000", neighborhood = "neighborhood" } = property;
 
   const clickHandler = async () => {
-    const propertyForReduxWhenComponentLoad = await getPropertyForReduxWhenComponentLoad({
-      id: property.id,
-    });
-    console.log({ propertyForReduxWhenComponentLoad });
-    dispatch(setProperty(serialize(propertyForReduxWhenComponentLoad)));
     router.push(`/dashboard/property/${property.id}`);
   };
 
