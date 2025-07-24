@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import { PropertyWithRelations } from " +/actions/property/manager";
 import { AdminLevel, DocumentType, Gender, MaritalStatus } from "@prisma/client";
+import { formatAdminLevel } from "../utils";
 
 export const ExpandablePropertyAdmin = ({ property }: { property: NonNullable<PropertyWithRelations> }) => {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -61,16 +62,6 @@ export const ExpandablePropertyAdmin = ({ property }: { property: NonNullable<Pr
       <span className="font-medium text-gray-900">{value || "N/A"}</span>
     </div>
   );
-
-  const formatAdminLevel = (level: AdminLevel) => {
-    const levels = {
-      SUPER_ADMIN: "Super Administrador",
-      MANAGER: "Manager",
-      STANDARD: "Estándar",
-      LIMITED: "Limitado",
-    };
-    return levels[level];
-  };
 
   const formatDocumentType = (type: DocumentType) => {
     const types = {

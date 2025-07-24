@@ -33,6 +33,7 @@ import {
 } from "lucide-react";
 import { PropertyWithRelations } from " +/actions/property/manager";
 import { PaymentMethod, PaymentStatus, PaymentType, UnitStatus } from "@prisma/client";
+import { formatAdminLevel } from "../utils";
 
 export const ExpandableUnits = ({ property }: { property?: NonNullable<PropertyWithRelations> }) => {
   const [expandedUnits, setExpandedUnits] = useState(new Set());
@@ -239,7 +240,7 @@ export const ExpandableUnits = ({ property }: { property?: NonNullable<PropertyW
         </div>
       </CardHeader>
       <CardContent>
-        <div className="space-y-4">
+        <div className="space-y-4 grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
           {units.map((unit) => {
             const activeContract = unit.contracts.find((contract) => contract.status === "ACTIVE");
             const paymentStatus = activeContract ? getPaymentStatus(activeContract.payments) : null;
@@ -247,7 +248,10 @@ export const ExpandableUnits = ({ property }: { property?: NonNullable<PropertyW
             const paymentStats = activeContract ? calculatePaymentStats(activeContract.payments) : null;
 
             return (
-              <div key={unit.id} className="border border-gray-100 rounded-lg transition-colors">
+              <div
+                key={unit.id}
+                className={`border border-gray-100 rounded-lg transition-colors ${isExpanded ? "col-span-2" : ""}`}
+              >
                 {/* Header compacto (siempre visible) */}
                 <div className="p-4 hover:bg-gray-50">
                   <div className="flex items-center justify-between mb-3">
@@ -292,27 +296,40 @@ export const ExpandableUnits = ({ property }: { property?: NonNullable<PropertyW
                   </div>
 
                   {activeContract && (
-                    <div className="mb-3 p-2 bg-blue-50 rounded">
-                      <p className="text-sm font-medium text-blue-900">
-                        Inquilino: {activeContract.tenant.user.name} {activeContract.tenant.user.lastName}
-                      </p>
-                      <p className="text-xs text-blue-700">{activeContract.tenant.user.email}</p>
+                    <div className="lg:grid lg:grid-cols-2 gap-3">
+                      {/* admins */}
+                      {activeContract.admins && activeContract.admins.length > 0 && (
+                        <div className="mb-3 p-2 bg-blue-50 rounded">
+                          <p className="text-sm font-medium text-blue-900">
+                            Administradores ({activeContract.admins.length}):
+                          </p>
+                          <div className="space-y-1">
+                            {activeContract.admins.map((admin) => (
+                              <div key={admin.id} className="flex items-center justify-between">
+                                <p className="text-xs text-blue-700">
+                                  {admin.user.name} {admin.user.lastName}
+                                </p>
+                                <span className="text-xs bg-blue-200 text-blue-800 px-2 py-0.5 rounded">
+                                  {formatAdminLevel(admin.adminLevel)}
+                                </span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* inquilino */}
+                      <div className="mb-3 p-2 bg-blue-50 rounded">
+                        <p className="text-sm font-medium text-blue-900">
+                          Inquilino: {activeContract.tenant.user.name} {activeContract.tenant.user.lastName}
+                        </p>
+                        <p className="text-xs text-blue-700">{activeContract.tenant.user.email}</p>
+                        <p className="text-xs text-blue-700">{activeContract.tenant.user.phone}</p>
+                      </div>
                     </div>
                   )}
 
                   <div className="grid grid-cols-4 gap-4 text-sm">
-                    <div>
-                      <span className="text-gray-600">Habitaciones:</span>
-                      <p className="font-medium">{unit.bedrooms}</p>
-                    </div>
-                    <div>
-                      <span className="text-gray-600">Baños:</span>
-                      <p className="font-medium">{unit.bathrooms}</p>
-                    </div>
-                    <div>
-                      <span className="text-gray-600">Área:</span>
-                      <p className="font-medium">{unit.area ? `${unit.area}m²` : "N/A"}</p>
-                    </div>
                     <div>
                       <span className="text-gray-600">Renta:</span>
                       <p className="font-medium text-green-600">
