@@ -1,34 +1,34 @@
 /* eslint-disable @typescript-eslint/no-require-imports */
+
 const fs = require("fs");
 const path = require("path");
 
-const isProd = process.env.NODE_ENV === "production" || process.env.VERCEL === "1";
+const provider = process.env.DB_PROVIDER || "sqlite";
+const templateContent = `generator client {
+    provider      = "prisma-client-js"
+    binaryTargets = ["native"]
+}
+
+datasource db {
+    provider = "${provider}"
+    url      = env("DATABASE_URL")
+}
+`;
+
 const schemaPath = path.join(__dirname, "../prisma/schema.prisma");
 
-console.log(`🔧 Configurando base de datos para: ${isProd ? "PRODUCCIÓN" : "DESARROLLO"}`);
+console.log(`🔧 Generando schema.prisma con provider: ${provider}`);
 
 try {
-  // Leer el schema actual
-  const schemaContent = fs.readFileSync(schemaPath, "utf8");
-
-  // Configurar provider y url según el entorno
-  let updatedSchema = schemaContent;
-
-  if (isProd) {
-    // Configuración para PostgreSQL en producción
-    updatedSchema = updatedSchema.replace(/provider\s*=\s*"sqlite"/g, 'provider = "postgresql"');
-    console.log("✅ Configurado para PostgreSQL (Producción)");
-  } else {
-    // Configuración para SQLite en desarrollo
-    updatedSchema = updatedSchema.replace(/provider\s*=\s*"postgresql"/g, 'provider = "sqlite"');
-    console.log("✅ Configurado para SQLite (Desarrollo)");
+  // Eliminar schema existente y crear nuevo
+  if (fs.existsSync(schemaPath)) {
+    fs.unlinkSync(schemaPath);
   }
 
-  // Escribir el schema actualizado
-  fs.writeFileSync(schemaPath, updatedSchema);
+  fs.writeFileSync(schemaPath, templateContent);
 
-  console.log("📄 Schema actualizado correctamente");
+  console.log(`✅ Schema generado para ${provider.toUpperCase()}`);
 } catch (error) {
-  console.error("❌ Error configurando base de datos:", error.message);
+  console.error("❌ Error generando schema:", error.message);
   process.exit(1);
 }
