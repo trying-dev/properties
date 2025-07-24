@@ -12,24 +12,18 @@ export async function createProperty({ data }: { data: Prisma.PropertyCreateInpu
   }
 }
 
-export async function getProperties(props?: { options?: Prisma.PropertyFindManyArgs }) {
+export async function getProperties() {
   try {
-    return await propertyManager.getProperties(props);
+    return await propertyManager.getProperties();
   } catch (error) {
     console.error("Error fetching properties:", error);
     throw error;
   }
 }
 
-export async function getPropertyById({
-  id,
-  options,
-}: {
-  id: string;
-  options?: Prisma.PropertyFindUniqueArgs;
-}) {
+export async function getProperty({ id }: { id: string }) {
   try {
-    return propertyManager.getPropertyById({ id, options });
+    return propertyManager.getProperty({ id });
   } catch (error) {
     console.error("Error fetching property by ID:", error);
     throw error;

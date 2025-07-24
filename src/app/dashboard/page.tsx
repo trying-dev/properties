@@ -14,6 +14,7 @@ export default function Dashboard() {
   useEffect(() => {
     async function fetchProperties() {
       const properties = await getProperties();
+      console.log({ properties });
       setProperties(properties);
     }
     fetchProperties();
