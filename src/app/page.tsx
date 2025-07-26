@@ -30,7 +30,8 @@ const initialState = {
   errors: undefined as Record<string, string[]> | undefined,
 };
 
-const isDevMode = process.env.NODE_ENV === "development";
+// const isDevMode = process.env.NODE_ENV === "development";
+const isDevMode = true;
 
 const passwordDemo = process.env.NEXT_PUBLIC_PASSWORD_DEMO || "No Password";
 
@@ -116,7 +117,7 @@ export default function HomePage() {
         startTransition(() => {
           router.push("/dashboard");
         });
-      }, 2500);
+      }, 1500);
     }
   }, [state?.success, router, startTransition]);
 

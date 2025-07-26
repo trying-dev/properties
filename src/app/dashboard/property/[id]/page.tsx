@@ -3,19 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 
-import {
-  Building2,
-  MapPin,
-  User,
-  Home,
-  Key,
-  Users,
-  DollarSign,
-  Settings,
-  FileText,
-  CreditCard,
-  AlertCircle,
-} from "lucide-react";
+import { Building2, MapPin, Users, DollarSign, Settings, AlertCircle } from "lucide-react";
 
 import { getProperty } from " +/actions/property/actions_and_mutations";
 import { PropertyWithRelations } from " +/actions/property/manager";

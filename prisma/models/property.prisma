@@ -53,9 +53,9 @@ model Property {
 
 enum PropertyType {
     HOUSE
+    BUILDING
     APARTMENT
     COMMERCIAL_SPACE
-    LOCAL
     OFFICE
     LAND
 }

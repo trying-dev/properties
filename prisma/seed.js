@@ -359,7 +359,7 @@ async function main() {
       postalCode: "111111",
       country: "Colombia",
       gpsCoordinates: "4.7409,-74.0705",
-      propertyType: PropertyType.APARTMENT, // Cambiado para ser coherente
+      propertyType: PropertyType.BUILDING,
       status: PropertyStatus.ACTIVE,
       totalLandArea: 200.0,
       builtArea: 360.0,
