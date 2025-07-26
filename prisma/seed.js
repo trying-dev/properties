@@ -13,11 +13,16 @@ const {
   PaymentType,
   PaymentMethod,
 } = require("@prisma/client");
+const bcrypt = require("bcryptjs");
 
 const prisma = new PrismaClient();
 
 async function main() {
   console.log("🌱 Iniciando seed coherente...");
+
+  // Password desde .env
+  const seedPassword = process.env.SEED_PASSWORD || "password123";
+  const hashedPassword = await bcrypt.hash(seedPassword, 10);
 
   // ========================================
   // 1. LIMPIAR BASE DE DATOS
@@ -51,6 +56,7 @@ async function main() {
       user: {
         create: {
           email: "admin1@propiedades.com",
+          password: hashedPassword,
           phone: "+57 300 111 1111",
           name: "Carlos",
           lastName: "Administrador",
@@ -77,6 +83,8 @@ async function main() {
       user: {
         create: {
           email: "admin2@propiedades.com",
+          password: hashedPassword,
+          password: await bcrypt.hash("Was@123", 10),
           phone: "+57 300 222 2222",
           name: "María",
           lastName: "Supervisora",
@@ -103,6 +111,8 @@ async function main() {
       user: {
         create: {
           email: "admin3@propiedades.com",
+          password: hashedPassword,
+          password: await bcrypt.hash("Was@123", 10),
           phone: "+57 300 333 3333",
           name: "Luis",
           lastName: "Gerente",
@@ -129,6 +139,7 @@ async function main() {
       user: {
         create: {
           email: "portero@propiedades.com",
+          password: hashedPassword,
           phone: "+57 300 888 8888",
           name: "Roberto",
           lastName: "Portero",
@@ -169,6 +180,7 @@ async function main() {
       user: {
         create: {
           email: "comerciante1@gmail.com",
+          password: hashedPassword,
           phone: "+57 300 444 4444",
           name: "Ana",
           lastName: "Comerciante",
@@ -211,6 +223,7 @@ async function main() {
       user: {
         create: {
           email: "comerciante2@gmail.com",
+          password: hashedPassword,
           phone: "+57 300 555 5555",
           name: "Pedro",
           lastName: "Empresario",
@@ -248,6 +261,7 @@ async function main() {
       user: {
         create: {
           email: "residente1@gmail.com",
+          password: hashedPassword,
           phone: "+57 300 666 6666",
           name: "Laura",
           lastName: "Hernandez",
@@ -285,6 +299,7 @@ async function main() {
       user: {
         create: {
           email: "extranjero1@gmail.com",
+          password: hashedPassword,
           phone: "+57 300 777 7777",
           name: "John",
           lastName: "Smith",
@@ -569,6 +584,7 @@ async function main() {
           name: r.name,
           lastName: r.lastName,
           email: r.email,
+          password: hashedPassword,
           phone: r.phone,
           documentNumber: r.documentNumber,
           birthDate: r.birthDate,
