@@ -84,7 +84,6 @@ async function main() {
         create: {
           email: "admin2@propiedades.com",
           password: hashedPassword,
-          password: await bcrypt.hash("Was@123", 10),
           phone: "+57 300 222 2222",
           name: "María",
           lastName: "Supervisora",
@@ -112,7 +111,6 @@ async function main() {
         create: {
           email: "admin3@propiedades.com",
           password: hashedPassword,
-          password: await bcrypt.hash("Was@123", 10),
           phone: "+57 300 333 3333",
           name: "Luis",
           lastName: "Gerente",

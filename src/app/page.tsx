@@ -19,6 +19,7 @@ import {
   BarChart3,
   Star,
   Check,
+  User,
 } from "lucide-react";
 
 import { authenticate } from " +/actions/auth/login";
@@ -28,6 +29,58 @@ const initialState = {
   message: "",
   errors: undefined as Record<string, string[]> | undefined,
 };
+
+const isDevMode = process.env.NODE_ENV === "development";
+
+const passwordDemo = process.env.NEXT_PUBLIC_PASSWORD_DEMO || "No Password";
+
+const adminUsers = [
+  {
+    role: "Super Admin",
+    email: "admin1@propiedades.com",
+    password: passwordDemo,
+  },
+  {
+    role: "Manager",
+    email: "admin2@propiedades.com",
+    password: passwordDemo,
+  },
+  {
+    role: "Standard Admin",
+    email: "admin3@propiedades.com",
+    password: passwordDemo,
+  },
+  {
+    role: "Portero (Limited)",
+    email: "portero@propiedades.com",
+    password: passwordDemo,
+  },
+];
+
+const tenantUsers = [
+  {
+    role: "Inquilino - Ana Comerciante",
+    email: "comerciante1@gmail.com",
+    password: passwordDemo,
+  },
+  {
+    role: "Inquilino - Pedro Empresario",
+    email: "comerciante2@gmail.com",
+    password: passwordDemo,
+  },
+  {
+    role: "Inquilino - Laura Hernandez",
+    email: "residente1@gmail.com",
+    password: passwordDemo,
+  },
+  {
+    role: "Inquilino - John Smith",
+    email: "extranjero1@gmail.com",
+    password: passwordDemo,
+  },
+];
+
+const demoUsers = [...adminUsers, ...tenantUsers];
 
 export default function HomePage() {
   const router = useRouter();
@@ -39,6 +92,10 @@ export default function HomePage() {
   const [showSuccess, setShowSuccess] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [currentFeature, setCurrentFeature] = useState(0);
+
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [showUserMenu, setShowUserMenu] = useState(false);
 
   const isLoading = isPending || isPendingTransition;
 
@@ -64,18 +121,12 @@ export default function HomePage() {
   }, [state?.success, router, startTransition]);
 
   const handleSubmit = () => {
-    const emailInput = document.querySelector('input[name="email"]') as HTMLInputElement;
-    const passwordInput = document.querySelector('input[name="password"]') as HTMLInputElement;
-
-    if (emailInput && passwordInput) {
-      const formData = new FormData();
-      formData.append("email", emailInput.value);
-      formData.append("password", passwordInput.value);
-
-      startTransition(() => {
-        formAction(formData);
-      });
-    }
+    const formData = new FormData();
+    formData.append("email", email);
+    formData.append("password", password);
+    startTransition(() => {
+      formAction(formData);
+    });
   };
 
   const features = [
@@ -237,7 +288,7 @@ export default function HomePage() {
             </div>
 
             {/* Right Side - Login */}
-            <div
+            <form
               className={`${mounted ? "opacity-100 translate-x-0" : "opacity-0 translate-x-10"} transition-all duration-1000 delay-300`}
             >
               <div className="bg-white/10 backdrop-blur-2xl rounded-3xl p-10 border border-white/20 shadow-2xl">
@@ -253,14 +304,68 @@ export default function HomePage() {
                 <div className="space-y-8">
                   {/* Email Field */}
                   <div className="space-y-3">
-                    <label className="block text-sm font-semibold text-gray-300 uppercase tracking-wide">
-                      Correo Electrónico
-                    </label>
+                    <div className="flex items-center justify-between">
+                      <label className="block text-sm font-semibold text-gray-300 uppercase tracking-wide">
+                        Correo Electrónico
+                      </label>
+
+                      {/* Demo Users Icon */}
+                      {isDevMode && (
+                        <div className="relative">
+                          <button
+                            type="button"
+                            onClick={() => setShowUserMenu(!showUserMenu)}
+                            className="p-2 bg-gradient-to-r from-blue-500/20 to-purple-500/20 border border-blue-500/30 rounded-xl backdrop-blur-sm text-blue-300 hover:text-white hover:bg-white/10 transition-all duration-200 group"
+                            title="Usuarios Demo"
+                          >
+                            <User className="w-5 h-5" />
+                          </button>
+
+                          {showUserMenu && (
+                            <div className="absolute top-full right-0 mt-2 w-80 bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl shadow-2xl z-10">
+                              <div className="p-4 border-b border-white/10">
+                                <h4 className="text-white font-semibold text-center">Usuarios Demo</h4>
+                                <p className="text-gray-300 text-xs text-center mt-1">
+                                  Selecciona un usuario para probar
+                                </p>
+                              </div>
+                              <div className="max-h-64 overflow-y-auto">
+                                {demoUsers.map((user, index) => (
+                                  <button
+                                    key={index}
+                                    type="button"
+                                    onClick={() => {
+                                      setEmail(user.email);
+                                      setPassword(user.password);
+                                      setShowUserMenu(false);
+                                    }}
+                                    className="w-full text-left px-4 py-3 hover:bg-white/20 transition-colors text-white border-b border-white/5 last:border-b-0 group"
+                                  >
+                                    <div className="flex items-center space-x-3">
+                                      <div className="w-8 h-8 bg-gradient-to-r from-purple-500/30 to-pink-500/30 rounded-full flex items-center justify-center flex-shrink-0 group-hover:from-purple-500/50 group-hover:to-pink-500/50 transition-all">
+                                        <User className="w-4 h-4 text-purple-300" />
+                                      </div>
+                                      <div className="flex-1 min-w-0">
+                                        <div className="font-medium text-sm">{user.role}</div>
+                                        <div className="text-xs text-gray-400 truncate">{user.email}</div>
+                                      </div>
+                                    </div>
+                                  </button>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </div>
                     <div className="relative">
                       <Mail className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
                       <input
                         name="email"
                         type="email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        autoComplete="email"
                         required
                         disabled={isLoading || showSuccess}
                         className="w-full pl-14 pr-4 py-4 bg-white/5 border border-white/20 rounded-2xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 text-lg disabled:opacity-50"
@@ -285,6 +390,9 @@ export default function HomePage() {
                       <input
                         name="password"
                         type={showPassword ? "text" : "password"}
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        autoComplete="current-password"
                         required
                         disabled={isLoading || showSuccess}
                         className="w-full pl-14 pr-14 py-4 bg-white/5 border border-white/20 rounded-2xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 text-lg disabled:opacity-50"
@@ -350,28 +458,9 @@ export default function HomePage() {
                       </>
                     )}
                   </button>
-
-                  {/* Demo Credentials */}
-                  <div className="bg-gradient-to-r from-blue-500/20 to-purple-500/20 border border-blue-500/30 rounded-2xl p-6 backdrop-blur-sm">
-                    <h4 className="text-blue-200 font-bold mb-4 text-center">Credenciales Demo</h4>
-                    <div className="space-y-3 text-sm">
-                      <div className="flex justify-between items-center bg-white/10 rounded-lg p-3 hover:bg-white/20 transition-colors">
-                        <span className="text-blue-200 font-medium">Super Admin:</span>
-                        <span className="text-white">admin@test.com / 123456</span>
-                      </div>
-                      <div className="flex justify-between items-center bg-white/10 rounded-lg p-3 hover:bg-white/20 transition-colors">
-                        <span className="text-blue-200 font-medium">Manager:</span>
-                        <span className="text-white">manager@test.com / 123456</span>
-                      </div>
-                      <div className="flex justify-between items-center bg-white/10 rounded-lg p-3 hover:bg-white/20 transition-colors">
-                        <span className="text-blue-200 font-medium">Tenant:</span>
-                        <span className="text-white">tenant@test.com / 123456</span>
-                      </div>
-                    </div>
-                  </div>
                 </div>
               </div>
-            </div>
+            </form>
           </div>
 
           {/* Stats Section */}
