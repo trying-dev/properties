@@ -48,11 +48,11 @@ export const ExpandablePropertyInfo = ({ property }: { property: NonNullable<Pro
       APARTMENT: "Apartamento",
       HOUSE: "Casa",
       COMMERCIAL_SPACE: "Espacio Comercial",
-      LOCAL: "Local",
+      BUILDING: "Edificio",
       OFFICE: "Oficina",
       LAND: "Terreno",
     };
-    return types[type] || type;
+    return types[type];
   };
 
   return (
