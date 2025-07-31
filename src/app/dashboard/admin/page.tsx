@@ -9,6 +9,7 @@ import { Property } from "@prisma/client";
 
 import { getProperties } from " +/actions/property/actions_and_mutations";
 import { useSession } from " +/hooks/useSession";
+import { useRouter } from "next/navigation";
 
 interface DashboardStats {
   totalProperties: number;
@@ -18,6 +19,7 @@ interface DashboardStats {
 }
 
 export default function Dashboard() {
+  const router = useRouter();
   const { session, status } = useSession();
   const [properties, setProperties] = useState<Property[]>([]);
   const [stats, setStats] = useState<DashboardStats>({
@@ -42,7 +44,7 @@ export default function Dashboard() {
         const [propertiesData] = await Promise.all([
           getProperties(),
           // Aquí podrías agregar más llamadas: getAdmins(), getStats(), etc.
-          new Promise((resolve) => setTimeout(resolve, 800)), // Simular delay
+          new Promise((resolve) => setTimeout(resolve, 650)), // Simular delay
         ]);
 
         setProperties(propertiesData);
@@ -273,7 +275,10 @@ export default function Dashboard() {
                 <Users className="h-6 w-6 mr-2 text-green-600" />
                 Equipo de Administración
               </h2>
-              <button className="flex items-center space-x-2 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors">
+              <button
+                onClick={() => router.push("/dashboard/admin/create-admin")}
+                className="flex items-center space-x-2 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors"
+              >
                 <Plus className="h-4 w-4" />
                 <span>Agregar</span>
               </button>
