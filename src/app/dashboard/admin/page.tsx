@@ -10,6 +10,7 @@ import { Property } from "@prisma/client";
 import { getProperties } from " +/actions/property/actions_and_mutations";
 import { useSession } from " +/hooks/useSession";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 interface DashboardStats {
   totalProperties: number;
@@ -304,10 +305,13 @@ export default function Dashboard() {
               <Building2 className="h-8 w-8 text-blue-600 mb-2" />
               <span className="text-sm font-medium text-gray-700">Nueva Propiedad</span>
             </button>
-            <button className="flex flex-col items-center p-4 rounded-lg border border-gray-200 hover:border-green-300 hover:bg-green-50 transition-colors">
+            <Link
+              href="/dashboard/admin/nuevo-proceso"
+              className="flex flex-col items-center p-4 rounded-lg border border-gray-200 hover:border-green-300 hover:bg-green-50 transition-colors"
+            >
               <Users className="h-8 w-8 text-green-600 mb-2" />
-              <span className="text-sm font-medium text-gray-700">Nuevo Admin</span>
-            </button>
+              <span className="text-sm font-medium text-gray-700">Nuevo Proceso</span>
+            </Link>
             <button className="flex flex-col items-center p-4 rounded-lg border border-gray-200 hover:border-yellow-300 hover:bg-yellow-50 transition-colors">
               <Calendar className="h-8 w-8 text-yellow-600 mb-2" />
               <span className="text-sm font-medium text-gray-700">Programar Visita</span>
