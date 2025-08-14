@@ -1,3 +1,4 @@
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 const { PrismaClient, PropertyType, PropertyStatus, UnitStatus } = require("@prisma/client");
 
 const prisma = new PrismaClient();
@@ -14,6 +15,66 @@ async function main() {
   const ADMIN_ID = admins[1].id;
 
   console.log("Usando el segundo admin con ID:", ADMIN_ID);
+
+  const commonZonesHouse1 = [
+    {
+      id: "zone_patio_laureles",
+      name: "Patio Trasero",
+      description: "Amplio patio con zona BBQ y jardín",
+      available: true,
+      openingTime: "06:00",
+      closingTime: "22:00",
+      capacity: 10,
+      adminId: ADMIN_ID,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    },
+    {
+      id: "zone_garden_laureles",
+      name: "Jardín Frontal",
+      description: "Jardín decorativo en la entrada",
+      available: true,
+      adminId: ADMIN_ID,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    },
+  ];
+
+  const commonZonesHouse2 = [
+    {
+      id: "zone_terrace_teusa",
+      name: "Terraza Superior",
+      description: "Terraza amplia en el segundo piso",
+      available: true,
+      openingTime: "07:00",
+      closingTime: "21:00",
+      capacity: 8,
+      adminId: ADMIN_ID,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    },
+    {
+      id: "zone_garage_teusa",
+      name: "Garaje Cubierto",
+      description: "Área de parqueadero para 2 vehículos",
+      available: true,
+      adminId: ADMIN_ID,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    },
+    {
+      id: "zone_reading_teusa",
+      name: "Zona de Lectura",
+      description: "Espacio tranquilo para lectura y estudio",
+      available: true,
+      openingTime: "08:00",
+      closingTime: "20:00",
+      capacity: 4,
+      adminId: ADMIN_ID,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    },
+  ];
 
   const properties = [
     {
@@ -40,6 +101,7 @@ async function main() {
       balconiesAndTerraces: "Balcón segundo piso",
       recreationalAreas: "BBQ",
       status: PropertyStatus.ACTIVE,
+      commonZones: JSON.stringify(commonZonesHouse1), // Zonas comunes como JSON
       units: {
         create: [
           {
@@ -62,7 +124,7 @@ async function main() {
             baseRent: 1800000,
             deposit: 1800000,
             description: "Apartamento 2H/1B, primer piso, acceso al patio.",
-            images: "https://picsum.photos/seed/laureles101/800/600",
+            images: JSON.stringify(["https://picsum.photos/seed/laureles101/800/600"]), // Array como JSON string
           },
           {
             unitNumber: "102",
@@ -84,7 +146,7 @@ async function main() {
             baseRent: 1600000,
             deposit: 1600000,
             description: "Estudio amoblado, ideal para 1 persona.",
-            images: "https://picsum.photos/seed/laureles102/800/600",
+            images: JSON.stringify(["https://picsum.photos/seed/laureles102/800/600"]),
           },
           {
             unitNumber: "201",
@@ -106,7 +168,7 @@ async function main() {
             baseRent: 2200000,
             deposit: 2200000,
             description: "3H/1.5B con balcón, segundo piso.",
-            images: "https://picsum.photos/seed/laureles201/800/600",
+            images: JSON.stringify(["https://picsum.photos/seed/laureles201/800/600"]),
           },
         ],
       },
@@ -135,6 +197,7 @@ async function main() {
       balconiesAndTerraces: "Terraza amplia",
       recreationalAreas: "Zona de lectura",
       status: PropertyStatus.ACTIVE,
+      commonZones: JSON.stringify(commonZonesHouse2), // Zonas comunes como JSON
       units: {
         create: [
           {
@@ -157,7 +220,7 @@ async function main() {
             baseRent: 2100000,
             deposit: 2100000,
             description: "2H/1B, primer piso, garaje incluido.",
-            images: "https://picsum.photos/seed/teusa101/800/600",
+            images: JSON.stringify(["https://picsum.photos/seed/teusa101/800/600"]),
           },
           {
             unitNumber: "102",
@@ -179,7 +242,7 @@ async function main() {
             baseRent: 1750000,
             deposit: 1750000,
             description: "1H/1B amoblado con servicios incluidos.",
-            images: "https://picsum.photos/seed/teusa102/800/600",
+            images: JSON.stringify(["https://picsum.photos/seed/teusa102/800/600"]),
           },
           {
             unitNumber: "201",
@@ -201,15 +264,17 @@ async function main() {
             baseRent: 2600000,
             deposit: 2600000,
             description: "3H/2B, segundo piso con terraza.",
-            images: "https://picsum.photos/seed/teusa201/800/600",
+            images: JSON.stringify(["https://picsum.photos/seed/teusa201/800/600"]),
           },
         ],
       },
     },
   ];
 
+  console.log("🏠 Creando propiedades...");
+
   for (const p of properties) {
-    await prisma.property.upsert({
+    const result = await prisma.property.upsert({
       where: { id: p.id },
       update: {
         name: p.name,
@@ -233,17 +298,46 @@ async function main() {
         balconiesAndTerraces: p.balconiesAndTerraces,
         recreationalAreas: p.recreationalAreas,
         status: p.status,
+        commonZones: p.commonZones, // Actualizar zonas comunes
       },
       create: p,
+      include: {
+        units: true,
+      },
     });
+
+    console.log(`✅ Propiedad creada/actualizada: ${result.name}`);
+    console.log(`   - Ubicación: ${result.neighborhood}, ${result.city}`);
+    console.log(`   - Unidades: ${result.units.length}`);
+
+    // Parsear y mostrar zonas comunes
+    try {
+      const zones = JSON.parse(result.commonZones || "[]");
+      console.log(`   - Zonas comunes: ${zones.length}`);
+      zones.forEach((zone) => console.log(`     • ${zone.name}`));
+    } catch (e) {
+      console.log(`   - Zonas comunes: Error al parsear`);
+    }
   }
 
-  console.log("✅ Seed de propiedades y unidades listo (JS).");
+  // Estadísticas finales
+  const totalProperties = await prisma.property.count();
+  const totalUnits = await prisma.unit.count();
+
+  console.log("\n📊 RESUMEN:");
+  console.log("═══════════════════════");
+  console.log(`🏠 Total propiedades: ${totalProperties}`);
+  console.log(`🏢 Total unidades: ${totalUnits}`);
+  console.log(`📍 Ciudades: Medellín, Bogotá`);
+  console.log(`🎯 Tipo: Casas residenciales`);
+  console.log(`💰 Rango de precios: $1.6M - $2.6M`);
+
+  console.log("\n✅ Seed de propiedades y unidades completado exitosamente!");
 }
 
 main()
   .catch((e) => {
-    console.error(e);
+    console.error("💥 Error en el seed:", e);
     process.exit(1);
   })
   .finally(async () => {

@@ -57,7 +57,6 @@ export class UnitsManager {
           property: {
             include: {
               admin: { include: { user: true } },
-              commonZones: true,
             },
           },
         },
@@ -81,11 +80,6 @@ export class UnitsManager {
           property: {
             include: {
               admin: { include: { user: true } },
-              commonZones: {
-                include: {
-                  admin: { include: { user: true } },
-                },
-              },
             },
           },
           contracts: {

@@ -12,6 +12,31 @@ import { ExpandablePropertyInfo } from "./fragments/ExpandablePropertyInfo";
 import { ExpandablePropertyAdmin } from "./fragments/ExpandableAdminInfo";
 import { ExpandableUnits } from "./fragments/ExpandableUnits";
 
+// Interface para las zonas comunes
+interface CommonZone {
+  id?: string;
+  name: string;
+  description: string;
+  capacity?: number;
+  available: boolean;
+  openingTime?: string;
+  closingTime?: string;
+  adminId: string;
+  createdAt?: Date;
+  updatedAt?: Date;
+}
+
+// Utility para parsear zonas comunes
+const parseCommonZones = (commonZonesJson: string | null): CommonZone[] => {
+  if (!commonZonesJson) return [];
+  try {
+    return JSON.parse(commonZonesJson) as CommonZone[];
+  } catch (error) {
+    console.error("Error parsing common zones JSON:", error);
+    return [];
+  }
+};
+
 const PropertyPage = () => {
   const { id } = useParams();
   const [property, setProperty] = useState<PropertyWithRelations | null>(null);
@@ -70,26 +95,6 @@ const PropertyPage = () => {
       occupancyRate,
       totalMonthlyRent,
     };
-  };
-
-  // Función para obtener el estado del último pago
-  const getPaymentStatus = (
-    payments: NonNullable<PropertyWithRelations>["units"][0]["contracts"][0]["payments"],
-  ) => {
-    if (!payments.length) return { status: "Sin pagos", color: "gray" };
-
-    const latestPayment = payments[0]; // Ya están ordenados por fecha desc
-
-    switch (latestPayment.status) {
-      case "PAID":
-        return { status: "Al día", color: "green" };
-      case "PENDING":
-        return { status: "Pendiente", color: "yellow" };
-      case "OVERDUE":
-        return { status: "Vencido", color: "red" };
-      default:
-        return { status: "Desconocido", color: "gray" };
-    }
   };
 
   // Componentes auxiliares
@@ -174,6 +179,7 @@ const PropertyPage = () => {
   }
 
   const stats = calculateStats(property.units);
+  const commonZones = parseCommonZones(property.commonZones);
 
   return (
     <div className="min-h-screen bg-gray-50 p-6">
@@ -248,59 +254,78 @@ const PropertyPage = () => {
         </div>
 
         {/* Bottom Row - Secciones grandes */}
-        {/* <div className="grid grid-cols-1 lg:grid-cols-2 gap-6"> */}
         {/* Unidades */}
         <ExpandableUnits property={property} />
 
         {/* Zonas Comunes */}
-        <Card>
+        <Card className="mt-6">
           <CardHeader>
             <div className="flex items-center justify-between">
               <div className="flex items-center">
                 <Users className="h-5 w-5 text-indigo-600 mr-2" />
                 <h3 className="text-lg font-semibold text-gray-900">Zonas Comunes</h3>
               </div>
-              <span className="text-sm text-gray-500">{property.commonZones.length} zonas</span>
+              <span className="text-sm text-gray-500">{commonZones.length} zonas</span>
             </div>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {property.commonZones.map((zone) => (
-                <div
-                  key={zone.id}
-                  className="border border-gray-100 rounded-lg p-4 hover:bg-gray-50 transition-colors"
-                >
-                  <div className="flex items-center justify-between mb-2">
-                    <div className="flex items-center">
-                      <Settings className="h-4 w-4 text-gray-400 mr-2" />
-                      <div>
-                        <span className="font-medium">{zone.name}</span>
-                        {zone.description && <p className="text-sm text-gray-600">{zone.description}</p>}
+              {commonZones.length > 0 ? (
+                commonZones.map((zone, index) => (
+                  <div
+                    key={zone.id || `zone-${index}`}
+                    className="border border-gray-100 rounded-lg p-4 hover:bg-gray-50 transition-colors"
+                  >
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center">
+                        <Settings className="h-4 w-4 text-gray-400 mr-2" />
+                        <div>
+                          <span className="font-medium">{zone.name}</span>
+                          {zone.description && <p className="text-sm text-gray-600">{zone.description}</p>}
+                        </div>
                       </div>
+                      <span
+                        className={`px-2 py-1 rounded-full text-xs font-medium ${
+                          zone.available ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"
+                        }`}
+                      >
+                        {zone.available ? "Disponible" : "No disponible"}
+                      </span>
                     </div>
-                    <span
-                      className={`px-2 py-1 rounded-full text-xs font-medium ${
-                        zone.available ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"
-                      }`}
-                    >
-                      {zone.available ? "Disponible" : "No disponible"}
-                    </span>
-                  </div>
-                  <div className="text-xs text-gray-500">
-                    Responsable: {zone.admin.user.name} {zone.admin.user.lastName}
-                  </div>
-                </div>
-              ))}
 
-              {/* Placeholder para más zonas comunes */}
-              <div className="border-2 border-dashed border-gray-200 rounded-lg p-6 text-center">
+                    {/* Horarios si están disponibles */}
+                    {zone.openingTime && zone.closingTime && (
+                      <div className="text-xs text-gray-500 mb-1">
+                        Horario: {zone.openingTime} - {zone.closingTime}
+                      </div>
+                    )}
+
+                    {/* Capacidad si está disponible */}
+                    {zone.capacity && (
+                      <div className="text-xs text-gray-500 mb-1">Capacidad: {zone.capacity} personas</div>
+                    )}
+
+                    {/* Información del administrador responsable */}
+                    <div className="text-xs text-gray-500">
+                      Responsable: {property.admin.user.name} {property.admin.user.lastName}
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div className="text-center py-8 text-gray-500">
+                  <Users className="h-8 w-8 text-gray-400 mx-auto mb-2" />
+                  <p>No hay zonas comunes registradas</p>
+                </div>
+              )}
+
+              {/* Placeholder para agregar más zonas comunes */}
+              <div className="border-2 border-dashed border-gray-200 rounded-lg p-6 text-center hover:border-gray-300 transition-colors cursor-pointer">
                 <Settings className="h-8 w-8 text-gray-400 mx-auto mb-2" />
                 <p className="text-gray-500 text-sm">Agregar nueva zona común</p>
               </div>
             </div>
           </CardContent>
         </Card>
-        {/* </div> */}
       </div>
     </div>
   );

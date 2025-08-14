@@ -36,7 +36,6 @@ async function main() {
   await prisma.contract.deleteMany({});
   await prisma.reference.deleteMany({});
   await prisma.tenant.deleteMany({});
-  await prisma.commonZone.deleteMany({});
   await prisma.unit.deleteMany({});
   await prisma.property.deleteMany({});
   await prisma.admin.deleteMany({});
@@ -346,6 +345,24 @@ async function main() {
 
   console.log("🏢 Creando propiedad...");
 
+  // Definir zonas comunes como JSON
+  const commonZones = [
+    {
+      name: "Escaleras",
+      description: "Escaleras principales - Acceso a segundo piso",
+      available: true,
+      adminId: admin2.id,
+    },
+    {
+      name: "Entrada",
+      description: "Área frontal - Entrada principal y recepción",
+      available: true,
+      openingTime: "06:00",
+      closingTime: "22:00",
+      adminId: admin2.id,
+    },
+  ];
+
   const property = await prisma.property.create({
     data: {
       admin: { connect: { id: admin1.id } },
@@ -367,6 +384,7 @@ async function main() {
       age: 5,
       parking: 4,
       parkingLocation: "Parte trasera del edificio",
+      commonZones: JSON.stringify(commonZones), // Zonas comunes como JSON
     },
     include: {
       units: true,
@@ -463,32 +481,9 @@ async function main() {
     },
   });
 
-  // Crear zonas comunes
-  await prisma.commonZone.create({
-    data: {
-      property: { connect: { id: property.id } },
-      admin: { connect: { id: admin2.id } },
-      name: "Escaleras",
-      description: "Escaleras principales - Acceso a segundo piso",
-      available: true,
-    },
-  });
-
-  await prisma.commonZone.create({
-    data: {
-      property: { connect: { id: property.id } },
-      admin: { connect: { id: admin2.id } },
-      name: "Entrada",
-      description: "Área frontal - Entrada principal y recepción",
-      available: true,
-      openingTime: "06:00",
-      closingTime: "22:00",
-    },
-  });
-
   console.log(`✅ Propiedad creada: ${property.name}`);
   console.log(`   - 4 unidades creadas`);
-  console.log(`   - 2 zonas comunes creadas`);
+  console.log(`   - 2 zonas comunes creadas (JSON)`);
 
   // ========================================
   // 5. CREAR CONTRATOS
@@ -801,7 +796,6 @@ async function main() {
   const contractCount = await prisma.contract.count();
   const paymentCount = await prisma.payment.count();
   const unitCount = await prisma.unit.count();
-  const commonZoneCount = await prisma.commonZone.count();
 
   console.log("\n📊 RESUMEN DEL SISTEMA CREADO:");
   console.log("═══════════════════════════════");
@@ -822,14 +816,14 @@ async function main() {
   console.log("");
   console.log("🏠 INFRAESTRUCTURA:");
   console.log(`   - Unidades: ${unitCount}`);
-  console.log(`   - Zonas comunes: ${commonZoneCount}`);
+  console.log(`   - Zonas comunes: 2 (almacenadas en JSON)`);
   console.log(`   - Ocupación: 100% (${unitCount}/${unitCount} unidades)`);
   console.log("");
   console.log("📄 CONTRATOS Y FINANZAS:");
   console.log(`   - Contratos activos: ${contractCount}`);
   console.log(`   - Pagos registrados: ${paymentCount}`);
-  console.log(`   - Ingresos mensuales: $${totalRent.toLocaleString()}`);
-  console.log(`   - Total depósitos: $${totalDeposits.toLocaleString()}`);
+  console.log(`   - Ingresos mensuales: ${totalRent.toLocaleString()}`);
+  console.log(`   - Total depósitos: ${totalDeposits.toLocaleString()}`);
   console.log("");
   console.log("📋 TIPOS DE DOCUMENTOS:");
   console.log(`   - Cédulas de Ciudadanía: 7`);
@@ -845,5 +839,6 @@ main()
     process.exit(1);
   })
   .finally(async () => {
+    require("./seeds/2-casas");
     await prisma.$disconnect();
   });

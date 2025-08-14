@@ -1,12 +1,15 @@
 "use client";
 
-import React, { useState, useEffect, useRef, useCallback, useMemo } from "react";
+import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { Search, Home, MapPin, Bed, Bath, Check, X } from "lucide-react";
 import { AvailableUnit, PropertyWithAvailableUnits } from " +/actions/nuevo-proceso/manager";
 import {
   getAvailableUnitsAction,
   getPropertiesWithAvailableUnitsAction,
 } from " +/actions/nuevo-proceso/actions_and_mutations";
+
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 interface PriceRangeSliderProps {
   min: number;
@@ -87,7 +90,7 @@ const PriceRangeSlider = ({
     setIsDragging(null);
   }, []);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (isDragging) {
       document.addEventListener("mousemove", handleMouseMove);
       document.addEventListener("mouseup", handleMouseUp);
@@ -226,13 +229,24 @@ const PriceRangeSlider = ({
   );
 };
 
+const STORAGE_KEY = "np:selectedUnitId";
+
 const NuevoProceso = () => {
+  const router = useRouter();
+
   const [units, setUnits] = useState<AvailableUnit[]>([]);
   const [allUnits, setAllUnits] = useState<AvailableUnit[]>([]); // Para calcular rangos dinámicos
   const [loading, setLoading] = useState(false);
   const [properties, setProperties] = useState<PropertyWithAvailableUnits[]>([]);
   const [selectedUnit, setSelectedUnit] = useState<AvailableUnit | null>(null);
   const [showReserveModal, setShowReserveModal] = useState(false);
+
+  const selectAndGo = (unitId: string) => {
+    try {
+      localStorage.setItem(STORAGE_KEY, unitId);
+    } catch {}
+    router.push("/dashboard/admin/seleccion-de-usuario");
+  };
 
   // Calcular rangos dinámicos basados en todas las unidades disponibles
   const priceRange = useMemo(() => {
@@ -336,7 +350,6 @@ const NuevoProceso = () => {
 
   const loadAllUnits = async () => {
     try {
-      // Cargar todas las unidades sin filtros para calcular rangos
       const result = await getAvailableUnitsAction({});
       if (result.success) {
         setAllUnits(result.data ?? []);
@@ -607,7 +620,16 @@ const NuevoProceso = () => {
                 <div className="p-6">
                   <div className="flex items-start justify-between mb-4">
                     <div>
-                      <h3 className="text-lg font-semibold text-gray-900">Unidad {unit.unitNumber}</h3>
+                      <h3 className="text-lg font-semibold text-gray-900">
+                        <Link
+                          href="/dashboard/admin/nuevo-proceso/seleccion-de-usuario"
+                          prefetch={false}
+                          onClick={() => selectAndGo(unit.id)}
+                          className="hover:underline cursor-pointer"
+                        >
+                          Unidad {unit.unitNumber}
+                        </Link>
+                      </h3>
                       <p className="text-sm text-gray-600 flex items-center">
                         <MapPin className="w-4 h-4 mr-1" />
                         {unit.property.name}
@@ -668,15 +690,14 @@ const NuevoProceso = () => {
                   )}
 
                   <div className="flex space-x-2">
-                    <button
-                      onClick={() => handleSelectUnit(unit)}
+                    <Link
+                      href="/dashboard/admin/nuevo-proceso/seleccion-de-usuario"
+                      prefetch={false}
+                      onClick={() => selectAndGo(unit.id)}
                       className="flex-1 bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-colors text-sm font-medium"
                     >
                       Seleccionar Unidad
-                    </button>
-                    <button className="px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors text-sm">
-                      Ver Detalles
-                    </button>
+                    </Link>
                   </div>
                 </div>
               </div>

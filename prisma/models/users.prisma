@@ -99,10 +99,9 @@ model Admin {
     createdBy   Admin?  @relation("AdminCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
     created     Admin[] @relation("AdminCreatedBy")
 
-    // Relaciones mejoradas
-    properties  Property[]
-    commonZones CommonZone[]
-    contracts   Contract[]   @relation("ContractAdmins")
+    // Relaciones
+    properties Property[]
+    contracts  Contract[] @relation("ContractAdmins")
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt

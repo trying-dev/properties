@@ -34,11 +34,6 @@ export class PropertyManager {
               },
             },
           },
-          commonZones: {
-            include: {
-              admin: { include: { user: true } },
-            },
-          },
         },
       });
     } catch (error) {

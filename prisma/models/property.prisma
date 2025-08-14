@@ -34,13 +34,16 @@ model Property {
     balconiesAndTerraces String?
     recreationalAreas    String?
 
+    // Zonas comunes (optimizado como JSON)
+    commonZones String? // JSON string con array de zonas comunes
+    // Ejemplo: [{"name": "Piscina", "description": "...", "capacity": 20, "available": true, "openingTime": "06:00", "closingTime": "22:00", "adminId": "admin123"}]
+
     // Estado y disponibilidad
     status PropertyStatus @default(ACTIVE)
 
-    // Relaciones mejoradas
-    admin       Admin        @relation(fields: [adminId], references: [id], onDelete: Restrict)
-    commonZones CommonZone[]
-    units       Unit[]
+    // Relaciones
+    admin Admin  @relation(fields: [adminId], references: [id], onDelete: Restrict)
+    units Unit[]
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
@@ -131,35 +134,4 @@ enum UnitStatus {
     RESERVED // Reservada
     MAINTENANCE // En mantenimiento
     UNAVAILABLE // No disponible
-}
-
-// ========================================
-// Common Zone
-// ========================================
-
-model CommonZone {
-    id String @id @default(cuid())
-
-    propertyId String
-    adminId    String
-
-    name        String
-    description String
-    capacity    Int?
-
-    // Disponibilidad
-    available Boolean @default(true)
-
-    // Horarios
-    openingTime String? // HH:mm format
-    closingTime String? // HH:mm format
-
-    property Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
-    admin    Admin    @relation(fields: [adminId], references: [id], onDelete: Restrict)
-
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
-
-    @@index([propertyId])
-    @@map("common_zones")
 }
