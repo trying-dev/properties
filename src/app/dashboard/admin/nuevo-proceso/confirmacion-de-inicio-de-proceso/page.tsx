@@ -20,6 +20,7 @@ import {
   initializeContractAction,
 } from " +/actions/confirmacion-de-inicio-de-proceso/actions_and_mutations";
 import { useSession } from " +/hooks/useSession";
+import { ProcessDetails } from " +/actions/confirmacion-de-inicio-de-proceso/manager";
 
 const ConfirmacionDeInicioDeProceso = () => {
   const router = useRouter();
@@ -27,7 +28,7 @@ const ConfirmacionDeInicioDeProceso = () => {
   const [loading, setLoading] = useState(true);
   const [processing, setProcessing] = useState(false);
   const [contractInitialized, setContractInitialized] = useState(false);
-  const [processDetails, setProcessDetails] = useState<any>(null);
+  const [processDetails, setProcessDetails] = useState<ProcessDetails | null>(null);
   const [error, setError] = useState("");
   const [notes, setNotes] = useState("");
 
@@ -52,6 +53,7 @@ const ConfirmacionDeInicioDeProceso = () => {
 
       loadProcessDetails(unitId, tenantId);
     } catch (err) {
+      console.error("Error al acceder a los datos almacenados.", err);
       setError("Error al acceder a los datos almacenados.");
       setLoading(false);
     }
@@ -62,11 +64,12 @@ const ConfirmacionDeInicioDeProceso = () => {
       const result = await getProcessDetailsAction(unitId, tenantId);
 
       if (result.success) {
-        setProcessDetails(result.data);
+        setProcessDetails(result.data ?? null);
       } else {
         setError(result.error || "Error al cargar los detalles");
       }
     } catch (err) {
+      console.error("Error al cargar los detalles del proceso", err);
       setError("Error al cargar los detalles del proceso");
     } finally {
       setLoading(false);
@@ -100,6 +103,7 @@ const ConfirmacionDeInicioDeProceso = () => {
         setError(result.error || "Error al inicializar el contrato");
       }
     } catch (err) {
+      console.error("Error al procesar la solicitud", err);
       setError("Error al procesar la solicitud");
     } finally {
       setProcessing(false);

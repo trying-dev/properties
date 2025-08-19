@@ -135,6 +135,9 @@ model Tenant {
     user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
     contracts Contract[] // Contratos donde es el inquilino
 
+    registrationToken        String?
+    registrationTokenExpires DateTime?
+
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 

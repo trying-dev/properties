@@ -1,7 +1,7 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
 import { processConfirmationManager } from "./manager";
+import { emailService } from "./emailResend";
 
 export async function getProcessDetailsAction(unitId: string, tenantId: string) {
   try {
@@ -14,6 +14,16 @@ export async function getProcessDetailsAction(unitId: string, tenantId: string) 
       error: error instanceof Error ? error.message : "Error al obtener detalles del proceso",
     };
   }
+}
+
+// 🔧 FUNCIONES AUXILIARES NECESARIAS
+
+/**
+ * Genera un token único para el registro
+ */
+async function generateRegistrationToken(): Promise<string> {
+  const crypto = await import("crypto");
+  return crypto.randomBytes(32).toString("hex");
 }
 
 export async function initializeContractAction({
@@ -37,20 +47,48 @@ export async function initializeContractAction({
     });
 
     // Obtener detalles para el email
-    const details = await processConfirmationManager.getProcessDetails({ unitId, tenantId });
-
-    const unitInfo = `${details.unit.property.name} - Unidad ${details.unit.unitNumber}`;
-
-    // Enviar email de notificación
-    const emailResult = await processConfirmationManager.sendNotificationEmail({
-      // tenantEmail: details.tenant.user.email,
-      tenantEmail: "revi-pruebas@outlook.com",
-      tenantName: `${details.tenant.user.name} ${details.tenant.user.lastName}`,
-      unitInfo,
-      processId: contract.id,
+    const details = await processConfirmationManager.getProcessDetails({
+      unitId,
+      tenantId,
     });
 
-    revalidatePath("/dashboard");
+    const tenantUser = details.tenant.user;
+
+    // 🔍 DETERMINAR TIPO DE USUARIO
+    const isNewUser = tenantUser.password === null;
+
+    let emailResult;
+
+    if (isNewUser) {
+      // 🎯 FLUJO 1: USUARIO NUEVO
+      console.log("📧 Enviando email de registro para usuario nuevo:", tenantUser.email);
+
+      // Generar token de registro
+      const registrationToken = await generateRegistrationToken();
+
+      // Guardar token en la base de datos
+      await processConfirmationManager.updateUserRegistrationToken(tenantUser.id, registrationToken);
+
+      // Enviar email con token para completar registro
+      emailResult = await emailService.sendNewUserRegistrationEmail({
+        // tenantEmail: tenantUser.email,
+        tenantEmail: "revi-pruebas@outlook.com",
+        tenantName: `${tenantUser.name} ${tenantUser.lastName}`,
+        registrationToken,
+      });
+    } else {
+      // 🎯 FLUJO 2: USUARIO EXISTENTE
+      console.log("📧 Enviando email de continuación para usuario existente:", tenantUser.email);
+
+      // Enviar email simple para continuar proceso
+      emailResult = await emailService.sendExistingUserContinueEmail({
+        // tenantEmail: tenantUser.email,
+        tenantEmail: "revi-pruebas@outlook.com",
+        tenantName: `${tenantUser.name} ${tenantUser.lastName}`,
+      });
+    }
+
+    // revalidatePath("/dashboard");
 
     return {
       success: true,
@@ -58,8 +96,12 @@ export async function initializeContractAction({
         contract,
         emailSent: emailResult.success,
         emailId: emailResult.emailId,
+        userType: isNewUser ? "new" : "existing",
+        emailType: isNewUser ? "registration" : "continue",
       },
-      message: "Contrato inicializado exitosamente y email enviado",
+      message: isNewUser
+        ? "Contrato inicializado y email de registro enviado al usuario nuevo"
+        : "Contrato inicializado y email de continuación enviado al usuario existente",
     };
   } catch (error) {
     console.error("Error en initializeContractAction:", error);

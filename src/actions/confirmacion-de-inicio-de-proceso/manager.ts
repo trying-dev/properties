@@ -1,6 +1,5 @@
 import { Prisma, PrismaClient } from "@prisma/client";
 import { DefaultArgs } from "@prisma/client/runtime/library";
-import { EmailService } from "./emailResend";
 
 export class ProcessConfirmationManager {
   prisma: PrismaClient<Prisma.PrismaClientOptions, never, DefaultArgs>;
@@ -13,15 +12,7 @@ export class ProcessConfirmationManager {
     try {
       const unit = await this.prisma.unit.findUnique({
         where: { id: unitId },
-        include: {
-          property: {
-            include: {
-              admin: {
-                include: { user: true },
-              },
-            },
-          },
-        },
+        include: { property: { include: { admin: { include: { user: true } } } } },
       });
 
       const tenant = await this.prisma.tenant.findUnique({
@@ -62,25 +53,18 @@ export class ProcessConfirmationManager {
           baseRent: true,
           deposit: true,
           unitNumber: true,
-          property: {
-            select: { name: true },
-          },
+          property: { select: { name: true } },
         },
       });
 
-      if (!unit) {
-        throw new Error("La unidad especificada no existe");
-      }
-
-      if (!unit.baseRent) {
-        throw new Error("La unidad no tiene una renta base definida");
-      }
+      if (!unit) throw new Error("La unidad especificada no existe");
+      if (!unit.baseRent) throw new Error("La unidad no tiene una renta base definida");
 
       // Verificar que el inquilino y admin existen
       const [tenant, userAdmin] = await Promise.all([
         this.prisma.tenant.findUnique({
           where: { id: tenantId },
-          include: { user: { select: { name: true, lastName: true, email: true } } },
+          include: { user: { select: { name: true, lastName: true, email: true, password: true } } },
         }),
         this.prisma.user.findUnique({
           where: { id: adminId },
@@ -112,19 +96,9 @@ export class ProcessConfirmationManager {
           initiatedAt: new Date(),
         },
         include: {
-          unit: {
-            include: {
-              property: {
-                select: { name: true },
-              },
-            },
-          },
+          unit: { include: { property: { select: { name: true } } } },
           tenant: {
-            include: {
-              user: {
-                select: { name: true, lastName: true, email: true },
-              },
-            },
+            include: { user: { select: { name: true, lastName: true, email: true, password: true } } },
           },
         },
       });
@@ -149,24 +123,19 @@ export class ProcessConfirmationManager {
     }
   }
 
-  async sendNotificationEmail({
-    tenantEmail,
-    tenantName,
-    unitInfo,
-    processId,
-  }: {
-    tenantEmail: string;
-    tenantName: string;
-    unitInfo: string;
-    processId: string;
-  }) {
-    return await EmailService.sendNotificationEmail({
-      tenantEmail,
-      tenantName,
-      unitInfo,
-      processId,
+  async updateUserRegistrationToken(tenantId: string, registrationToken: string) {
+    return await this.prisma.tenant.update({
+      where: { id: tenantId },
+      data: {
+        registrationToken,
+        registrationTokenExpires: new Date(Date.now() + 24 * 60 * 60 * 1000), // 24 horas
+      },
     });
   }
 }
 
 export const processConfirmationManager = new ProcessConfirmationManager(new PrismaClient());
+
+export type ProcessDetails = Prisma.PromiseReturnType<
+  typeof ProcessConfirmationManager.prototype.getProcessDetails
+>;

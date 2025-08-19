@@ -22,7 +22,40 @@ const roleRouteAccess = {
   tenant: ["/dashboard", "/dashboard/tenant"],
 };
 
+function validateEnvironmentVariables() {
+  const requiredEnvVars = {
+    RESEND_API_KEY: process.env.RESEND_API_KEY,
+    FROM_EMAIL: process.env.FROM_EMAIL,
+    NEXTAUTH_URL: process.env.NEXTAUTH_URL,
+  };
+
+  const missingVars = Object.entries(requiredEnvVars)
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    .filter(([_key, value]) => !value)
+    .map(([key]) => key);
+
+  if (missingVars.length > 0) {
+    console.error(`❌ Variables de entorno faltantes: ${missingVars.join(", ")}`);
+    console.error("🚨 La aplicación no puede funcionar sin estas variables de entorno");
+    return false;
+  }
+
+  console.log("✅ Variables de entorno validadas correctamente");
+  return true;
+}
+
 export default async function middleware(request: NextRequest) {
+  if (!validateEnvironmentVariables()) {
+    console.error("🚨 Middleware detenido por falta de variables de entorno");
+    return NextResponse.json(
+      {
+        error: "Server configuration error",
+        message: "Required environment variables are missing",
+      },
+      { status: 500 },
+    );
+  }
+
   const session = await auth();
   const pathname = request.nextUrl.pathname;
 
