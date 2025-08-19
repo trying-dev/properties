@@ -17,7 +17,7 @@ export class EmailService {
     registrationToken: string;
   }) {
     try {
-      const registrationUrl = `${process.env.NEXTAUTH_URL}/register?token=${registrationToken}`;
+      const registrationUrl = `${process.env.NEXTAUTH_URL}/registro-con-token?token=${registrationToken}`;
 
       const emailResult = await this.resend.emails.send({
         from: process.env.FROM_EMAIL as string,
@@ -80,7 +80,6 @@ export class EmailService {
     }
   }
 
-  // 🆕 Template para nuevo usuario
   private getNewUserRegistrationTemplate(tenantName: string, registrationUrl: string) {
     return `
       <!DOCTYPE html>
@@ -152,9 +151,8 @@ export class EmailService {
     `;
   }
 
-  // 🆕 Template para usuario existente
   private getExistingUserContinueTemplate(tenantName: string) {
-    const loginUrl = `${process.env.NEXTAUTH_URL}/login`;
+    const loginUrl = `${process.env.NEXTAUTH_URL}`;
     return `
       <!DOCTYPE html>
       <html lang="es">

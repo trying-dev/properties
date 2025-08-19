@@ -124,13 +124,13 @@ export class ProcessConfirmationManager {
   }
 
   async updateUserRegistrationToken(tenantId: string, registrationToken: string) {
-    return await this.prisma.tenant.update({
-      where: { id: tenantId },
-      data: {
-        registrationToken,
-        registrationTokenExpires: new Date(Date.now() + 24 * 60 * 60 * 1000), // 24 horas
-      },
-    });
+    return  await this.prisma.tenant.update({
+        where: { id: tenantId },
+        data: {
+          registrationToken,
+          registrationTokenExpires: new Date(Date.now() + 24 * 60 * 60 * 1000), // 24 horas
+        },
+      });
   }
 }
 

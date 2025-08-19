@@ -88,6 +88,15 @@ enum MaritalStatus {
     COMMON_LAW // Unión libre
 }
 
+enum EmploymentStatus {
+    EMPLOYED
+    SELF_EMPLOYED
+    UNEMPLOYED
+    STUDENT
+    RETIRED
+    OTHER
+}
+
 model Admin {
     id         String     @id @default(cuid())
     userId     String     @unique
@@ -126,7 +135,7 @@ model Tenant {
     // Información específica del inquilino
     emergencyContact      String?
     emergencyContactPhone String?
-    employmentStatus      String?
+    employmentStatus      EmploymentStatus?
     monthlyIncome         Float?
 
     // Referencias

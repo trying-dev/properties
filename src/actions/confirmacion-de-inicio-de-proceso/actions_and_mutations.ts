@@ -2,6 +2,7 @@
 
 import { processConfirmationManager } from "./manager";
 import { emailService } from "./emailResend";
+import { randomBytes } from "crypto";
 
 export async function getProcessDetailsAction(unitId: string, tenantId: string) {
   try {
@@ -16,16 +17,6 @@ export async function getProcessDetailsAction(unitId: string, tenantId: string) 
   }
 }
 
-// 🔧 FUNCIONES AUXILIARES NECESARIAS
-
-/**
- * Genera un token único para el registro
- */
-async function generateRegistrationToken(): Promise<string> {
-  const crypto = await import("crypto");
-  return crypto.randomBytes(32).toString("hex");
-}
-
 export async function initializeContractAction({
   unitId,
   tenantId,
@@ -38,7 +29,6 @@ export async function initializeContractAction({
   notes?: string;
 }) {
   try {
-    // Inicializar el contrato
     const contract = await processConfirmationManager.initializeContract({
       unitId,
       tenantId,
@@ -46,49 +36,39 @@ export async function initializeContractAction({
       notes,
     });
 
-    // Obtener detalles para el email
     const details = await processConfirmationManager.getProcessDetails({
       unitId,
       tenantId,
     });
 
-    const tenantUser = details.tenant.user;
+    const { name, lastName, email, password } = details.tenant.user;
 
-    // 🔍 DETERMINAR TIPO DE USUARIO
-    const isNewUser = tenantUser.password === null;
+    const isNewUser = password === null;
 
     let emailResult;
 
     if (isNewUser) {
-      // 🎯 FLUJO 1: USUARIO NUEVO
-      console.log("📧 Enviando email de registro para usuario nuevo:", tenantUser.email);
+      console.log("📧 Enviando email de registro para usuario nuevo:", email);
 
-      // Generar token de registro
-      const registrationToken = await generateRegistrationToken();
+      const registrationToken = randomBytes(32).toString("hex");
 
-      // Guardar token en la base de datos
-      await processConfirmationManager.updateUserRegistrationToken(tenantUser.id, registrationToken);
+      await processConfirmationManager.updateUserRegistrationToken(tenantId, registrationToken);
 
-      // Enviar email con token para completar registro
       emailResult = await emailService.sendNewUserRegistrationEmail({
-        // tenantEmail: tenantUser.email,
+        // tenantEmail: email,
         tenantEmail: "revi-pruebas@outlook.com",
-        tenantName: `${tenantUser.name} ${tenantUser.lastName}`,
+        tenantName: `${name} ${lastName}`,
         registrationToken,
       });
     } else {
-      // 🎯 FLUJO 2: USUARIO EXISTENTE
-      console.log("📧 Enviando email de continuación para usuario existente:", tenantUser.email);
+      console.log("📧 Enviando email de continuación para usuario existente:", email);
 
-      // Enviar email simple para continuar proceso
       emailResult = await emailService.sendExistingUserContinueEmail({
-        // tenantEmail: tenantUser.email,
+        // tenantEmail: email,
         tenantEmail: "revi-pruebas@outlook.com",
-        tenantName: `${tenantUser.name} ${tenantUser.lastName}`,
+        tenantName: `${name} ${lastName}`,
       });
     }
-
-    // revalidatePath("/dashboard");
 
     return {
       success: true,
