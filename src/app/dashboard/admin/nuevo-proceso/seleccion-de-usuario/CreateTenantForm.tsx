@@ -38,9 +38,6 @@ export interface TenantFormData {
   // Emergencia
   emergencyContact?: string;
   emergencyContactPhone?: string;
-
-  // Acceso
-  password?: string;
 }
 
 export interface CreateTenantSubmit {
@@ -60,7 +57,6 @@ export interface CreateTenantSubmit {
     state?: string;
     country?: string;
     profession?: string;
-    password?: string;
   };
   tenant: {
     employmentStatus?: string;
@@ -79,28 +75,28 @@ type Props = {
 };
 
 export const CreateTenantForm = ({ isOpen, onClose, onSubmit }: Props) => {
-  const initialForm: TenantFormData = useMemo(
-    () => ({
-      email: "",
-      name: "",
-      lastName: "",
-      documentType: "CC",
-      documentNumber: "",
-      phone: "",
-      birthDate: "",
-      gender: "PREFER_NOT_TO_SAY",
-      maritalStatus: "SINGLE",
-      address: "",
-      city: "",
-      state: "",
-      country: "Colombia",
-      profession: "",
-      employmentStatus: "",
-      monthlyIncome: "",
-      emergencyContact: "",
-      emergencyContactPhone: "",
-      password: "",
-    }),
+  const initialForm = useMemo(
+    () =>
+      ({
+        email: "",
+        name: "",
+        lastName: "",
+        documentType: "CC",
+        documentNumber: "",
+        phone: "",
+        birthDate: "",
+        gender: "PREFER_NOT_TO_SAY",
+        maritalStatus: "SINGLE",
+        address: "",
+        city: "",
+        state: "",
+        country: "Colombia",
+        profession: "",
+        employmentStatus: "",
+        monthlyIncome: "",
+        emergencyContact: "",
+        emergencyContactPhone: "",
+      }) as TenantFormData,
     [],
   );
 
@@ -170,7 +166,6 @@ export const CreateTenantForm = ({ isOpen, onClose, onSubmit }: Props) => {
         state: formData.state?.trim() || undefined,
         country: formData.country?.trim() || undefined,
         profession: formData.profession?.trim() || undefined,
-        password: formData.password?.trim() || undefined,
       },
       tenant: {
         employmentStatus: formData.employmentStatus?.trim() || undefined,
@@ -188,6 +183,7 @@ export const CreateTenantForm = ({ isOpen, onClose, onSubmit }: Props) => {
 
   useEffect(() => {
     if (!isOpen) resetForm();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen]);
 
   if (!isOpen) return null;
@@ -540,26 +536,6 @@ export const CreateTenantForm = ({ isOpen, onClose, onSubmit }: Props) => {
                     </div>
                   </div>
                 ))}
-              </div>
-            </section>
-
-            {/* Acceso */}
-            <section>
-              <h3 className="text-lg font-medium text-gray-900 mb-4">Acceso al Sistema</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Contraseña Temporal (Opcional)
-                  </label>
-                  <input
-                    type="password"
-                    autoComplete="new-password"
-                    className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    value={formData.password}
-                    onChange={(e) => handleInputChange("password", e.target.value)}
-                    placeholder="Si no se especifica, no podrá acceder al sistema"
-                  />
-                </div>
               </div>
             </section>
           </div>

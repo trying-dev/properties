@@ -11,7 +11,6 @@ export class ProcessConfirmationManager {
 
   async getProcessDetails({ unitId, tenantId }: { unitId: string; tenantId: string }) {
     try {
-      // Obtener información de la unidad
       const unit = await this.prisma.unit.findUnique({
         where: { id: unitId },
         include: {
@@ -25,12 +24,9 @@ export class ProcessConfirmationManager {
         },
       });
 
-      // Obtener información del inquilino
       const tenant = await this.prisma.tenant.findUnique({
         where: { id: tenantId },
-        include: {
-          user: true,
-        },
+        include: { user: true },
       });
 
       if (!unit || !tenant) {

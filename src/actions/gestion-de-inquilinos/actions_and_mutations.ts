@@ -1,12 +1,9 @@
 "use server";
 
-import { DocumentType, Gender, MaritalStatus } from "@prisma/client";
+import { DocumentType, MaritalStatus } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 import { tenantsManager } from "./manager";
-import {
-  CreateTenantSubmit,
-  TenantFormData,
-} from " +/app/dashboard/admin/nuevo-proceso/seleccion-de-usuario/CreateTenantForm";
+import { CreateTenantSubmit } from " +/app/dashboard/admin/nuevo-proceso/seleccion-de-usuario/CreateTenantForm";
 
 export async function getTenantsAction(filters?: {
   search?: string;

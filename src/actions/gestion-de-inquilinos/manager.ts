@@ -114,44 +114,31 @@ export class TenantsManager {
 
     console.log({ user });
 
-    // 1. Verificar que no exista el usuario
     const existingUser = await this.prisma.user.findFirst({
       where: { OR: [{ email: user.email }, { documentNumber: user.documentNumber }] },
     });
 
     if (existingUser) throw new Error("Ya existe un usuario con ese email o número de documento");
 
-    // 2. Hash de contraseña si existe
-    let hashedPassword: string | undefined;
-    if (user.password) {
-      hashedPassword = await bcrypt.hash(user.password, 10);
-    }
-
-    // 3. Crear usuario con tenant y referencias en un solo paso
-    const newUser = await this.prisma.user.create({
+    const newTenant = await this.prisma.tenant.create({
       data: {
-        ...user,
-        password: hashedPassword,
-        tenant: {
-          create: {
-            ...tenant,
-            references:
-              references.length > 0
-                ? {
-                    create: references.map((ref) => ({
-                      name: ref.name,
-                      phone: ref.phone,
-                      relationship: ref.relationship,
-                    })),
-                  }
-                : undefined,
-          },
-        },
+        ...tenant,
+        user: { create: { ...user } },
+        references:
+          references.length > 0
+            ? {
+                create: references.map((ref) => ({
+                  name: ref.name,
+                  phone: ref.phone,
+                  relationship: ref.relationship,
+                })),
+              }
+            : undefined,
       },
-      include: { tenant: { include: { references: true } } },
+      include: { user: true, references: true },
     });
 
-    return newUser;
+    return newTenant;
   }
 
   async updateTenant({

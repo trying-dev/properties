@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Plus, Edit, User, Mail, Phone, MapPin, CheckCircle } from "lucide-react";
 import { DocumentType, ContractStatus } from "@prisma/client";
 import { useRouter } from "next/navigation";
@@ -31,15 +31,17 @@ const SeleccionDeUsuario = () => {
   const reqCounter = useRef(0);
   const debouncedSearch = useDebouncedValue(search, 300);
 
-  async function loadTenants() {
+  const loadTenants = useCallback(async () => {
     setLoading(true);
     const currentReq = ++reqCounter.current;
+
     try {
       const result = (await getTenantsAction({ search: debouncedSearch })) as GetTenantsResponse;
-      if (currentReq === reqCounter.current) {
-        setTenants(result.success ? (result.data ?? []) : []);
-        if (!result.success) console.error(result.error);
-      }
+
+      if (currentReq !== reqCounter.current) return; // a newer request finished first
+
+      setTenants(result.success ? (result.data ?? []) : []);
+      if (!result.success) console.error(result.error);
     } catch (error) {
       if (currentReq === reqCounter.current) {
         console.error("Error al cargar inquilinos:", error);
@@ -48,11 +50,11 @@ const SeleccionDeUsuario = () => {
     } finally {
       if (currentReq === reqCounter.current) setLoading(false);
     }
-  }
+  }, [debouncedSearch]);
 
   useEffect(() => {
     loadTenants();
-  }, [debouncedSearch]);
+  }, [debouncedSearch, loadTenants]);
 
   async function handleCreateTenant(tenantData: CreateTenantSubmit) {
     try {
@@ -65,17 +67,16 @@ const SeleccionDeUsuario = () => {
         loadTenants();
 
         if (createdId) {
-          alert(result.message || "Inquilino creado exitosamente");
           goToConfirmationWith(createdId);
         } else {
-          alert("Inquilino creado, pero no recibí el ID. Revisa la respuesta del servidor.");
+          console.error("Inquilino creado, pero no recibí el ID. Revisa la respuesta del servidor.");
         }
       } else {
-        alert(result.error || "Error al crear el inquilino");
+        console.error(result.error || "Error al crear el inquilino");
       }
     } catch (error) {
       console.error("Error:", error);
-      alert("Error al crear el inquilino");
+      console.error("Error al crear el inquilino");
     }
   }
 
@@ -124,8 +125,10 @@ const SeleccionDeUsuario = () => {
     <div className="p-6 max-w-7xl mx-auto">
       <div className="mb-8 flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Gestión de Inquilinos</h1>
-          <p className="text-gray-600">Administra los inquilinos y sus datos personales</p>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">Seleccion de Inquilino</h1>
+          <p className="text-gray-600">
+            Selecciona el inquilino para continuar con el proceso de incio de contrato.
+          </p>
         </div>
         <button
           onClick={() => setShowCreateModal(true)}
