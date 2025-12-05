@@ -1,0 +1,19 @@
+interface CommonZone {
+  name: string;
+  description: string;
+  capacity?: number;
+  available: boolean;
+  openingTime?: string;
+  closingTime?: string;
+}
+
+const commonZones: CommonZone[] = [
+  {
+    name: "Piscina",
+    description: "Piscina semiolímpica",
+    capacity: 20,
+    available: true,
+    openingTime: "06:00",
+    closingTime: "22:00",
+  },
+];
