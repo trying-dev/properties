@@ -4,6 +4,7 @@ const {
   DocumentType,
   Gender,
   MaritalStatus,
+  EmploymentStatus,
   AdminLevel,
   PropertyType,
   PropertyStatus,
@@ -172,7 +173,7 @@ const main = async () => {
     data: {
       emergencyContact: 'María Comerciante',
       emergencyContactPhone: '+57 300 999 9999',
-      employmentStatus: 'Empleado independiente',
+      employmentStatus: EmploymentStatus.SELF_EMPLOYED,
       monthlyIncome: 5000000,
       user: {
         create: {
@@ -215,7 +216,7 @@ const main = async () => {
     data: {
       emergencyContact: 'Sandra Empresaria',
       emergencyContactPhone: '+57 300 888 8888',
-      employmentStatus: 'Empresario',
+      employmentStatus: EmploymentStatus.SELF_EMPLOYED,
       monthlyIncome: 8000000,
       user: {
         create: {
@@ -253,7 +254,7 @@ const main = async () => {
     data: {
       emergencyContact: 'Roberto Profesional',
       emergencyContactPhone: '+57 300 777 7777',
-      employmentStatus: 'Empleado',
+      employmentStatus: EmploymentStatus.EMPLOYED,
       monthlyIncome: 4000000,
       user: {
         create: {
@@ -291,7 +292,7 @@ const main = async () => {
     data: {
       emergencyContact: 'Sarah Smith',
       emergencyContactPhone: '+1 555 123 4567',
-      employmentStatus: 'Consultor Internacional',
+      employmentStatus: EmploymentStatus.SELF_EMPLOYED,
       monthlyIncome: 6000000,
       user: {
         create: {

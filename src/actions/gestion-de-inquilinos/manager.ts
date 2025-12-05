@@ -1,10 +1,19 @@
+import { CreateTenantSubmit } from '+/app/dashboard/admin/nuevo-proceso/seleccion-de-usuario/CreateTenantForm'
 import {
-  CreateTenantSubmit,
-  TenantFormData,
-} from '+/app/dashboard/admin/nuevo-proceso/seleccion-de-usuario/CreateTenantForm'
-import { ContractStatus, MaritalStatus, Prisma, PrismaClient, DocumentType, Gender } from '@prisma/client'
+  ContractStatus,
+  EmploymentStatus,
+  MaritalStatus,
+  Prisma,
+  PrismaClient,
+  DocumentType,
+  Gender,
+} from '@prisma/client'
 import { DefaultArgs } from '@prisma/client/runtime/library'
-import bcrypt from 'bcryptjs'
+
+const toEmploymentStatus = (status?: string): EmploymentStatus | undefined =>
+  status && Object.values(EmploymentStatus).includes(status as EmploymentStatus)
+    ? (status as EmploymentStatus)
+    : undefined
 
 export class TenantsManager {
   prisma: PrismaClient<Prisma.PrismaClientOptions, never, DefaultArgs>
@@ -26,6 +35,8 @@ export class TenantsManager {
 
       const safeTake = Math.min(Math.max(take, 1), 100)
 
+      const employmentStatusFilter = toEmploymentStatus(employmentStatus)
+
       const userWhere: Prisma.UserWhereInput = {
         deletedAt: null,
         ...(city && { city }),
@@ -41,7 +52,7 @@ export class TenantsManager {
       }
 
       const where: Prisma.TenantWhereInput = {
-        ...(employmentStatus && { employmentStatus }),
+        ...(employmentStatusFilter && { employmentStatus: employmentStatusFilter }),
         user: { is: userWhere },
       }
 
@@ -113,6 +124,7 @@ export class TenantsManager {
     const { user, tenant, references } = payload
 
     console.log({ user })
+    const employmentStatusValue = toEmploymentStatus(tenant.employmentStatus)
 
     const existingUser = await this.prisma.user.findFirst({
       where: { OR: [{ email: user.email }, { documentNumber: user.documentNumber }] },
@@ -122,7 +134,10 @@ export class TenantsManager {
 
     const newTenant = await this.prisma.tenant.create({
       data: {
-        ...tenant,
+        employmentStatus: employmentStatusValue,
+        monthlyIncome: tenant.monthlyIncome,
+        emergencyContact: tenant.emergencyContact,
+        emergencyContactPhone: tenant.emergencyContactPhone,
         user: { create: { ...user } },
         references:
           references.length > 0
@@ -173,6 +188,8 @@ export class TenantsManager {
         })
         if (!tenant) throw new Error('Tenant no encontrado')
 
+        const employmentStatusUpdate = toEmploymentStatus(tenantData.employmentStatus)
+
         const userUpdateData: Prisma.UserUpdateInput = {
           ...(userData.name !== undefined && { name: userData.name }),
           ...(userData.lastName !== undefined && { lastName: userData.lastName }),
@@ -195,7 +212,7 @@ export class TenantsManager {
           ...(tenantData.emergencyContactPhone !== undefined && {
             emergencyContactPhone: tenantData.emergencyContactPhone,
           }),
-          ...(tenantData.employmentStatus !== undefined && { employmentStatus: tenantData.employmentStatus }),
+          ...(employmentStatusUpdate !== undefined && { employmentStatus: employmentStatusUpdate }),
           ...(tenantData.monthlyIncome !== undefined && { monthlyIncome: tenantData.monthlyIncome }),
         }
 

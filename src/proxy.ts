@@ -52,9 +52,9 @@ const validateEnvironmentVariables = () => {
   return envValid
 }
 
-export default async function middleware(request: NextRequest) {
+export default async function proxy(request: NextRequest) {
   if (!validateEnvironmentVariables()) {
-    console.error('🚨 Middleware detenido por falta de variables de entorno')
+    console.error('🚨 Proxy detenido por falta de variables de entorno')
     return NextResponse.json(
       {
         error: 'Server configuration error',

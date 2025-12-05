@@ -1,6 +1,7 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, type FormEvent } from 'react'
+import type { DocumentType, Gender, MaritalStatus } from '@prisma/client'
 import {
   Search,
   Plus,
@@ -21,10 +22,57 @@ import {
   getTenantsAction,
   getTenantsStatsAction,
 } from '+/actions/gestion-de-inquilinos/actions_and_mutations'
+import type { TenantListItem } from '+/actions/gestion-de-inquilinos/manager'
+import type { CreateTenantSubmit } from '+/app/dashboard/admin/nuevo-proceso/seleccion-de-usuario/CreateTenantForm'
+
+type ReferenceEntry = { name: string; phone: string; relationship: string }
+
+type CreateTenantFormValues = {
+  email: string
+  name: string
+  lastName: string
+  documentType: string
+  documentNumber: string
+  phone: string
+  birthDate: string
+  gender: string
+  maritalStatus: string
+  address: string
+  city: string
+  state: string
+  country: string
+  profession: string
+  employmentStatus: string
+  monthlyIncome: string
+  emergencyContact: string
+  emergencyContactPhone: string
+  password: string
+}
+
+type CreateTenantFormProps = {
+  isOpen: boolean
+  onClose: () => void
+  onSubmit: (data: CreateTenantSubmit) => void
+}
+
+type TenantFilters = {
+  search: string
+  city: string
+  documentType: string
+  employmentStatus: string
+  page: number
+  pageSize: number
+}
+
+type TenantStats = {
+  totalTenants: number
+  activeContracts: number
+  citiesDistribution: { city: string | null; _count: number }[]
+}
 
 // Formulario de creación de tenant
-const CreateTenantForm = ({ isOpen, onClose, onSubmit }) => {
-  const [formData, setFormData] = useState({
+const CreateTenantForm = ({ isOpen, onClose, onSubmit }: CreateTenantFormProps) => {
+  const [formData, setFormData] = useState<CreateTenantFormValues>({
     // Datos básicos
     email: '',
     name: '',
@@ -55,9 +103,9 @@ const CreateTenantForm = ({ isOpen, onClose, onSubmit }) => {
     password: '',
   })
 
-  const [references, setReferences] = useState([{ name: '', phone: '', relationship: '' }])
+  const [references, setReferences] = useState<ReferenceEntry[]>([{ name: '', phone: '', relationship: '' }])
 
-  const handleInputChange = (field, value) => {
+  const handleInputChange = <K extends keyof CreateTenantFormValues>(field: K, value: CreateTenantFormValues[K]) => {
     setFormData((prev) => ({ ...prev, [field]: value }))
   }
 
@@ -65,21 +113,47 @@ const CreateTenantForm = ({ isOpen, onClose, onSubmit }) => {
     setReferences((prev) => [...prev, { name: '', phone: '', relationship: '' }])
   }
 
-  const removeReference = (index) => {
+  const removeReference = (index: number) => {
     setReferences((prev) => prev.filter((_, i) => i !== index))
   }
 
-  const updateReference = (index, field, value) => {
+  const updateReference = <K extends keyof ReferenceEntry>(index: number, field: K, value: ReferenceEntry[K]) => {
     setReferences((prev) => prev.map((ref, i) => (i === index ? { ...ref, [field]: value } : ref)))
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
 
-    const submitData = {
-      ...formData,
-      monthlyIncome: formData.monthlyIncome ? parseFloat(formData.monthlyIncome) : undefined,
-      references: references.filter((ref) => ref.name.trim() !== ''),
+    const submitData: CreateTenantSubmit = {
+      user: {
+        email: formData.email.trim(),
+        name: formData.name.trim(),
+        lastName: formData.lastName.trim(),
+        documentType: formData.documentType as DocumentType,
+        documentNumber: formData.documentNumber.trim(),
+        phone: formData.phone.trim() || undefined,
+        birthDate: formData.birthDate ? new Date(formData.birthDate).toISOString() : undefined,
+        gender: formData.gender as Gender,
+        maritalStatus: formData.maritalStatus as MaritalStatus,
+        address: formData.address.trim() || undefined,
+        city: formData.city.trim() || undefined,
+        state: formData.state.trim() || undefined,
+        country: formData.country.trim() || undefined,
+        profession: formData.profession.trim() || undefined,
+      },
+      tenant: {
+        employmentStatus: formData.employmentStatus.trim() || undefined,
+        monthlyIncome: formData.monthlyIncome ? parseFloat(formData.monthlyIncome) : undefined,
+        emergencyContact: formData.emergencyContact.trim() || undefined,
+        emergencyContactPhone: formData.emergencyContactPhone.trim() || undefined,
+      },
+      references: references
+        .map((ref) => ({
+          name: ref.name.trim(),
+          phone: ref.phone.trim(),
+          relationship: ref.relationship.trim(),
+        }))
+        .filter((ref) => ref.name !== ''),
     }
 
     onSubmit(submitData)
@@ -468,12 +542,12 @@ const CreateTenantForm = ({ isOpen, onClose, onSubmit }) => {
 }
 
 export default function TenantsManagement() {
-  const [tenants, setTenants] = useState([])
+  const [tenants, setTenants] = useState<TenantListItem[]>([])
   const [loading, setLoading] = useState(false)
   const [showCreateModal, setShowCreateModal] = useState(false)
-  const [stats, setStats] = useState(null)
+  const [stats, setStats] = useState<TenantStats | null>(null)
 
-  const [filters, setFilters] = useState({
+  const [filters, setFilters] = useState<TenantFilters>({
     search: '',
     city: '',
     documentType: '',
@@ -492,7 +566,7 @@ export default function TenantsManagement() {
     try {
       const cleanFilters = Object.fromEntries(
         Object.entries(filters).filter(([_, value]) => value !== '' && value !== null)
-      )
+      ) as Parameters<typeof getTenantsAction>[0]
 
       const result = await getTenantsAction(cleanFilters)
 
@@ -519,11 +593,14 @@ export default function TenantsManagement() {
   const loadStats = async () => {
     try {
       const result = await getTenantsStatsAction()
-      if (result.success) {
-        setStats(result.data)
+      if (result.success && result.data) {
+        setStats(result.data as TenantStats)
+      } else {
+        setStats(null)
       }
     } catch (error) {
       console.error('Error al cargar estadísticas:', error)
+      setStats(null)
     }
   }
 
@@ -540,7 +617,7 @@ export default function TenantsManagement() {
     return () => clearTimeout(timer)
   }, [filters])
 
-  const handleFilterChange = (key, value) => {
+  const handleFilterChange = <K extends keyof TenantFilters>(key: K, value: TenantFilters[K]) => {
     setFilters((prev) => ({
       ...prev,
       [key]: value,
@@ -548,7 +625,7 @@ export default function TenantsManagement() {
     }))
   }
 
-  const handleCreateTenant = async (tenantData) => {
+  const handleCreateTenant = async (tenantData: CreateTenantSubmit) => {
     try {
       const result = await createTenantAction(tenantData)
 
@@ -566,7 +643,7 @@ export default function TenantsManagement() {
     }
   }
 
-  const handleDisableTenant = async (tenantId) => {
+  const handleDisableTenant = async (tenantId: string) => {
     if (!confirm('¿Estás seguro de que quieres deshabilitar este inquilino?')) {
       return
     }
@@ -587,7 +664,7 @@ export default function TenantsManagement() {
     }
   }
 
-  const formatCurrency = (amount) => {
+  const formatCurrency = (amount?: number | null) => {
     if (!amount) return 'No especificado'
     return new Intl.NumberFormat('es-CO', {
       style: 'currency',
@@ -596,23 +673,23 @@ export default function TenantsManagement() {
     }).format(amount)
   }
 
-  const formatDate = (date) => {
+  const formatDate = (date?: string | Date | null) => {
     if (!date) return 'No especificado'
     return new Date(date).toLocaleDateString('es-CO')
   }
 
-  const getDocumentTypeLabel = (type) => {
+  const getDocumentTypeLabel = (type: string) => {
     const types = {
       CC: 'Cédula de Ciudadanía',
       CE: 'Cédula de Extranjería',
       TI: 'Tarjeta de Identidad',
       PASSPORT: 'Pasaporte',
       OTHER: 'Otro',
-    }
-    return types[type] || type
+    } as const
+    return types[type as keyof typeof types] ?? type
   }
 
-  const getStatusBadge = (tenant) => {
+  const getStatusBadge = (tenant: TenantListItem) => {
     const hasActiveContract = tenant.contracts.some((c) => c.status === 'ACTIVE')
 
     if (tenant.user.disable) {
@@ -719,11 +796,14 @@ export default function TenantsManagement() {
               onChange={(e) => handleFilterChange('city', e.target.value)}
             >
               <option value="">Todas las ciudades</option>
-              {stats?.citiesDistribution?.map((city) => (
-                <option key={city.city} value={city.city}>
-                  {city.city} ({city._count})
-                </option>
-              ))}
+              {stats?.citiesDistribution?.map((city) => {
+                const cityName = city.city ?? 'Sin ciudad'
+                return (
+                  <option key={cityName} value={cityName}>
+                    {cityName} ({city._count})
+                  </option>
+                )
+              })}
             </select>
           </div>
 

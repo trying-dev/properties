@@ -1,6 +1,7 @@
 'use client'
 
-import { useState, useEffect, useRef, useCallback, useMemo, type MouseEvent } from 'react'
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react'
+import type { MouseEvent as ReactMouseEvent } from 'react'
 import { Search, Home, MapPin, Bed, Bath, Check, X } from 'lucide-react'
 import { AvailableUnit, PropertyWithAvailableUnits } from '+/actions/nuevo-proceso/manager'
 import {
@@ -58,7 +59,7 @@ const PriceRangeSlider = ({
     [min, max, step]
   )
 
-  const handleMouseDown = (handle: 'min' | 'max') => (e: MouseEvent) => {
+  const handleMouseDown = (handle: 'min' | 'max') => (e: ReactMouseEvent) => {
     e.preventDefault()
     setIsDragging(handle)
   }
@@ -104,7 +105,7 @@ const PriceRangeSlider = ({
     }
   }, [isDragging, handleMouseMove, handleMouseUp])
 
-  const handleTrackClick = (e: MouseEvent) => {
+  const handleTrackClick = (e: ReactMouseEvent<HTMLDivElement>) => {
     if (isDragging) return
 
     const rect = sliderRef.current!.getBoundingClientRect()
