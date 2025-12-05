@@ -1,496 +1,398 @@
 'use client'
 
-import { useState, useEffect, useTransition, useActionState, createElement } from 'react'
-import { useRouter } from 'next/navigation'
+import { useState } from 'react'
+import Link from 'next/link'
+import { Home, Search, MapPin, Bed, Bath, Maximize, Heart, SlidersHorizontal } from 'lucide-react'
 
-import {
-  Building2,
-  Shield,
-  Users,
-  TrendingUp,
-  CheckCircle,
-  ArrowRight,
-  Eye,
-  EyeOff,
-  Mail,
-  Lock,
-  Sparkles,
-  BarChart3,
-  Star,
-  Check,
-  User,
-} from 'lucide-react'
-
-import { authenticate } from '+/actions/auth/login'
-
-const initialState = {
-  success: false,
-  message: '',
-  errors: undefined as Record<string, string[]> | undefined,
-}
-
-// const isDevMode = process.env.NODE_ENV === "development";
-const isDevMode = true
-
-const passwordDemo = process.env.NEXT_PUBLIC_PASSWORD_DEMO || 'No Password'
-
-const adminUsers = [
+const mockProperties = [
   {
-    role: 'Super Admin',
-    email: 'admin1@propiedades.com',
-    password: passwordDemo,
+    id: '1',
+    name: 'Edificio Centro',
+    unitNumber: '301',
+    address: 'Calle 72 #10-34, Chapinero',
+    city: 'Bogotá',
+    price: 1200000,
+    bedrooms: 2,
+    bathrooms: 1,
+    area: 65,
+    image: '/placeholder-apartment.jpg',
+    featured: true,
   },
   {
-    role: 'Manager',
-    email: 'admin2@propiedades.com',
-    password: passwordDemo,
-  },
-  {
-    role: 'Standard Admin',
-    email: 'admin3@propiedades.com',
-    password: passwordDemo,
-  },
-  {
-    role: 'Portero (Limited)',
-    email: 'portero@propiedades.com',
-    password: passwordDemo,
+    id: '2',
+    name: 'Torre Norte',
+    unitNumber: '205',
+    address: 'Carrera 15 #85-20, Usaquén',
+    city: 'Bogotá',
+    price: 1500000,
+    bedrooms: 3,
+    bathrooms: 2,
+    area: 85,
+    image: '/placeholder-apartment.jpg',
+    featured: false,
   },
 ]
 
-const tenantUsers = [
-  {
-    role: 'Inquilino - Ana Comerciante',
-    email: 'comerciante1@gmail.com',
-    password: passwordDemo,
-  },
-  {
-    role: 'Inquilino - Pedro Empresario',
-    email: 'comerciante2@gmail.com',
-    password: passwordDemo,
-  },
-  {
-    role: 'Inquilino - Laura Hernandez',
-    email: 'residente1@gmail.com',
-    password: passwordDemo,
-  },
-  {
-    role: 'Inquilino - John Smith',
-    email: 'extranjero1@gmail.com',
-    password: passwordDemo,
-  },
-]
+export default function PropertiesCatalog() {
+  const [properties] = useState(mockProperties)
+  const [showFilters, setShowFilters] = useState(false)
+  const [searchQuery, setSearchQuery] = useState('')
+  const [filters, setFilters] = useState({
+    priceMax: '',
+    bedrooms: '',
+    city: '',
+  })
 
-const demoUsers = [...adminUsers, ...tenantUsers]
-
-export default function HomePage() {
-  const router = useRouter()
-  const [state, formAction, isPending] = useActionState(authenticate, initialState)
-  const [isPendingTransition, startTransition] = useTransition()
-
-  // UI States
-  const [showPassword, setShowPassword] = useState(false)
-  const [showSuccess, setShowSuccess] = useState(false)
-  const [mounted, setMounted] = useState(false)
-  const [currentFeature, setCurrentFeature] = useState(0)
-
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [showUserMenu, setShowUserMenu] = useState(false)
-
-  const isLoading = isPending || isPendingTransition
-
-  // Mount animation
-  useEffect(() => {
-    setMounted(true)
-    const interval = setInterval(() => {
-      setCurrentFeature((prev) => (prev + 1) % 3)
-    }, 4000)
-    return () => clearInterval(interval)
-  }, [])
-
-  // Handle success
-  useEffect(() => {
-    if (state?.success) {
-      setShowSuccess(true)
-      setTimeout(() => {
-        startTransition(() => {
-          router.push('/dashboard')
-        })
-      }, 1500)
-    }
-  }, [state?.success, router, startTransition])
-
-  const handleSubmit = () => {
-    const formData = new FormData()
-    formData.append('email', email)
-    formData.append('password', password)
-    startTransition(() => {
-      formAction(formData)
-    })
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat('es-CO', {
+      style: 'currency',
+      currency: 'COP',
+      minimumFractionDigits: 0,
+    }).format(amount)
   }
 
-  const features = [
-    {
-      icon: Building2,
-      title: 'Gestión Integral',
-      description: 'Administra todas tus propiedades desde un solo lugar',
-    },
-    {
-      icon: Users,
-      title: 'Control de Inquilinos',
-      description: 'Seguimiento completo de contratos y pagos',
-    },
-    {
-      icon: BarChart3,
-      title: 'Analytics Avanzados',
-      description: 'Reportes detallados y métricas en tiempo real',
-    },
-  ]
-
-  const benefits = [
-    'Automatización completa de procesos',
-    'Reducción de costos operativos',
-    'Mejor experiencia del inquilino',
-    'Reportes financieros en tiempo real',
-    'Seguridad y cumplimiento garantizado',
-  ]
-
-  // Success Animation Component
-  const SuccessAnimation = () => (
-    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center">
-      <div className="bg-white/10 backdrop-blur-xl rounded-3xl p-12 border border-white/20 shadow-2xl max-w-md w-full mx-4 text-center">
-        <div className="w-24 h-24 bg-gradient-to-r from-green-400 to-emerald-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg animate-bounce">
-          <Check className="w-12 h-12 text-white" />
-        </div>
-        <h3 className="text-3xl font-bold text-white mb-3">¡Login Exitoso!</h3>
-        <p className="text-gray-300 mb-8">Redirigiendo al dashboard...</p>
-        <div className="flex items-center justify-center space-x-2">
-          <div className="w-3 h-3 bg-green-400 rounded-full animate-bounce"></div>
-          <div className="w-3 h-3 bg-green-400 rounded-full animate-bounce delay-75"></div>
-          <div className="w-3 h-3 bg-green-400 rounded-full animate-bounce delay-150"></div>
-        </div>
-      </div>
-    </div>
-  )
+  const handleSearch = () => {
+    console.log('Searching with:', searchQuery, filters)
+  }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 relative overflow-hidden">
-      {/* Success Overlay */}
-      {showSuccess && <SuccessAnimation />}
-
-      {/* Background Effects */}
-      <div className="absolute inset-0">
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-purple-500/20 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute top-3/4 right-1/4 w-96 h-96 bg-blue-500/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
-        <div className="absolute top-1/2 left-1/2 w-96 h-96 bg-pink-500/10 rounded-full blur-3xl animate-pulse delay-2000"></div>
-      </div>
-
-      <div className="relative z-10">
-        {/* Header */}
-        <header className="px-6 py-6">
-          <nav className="max-w-7xl mx-auto flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-              <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl flex items-center justify-center shadow-lg">
-                <Building2 className="w-7 h-7 text-white" />
+    <div className="min-h-screen bg-white">
+      {/* Header */}
+      <header className="border-b border-gray-200 bg-white sticky top-0 z-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-16">
+            {/* Logo */}
+            <Link href="/" className="flex items-center space-x-3">
+              <div className="w-8 h-8 bg-gray-900 flex items-center justify-center">
+                <Home className="h-5 w-5 text-white" />
               </div>
-              <div>
-                <span className="text-2xl font-bold text-white">PropertyHub</span>
-                <div className="text-xs text-purple-300">Pro Management</div>
+              <span className="text-xl font-semibold text-gray-900">Properties</span>
+            </Link>
+
+            {/* Navigation */}
+            <nav className="hidden md:flex items-center space-x-8">
+              <Link href="/propiedades" className="text-sm font-medium text-gray-900">
+                Buscar
+              </Link>
+              <Link href="/sobre-nosotros" className="text-sm font-medium text-gray-600 hover:text-gray-900">
+                Sobre Nosotros
+              </Link>
+            </nav>
+
+            {/* Auth Buttons */}
+            <div className="flex items-center space-x-4">
+              <Link href="/auth" className="text-sm font-medium text-gray-900 hover:text-gray-700">
+                Registrarse
+              </Link>
+              <Link
+                href="/auth"
+                className="bg-gray-900 hover:bg-gray-800 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors"
+              >
+                Iniciar sesión
+              </Link>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      {/* Hero Section with Search */}
+      <section className="bg-linear-to-b from-gray-50 to-white border-b border-gray-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          <div className="text-center mb-8">
+            <h1 className="text-4xl font-bold text-gray-900 mb-3">Buscar Propiedad</h1>
+            <p className="text-gray-600">Encuentra tu próximo hogar</p>
+          </div>
+
+          {/* Search Box */}
+          <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-4">
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
+              {/* Location Input */}
+              <div className="md:col-span-4">
+                <input
+                  type="text"
+                  placeholder="Ciudad, dirección o código postal"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent"
+                />
+              </div>
+
+              {/* Price Filter */}
+              <div className="md:col-span-2">
+                <div className="relative">
+                  <input
+                    type="number"
+                    placeholder="Precio máximo"
+                    value={filters.priceMax}
+                    onChange={(e) => setFilters({ ...filters, priceMax: e.target.value })}
+                    className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent"
+                  />
+                </div>
+              </div>
+
+              {/* Bedrooms Filter */}
+              <div className="md:col-span-2">
+                <select
+                  value={filters.bedrooms}
+                  onChange={(e) => setFilters({ ...filters, bedrooms: e.target.value })}
+                  className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent appearance-none bg-white"
+                >
+                  <option value="">Habitaciones</option>
+                  <option value="1">1+</option>
+                  <option value="2">2+</option>
+                  <option value="3">3+</option>
+                  <option value="4">4+</option>
+                </select>
+              </div>
+
+              {/* City Filter */}
+              <div className="md:col-span-2">
+                <select
+                  value={filters.city}
+                  onChange={(e) => setFilters({ ...filters, city: e.target.value })}
+                  className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent appearance-none bg-white"
+                >
+                  <option value="">Ciudad</option>
+                  <option value="bogota">Bogotá</option>
+                  <option value="medellin">Medellín</option>
+                  <option value="cali">Cali</option>
+                  <option value="barranquilla">Barranquilla</option>
+                </select>
+              </div>
+
+              {/* Search Button */}
+              <div className="md:col-span-2">
+                <button
+                  onClick={handleSearch}
+                  className="w-full bg-gray-900 hover:bg-gray-800 text-white px-6 py-3 rounded-lg font-medium transition-colors flex items-center justify-center space-x-2"
+                >
+                  <Search className="h-5 w-5" />
+                  <span>Buscar</span>
+                </button>
               </div>
             </div>
-            <div className="hidden md:flex items-center space-x-8 text-white/80">
-              <a href="#features" className="hover:text-white transition-colors">
-                Características
-              </a>
-              <a href="#benefits" className="hover:text-white transition-colors">
-                Beneficios
-              </a>
-              <a href="#contact" className="hover:text-white transition-colors">
-                Contacto
-              </a>
-            </div>
-          </nav>
-        </header>
 
-        <div className="max-w-7xl mx-auto px-6 py-8">
-          <div className="grid lg:grid-cols-2 gap-16 items-center">
-            {/* Left Content */}
-            <div
-              className={`space-y-10 ${mounted ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-10'} transition-all duration-1000`}
+            {/* Advanced Filters Toggle */}
+            <button
+              onClick={() => setShowFilters(!showFilters)}
+              className="mt-4 text-sm text-gray-600 hover:text-gray-900 flex items-center space-x-1"
             >
-              {/* Hero Badge */}
-              <div className="inline-flex items-center space-x-2 bg-purple-500/20 text-purple-300 px-5 py-3 rounded-full text-sm font-medium border border-purple-500/30">
-                <Sparkles className="w-4 h-4" />
-                <span>Sistema de Gestión Empresarial</span>
-                <Star className="w-4 h-4 text-yellow-400 fill-current" />
-              </div>
+              <SlidersHorizontal className="h-4 w-4" />
+              <span>Más filtros</span>
+            </button>
 
-              {/* Main Heading */}
-              <div className="space-y-6">
-                <h1 className="text-6xl lg:text-8xl font-bold text-white leading-tight">
-                  Gestiona
-                  <span className="block bg-gradient-to-r from-purple-400 via-pink-400 to-purple-400 bg-clip-text text-transparent">
-                    Propiedades
-                  </span>
-                  <span className="text-5xl lg:text-6xl text-gray-300">como un Pro</span>
-                </h1>
-
-                <p className="text-xl text-gray-300 leading-relaxed max-w-2xl">
-                  La plataforma más avanzada para administradores de propiedades e inquilinos. Automatiza
-                  procesos, optimiza operaciones y transforma tu gestión inmobiliaria.
-                </p>
-              </div>
-
-              {/* Feature Carousel */}
-              <div className="bg-white/5 backdrop-blur-xl rounded-3xl p-8 border border-white/10 shadow-2xl">
-                <div className="flex items-start space-x-6">
-                  <div className="flex-shrink-0">
-                    <div className="w-16 h-16 bg-gradient-to-r from-purple-500 to-pink-500 rounded-2xl flex items-center justify-center shadow-lg">
-                      {createElement(features[currentFeature].icon, {
-                        className: 'w-8 h-8 text-white',
-                      })}
-                    </div>
+            {/* Advanced Filters */}
+            {showFilters && (
+              <div className="mt-4 pt-4 border-t border-gray-200">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Área mínima (m²)</label>
+                    <input
+                      type="number"
+                      placeholder="50"
+                      className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900"
+                    />
                   </div>
-                  <div className="flex-1">
-                    <h3 className="text-white font-bold text-xl mb-2">{features[currentFeature].title}</h3>
-                    <p className="text-gray-300 leading-relaxed">{features[currentFeature].description}</p>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Baños</label>
+                    <select className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900">
+                      <option value="">Cualquiera</option>
+                      <option value="1">1+</option>
+                      <option value="2">2+</option>
+                      <option value="3">3+</option>
+                    </select>
                   </div>
-                </div>
-
-                {/* Progress Indicators */}
-                <div className="flex space-x-3 mt-6">
-                  {features.map((_, index) => (
-                    <div
-                      key={index}
-                      className={`h-2 rounded-full transition-all duration-500 ${
-                        index === currentFeature ? 'bg-purple-400 w-12' : 'bg-white/20 w-3'
-                      }`}
-                    ></div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Benefits */}
-              <div className="space-y-4">
-                <h3 className="text-2xl font-bold text-white mb-6">¿Por qué elegir PropertyHub?</h3>
-                <div className="grid grid-cols-1 gap-4">
-                  {benefits.map((benefit, index) => (
-                    <div
-                      key={index}
-                      className="flex items-center space-x-4 bg-white/5 backdrop-blur-sm rounded-xl p-4 border border-white/10 transition-all duration-300 hover:bg-white/10"
-                    >
-                      <CheckCircle className="w-6 h-6 text-green-400 flex-shrink-0" />
-                      <span className="text-gray-300 font-medium">{benefit}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            {/* Right Side - Login */}
-            <form
-              className={`${mounted ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-10'} transition-all duration-1000 delay-300`}
-            >
-              <div className="bg-white/10 backdrop-blur-2xl rounded-3xl p-10 border border-white/20 shadow-2xl">
-                {/* Login Header */}
-                <div className="text-center mb-10">
-                  <div className="w-20 h-20 bg-gradient-to-r from-purple-500 to-pink-500 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg">
-                    <Lock className="w-10 h-10 text-white" />
-                  </div>
-                  <h2 className="text-3xl font-bold text-white mb-3">Acceso al Sistema</h2>
-                  <p className="text-gray-300">Ingresa tus credenciales para continuar</p>
-                </div>
-
-                <div className="space-y-8">
-                  {/* Email Field */}
-                  <div className="space-y-3">
-                    <div className="flex items-center justify-between">
-                      <label className="block text-sm font-semibold text-gray-300 uppercase tracking-wide">
-                        Correo Electrónico
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Características</label>
+                    <div className="space-y-2">
+                      <label className="flex items-center space-x-2">
+                        <input type="checkbox" className="rounded border-gray-300" />
+                        <span className="text-sm text-gray-700">Amoblado</span>
                       </label>
-
-                      {/* Demo Users Icon */}
-                      {isDevMode && (
-                        <div className="relative">
-                          <button
-                            type="button"
-                            onClick={() => setShowUserMenu(!showUserMenu)}
-                            className="p-2 bg-gradient-to-r from-blue-500/20 to-purple-500/20 border border-blue-500/30 rounded-xl backdrop-blur-sm text-blue-300 hover:text-white hover:bg-white/10 transition-all duration-200 group"
-                            title="Usuarios Demo"
-                          >
-                            <User className="w-5 h-5" />
-                          </button>
-
-                          {showUserMenu && (
-                            <div className="absolute top-full right-0 mt-2 w-80 bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl shadow-2xl z-10">
-                              <div className="p-4 border-b border-white/10">
-                                <h4 className="text-white font-semibold text-center">Usuarios Demo</h4>
-                                <p className="text-gray-300 text-xs text-center mt-1">
-                                  Selecciona un usuario para probar
-                                </p>
-                              </div>
-                              <div className="max-h-64 overflow-y-auto">
-                                {demoUsers.map((user, index) => (
-                                  <button
-                                    key={index}
-                                    type="button"
-                                    onClick={() => {
-                                      setEmail(user.email)
-                                      setPassword(user.password)
-                                      setShowUserMenu(false)
-                                    }}
-                                    className="w-full text-left px-4 py-3 hover:bg-white/20 transition-colors text-white border-b border-white/5 last:border-b-0 group"
-                                  >
-                                    <div className="flex items-center space-x-3">
-                                      <div className="w-8 h-8 bg-gradient-to-r from-purple-500/30 to-pink-500/30 rounded-full flex items-center justify-center flex-shrink-0 group-hover:from-purple-500/50 group-hover:to-pink-500/50 transition-all">
-                                        <User className="w-4 h-4 text-purple-300" />
-                                      </div>
-                                      <div className="flex-1 min-w-0">
-                                        <div className="font-medium text-sm">{user.role}</div>
-                                        <div className="text-xs text-gray-400 truncate">{user.email}</div>
-                                      </div>
-                                    </div>
-                                  </button>
-                                ))}
-                              </div>
-                            </div>
-                          )}
-                        </div>
-                      )}
+                      <label className="flex items-center space-x-2">
+                        <input type="checkbox" className="rounded border-gray-300" />
+                        <span className="text-sm text-gray-700">Parqueadero</span>
+                      </label>
+                      <label className="flex items-center space-x-2">
+                        <input type="checkbox" className="rounded border-gray-300" />
+                        <span className="text-sm text-gray-700">Acepta mascotas</span>
+                      </label>
                     </div>
-                    <div className="relative">
-                      <Mail className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-                      <input
-                        name="email"
-                        type="email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        autoComplete="email"
-                        required
-                        disabled={isLoading || showSuccess}
-                        className="w-full pl-14 pr-4 py-4 bg-white/5 border border-white/20 rounded-2xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 text-lg disabled:opacity-50"
-                        placeholder="admin@propiedades.com"
-                      />
-                    </div>
-                    {state?.errors?.email && (
-                      <p className="text-red-300 text-sm flex items-center space-x-2">
-                        <span className="w-1 h-1 bg-red-400 rounded-full"></span>
-                        <span>{state.errors.email[0]}</span>
-                      </p>
-                    )}
                   </div>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      </section>
 
-                  {/* Password Field */}
-                  <div className="space-y-3">
-                    <label className="block text-sm font-semibold text-gray-300 uppercase tracking-wide">
-                      Contraseña
-                    </label>
-                    <div className="relative">
-                      <Lock className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-                      <input
-                        name="password"
-                        type={showPassword ? 'text' : 'password'}
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        autoComplete="current-password"
-                        required
-                        disabled={isLoading || showSuccess}
-                        className="w-full pl-14 pr-14 py-4 bg-white/5 border border-white/20 rounded-2xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 text-lg disabled:opacity-50"
-                        placeholder="••••••••"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => setShowPassword(!showPassword)}
-                        disabled={isLoading || showSuccess}
-                        className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white transition-colors duration-200 disabled:opacity-50"
-                      >
-                        {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-                      </button>
-                    </div>
-                    {state?.errors?.password && (
-                      <p className="text-red-300 text-sm flex items-center space-x-2">
-                        <span className="w-1 h-1 bg-red-400 rounded-full"></span>
-                        <span>{state.errors.password[0]}</span>
-                      </p>
-                    )}
+      {/* Results Section */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="flex items-center justify-between mb-8">
+          <p className="text-gray-600">
+            <span className="font-semibold text-gray-900">{properties.length}</span> propiedades disponibles
+          </p>
+          <select className="px-4 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-gray-900">
+            <option>Más recientes</option>
+            <option>Precio: menor a mayor</option>
+            <option>Precio: mayor a menor</option>
+            <option>Área: mayor a menor</option>
+          </select>
+        </div>
+
+        {/* Properties Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {properties.map((property) => (
+            <Link
+              key={property.id}
+              href={`/propiedades/${property.id}`}
+              className="bg-white border border-gray-200 rounded-lg overflow-hidden hover:border-gray-400 hover:shadow-lg transition-all group"
+            >
+              {/* Property Image */}
+              <div className="relative h-48 bg-gray-200">
+                {/* Placeholder for image */}
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <Home className="h-12 w-12 text-gray-400" />
+                </div>
+                {/* Favorite Button */}
+                <button
+                  onClick={(e) => {
+                    e.preventDefault()
+                  }}
+                  className="absolute top-3 right-3 w-10 h-10 bg-white rounded-full flex items-center justify-center hover:bg-gray-50 shadow-md"
+                >
+                  <Heart className="h-5 w-5 text-gray-600" />
+                </button>
+                {/* Featured Badge */}
+                {property.featured && (
+                  <div className="absolute top-3 left-3 bg-gray-900 text-white text-xs font-semibold px-3 py-1 rounded-full">
+                    Destacado
                   </div>
+                )}
+              </div>
 
-                  {/* Messages */}
-                  {state?.message && !state.success && (
-                    <div className="bg-red-500/20 border border-red-500/30 text-red-200 px-6 py-4 rounded-2xl backdrop-blur-sm">
-                      <div className="flex items-center space-x-3">
-                        <div className="w-2 h-2 bg-red-400 rounded-full flex-shrink-0"></div>
-                        <span className="font-medium">{state.message}</span>
-                      </div>
-                    </div>
-                  )}
+              {/* Property Info */}
+              <div className="p-4">
+                <div className="mb-3">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-1 group-hover:text-gray-700">
+                    {property.name} - Unidad {property.unitNumber}
+                  </h3>
+                  <p className="text-sm text-gray-600 flex items-center">
+                    <MapPin className="h-4 w-4 mr-1" />
+                    {property.address}
+                  </p>
+                </div>
 
-                  {state?.message && state.success && (
-                    <div className="bg-green-500/20 border border-green-500/30 text-green-200 px-6 py-4 rounded-2xl backdrop-blur-sm">
-                      <div className="flex items-center space-x-3">
-                        <CheckCircle className="w-5 h-5 text-green-400 flex-shrink-0" />
-                        <span className="font-medium">{state.message}</span>
-                      </div>
-                    </div>
-                  )}
+                <div className="flex items-center space-x-4 text-sm text-gray-600 mb-3">
+                  <span className="flex items-center">
+                    <Bed className="h-4 w-4 mr-1" />
+                    {property.bedrooms}
+                  </span>
+                  <span className="flex items-center">
+                    <Bath className="h-4 w-4 mr-1" />
+                    {property.bathrooms}
+                  </span>
+                  <span className="flex items-center">
+                    <Maximize className="h-4 w-4 mr-1" />
+                    {property.area}m²
+                  </span>
+                </div>
 
-                  {/* Submit Button */}
-                  <button
-                    type="button"
-                    onClick={handleSubmit}
-                    disabled={isLoading || showSuccess}
-                    className="w-full bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold py-4 px-8 rounded-2xl hover:from-purple-600 hover:to-pink-600 focus:outline-none focus:ring-4 focus:ring-purple-500/50 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-3 text-lg shadow-lg hover:shadow-xl transform hover:scale-105 disabled:transform-none"
-                  >
-                    {isLoading ? (
-                      <>
-                        <div className="w-6 h-6 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                        <span>Autenticando...</span>
-                      </>
-                    ) : showSuccess ? (
-                      <>
-                        <Check className="w-6 h-6 text-green-400" />
-                        <span>¡Exitoso!</span>
-                      </>
-                    ) : (
-                      <>
-                        <span>Iniciar Sesión</span>
-                        <ArrowRight className="w-6 h-6" />
-                      </>
-                    )}
+                <div className="flex items-center justify-between pt-3 border-t border-gray-100">
+                  <div>
+                    <p className="text-xs text-gray-500">Renta mensual</p>
+                    <p className="text-xl font-bold text-gray-900">{formatCurrency(property.price)}</p>
+                  </div>
+                  <button className="text-sm font-medium text-gray-900 hover:text-gray-700">
+                    Ver detalles →
                   </button>
                 </div>
               </div>
-            </form>
+            </Link>
+          ))}
+        </div>
+
+        {/* Empty State */}
+        {properties.length === 0 && (
+          <div className="text-center py-12">
+            <Search className="h-16 w-16 text-gray-300 mx-auto mb-4" />
+            <h3 className="text-xl font-semibold text-gray-900 mb-2">No se encontraron propiedades</h3>
+            <p className="text-gray-600 mb-6">Intenta ajustar tus filtros de búsqueda</p>
+            <button
+              onClick={() => {
+                setSearchQuery('')
+                setFilters({ priceMax: '', bedrooms: '', city: '' })
+              }}
+              className="text-sm font-medium text-gray-900 hover:text-gray-700 underline"
+            >
+              Limpiar filtros
+            </button>
           </div>
+        )}
+      </section>
 
-          {/* Stats Section */}
-          <div
-            className={`mt-32 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'} transition-all duration-1000 delay-700`}
-          >
-            <div className="text-center mb-16">
-              <h3 className="text-4xl font-bold text-white mb-4">Resultados que Hablan por Sí Solos</h3>
-              <p className="text-xl text-gray-300">Más de 1000 empresas confían en PropertyHub</p>
-            </div>
-
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-              {[
-                { icon: Building2, label: 'Propiedades', value: '1,200+' },
-                { icon: Users, label: 'Inquilinos', value: '4,500+' },
-                { icon: TrendingUp, label: 'Crecimiento', value: '35%' },
-                { icon: Shield, label: 'Uptime', value: '99.9%' },
-              ].map((stat, index) => (
-                <div key={index} className="text-center group">
-                  <div className="w-20 h-20 bg-gradient-to-r from-purple-500/20 to-pink-500/20 rounded-3xl flex items-center justify-center mx-auto mb-6 border border-white/10 group-hover:scale-110 transition-transform duration-300">
-                    <stat.icon className="w-10 h-10 text-purple-400" />
-                  </div>
-                  <div className="text-4xl font-bold text-white mb-3">{stat.value}</div>
-                  <div className="text-gray-400 font-medium">{stat.label}</div>
+      {/* Footer */}
+      <footer className="border-t border-gray-200 bg-gray-50 mt-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+            <div>
+              <div className="flex items-center space-x-3 mb-4">
+                <div className="w-8 h-8 bg-gray-900 flex items-center justify-center">
+                  <Home className="h-5 w-5 text-white" />
                 </div>
-              ))}
+                <span className="text-lg font-semibold text-gray-900">Properties</span>
+              </div>
+              <p className="text-sm text-gray-600">Encuentra tu próximo hogar con nosotros</p>
             </div>
+            <div>
+              <h4 className="font-semibold text-gray-900 mb-4">Explorar</h4>
+              <ul className="space-y-2 text-sm text-gray-600">
+                <li>
+                  <Link href="/propiedades" className="hover:text-gray-900">
+                    Buscar propiedades
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/sobre-nosotros" className="hover:text-gray-900">
+                    Sobre nosotros
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/contacto" className="hover:text-gray-900">
+                    Contacto
+                  </Link>
+                </li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="font-semibold text-gray-900 mb-4">Legal</h4>
+              <ul className="space-y-2 text-sm text-gray-600">
+                <li>
+                  <Link href="/terminos" className="hover:text-gray-900">
+                    Términos y condiciones
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/privacidad" className="hover:text-gray-900">
+                    Política de privacidad
+                  </Link>
+                </li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="font-semibold text-gray-900 mb-4">Contacto</h4>
+              <ul className="space-y-2 text-sm text-gray-600">
+                <li>Email: info@properties.com</li>
+                <li>Tel: +57 300 123 4567</li>
+                <li>Lun - Vie: 8AM - 6PM</li>
+              </ul>
+            </div>
+          </div>
+          <div className="mt-8 pt-8 border-t border-gray-200 text-center text-sm text-gray-600">
+            <p>© 2025 Properties. Todos los derechos reservados.</p>
           </div>
         </div>
-      </div>
+      </footer>
     </div>
   )
 }
