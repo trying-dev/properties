@@ -7,7 +7,7 @@ import CardAdmin from '../fragments/CardAdmin'
 import CardProperty from '../fragments/CardProperty'
 import { Property } from '@prisma/client'
 
-import { getProperties } from '+/actions/property/actions_and_mutations'
+import { getProperties } from '+/actions/property'
 import { useSession } from '+/hooks/useSession'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'

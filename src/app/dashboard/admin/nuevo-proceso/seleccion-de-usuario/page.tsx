@@ -8,7 +8,7 @@ import { useRouter } from 'next/navigation'
 import { CreateTenantForm } from './CreateTenantForm'
 import type { CreateTenantSubmit } from './CreateTenantForm'
 import { TenantListItem } from '+/actions/gestion-de-inquilinos/manager'
-import { createTenantAction, getTenantsAction } from '+/actions/gestion-de-inquilinos/actions_and_mutations'
+import { createTenantAction, getTenantsAction } from '+/actions/gestion-de-inquilinos'
 type GetTenantsResponse = { success: true; data: TenantListItem[] } | { success: false; error: string }
 
 const useDebouncedValue = <T,>(value: T, delay = 300): T => {

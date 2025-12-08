@@ -31,7 +31,7 @@ import {
   TrendingUp,
   AlertTriangle,
 } from 'lucide-react'
-import { PropertyWithRelations } from '+/actions/property/actions_and_mutations'
+import { PropertyWithRelations } from '+/actions/property'
 import { PaymentMethod, PaymentStatus, UnitStatus } from '@prisma/client'
 import { formatAdminLevel } from '../utils'
 

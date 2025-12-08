@@ -3,14 +3,11 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import type { MouseEvent as ReactMouseEvent } from 'react'
 import { Search, Home, MapPin, Bed, Bath, Check, X } from 'lucide-react'
-import {
-  AvailableUnit,
-  PropertyWithAvailableUnits,
-} from '+/actions/nuevo-proceso/actions_and_mutations'
+import { AvailableUnit, PropertyWithAvailableUnits } from '+/actions/nuevo-proceso'
 import {
   getAvailableUnitsAction,
   getPropertiesWithAvailableUnitsAction,
-} from '+/actions/nuevo-proceso/actions_and_mutations'
+} from '+/actions/nuevo-proceso'
 
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'

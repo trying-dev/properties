@@ -484,6 +484,122 @@ const createPropertyAndUnits = async (adminId: string) => {
 }
 
 /**
+ * Crea propiedades adicionales para pruebas de disponibilidad (unidades VACANT).
+ */
+const createExtraProperties = async (adminId: string) => {
+  const extras = [
+    {
+      id: 'extra-prop-1',
+      name: 'Residencial Norte',
+      city: 'Bogotá',
+      neighborhood: 'Cedritos',
+      units: [
+        {
+          unitNumber: 'E1-101',
+          floor: 1,
+          area: 55,
+          bedrooms: 1,
+          bathrooms: 1,
+          furnished: false,
+          petFriendly: true,
+          status: UnitStatus.VACANT,
+          baseRent: 1_400_000,
+          deposit: 1_400_000,
+          description: 'Apto 1H/1B cerca a comercio y parques',
+          images: JSON.stringify(['https://picsum.photos/seed/extrae1101/800/600']),
+        },
+        {
+          unitNumber: 'E1-201',
+          floor: 2,
+          area: 65,
+          bedrooms: 2,
+          bathrooms: 1,
+          furnished: true,
+          petFriendly: false,
+          status: UnitStatus.VACANT,
+          baseRent: 1_800_000,
+          deposit: 1_800_000,
+          description: 'Apto 2H/1B amoblado, listo para mudarse',
+          images: JSON.stringify(['https://picsum.photos/seed/extrae1201/800/600']),
+        },
+      ],
+    },
+    {
+      id: 'extra-prop-2',
+      name: 'Conjunto Sur',
+      city: 'Medellín',
+      neighborhood: 'El Poblado',
+      units: [
+        {
+          unitNumber: 'E2-101',
+          floor: 1,
+          area: 60,
+          bedrooms: 2,
+          bathrooms: 1,
+          furnished: false,
+          petFriendly: true,
+          status: UnitStatus.VACANT,
+          baseRent: 2_000_000,
+          deposit: 2_000_000,
+          description: 'Apto 2H/1B con balcón y vista',
+          images: JSON.stringify(['https://picsum.photos/seed/extrae2101/800/600']),
+        },
+        {
+          unitNumber: 'E2-201',
+          floor: 2,
+          area: 75,
+          bedrooms: 3,
+          bathrooms: 2,
+          furnished: false,
+          petFriendly: false,
+          status: UnitStatus.VACANT,
+          baseRent: 2_600_000,
+          deposit: 2_600_000,
+          description: 'Apto 3H/2B amplio, ideal familias',
+          images: JSON.stringify(['https://picsum.photos/seed/extrae2201/800/600']),
+        },
+      ],
+    },
+  ]
+
+  for (const extra of extras) {
+    const property = await prisma.property.upsert({
+      where: { id: extra.id },
+      update: {
+        name: extra.name,
+        city: extra.city,
+        neighborhood: extra.neighborhood,
+        age: 1,
+      },
+      create: {
+        id: extra.id,
+        adminId,
+        name: extra.name,
+        description: 'Propiedad demo para unidades disponibles',
+        street: 'Demo St',
+        number: '123',
+        city: extra.city,
+        neighborhood: extra.neighborhood,
+        state: 'Cundinamarca',
+        postalCode: '00000',
+        country: 'Colombia',
+        gpsCoordinates: '0,0',
+        propertyType: PropertyType.BUILDING,
+        status: PropertyStatus.ACTIVE,
+        builtArea: 120,
+        totalLandArea: 200,
+        floors: 2,
+        age: 1,
+        units: { create: extra.units },
+      },
+      include: { units: true },
+    })
+
+    console.log(`✅ Propiedad demo creada: ${property.name} (${property.units.length} unidades)`) 
+  }
+}
+
+/**
  * Crea los contratos, incluyendo residentes adicionales para un contrato.
  */
 const createContracts = async (params: {
@@ -886,6 +1002,7 @@ const main = async (): Promise<void> => {
   const admins = await createAdmins(hashedPassword)
   const tenants = await createTenants(hashedPassword)
   const units = await createPropertyAndUnits(admins.admin1.id)
+  await createExtraProperties(admins.admin1.id)
   const contracts = await createContracts({ admins, tenants, units, hashedPassword })
   await assignAdminsToContracts({ admins, contracts })
   await createPayments(contracts)

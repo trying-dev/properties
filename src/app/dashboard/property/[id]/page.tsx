@@ -5,8 +5,7 @@ import { useParams } from 'next/navigation'
 
 import { Building2, MapPin, Users, DollarSign, Settings, AlertCircle } from 'lucide-react'
 
-import { getProperty } from '+/actions/property/actions_and_mutations'
-import { PropertyWithRelations } from '+/actions/property/actions_and_mutations'
+import { getProperty, PropertyWithRelations } from '+/actions/property'
 
 import { ExpandablePropertyInfo } from './fragments/ExpandablePropertyInfo'
 import { ExpandablePropertyAdmin } from './fragments/ExpandableAdminInfo'

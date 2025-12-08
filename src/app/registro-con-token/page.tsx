@@ -7,7 +7,7 @@ import {
   completeUserRegistration,
   validateRegistrationToken,
   type TenantValidationRegistrationToken,
-} from '+/actions/registro-con-token/actions_and_mutations'
+} from '+/actions/registro-con-token'
 
 function RegisterWithTokenContent() {
   const router = useRouter()

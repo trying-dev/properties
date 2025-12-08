@@ -21,8 +21,8 @@ import {
   disableTenantAction,
   getTenantsAction,
   getTenantsStatsAction,
-} from '+/actions/gestion-de-inquilinos/actions_and_mutations'
-import type { TenantListItem } from '+/actions/gestion-de-inquilinos/manager'
+} from '+/actions/gestion-de-inquilinos'
+import type { TenantListItem } from '+/actions/gestion-de-inquilinos'
 import type { CreateTenantSubmit } from '+/app/dashboard/admin/nuevo-proceso/seleccion-de-usuario/CreateTenantForm'
 
 type ReferenceEntry = { name: string; phone: string; relationship: string }
