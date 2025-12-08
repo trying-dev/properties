@@ -41,8 +41,7 @@ yarn-error.log*
 next-env.d.ts
 
 
-prisma/db
-prisma/schema.prisma
-.vscode
-
-prisma/models/el_nuevo.txt
+# prisma
+/prisma/**/*.db
+/prisma/*.db-journal
+/prisma/migrations

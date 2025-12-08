@@ -1,7 +1,22 @@
 'use server'
 
+import { Prisma } from '@prisma/client'
+import bcrypt from 'bcryptjs'
 import { signIn } from '+/lib/auth'
-import { resitroConToken } from './manager'
+import { prisma } from '+/lib/prisma'
+
+const findTenantByToken = async (token: string) =>
+  prisma.tenant.findFirst({
+    where: {
+      registrationToken: token,
+      registrationTokenExpires: { gte: new Date() },
+    },
+    select: {
+      id: true,
+      userId: true,
+      user: { select: { name: true, lastName: true, email: true, password: true } },
+    },
+  })
 
 export const validateRegistrationToken = async (token: string) => {
   try {
@@ -12,7 +27,13 @@ export const validateRegistrationToken = async (token: string) => {
       }
     }
 
-    const tenant = await resitroConToken.validateRegistrationToken(token)
+    const tenant = await findTenantByToken(token)
+    if (!tenant) {
+      return {
+        success: false,
+        error: 'Token inválido o expirado',
+      }
+    }
 
     return {
       success: true,
@@ -62,15 +83,29 @@ export const completeUserRegistration = async ({ token, password }: { token: str
       }
     }
 
-    const tenant = await resitroConToken.completeUserRegistration({
-      token,
-      password,
+    const tenant = await findTenantByToken(token)
+
+    if (!tenant) {
+      return {
+        success: false,
+        error: 'Token inválido o expirado',
+      }
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10)
+
+    await prisma.tenant.update({
+      where: { id: tenant.id },
+      data: {
+        registrationToken: null,
+        registrationTokenExpires: null,
+        user: { update: { password: hashedPassword } },
+      },
     })
 
-    // ✅ Usar la nueva contraseña proporcionada por el usuario, no la vieja de la DB
     const result = await signIn('credentials', {
       email: tenant.user.email,
-      password: password, // 🔧 Cambio aquí: usar la contraseña nueva
+      password: password,
       redirect: false,
     })
 
@@ -98,3 +133,6 @@ export const completeUserRegistration = async ({ token, password }: { token: str
     }
   }
 }
+
+export type TenantValidationRegistrationToken = Prisma.PromiseReturnType<typeof findTenantByToken>
+export type RegistrationCompletionResult = Prisma.PromiseReturnType<typeof findTenantByToken>

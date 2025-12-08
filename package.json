@@ -6,7 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "initPrisma": "prisma generate && prisma db push --accept-data-loss",
-    "prepareDB": "node scripts/setup-db.js && pnpm initPrisma",
+    "prepareDB": "pnpm initPrisma",
     "buildWithSetupDB": "pnpm prepareDB && next build",
     "start": "next start",
     "lint": "next lint",
@@ -15,42 +15,42 @@
     "db:migrate": "prisma migrate dev",
     "db:studio": "prisma studio",
     "db:reset": "prisma migrate reset",
-    "db:seed": "node prisma/seed.js"
+    "db:seed": "tsx prisma/seed.ts"
   },
   "dependencies": {
     "@ariakit/react": "^0.4.20",
-    "@hookform/resolvers": "^3.10.0",
-    "@prisma/client": "^6.19.0",
-    "@reduxjs/toolkit": "^2.11.0",
-    "bcryptjs": "^2.4.3",
+    "@hookform/resolvers": "^5.2.2",
+    "@libsql/client": "0.8.1",
+    "@prisma/adapter-libsql": "^7.1.0",
+    "@prisma/client": "7.1.0",
+    "@reduxjs/toolkit": "^2.11.1",
+    "bcryptjs": "^3.0.3",
     "date-fns": "^4.1.0",
+    "dotenv": "^17.2.3",
     "jsonwebtoken": "^9.0.3",
-    "lucide-react": "^0.460.0",
+    "lucide-react": "^0.556.0",
     "next": "16.0.7",
-    "next-auth": "5.0.0-beta.29",
+    "next-auth": "5.0.0-beta.30",
     "prettier": "^3.7.4",
-    "prisma": "^6.19.0",
-    "react": "19.2.0",
-    "react-dom": "19.2.0",
+    "prisma": "^7.1.0",
+    "react": "19.2.1",
+    "react-dom": "19.2.1",
     "react-hook-form": "^7.68.0",
     "react-redux": "^9.2.0",
     "resend": "^6.5.2",
-    "zod": "^3.25.76"
+    "zod": "^4.1.13"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.3",
     "@tailwindcss/postcss": "^4.1.17",
-    "@types/bcryptjs": "^2.4.6",
     "@types/jsonwebtoken": "^9.0.10",
-    "@types/node": "^20.19.25",
+    "@types/node": "^24.10.1",
     "@types/react": "^19.2.7",
     "@types/react-dom": "^19.2.3",
     "eslint": "^9.39.1",
     "eslint-config-next": "16.0.7",
     "tailwindcss": "^4.1.17",
+    "tsx": "^4.21.0",
     "typescript": "^5.9.3"
-  },
-  "prisma": {
-    "schema": "./prisma"
   }
 }

@@ -6,8 +6,8 @@ import { Eye, EyeOff, CheckCircle, XCircle, Loader2 } from 'lucide-react'
 import {
   completeUserRegistration,
   validateRegistrationToken,
+  type TenantValidationRegistrationToken,
 } from '+/actions/registro-con-token/actions_and_mutations'
-import { TenantValidationRegistrationToken } from '+/actions/registro-con-token/manager'
 
 function RegisterWithTokenContent() {
   const router = useRouter()

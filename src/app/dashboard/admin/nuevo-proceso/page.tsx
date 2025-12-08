@@ -3,7 +3,10 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import type { MouseEvent as ReactMouseEvent } from 'react'
 import { Search, Home, MapPin, Bed, Bath, Check, X } from 'lucide-react'
-import { AvailableUnit, PropertyWithAvailableUnits } from '+/actions/nuevo-proceso/manager'
+import {
+  AvailableUnit,
+  PropertyWithAvailableUnits,
+} from '+/actions/nuevo-proceso/actions_and_mutations'
 import {
   getAvailableUnitsAction,
   getPropertiesWithAvailableUnitsAction,

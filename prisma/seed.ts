@@ -1,37 +1,37 @@
-/* eslint-disable @typescript-eslint/no-require-imports */
-const {
-  PrismaClient,
+import bcrypt from 'bcryptjs'
+import {
+  AdminLevel,
+  ContractStatus,
   DocumentType,
+  EmploymentStatus,
   Gender,
   MaritalStatus,
-  EmploymentStatus,
-  AdminLevel,
-  PropertyType,
-  PropertyStatus,
-  UnitStatus,
-  ContractStatus,
+  PaymentMethod,
   PaymentStatus,
   PaymentType,
-  PaymentMethod,
-} = require('@prisma/client')
-const bcrypt = require('bcryptjs')
+  PropertyStatus,
+  PropertyType,
+  UnitStatus,
+} from '@prisma/client'
+import { prisma } from '+/lib/prisma'
 
-const prisma = new PrismaClient()
+type AdditionalResidentSeed = {
+  id: string
+  name: string
+  lastName: string
+  email: string
+  documentNumber: string
+  birthDate: Date
+  phone?: string
+  profession?: string
+}
 
-const main = async () => {
-  console.log('🌱 Iniciando seed coherente...')
-
-  // Password desde .env
-  const seedPassword = process.env.SEED_PASSWORD || 'password123'
-  const hashedPassword = await bcrypt.hash(seedPassword, 10)
-
-  // ========================================
-  // 1. LIMPIAR BASE DE DATOS
-  // ========================================
-
+/**
+ * Limpia TODA la base, en el orden correcto.
+ */
+const resetDatabase = async (): Promise<void> => {
   console.log('🧹 Limpiando base de datos...')
 
-  // Eliminar en orden de dependencias (de dependiente a independiente)
   await prisma.payment.deleteMany({})
   await prisma.contractDocument.deleteMany({})
   await prisma.contract.deleteMany({})
@@ -43,11 +43,12 @@ const main = async () => {
   await prisma.user.deleteMany({})
 
   console.log('✅ Base de datos limpia')
+}
 
-  // ========================================
-  // 2. CREAR USUARIOS ADMINISTRADORES
-  // ========================================
-
+/**
+ * Crea los administradores iniciales.
+ */
+const createAdmins = async (hashedPassword: string) => {
   console.log('👥 Creando administradores...')
 
   const admin1 = await prisma.admin.create({
@@ -163,10 +164,13 @@ const main = async () => {
   console.log(`   - ${admin3.user.name}: ${AdminLevel.STANDARD}`)
   console.log(`   - ${admin4.user.name}: ${AdminLevel.LIMITED}`)
 
-  // ========================================
-  // 3. CREAR USUARIOS INQUILINOS
-  // ========================================
+  return { admin1, admin2, admin3, admin4 }
+}
 
+/**
+ * Crea los inquilinos (tenants) con sus usuarios y referencias.
+ */
+const createTenants = async (hashedPassword: string) => {
   console.log('🏠 Creando inquilinos...')
 
   const tenant1 = await prisma.tenant.create({
@@ -174,7 +178,7 @@ const main = async () => {
       emergencyContact: 'María Comerciante',
       emergencyContactPhone: '+57 300 999 9999',
       employmentStatus: EmploymentStatus.SELF_EMPLOYED,
-      monthlyIncome: 5000000,
+      monthlyIncome: 5_000_000,
       user: {
         create: {
           email: 'comerciante1@gmail.com',
@@ -217,7 +221,7 @@ const main = async () => {
       emergencyContact: 'Sandra Empresaria',
       emergencyContactPhone: '+57 300 888 8888',
       employmentStatus: EmploymentStatus.SELF_EMPLOYED,
-      monthlyIncome: 8000000,
+      monthlyIncome: 8_000_000,
       user: {
         create: {
           email: 'comerciante2@gmail.com',
@@ -255,7 +259,7 @@ const main = async () => {
       emergencyContact: 'Roberto Profesional',
       emergencyContactPhone: '+57 300 777 7777',
       employmentStatus: EmploymentStatus.EMPLOYED,
-      monthlyIncome: 4000000,
+      monthlyIncome: 4_000_000,
       user: {
         create: {
           email: 'residente1@gmail.com',
@@ -293,7 +297,7 @@ const main = async () => {
       emergencyContact: 'Sarah Smith',
       emergencyContactPhone: '+1 555 123 4567',
       employmentStatus: EmploymentStatus.SELF_EMPLOYED,
-      monthlyIncome: 6000000,
+      monthlyIncome: 6_000_000,
       user: {
         create: {
           email: 'extranjero1@gmail.com',
@@ -332,19 +336,21 @@ const main = async () => {
   console.log(`   - ${tenant3.user.name} ${tenant3.user.lastName} (${tenant3.references.length} referencias)`)
   console.log(`   - ${tenant4.user.name} ${tenant4.user.lastName} (${tenant4.references.length} referencias)`)
 
-  // ========================================
-  // 4. CREAR PROPIEDAD CON UNIDADES
-  // ========================================
+  return { tenant1, tenant2, tenant3, tenant4 }
+}
 
+/**
+ * Crea la propiedad principal y sus unidades.
+ */
+const createPropertyAndUnits = async (adminId: string) => {
   console.log('🏢 Creando propiedad...')
 
-  // Definir zonas comunes como JSON
   const commonZones = [
     {
       name: 'Escaleras',
       description: 'Escaleras principales - Acceso a segundo piso',
       available: true,
-      adminId: admin2.id,
+      adminId,
     },
     {
       name: 'Entrada',
@@ -352,13 +358,13 @@ const main = async () => {
       available: true,
       openingTime: '06:00',
       closingTime: '22:00',
-      adminId: admin2.id,
+      adminId,
     },
   ]
 
   const property = await prisma.property.create({
     data: {
-      admin: { connect: { id: admin1.id } },
+      admin: { connect: { id: adminId } },
       name: 'Edificio Plaza Central',
       description: 'Edificio mixto de 2 pisos con locales comerciales y apartamentos',
       street: 'Carrera 92',
@@ -377,14 +383,10 @@ const main = async () => {
       age: 5,
       parking: 4,
       parkingLocation: 'Parte trasera del edificio',
-      commonZones: JSON.stringify(commonZones), // Zonas comunes como JSON
-    },
-    include: {
-      units: true,
+      commonZones: JSON.stringify(commonZones),
     },
   })
 
-  // Crear unidades por separado para tener mejor control
   const local1 = await prisma.unit.create({
     data: {
       property: { connect: { id: property.id } },
@@ -404,8 +406,8 @@ const main = async () => {
       waterIncluded: true,
       gasIncluded: true,
       status: UnitStatus.OCCUPIED,
-      baseRent: 2500000,
-      deposit: 7500000,
+      baseRent: 2_500_000,
+      deposit: 7_500_000,
       description: 'Local comercial de 45 m² con excelente ubicación y vitrina.',
       images: JSON.stringify(['https://ejemplo.com/local1.jpg']),
       lastInspectionDate: new Date('2024-01-01'),
@@ -420,8 +422,8 @@ const main = async () => {
       area: 60.0,
       bedrooms: 0,
       bathrooms: 1,
-      baseRent: 3000000,
-      deposit: 9000000,
+      baseRent: 3_000_000,
+      deposit: 9_000_000,
       furnished: false,
       waterIncluded: true,
       gasIncluded: true,
@@ -444,8 +446,8 @@ const main = async () => {
       petFriendly: true,
       internet: true,
       cableTV: true,
-      baseRent: 1800000,
-      deposit: 3600000,
+      baseRent: 1_800_000,
+      deposit: 3_600_000,
       status: UnitStatus.OCCUPIED,
       description: 'Apartamento amplio con 2 habitaciones, vista al parque.',
       images: JSON.stringify(['https://ejemplo.com/apt1.jpg']),
@@ -465,8 +467,8 @@ const main = async () => {
       petFriendly: true,
       internet: true,
       cableTV: true,
-      baseRent: 2200000,
-      deposit: 4400000,
+      baseRent: 2_200_000,
+      deposit: 4_400_000,
       status: UnitStatus.OCCUPIED,
       description: 'Apartamento totalmente amoblado. Vista panorámica.',
       images: JSON.stringify(['https://ejemplo.com/apt2.jpg']),
@@ -478,21 +480,33 @@ const main = async () => {
   console.log(`   - 4 unidades creadas`)
   console.log(`   - 2 zonas comunes creadas (JSON)`)
 
-  // ========================================
-  // 5. CREAR CONTRATOS
-  // ========================================
+  return { property, local1, local2, apartamento1, apartamento2 }
+}
+
+/**
+ * Crea los contratos, incluyendo residentes adicionales para un contrato.
+ */
+const createContracts = async (params: {
+  admins: ReturnType<typeof createAdmins> extends Promise<infer R> ? R : never
+  tenants: ReturnType<typeof createTenants> extends Promise<infer R> ? R : never
+  units: ReturnType<typeof createPropertyAndUnits> extends Promise<infer R> ? R : never
+  hashedPassword: string
+}) => {
+  const { admin1, admin2, admin3 } = params.admins
+  const { tenant1, tenant2, tenant3, tenant4 } = params.tenants
+  const { local1, local2, apartamento1, apartamento2 } = params.units
+  const { hashedPassword } = params
 
   console.log('📄 Creando contratos...')
 
-  // Contrato 1: Local 1
   const contract1 = await prisma.contract.create({
     data: {
       unit: { connect: { id: local1.id } },
       tenant: { connect: { id: tenant1.id } },
       adminId: admin1.id,
-      rent: 2500000,
-      deposit: 7500000,
-      securityDeposit: 2500000,
+      rent: 2_500_000,
+      deposit: 7_500_000,
+      securityDeposit: 2_500_000,
       lateFeePenalty: 5.0,
       gracePeriodDays: 3,
       autoRenewal: true,
@@ -507,15 +521,14 @@ const main = async () => {
     },
   })
 
-  // Contrato 2: Local 2
   const contract2 = await prisma.contract.create({
     data: {
       unit: { connect: { id: local2.id } },
       tenant: { connect: { id: tenant2.id } },
       adminId: admin2.id,
-      rent: 3000000,
-      deposit: 9000000,
-      securityDeposit: 3000000,
+      rent: 3_000_000,
+      deposit: 9_000_000,
+      securityDeposit: 3_000_000,
       lateFeePenalty: 4.0,
       gracePeriodDays: 5,
       autoRenewal: false,
@@ -528,7 +541,7 @@ const main = async () => {
     },
   })
 
-  const additionalResidentsTenant1 = [
+  const additionalResidentsTenant1: AdditionalResidentSeed[] = [
     {
       id: 'user_carlos',
       name: 'Carlos',
@@ -559,31 +572,30 @@ const main = async () => {
     },
   ]
 
-  // Contrato 3: Apartamento 1
   const contract3 = await prisma.contract.create({
     data: {
       unit: { connect: { id: apartamento1.id } },
       tenant: { connect: { id: tenant3.id } },
       additionalResidents: {
-        create: additionalResidentsTenant1.map((r) => ({
-          id: r.id,
-          name: r.name,
-          lastName: r.lastName,
-          email: r.email,
+        create: additionalResidentsTenant1.map((resident) => ({
+          id: resident.id,
+          name: resident.name,
+          lastName: resident.lastName,
+          email: resident.email,
           password: hashedPassword,
-          phone: r.phone,
-          documentNumber: r.documentNumber,
-          birthDate: r.birthDate,
-          profession: r.profession,
-          documentType: 'CC',
-          gender: 'OTHER',
-          maritalStatus: 'SINGLE',
+          phone: resident.phone,
+          documentNumber: resident.documentNumber,
+          birthDate: resident.birthDate,
+          profession: resident.profession,
+          documentType: DocumentType.CC,
+          gender: Gender.OTHER,
+          maritalStatus: MaritalStatus.SINGLE,
         })),
       },
       adminId: admin1.id,
-      rent: 1800000,
-      deposit: 3600000,
-      securityDeposit: 1800000,
+      rent: 1_800_000,
+      deposit: 3_600_000,
+      securityDeposit: 1_800_000,
       lateFeePenalty: 3.5,
       gracePeriodDays: 4,
       autoRenewal: true,
@@ -598,15 +610,14 @@ const main = async () => {
     },
   })
 
-  // Contrato 4: Apartamento 2
   const contract4 = await prisma.contract.create({
     data: {
       unit: { connect: { id: apartamento2.id } },
       tenant: { connect: { id: tenant4.id } },
       adminId: admin3.id,
-      rent: 2200000,
-      deposit: 4400000,
-      securityDeposit: 2200000,
+      rent: 2_200_000,
+      deposit: 4_400_000,
+      securityDeposit: 2_200_000,
       lateFeePenalty: 5.0,
       gracePeriodDays: 3,
       autoRenewal: false,
@@ -626,13 +637,21 @@ const main = async () => {
   console.log(`   - Apartamento 1: ${tenant3.user.name} - $${contract3.rent.toLocaleString()}`)
   console.log(`   - Apartamento 2: ${tenant4.user.name} - $${contract4.rent.toLocaleString()}`)
 
-  // ========================================
-  // 6. ASIGNAR ADMINISTRADORES A CONTRATOS
-  // ========================================
+  return { contract1, contract2, contract3, contract4 }
+}
 
+/**
+ * Asigna administradores a los contratos (relación N:M).
+ */
+const assignAdminsToContracts = async (params: {
+  admins: ReturnType<typeof createAdmins> extends Promise<infer R> ? R : never
+  contracts: ReturnType<typeof createContracts> extends Promise<infer R> ? R : never
+}) => {
   console.log('🔗 Asignando administradores a contratos...')
 
-  // Actualizar contratos para incluir administradores en la relación many-to-many
+  const { admin1, admin2, admin3 } = params.admins
+  const { contract1, contract2, contract3, contract4 } = params.contracts
+
   await prisma.contract.update({
     where: { id: contract1.id },
     data: {
@@ -670,18 +689,25 @@ const main = async () => {
   })
 
   console.log('✅ Administradores asignados a contratos')
+}
 
-  // ========================================
-  // 7. CREAR PAGOS
-  // ========================================
-
+/**
+ * Crea el historial de pagos.
+ */
+const createPayments = async (contracts: {
+  contract1: { id: string; rent: number }
+  contract2: { id: string; rent: number }
+  contract3: { id: string; rent: number }
+  contract4: { id: string; rent: number }
+}) => {
   console.log('💰 Creando historial de pagos...')
 
-  // Pagos para el contrato 1 (últimos 3 meses)
+  const { contract1, contract2, contract3, contract4 } = contracts
+
   await prisma.payment.create({
     data: {
-      contract: { connect: { id: contract1.id } },
-      amount: 2500000,
+      contractId: contract1.id,
+      amount: 2_500_000,
       dueDate: new Date('2024-05-01'),
       paidDate: new Date('2024-05-01'),
       paymentType: PaymentType.RENT,
@@ -694,8 +720,8 @@ const main = async () => {
 
   await prisma.payment.create({
     data: {
-      contract: { connect: { id: contract1.id } },
-      amount: 2500000,
+      contractId: contract1.id,
+      amount: 2_500_000,
       dueDate: new Date('2024-06-01'),
       paidDate: new Date('2024-06-03'),
       paymentType: PaymentType.RENT,
@@ -708,11 +734,10 @@ const main = async () => {
     },
   })
 
-  // Pago pendiente
   await prisma.payment.create({
     data: {
-      contract: { connect: { id: contract1.id } },
-      amount: 2500000,
+      contractId: contract1.id,
+      amount: 2_500_000,
       dueDate: new Date('2024-07-01'),
       paymentType: PaymentType.RENT,
       status: PaymentStatus.OVERDUE,
@@ -720,11 +745,10 @@ const main = async () => {
     },
   })
 
-  // Pagos para contrato 2
   await prisma.payment.create({
     data: {
-      contract: { connect: { id: contract2.id } },
-      amount: 3000000,
+      contractId: contract2.id,
+      amount: 3_000_000,
       dueDate: new Date('2024-06-01'),
       paidDate: new Date('2024-05-30'),
       paymentType: PaymentType.RENT,
@@ -737,18 +761,17 @@ const main = async () => {
   await prisma.payment.create({
     data: {
       contractId: contract2.id,
-      amount: 3000000,
+      amount: 3_000_000,
       dueDate: new Date('2024-07-01'),
       paymentType: PaymentType.RENT,
       status: PaymentStatus.PENDING,
     },
   })
 
-  // Pagos para contratos 3 y 4
   await prisma.payment.create({
     data: {
       contractId: contract3.id,
-      amount: 1800000,
+      amount: 1_800_000,
       dueDate: new Date('2024-06-01'),
       paidDate: new Date('2024-06-01'),
       paymentType: PaymentType.RENT,
@@ -762,7 +785,7 @@ const main = async () => {
   await prisma.payment.create({
     data: {
       contractId: contract4.id,
-      amount: 2200000,
+      amount: 2_200_000,
       dueDate: new Date('2024-06-01'),
       paidDate: new Date('2024-06-02'),
       paymentType: PaymentType.RENT,
@@ -774,15 +797,39 @@ const main = async () => {
   })
 
   console.log('✅ Historial de pagos creado (7 pagos)')
+}
 
-  // ========================================
-  // 8. ESTADÍSTICAS FINALES
-  // ========================================
+/**
+ * Muestra un resumen bonito del sistema.
+ */
+const printSummary = async (params: {
+  property: {
+    name: string
+    propertyType: PropertyType
+    neighborhood: string
+    city: string
+    floors: number
+    builtArea: number
+    status: PropertyStatus
+  }
+  contracts: {
+    contract1: { rent: number; deposit: number }
+    contract2: { rent: number; deposit: number }
+    contract3: { rent: number; deposit: number }
+    contract4: { rent: number; deposit: number }
+  }
+}) => {
+  const { property, contracts } = params
 
-  const totalRent = contract1.rent + contract2.rent + contract3.rent + contract4.rent
-  const totalDeposits = contract1.deposit + contract2.deposit + contract3.deposit + contract4.deposit
+  const totalRent =
+    contracts.contract1.rent + contracts.contract2.rent + contracts.contract3.rent + contracts.contract4.rent
 
-  // Contar datos creados
+  const totalDeposits =
+    contracts.contract1.deposit +
+    contracts.contract2.deposit +
+    contracts.contract3.deposit +
+    contracts.contract4.deposit
+
   const userCount = await prisma.user.count()
   const adminCount = await prisma.admin.count()
   const tenantCount = await prisma.tenant.count()
@@ -826,12 +873,30 @@ const main = async () => {
   console.log('🎯 Puedes comenzar a probar todas las funcionalidades')
 }
 
+/**
+ * Punto de entrada principal del seed.
+ */
+const main = async (): Promise<void> => {
+  console.log('🌱 Iniciando seed coherente...')
+
+  const seedPassword = process.env.SEED_PASSWORD ?? 'password123'
+  const hashedPassword = await bcrypt.hash(seedPassword, 10)
+
+  await resetDatabase()
+  const admins = await createAdmins(hashedPassword)
+  const tenants = await createTenants(hashedPassword)
+  const units = await createPropertyAndUnits(admins.admin1.id)
+  const contracts = await createContracts({ admins, tenants, units, hashedPassword })
+  await assignAdminsToContracts({ admins, contracts })
+  await createPayments(contracts)
+  await printSummary({ property: units.property, contracts })
+}
+
 main()
   .catch((e) => {
     console.error('💥 Error en el seed:', e)
     process.exit(1)
   })
   .finally(async () => {
-    require('./seeds/2-casas')
     await prisma.$disconnect()
   })

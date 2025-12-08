@@ -12,5 +12,5 @@ dotenv - Loads environment variables from your .env file
 
 para correr: 
 
-prisma generate 
-prisma db push --accept-data-loss
+npx prisma generate 
+npx prisma db push --accept-data-loss

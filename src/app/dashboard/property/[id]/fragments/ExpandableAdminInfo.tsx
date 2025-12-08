@@ -15,7 +15,7 @@ import {
   Users,
   Award,
 } from 'lucide-react'
-import { PropertyWithRelations } from '+/actions/property/manager'
+import { PropertyWithRelations } from '+/actions/property/actions_and_mutations'
 import { AdminLevel, DocumentType, Gender, MaritalStatus } from '@prisma/client'
 import { formatAdminLevel } from '../utils'
 

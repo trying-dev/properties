@@ -1,9 +1,14 @@
 'use server'
 
-import { DocumentType, MaritalStatus } from '@prisma/client'
+import { DocumentType, MaritalStatus, Prisma, ContractStatus, EmploymentStatus } from '@prisma/client'
 import { revalidatePath } from 'next/cache'
-import { tenantsManager } from './manager'
+import { prisma } from '+/lib/prisma'
 import { CreateTenantSubmit } from '+/app/dashboard/admin/nuevo-proceso/seleccion-de-usuario/CreateTenantForm'
+
+const toEmploymentStatus = (status?: string): EmploymentStatus | undefined =>
+  status && Object.values(EmploymentStatus).includes(status as EmploymentStatus)
+    ? (status as EmploymentStatus)
+    : undefined
 
 export const getTenantsAction = async (filters?: {
   search?: string
@@ -18,8 +23,39 @@ export const getTenantsAction = async (filters?: {
     const pageSize = filters?.pageSize || 20
     const skip = (page - 1) * pageSize
 
-    const tenants = await tenantsManager.getTenants({
-      ...filters,
+    const tenants = await prisma.tenant.findMany({
+      where: {
+        ...(filters?.employmentStatus &&
+          toEmploymentStatus(filters.employmentStatus) && {
+            employmentStatus: toEmploymentStatus(filters.employmentStatus),
+          }),
+        user: {
+          is: {
+            deletedAt: null,
+            ...(filters?.city && { city: filters.city }),
+            ...(filters?.documentType && { documentType: filters.documentType }),
+            ...(filters?.search && {
+              OR: [
+                { name: { contains: filters.search } },
+                { lastName: { contains: filters.search } },
+                { email: { contains: filters.search } },
+                { documentNumber: { contains: filters.search } },
+              ],
+            }),
+          },
+        },
+      },
+      include: {
+        user: true,
+        references: true,
+        contracts: {
+          where: { status: { in: [ContractStatus.ACTIVE, ContractStatus.PENDING] } },
+          include: {
+            unit: { include: { property: { select: { name: true, city: true, neighborhood: true } } } },
+          },
+        },
+      },
+      orderBy: [{ user: { lastName: 'asc' } }, { user: { name: 'asc' } }],
       skip,
       take: pageSize,
     })
@@ -36,7 +72,34 @@ export const getTenantsAction = async (filters?: {
 
 export const getTenantByIdAction = async (tenantId: string) => {
   try {
-    const tenant = await tenantsManager.getTenantById({ id: tenantId })
+    const tenant = await prisma.tenant.findUnique({
+      where: { id: tenantId },
+      include: {
+        user: true,
+        references: true,
+        contracts: {
+          include: {
+            unit: {
+              include: {
+                property: {
+                  select: {
+                    name: true,
+                    city: true,
+                    neighborhood: true,
+                    street: true,
+                    number: true,
+                  },
+                },
+              },
+            },
+            payments: {
+              orderBy: { dueDate: 'desc' },
+              take: 5,
+            },
+          },
+        },
+      },
+    })
 
     if (!tenant) return { success: false, error: 'Inquilino no encontrado' }
 
@@ -52,7 +115,35 @@ export const getTenantByIdAction = async (tenantId: string) => {
 
 export const createTenantAction = async (tenantData: CreateTenantSubmit) => {
   try {
-    const result = await tenantsManager.createTenant(tenantData)
+    const { user, tenant, references } = tenantData
+    const employmentStatusValue = toEmploymentStatus(tenant.employmentStatus)
+
+    const existingUser = await prisma.user.findFirst({
+      where: { OR: [{ email: user.email }, { documentNumber: user.documentNumber }] },
+    })
+
+    if (existingUser) throw new Error('Ya existe un usuario con ese email o número de documento')
+
+    const result = await prisma.tenant.create({
+      data: {
+        employmentStatus: employmentStatusValue,
+        monthlyIncome: tenant.monthlyIncome,
+        emergencyContact: tenant.emergencyContact,
+        emergencyContactPhone: tenant.emergencyContactPhone,
+        user: { create: { ...user } },
+        references:
+          references.length > 0
+            ? {
+                create: references.map((ref) => ({
+                  name: ref.name,
+                  phone: ref.phone,
+                  relationship: ref.relationship,
+                })),
+              }
+            : undefined,
+      },
+      include: { user: true, references: true },
+    })
 
     revalidatePath('/dashboard/tenants')
 
@@ -108,10 +199,47 @@ export const updateTenantAction = async (
       monthlyIncome: updateData.monthlyIncome,
     }
 
-    const result = await tenantsManager.updateTenant({
-      tenantId,
-      userData,
-      tenantData,
+    const result = await prisma.$transaction(async (tx) => {
+      const tenant = await tx.tenant.findUnique({
+        where: { id: tenantId },
+        select: { userId: true },
+      })
+      if (!tenant) throw new Error('Tenant no encontrado')
+
+      const employmentStatusUpdate = toEmploymentStatus(tenantData.employmentStatus)
+
+      const userUpdateData: Prisma.UserUpdateInput = {
+        ...(userData.name !== undefined && { name: userData.name }),
+        ...(userData.lastName !== undefined && { lastName: userData.lastName }),
+        ...(userData.phone !== undefined && { phone: userData.phone }),
+        ...(userData.birthDate !== undefined && { birthDate: userData.birthDate }),
+        ...(userData.address !== undefined && { address: userData.address }),
+        ...(userData.city !== undefined && { city: userData.city }),
+        ...(userData.state !== undefined && { state: userData.state }),
+        ...(userData.profession !== undefined && { profession: userData.profession }),
+        ...(userData.maritalStatus !== undefined && { maritalStatus: userData.maritalStatus }),
+      }
+
+      const updatedUser = await tx.user.update({
+        where: { id: tenant.userId },
+        data: userUpdateData,
+      })
+
+      const tenantUpdateData: Prisma.TenantUpdateInput = {
+        ...(tenantData.emergencyContact !== undefined && { emergencyContact: tenantData.emergencyContact }),
+        ...(tenantData.emergencyContactPhone !== undefined && {
+          emergencyContactPhone: tenantData.emergencyContactPhone,
+        }),
+        ...(employmentStatusUpdate !== undefined && { employmentStatus: employmentStatusUpdate }),
+        ...(tenantData.monthlyIncome !== undefined && { monthlyIncome: tenantData.monthlyIncome }),
+      }
+
+      const updatedTenant = await tx.tenant.update({
+        where: { id: tenantId },
+        data: tenantUpdateData,
+      })
+
+      return { user: updatedUser, tenant: updatedTenant }
     })
 
     revalidatePath('/dashboard/tenants')
@@ -133,7 +261,22 @@ export const updateTenantAction = async (
 
 export const disableTenantAction = async (tenantId: string) => {
   try {
-    await tenantsManager.disableTenant({ tenantId })
+    const tenant = await prisma.tenant.findUnique({
+      where: { id: tenantId },
+      select: { userId: true },
+    })
+
+    if (!tenant) {
+      throw new Error('Tenant no encontrado')
+    }
+
+    await prisma.user.update({
+      where: { id: tenant.userId },
+      data: {
+        disable: true,
+        deletedAt: new Date(),
+      },
+    })
 
     revalidatePath('/dashboard/tenants')
 
@@ -152,7 +295,45 @@ export const disableTenantAction = async (tenantId: string) => {
 
 export const getTenantsStatsAction = async () => {
   try {
-    const stats = await tenantsManager.getTenantsStats()
+    const stats = await prisma.tenant.aggregate({
+      _count: true,
+      where: {
+        user: {
+          deletedAt: null,
+        },
+      },
+    })
+
+    const activeContracts = await prisma.contract.count({
+      where: {
+        status: 'ACTIVE',
+      },
+    })
+
+    const citiesDistribution = await prisma.user.groupBy({
+      by: ['city'],
+      _count: true,
+      where: {
+        deletedAt: null,
+        tenant: {
+          isNot: null,
+        },
+      },
+      orderBy: {
+        _count: {
+          city: 'desc',
+        },
+      },
+      take: 5,
+    })
+
+    const data = {
+      totalTenants: stats._count,
+      activeContracts,
+      citiesDistribution,
+    }
+
+    return { success: true, data }
     return { success: true, data: stats }
   } catch (error) {
     console.error('Error en getTenantsStatsAction:', error)

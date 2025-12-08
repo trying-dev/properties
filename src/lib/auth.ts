@@ -5,7 +5,7 @@ import Credentials from 'next-auth/providers/credentials'
 
 import { AdminLevel } from '@prisma/client'
 
-import { userManager } from '+/actions/user/manager'
+import { prisma } from '+/lib/prisma'
 import { UserRoleForAuth } from '+/types/next-auth'
 
 export const authConfig: NextAuthConfig = {
@@ -28,7 +28,10 @@ export const authConfig: NextAuthConfig = {
         }
 
         try {
-          const user = await userManager.findByEmail(credentials.email as string)
+          const user = await prisma.user.findUnique({
+            where: { email: credentials.email as string },
+            include: { admin: true, tenant: true },
+          })
 
           if (!user || !user.password) return null
 
@@ -38,7 +41,10 @@ export const authConfig: NextAuthConfig = {
 
           if (user.disable) return null
 
-          await userManager.updateLastLogin(user.id)
+          await prisma.user.update({
+            where: { id: user.id },
+            data: { lastLoginAt: new Date() },
+          })
 
           let role: UserRoleForAuth
           let adminLevel: AdminLevel | undefined

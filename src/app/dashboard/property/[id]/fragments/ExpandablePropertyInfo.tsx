@@ -1,6 +1,6 @@
 import { useState, type ComponentType, type ReactNode, type SVGProps } from 'react'
 import { Building2, Plus, Minus, MapPin, Calendar, Home, Car, Ruler, Users, FileText } from 'lucide-react'
-import { PropertyWithRelations } from '+/actions/property/manager'
+import { PropertyWithRelations } from '+/actions/property/actions_and_mutations'
 import { PropertyType } from '@prisma/client'
 
 export const ExpandablePropertyInfo = ({ property }: { property: NonNullable<PropertyWithRelations> }) => {
