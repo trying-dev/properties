@@ -1,40 +1,13 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
+import Image from 'next/image'
 import Link from 'next/link'
 import { Home, Search, MapPin, Bed, Bath, Maximize, Heart, SlidersHorizontal } from 'lucide-react'
-
-const mockProperties = [
-  {
-    id: '1',
-    name: 'Edificio Centro',
-    unitNumber: '301',
-    address: 'Calle 72 #10-34, Chapinero',
-    city: 'Bogotá',
-    price: 1200000,
-    bedrooms: 2,
-    bathrooms: 1,
-    area: 65,
-    image: '/placeholder-apartment.jpg',
-    featured: true,
-  },
-  {
-    id: '2',
-    name: 'Torre Norte',
-    unitNumber: '205',
-    address: 'Carrera 15 #85-20, Usaquén',
-    city: 'Bogotá',
-    price: 1500000,
-    bedrooms: 3,
-    bathrooms: 2,
-    area: 85,
-    image: '/placeholder-apartment.jpg',
-    featured: false,
-  },
-]
+import { AvailableUnit, getAvailableUnitsAction } from '+/actions/nuevo-proceso'
 
 export default function PropertiesCatalog() {
-  const [properties] = useState(mockProperties)
+  const [units, setUnits] = useState<AvailableUnit[]>([])
   const [showFilters, setShowFilters] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
   const [filters, setFilters] = useState({
@@ -43,17 +16,38 @@ export default function PropertiesCatalog() {
     city: '',
   })
 
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('es-CO', {
+  useEffect(() => {
+    ;(async () => {
+      try {
+        const result = await getAvailableUnitsAction({})
+        if (result.success) setUnits(result.data ?? [])
+      } catch (error) {
+        console.error('Error loading units:', error)
+      }
+    })()
+  }, [])
+
+  const filteredUnits = useMemo(() => {
+    return units.filter((unit) => {
+      const matchesSearch =
+        !searchQuery ||
+        unit.property.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        `${unit.property.city} ${unit.property.neighborhood}`
+          .toLowerCase()
+          .includes(searchQuery.toLowerCase())
+      const matchesPrice = !filters.priceMax || (unit.baseRent ?? 0) <= Number(filters.priceMax)
+      const matchesBedrooms = !filters.bedrooms || unit.bedrooms >= Number(filters.bedrooms)
+      const matchesCity = !filters.city || unit.property.city.toLowerCase() === filters.city.toLowerCase()
+      return matchesSearch && matchesPrice && matchesBedrooms && matchesCity
+    })
+  }, [units, searchQuery, filters])
+
+  const formatCurrency = (amount?: number | null) =>
+    new Intl.NumberFormat('es-CO', {
       style: 'currency',
       currency: 'COP',
       minimumFractionDigits: 0,
-    }).format(amount)
-  }
-
-  const handleSearch = () => {
-    console.log('Searching with:', searchQuery, filters)
-  }
+    }).format(amount ?? 0)
 
   return (
     <div className="min-h-screen bg-white">
@@ -153,8 +147,8 @@ export default function PropertiesCatalog() {
                   className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent appearance-none bg-white"
                 >
                   <option value="">Ciudad</option>
-                  <option value="bogota">Bogotá</option>
-                  <option value="medellin">Medellín</option>
+                  <option value="bogotá">Bogotá</option>
+                  <option value="medellín">Medellín</option>
                   <option value="cali">Cali</option>
                   <option value="barranquilla">Barranquilla</option>
                 </select>
@@ -162,10 +156,7 @@ export default function PropertiesCatalog() {
 
               {/* Search Button */}
               <div className="md:col-span-2">
-                <button
-                  onClick={handleSearch}
-                  className="w-full bg-gray-900 hover:bg-gray-800 text-white px-6 py-3 rounded-lg font-medium transition-colors flex items-center justify-center space-x-2"
-                >
+                <button className="w-full bg-gray-900 hover:bg-gray-800 text-white px-6 py-3 rounded-lg font-medium transition-colors flex items-center justify-center space-x-2">
                   <Search className="h-5 w-5" />
                   <span>Buscar</span>
                 </button>
@@ -230,7 +221,8 @@ export default function PropertiesCatalog() {
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="flex items-center justify-between mb-8">
           <p className="text-gray-600">
-            <span className="font-semibold text-gray-900">{properties.length}</span> propiedades disponibles
+            <span className="font-semibold text-gray-900">{filteredUnits.length}</span> propiedades
+            disponibles
           </p>
           <select className="px-4 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-gray-900">
             <option>Más recientes</option>
@@ -242,78 +234,87 @@ export default function PropertiesCatalog() {
 
         {/* Properties Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {properties.map((property) => (
-            <Link
-              key={property.id}
-              href={`/propiedades/${property.id}`}
-              className="bg-white border border-gray-200 rounded-lg overflow-hidden hover:border-gray-400 hover:shadow-lg transition-all group"
-            >
-              {/* Property Image */}
-              <div className="relative h-48 bg-gray-200">
-                {/* Placeholder for image */}
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <Home className="h-12 w-12 text-gray-400" />
-                </div>
-                {/* Favorite Button */}
-                <button
-                  onClick={(e) => {
-                    e.preventDefault()
-                  }}
-                  className="absolute top-3 right-3 w-10 h-10 bg-white rounded-full flex items-center justify-center hover:bg-gray-50 shadow-md"
-                >
-                  <Heart className="h-5 w-5 text-gray-600" />
-                </button>
-                {/* Featured Badge */}
-                {property.featured && (
-                  <div className="absolute top-3 left-3 bg-gray-900 text-white text-xs font-semibold px-3 py-1 rounded-full">
-                    Destacado
-                  </div>
-                )}
-              </div>
+          {filteredUnits.map((unit, index) => {
+            const image = (() => {
+              try {
+                const parsed = unit.images ? (JSON.parse(unit.images) as string[]) : []
+                return parsed[0] ?? '/placeholder-apartment.jpg'
+              } catch {
+                return '/placeholder-apartment.jpg'
+              }
+            })()
 
-              {/* Property Info */}
-              <div className="p-4">
-                <div className="mb-3">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-1 group-hover:text-gray-700">
-                    {property.name} - Unidad {property.unitNumber}
-                  </h3>
-                  <p className="text-sm text-gray-600 flex items-center">
-                    <MapPin className="h-4 w-4 mr-1" />
-                    {property.address}
-                  </p>
-                </div>
-
-                <div className="flex items-center space-x-4 text-sm text-gray-600 mb-3">
-                  <span className="flex items-center">
-                    <Bed className="h-4 w-4 mr-1" />
-                    {property.bedrooms}
-                  </span>
-                  <span className="flex items-center">
-                    <Bath className="h-4 w-4 mr-1" />
-                    {property.bathrooms}
-                  </span>
-                  <span className="flex items-center">
-                    <Maximize className="h-4 w-4 mr-1" />
-                    {property.area}m²
-                  </span>
-                </div>
-
-                <div className="flex items-center justify-between pt-3 border-t border-gray-100">
-                  <div>
-                    <p className="text-xs text-gray-500">Renta mensual</p>
-                    <p className="text-xl font-bold text-gray-900">{formatCurrency(property.price)}</p>
-                  </div>
-                  <button className="text-sm font-medium text-gray-900 hover:text-gray-700">
-                    Ver detalles →
+            return (
+              <Link
+                key={unit.id}
+                href={`/propiedades/${unit.id}`}
+                className="bg-white border border-gray-200 rounded-lg overflow-hidden hover:border-gray-400 hover:shadow-lg transition-all group"
+              >
+                {/* Property Image */}
+                <div className="relative h-48 bg-gray-200">
+                  <Image
+                    src={image}
+                    alt={unit.property.name}
+                    fill
+                    sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
+                    className="object-cover transition-transform duration-300 group-hover:scale-105"
+                    priority={index < 3}
+                  />
+                  {/* Favorite Button */}
+                  <button
+                    onClick={(e) => {
+                      e.preventDefault()
+                    }}
+                    className="absolute top-3 right-3 w-10 h-10 bg-white rounded-full flex items-center justify-center hover:bg-gray-50 shadow-md"
+                  >
+                    <Heart className="h-5 w-5 text-gray-600" />
                   </button>
                 </div>
-              </div>
-            </Link>
-          ))}
+
+                {/* Property Info */}
+                <div className="p-4">
+                  <div className="mb-3">
+                    <h3 className="text-lg font-semibold text-gray-900 mb-1 group-hover:text-gray-700">
+                      {unit.property.name} - Unidad {unit.unitNumber}
+                    </h3>
+                    <p className="text-sm text-gray-600 flex items-center">
+                      <MapPin className="h-4 w-4 mr-1" />
+                      {unit.property.street} {unit.property.number}, {unit.property.neighborhood}
+                    </p>
+                  </div>
+
+                  <div className="flex items-center space-x-4 text-sm text-gray-600 mb-3">
+                    <span className="flex items-center">
+                      <Bed className="h-4 w-4 mr-1" />
+                      {unit.bedrooms}
+                    </span>
+                    <span className="flex items-center">
+                      <Bath className="h-4 w-4 mr-1" />
+                      {unit.bathrooms}
+                    </span>
+                    <span className="flex items-center">
+                      <Maximize className="h-4 w-4 mr-1" />
+                      {unit.area ? `${unit.area}m²` : 'N/A'}
+                    </span>
+                  </div>
+
+                  <div className="flex items-center justify-between pt-3 border-t border-gray-100">
+                    <div>
+                      <p className="text-xs text-gray-500">Renta mensual</p>
+                      <p className="text-xl font-bold text-gray-900">{formatCurrency(unit.baseRent)}</p>
+                    </div>
+                    <button className="text-sm font-medium text-gray-900 hover:text-gray-700">
+                      Ver detalles →
+                    </button>
+                  </div>
+                </div>
+              </Link>
+            )
+          })}
         </div>
 
         {/* Empty State */}
-        {properties.length === 0 && (
+        {filteredUnits.length === 0 && (
           <div className="text-center py-12">
             <Search className="h-16 w-16 text-gray-300 mx-auto mb-4" />
             <h3 className="text-xl font-semibold text-gray-900 mb-2">No se encontraron propiedades</h3>
