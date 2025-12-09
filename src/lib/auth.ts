@@ -9,8 +9,19 @@ import { prisma } from '+/lib/prisma'
 import { UserRoleForAuth } from '+/types/next-auth'
 
 export const authConfig: NextAuthConfig = {
-  pages: {
-    signIn: '/', // Tu página de login personalizada (home)
+  pages: { signIn: '/' },
+
+  logger: {
+    error(error) {
+      const err = error as unknown as { code?: string; name?: string; message?: string; cause?: unknown }
+      const code = err?.code || err?.name || 'error'
+      const cause =
+        (err?.cause as { message?: string })?.message ||
+        (err?.cause as string) ||
+        err?.message ||
+        String(error)
+      console.error(`[auth][${code}]`, cause)
+    },
   },
 
   providers: [

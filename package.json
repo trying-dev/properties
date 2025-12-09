@@ -6,7 +6,6 @@
     "dev": "next dev",
     "build": "next build",
     "initPrisma": "prisma generate && prisma db push --accept-data-loss",
-    "buildWithSetupDB": "pnpm initPrisma && next build",
     "start": "next start",
     "lint": "next lint",
     "db:generate": "prisma generate",

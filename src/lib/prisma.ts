@@ -27,7 +27,11 @@ export const prisma =
   new PrismaClient({
     ...(adapter ? { adapter } : {}),
     ...(accelerateUrl ? { accelerateUrl } : {}),
-    log: ['query', 'error', 'warn'],
+    log: [
+      // 'query',
+      'error',
+      'warn',
+    ],
   })
 
 if (process.env.NODE_ENV !== 'production') {

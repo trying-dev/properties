@@ -21,7 +21,6 @@ export default function DashboardLoading() {
 
           if (!mounted) return
 
-          // Esperar a que la sesión termine de cargar
           if (status === 'loading') {
             return
           }
@@ -39,7 +38,6 @@ export default function DashboardLoading() {
 
           setIsRedirecting(true)
 
-          // Determinar redirección según el rol
           let redirectUrl = '/dashboard'
 
           if (role === 'admin') {
@@ -54,7 +52,6 @@ export default function DashboardLoading() {
             return
           }
 
-          // Pequeño delay para mostrar el estado de "redirigiendo"
           setTimeout(() => {
             if (mounted) {
               router.push(redirectUrl)
@@ -64,7 +61,7 @@ export default function DashboardLoading() {
           console.error('Error al verificar sesión:', err)
           if (mounted) {
             setError('Error al verificar la sesión')
-            // Redirigir a login después de un delay
+
             setTimeout(() => {
               router.push('/')
             }, 2000)
@@ -73,7 +70,6 @@ export default function DashboardLoading() {
       })
     }
 
-    // Solo ejecutar cuando tengamos el estado final de la sesión
     if (status !== 'loading') {
       checkSessionAndRedirect()
     }
@@ -83,7 +79,6 @@ export default function DashboardLoading() {
     }
   }, [router, session, status, startTransition])
 
-  // Estado de loading general (incluye tanto el hook de sesión como la transición)
   const isLoading = status === 'loading' || isPending
 
   if (error) {
@@ -109,7 +104,7 @@ export default function DashboardLoading() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-blue-50">
+    <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-blue-50 via-white to-blue-50">
       <div className="text-center">
         {/* Logo o Icono */}
         <div className="w-20 h-20 mx-auto mb-6 text-blue-600">

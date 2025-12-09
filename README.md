@@ -48,7 +48,7 @@ Aplicación completa para administración de propiedades, unidades, contratos de
    # DATABASE_URL="postgresql://user:password@localhost:5432/properties"  # PostgreSQL
 
    # NextAuth
-   NEXTAUTH_URL="http://localhost:3000"
+   NEXT_PUBLIC_APP_URL="http://localhost:3000"
    NEXTAUTH_SECRET="tu-secreto-generado-aqui"  # Genera con: openssl rand -base64 32
 
    # Resend (emails)
@@ -254,7 +254,7 @@ Los pagos se generan automáticamente según términos del contrato:
 Asegúrate de configurar en producción:
 
 - `NEXTAUTH_SECRET`: Secreto fuerte y único
-- `NEXTAUTH_URL`: URL de producción
+- `NEXT_PUBLIC_APP_URL`: URL de producción
 - `RESEND_API_KEY`: API key válida
 - Remover o cambiar `SEED_PASSWORD`
 

@@ -333,7 +333,7 @@ export default function TenantCompleteForm() {
 
   if (submitSuccess) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-green-50 to-emerald-100 flex items-center justify-center p-4">
+      <div className="min-h-screen bg-linear-to-br from-green-50 to-emerald-100 flex items-center justify-center p-4">
         <div className="bg-white rounded-xl shadow-lg p-8 max-w-md w-full text-center">
           <div className="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-4">
             <CheckCircle2 size={32} className="text-white" />
@@ -349,11 +349,11 @@ export default function TenantCompleteForm() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
+    <div className="min-h-screen bg-linear-to-br from-blue-50 to-indigo-100 p-4">
       <div className="max-w-5xl mx-auto">
         <div className="bg-white rounded-xl shadow-lg overflow-hidden">
           {/* Header */}
-          <div className="bg-gradient-to-r from-blue-600 to-indigo-600 px-6 py-6 text-white">
+          <div className="bg-linear-to-r from-blue-600 to-indigo-600 px-6 py-6 text-white">
             <h1 className="text-2xl font-bold flex items-center gap-3">
               <User size={28} />
               Completar Información Personal
@@ -603,7 +603,7 @@ export default function TenantCompleteForm() {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="px-8 py-3 bg-gradient-to-r from-blue-500 to-indigo-500 text-white rounded-lg hover:from-blue-600 hover:to-indigo-600 transition-all duration-200 flex items-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed text-lg font-medium"
+                className="px-8 py-3 bg-linear-to-r from-blue-500 to-indigo-500 text-white rounded-lg hover:from-blue-600 hover:to-indigo-600 transition-all duration-200 flex items-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed text-lg font-medium"
               >
                 {isSubmitting ? (
                   <>

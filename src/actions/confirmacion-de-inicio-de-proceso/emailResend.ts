@@ -17,7 +17,7 @@ export class EmailService {
     registrationToken: string
   }) {
     try {
-      const registrationUrl = `${process.env.NEXTAUTH_URL}/registro-con-token?token=${registrationToken}`
+      const registrationUrl = `${process.env.NEXT_PUBLIC_APP_URL}/registro-con-token?token=${registrationToken}`
 
       const emailResult = await this.resend.emails.send({
         from: process.env.FROM_EMAIL as string,
@@ -152,7 +152,7 @@ export class EmailService {
   }
 
   private getExistingUserContinueTemplate(tenantName: string) {
-    const loginUrl = `${process.env.NEXTAUTH_URL}`
+    const loginUrl = `${process.env.NEXT_PUBLIC_APP_URL}`
     return `
       <!DOCTYPE html>
       <html lang="es">
