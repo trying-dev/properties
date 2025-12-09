@@ -4,10 +4,7 @@ import { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import type { MouseEvent as ReactMouseEvent } from 'react'
 import { Search, Home, MapPin, Bed, Bath, Check, X } from 'lucide-react'
 import { AvailableUnit, PropertyWithAvailableUnits } from '+/actions/nuevo-proceso'
-import {
-  getAvailableUnitsAction,
-  getPropertiesWithAvailableUnitsAction,
-} from '+/actions/nuevo-proceso'
+import { getAvailableUnitsAction, getPropertiesWithAvailableUnitsAction } from '+/actions/nuevo-proceso'
 
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
@@ -20,7 +17,7 @@ interface PriceRangeSliderProps {
   onChange: (value: [number, number]) => void
   formatValue?: (value: number) => string
   className?: string
-  priceDistribution: number[] // Array de conteos por rango de precios
+  priceDistribution: number[]
   distributionStep: number
 }
 
@@ -314,7 +311,7 @@ export default function NuevoProceso() {
   // Para evitar condiciones de carrera al hacer requests consecutivos
   const reqCounter = useRef(0)
 
-  const buildCleanFilters = () => {
+  const buildCleanFilters = useCallback(() => {
     const clean: Record<string, unknown> = {}
 
     // 1) Convierte el rango de precios a min/max
@@ -322,7 +319,8 @@ export default function NuevoProceso() {
     if (filters.priceRange[1] < priceRange.max) clean.maxRent = filters.priceRange[1]
 
     // 2) Excluye priceRange y procesa solo strings
-    const { priceRange: _omit, ...flat } = filters
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { priceRange: _priceRange, ...flat } = filters
 
     ;(Object.keys(flat) as Array<keyof typeof flat>).forEach((key) => {
       const value = flat[key] // aquí value es string (por el tipo de filters)
@@ -347,9 +345,9 @@ export default function NuevoProceso() {
     })
 
     return clean
-  }
+  }, [filters, priceRange.max, priceRange.min])
 
-  const loadAllUnits = async () => {
+  const loadAllUnits = useCallback(async () => {
     try {
       const result = await getAvailableUnitsAction({})
       if (result.success) {
@@ -358,9 +356,9 @@ export default function NuevoProceso() {
     } catch (error) {
       console.error('Error al cargar todas las unidades:', error)
     }
-  }
+  }, [])
 
-  const loadUnits = async () => {
+  const loadUnits = useCallback(async () => {
     setLoading(true)
     const currentReq = ++reqCounter.current
 
@@ -383,7 +381,7 @@ export default function NuevoProceso() {
     } finally {
       if (currentReq === reqCounter.current) setLoading(false)
     }
-  }
+  }, [buildCleanFilters])
 
   const loadProperties = async () => {
     try {
@@ -400,7 +398,7 @@ export default function NuevoProceso() {
   useEffect(() => {
     loadAllUnits() // Cargar primero todas las unidades para rangos
     loadProperties()
-  }, [])
+  }, [loadAllUnits])
 
   // Cargar unidades filtradas cuando cambian los filtros
   useEffect(() => {
@@ -408,7 +406,7 @@ export default function NuevoProceso() {
       // Solo después de tener todas las unidades
       loadUnits()
     }
-  }, [allUnits]) // Primer carga después de obtener todas las unidades
+  }, [allUnits, loadUnits]) // Primer carga después de obtener todas las unidades
 
   // Auto-buscar cuando cambian los filtros (con debounce)
   useEffect(() => {
@@ -418,7 +416,7 @@ export default function NuevoProceso() {
       loadUnits()
     }, 350)
     return () => clearTimeout(t)
-  }, [filters, allUnits])
+  }, [filters, allUnits, loadUnits])
 
   const handleFilterChange = (key: string, value: string) => {
     setFilters((prev) => ({ ...prev, [key]: value }))
@@ -426,11 +424,6 @@ export default function NuevoProceso() {
 
   const handlePriceRangeChange = (newRange: [number, number]) => {
     setFilters((prev) => ({ ...prev, priceRange: newRange }))
-  }
-
-  const handleSelectUnit = (unit: AvailableUnit) => {
-    setSelectedUnit(unit)
-    setShowReserveModal(true)
   }
 
   const formatCurrency = (amount?: number | null) => {

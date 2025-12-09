@@ -32,7 +32,7 @@ export default function Dashboard() {
   })
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [isPending, startTransition] = useTransition()
+  const [, startTransition] = useTransition()
 
   useEffect(() => {
     if (status === 'loading') return
@@ -211,7 +211,7 @@ export default function Dashboard() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           <div className="bg-white p-6 rounded-lg shadow-sm border hover:shadow-md transition-shadow">
             <div className="flex items-center">
-              <div className="flex-shrink-0">
+              <div className="shrink-0">
                 <Building2 className="h-8 w-8 text-blue-600" />
               </div>
               <div className="ml-4">
@@ -224,7 +224,7 @@ export default function Dashboard() {
 
           <div className="bg-white p-6 rounded-lg shadow-sm border hover:shadow-md transition-shadow">
             <div className="flex items-center">
-              <div className="flex-shrink-0">
+              <div className="shrink-0">
                 <Users className="h-8 w-8 text-green-600" />
               </div>
               <div className="ml-4">
@@ -237,7 +237,7 @@ export default function Dashboard() {
 
           <div className="bg-white p-6 rounded-lg shadow-sm border hover:shadow-md transition-shadow">
             <div className="flex items-center">
-              <div className="flex-shrink-0">
+              <div className="shrink-0">
                 <Calendar className="h-8 w-8 text-yellow-600" />
               </div>
               <div className="ml-4">
@@ -250,7 +250,7 @@ export default function Dashboard() {
 
           <div className="bg-white p-6 rounded-lg shadow-sm border hover:shadow-md transition-shadow">
             <div className="flex items-center">
-              <div className="flex-shrink-0">
+              <div className="shrink-0">
                 <TrendingUp className="h-8 w-8 text-purple-600" />
               </div>
               <div className="ml-4">

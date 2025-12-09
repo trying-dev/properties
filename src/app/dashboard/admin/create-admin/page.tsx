@@ -672,7 +672,7 @@ export default function AdminCreationForm() {
             {/* Información adicional */}
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
               <div className="flex items-start">
-                <AlertCircle className="w-5 h-5 text-blue-600 mt-0.5 mr-2 flex-shrink-0" />
+                <AlertCircle className="w-5 h-5 text-blue-600 mt-0.5 mr-2 shrink-0" />
                 <div className="text-sm text-blue-700">
                   <p className="font-medium mb-1">Información importante:</p>
                   <ul className="space-y-1 text-blue-600">

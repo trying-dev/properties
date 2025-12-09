@@ -67,7 +67,7 @@ export default function CardAdmin({ admin = mockAdmin }: { admin?: AdminData }) 
       `}
       >
         {/* Admin Avatar */}
-        <div className="relative flex-shrink-0">
+        <div className="relative shrink-0">
           <div className="w-16 h-16 rounded-full overflow-hidden bg-gray-100 ring-2 ring-white shadow-sm">
             <Image
               src="/images/img2.png"

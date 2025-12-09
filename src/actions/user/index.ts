@@ -2,9 +2,41 @@
 
 import { auth } from '+/lib/auth'
 import { prisma } from '+/lib/prisma'
-import { userSafeSelect, type UserTenant } from './types'
 
-export const getUserTenant = async (): Promise<UserTenant | null> => {
+export const userSafeSelect = {
+  id: true,
+  email: true,
+  emailVerified: true,
+  phone: true,
+  phoneVerified: true,
+  name: true,
+  lastName: true,
+  birthDate: true,
+  birthPlace: true,
+  address: true,
+  city: true,
+  state: true,
+  country: true,
+  postalCode: true,
+  documentType: true,
+  documentNumber: true,
+  gender: true,
+  maritalStatus: true,
+  profession: true,
+  profileImage: true,
+  disable: true,
+  timezone: true,
+  language: true,
+  emailNotifications: true,
+  smsNotifications: true,
+  createdAt: true,
+  updatedAt: true,
+  lastLoginAt: true,
+} as const
+
+export type UserSafeSelect = typeof userSafeSelect
+
+export const getUserTenant = async () => {
   const session = await auth()
 
   if (!session?.user.id) return null
@@ -33,3 +65,5 @@ export const getUserTenant = async (): Promise<UserTenant | null> => {
     throw error
   }
 }
+
+export type UserTenant = NonNullable<Awaited<ReturnType<typeof getUserTenant>>>

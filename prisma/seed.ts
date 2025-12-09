@@ -595,7 +595,7 @@ const createExtraProperties = async (adminId: string) => {
       include: { units: true },
     })
 
-    console.log(`✅ Propiedad demo creada: ${property.name} (${property.units.length} unidades)`) 
+    console.log(`✅ Propiedad demo creada: ${property.name} (${property.units.length} unidades)`)
   }
 }
 

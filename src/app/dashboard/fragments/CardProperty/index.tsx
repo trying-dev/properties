@@ -46,7 +46,7 @@ export default function CardProperty({ property }: { property: Property }) {
       `}
       >
         {/* Property Image */}
-        <div className="relative flex-shrink-0">
+        <div className="relative shrink-0">
           <div className="w-16 h-16 rounded-lg overflow-hidden bg-gray-100">
             <Image
               src="/images/img1.png"
@@ -127,7 +127,7 @@ export default function CardProperty({ property }: { property: Property }) {
         {/* Hover Arrow */}
         <div
           className={`
-          flex-shrink-0 transition-all duration-200
+          shrink-0 transition-all duration-200
           ${isHovered ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-2'}
         `}
         >

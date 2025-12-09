@@ -3,8 +3,8 @@
 import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { Home, Search, Heart, User, LogOut, ChevronDown, Building2, MessageSquare } from 'lucide-react'
-import { getUserTenant } from '+/actions/user'
-import { UserTenant } from '+/actions/user/manager'
+import { getUserTenant, type UserTenant } from '+/actions/user'
+
 import { logout } from '+/hooks/getSession'
 
 export default function TenantDashboard() {

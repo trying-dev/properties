@@ -7,8 +7,8 @@ import { useRouter } from 'next/navigation'
 
 import { CreateTenantForm } from './CreateTenantForm'
 import type { CreateTenantSubmit } from './CreateTenantForm'
-import { TenantListItem } from '+/actions/gestion-de-inquilinos/manager'
-import { createTenantAction, getTenantsAction } from '+/actions/gestion-de-inquilinos'
+
+import { createTenantAction, getTenantsAction, TenantListItem } from '+/actions/gestion-de-inquilinos'
 type GetTenantsResponse = { success: true; data: TenantListItem[] } | { success: false; error: string }
 
 const useDebouncedValue = <T,>(value: T, delay = 300): T => {
@@ -111,7 +111,9 @@ export default function SeleccionDeUsuario() {
   }
 
   const getStatusBadge = (tenant: TenantListItem) => {
-    const hasActiveContract = tenant.contracts.some((c) => c.status === ContractStatus.ACTIVE)
+    const hasActiveContract = tenant.contracts.some(
+      (c: { status: string }) => c.status === ContractStatus.ACTIVE
+    )
     if (tenant.user.disable) {
       return <span className="px-2 py-1 text-xs rounded-full bg-red-100 text-red-800">Deshabilitado</span>
     }
@@ -193,7 +195,7 @@ export default function SeleccionDeUsuario() {
                   <tr key={tenant.id} className="hover:bg-gray-50">
                     <td className="pl-6 px-3 py-4 whitespace-nowrap">
                       <div className="flex items-center">
-                        <div className="flex-shrink-0 h-10 w-10">
+                        <div className="shrink-0 h-10 w-10">
                           <div className="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center">
                             <User className="w-5 h-5 text-blue-600" />
                           </div>

@@ -19,49 +19,50 @@ import { PropertyWithRelations } from '+/actions/property'
 import { AdminLevel, DocumentType, Gender, MaritalStatus } from '@prisma/client'
 import { formatAdminLevel } from '../utils'
 
+type IconType = ComponentType<SVGProps<SVGSVGElement>>
+
+const Card = ({ children, className = '' }: { children: ReactNode; className?: string }) => (
+  <div
+    className={`bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-shadow duration-200 ${className}`}
+  >
+    {children}
+  </div>
+)
+
+const CardHeader = ({ children, className = '' }: { children: ReactNode; className?: string }) => (
+  <div className={`px-6 py-4 border-b border-gray-100 ${className}`}>{children}</div>
+)
+
+const CardContent = ({ children, className = '' }: { children: ReactNode; className?: string }) => (
+  <div className={`px-6 py-4 ${className}`}>{children}</div>
+)
+
+const InfoRow = ({
+  icon: Icon,
+  label,
+  value,
+  iconColor = 'text-gray-400',
+}: {
+  icon: IconType
+  label: string
+  value?: ReactNode
+  iconColor?: string
+}) => (
+  <div className="flex items-center justify-between py-2 border-b border-gray-50 last:border-b-0">
+    <div className="flex items-center">
+      <Icon className={`h-4 w-4 ${iconColor} mr-3`} />
+      <span className="text-gray-600">{label}:</span>
+    </div>
+    <span className="font-medium text-gray-900">{value || 'N/A'}</span>
+  </div>
+)
+
 export const ExpandablePropertyAdmin = ({ property }: { property: NonNullable<PropertyWithRelations> }) => {
   const [isExpanded, setIsExpanded] = useState(false)
 
   const admin = property?.admin
 
   if (!admin) return null
-
-  // Componentes auxiliares
-  const Card = ({ children, className = '' }: { children: ReactNode; className?: string }) => (
-    <div
-      className={`bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-shadow duration-200 ${className}`}
-    >
-      {children}
-    </div>
-  )
-
-  const CardHeader = ({ children, className = '' }: { children: ReactNode; className?: string }) => (
-    <div className={`px-6 py-4 border-b border-gray-100 ${className}`}>{children}</div>
-  )
-
-  const CardContent = ({ children, className = '' }: { children: ReactNode; className?: string }) => (
-    <div className={`px-6 py-4 ${className}`}>{children}</div>
-  )
-
-  const InfoRow = ({
-    icon: Icon,
-    label,
-    value,
-    iconColor = 'text-gray-400',
-  }: {
-    icon: ComponentType<SVGProps<SVGSVGElement>>
-    label: string
-    value?: ReactNode
-    iconColor?: string
-  }) => (
-    <div className="flex items-center justify-between py-2 border-b border-gray-50 last:border-b-0">
-      <div className="flex items-center">
-        <Icon className={`h-4 w-4 ${iconColor} mr-3`} />
-        <span className="text-gray-600">{label}:</span>
-      </div>
-      <span className="font-medium text-gray-900">{value || 'N/A'}</span>
-    </div>
-  )
 
   const formatDocumentType = (type: DocumentType) => {
     const types = {

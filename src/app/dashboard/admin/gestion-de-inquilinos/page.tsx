@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef, type FormEvent } from 'react'
+import { useState, useEffect, useRef, type FormEvent, useCallback } from 'react'
 import type { DocumentType, Gender, MaritalStatus } from '@prisma/client'
 import {
   Search,
@@ -105,7 +105,10 @@ const CreateTenantForm = ({ isOpen, onClose, onSubmit }: CreateTenantFormProps) 
 
   const [references, setReferences] = useState<ReferenceEntry[]>([{ name: '', phone: '', relationship: '' }])
 
-  const handleInputChange = <K extends keyof CreateTenantFormValues>(field: K, value: CreateTenantFormValues[K]) => {
+  const handleInputChange = <K extends keyof CreateTenantFormValues>(
+    field: K,
+    value: CreateTenantFormValues[K]
+  ) => {
     setFormData((prev) => ({ ...prev, [field]: value }))
   }
 
@@ -117,7 +120,11 @@ const CreateTenantForm = ({ isOpen, onClose, onSubmit }: CreateTenantFormProps) 
     setReferences((prev) => prev.filter((_, i) => i !== index))
   }
 
-  const updateReference = <K extends keyof ReferenceEntry>(index: number, field: K, value: ReferenceEntry[K]) => {
+  const updateReference = <K extends keyof ReferenceEntry>(
+    index: number,
+    field: K,
+    value: ReferenceEntry[K]
+  ) => {
     setReferences((prev) => prev.map((ref, i) => (i === index ? { ...ref, [field]: value } : ref)))
   }
 
@@ -185,9 +192,8 @@ const CreateTenantForm = ({ isOpen, onClose, onSubmit }: CreateTenantFormProps) 
   }
 
   useEffect(() => {
-    if (!isOpen) {
-      resetForm()
-    }
+    if (isOpen) return
+    return () => resetForm()
   }, [isOpen])
 
   if (!isOpen) return null
@@ -559,13 +565,13 @@ export default function TenantsManagement() {
   // Para evitar condiciones de carrera
   const reqCounter = useRef(0)
 
-  const loadTenants = async () => {
+  const loadTenants = useCallback(async () => {
     setLoading(true)
     const currentReq = ++reqCounter.current
 
     try {
       const cleanFilters = Object.fromEntries(
-        Object.entries(filters).filter(([_, value]) => value !== '' && value !== null)
+        Object.entries(filters).filter(([, value]) => value !== '' && value !== null)
       ) as Parameters<typeof getTenantsAction>[0]
 
       const result = await getTenantsAction(cleanFilters)
@@ -588,7 +594,7 @@ export default function TenantsManagement() {
         setLoading(false)
       }
     }
-  }
+  }, [filters])
 
   const loadStats = async () => {
     try {
@@ -607,7 +613,7 @@ export default function TenantsManagement() {
   useEffect(() => {
     loadTenants()
     loadStats()
-  }, [])
+  }, [loadTenants])
 
   // Auto-buscar con debounce
   useEffect(() => {
@@ -615,7 +621,7 @@ export default function TenantsManagement() {
       loadTenants()
     }, 300)
     return () => clearTimeout(timer)
-  }, [filters])
+  }, [filters, loadTenants])
 
   const handleFilterChange = <K extends keyof TenantFilters>(key: K, value: TenantFilters[K]) => {
     setFilters((prev) => ({
@@ -671,11 +677,6 @@ export default function TenantsManagement() {
       currency: 'COP',
       minimumFractionDigits: 0,
     }).format(amount)
-  }
-
-  const formatDate = (date?: string | Date | null) => {
-    if (!date) return 'No especificado'
-    return new Date(date).toLocaleDateString('es-CO')
   }
 
   const getDocumentTypeLabel = (type: string) => {
@@ -876,7 +877,7 @@ export default function TenantsManagement() {
                   <tr key={tenant.id} className="hover:bg-gray-50">
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center">
-                        <div className="flex-shrink-0 h-10 w-10">
+                        <div className="shrink-0 h-10 w-10">
                           <div className="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center">
                             <User className="w-5 h-5 text-blue-600" />
                           </div>

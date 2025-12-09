@@ -70,6 +70,8 @@ export const getTenantsAction = async (filters?: {
   }
 }
 
+export type TenantListItem = NonNullable<Awaited<ReturnType<typeof getTenantsAction>>['data']>[number]
+
 export const getTenantByIdAction = async (tenantId: string) => {
   try {
     const tenant = await prisma.tenant.findUnique({

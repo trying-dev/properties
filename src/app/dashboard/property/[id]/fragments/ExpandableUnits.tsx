@@ -35,69 +35,71 @@ import { PropertyWithRelations } from '+/actions/property'
 import { PaymentMethod, PaymentStatus, UnitStatus } from '@prisma/client'
 import { formatAdminLevel } from '../utils'
 
+type IconType = ComponentType<SVGProps<SVGSVGElement>>
+
+const Card = ({ children, className = '' }: { children: ReactNode; className?: string }) => (
+  <div
+    className={`bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-shadow duration-200 ${className}`}
+  >
+    {children}
+  </div>
+)
+
+const CardHeader = ({ children, className = '' }: { children: ReactNode; className?: string }) => (
+  <div className={`px-6 py-4 border-b border-gray-100 ${className}`}>{children}</div>
+)
+
+const CardContent = ({ children, className = '' }: { children: ReactNode; className?: string }) => (
+  <div className={`px-6 py-4 ${className}`}>{children}</div>
+)
+
+const FeatureIcon = ({
+  icon: Icon,
+  label,
+  enabled,
+  enabledColor = 'text-green-600',
+  disabledColor = 'text-gray-400',
+}: {
+  icon: IconType
+  label: string
+  enabled?: boolean
+  enabledColor?: string
+  disabledColor?: string
+}) => (
+  <div className="flex items-center space-x-2">
+    <Icon className={`h-4 w-4 ${enabled ? enabledColor : disabledColor}`} />
+    <span className={`text-sm ${enabled ? 'text-gray-900' : 'text-gray-500'}`}>{label}</span>
+    {enabled && <CheckCircle className="h-3 w-3 text-green-500" />}
+    {!enabled && <XCircle className="h-3 w-3 text-gray-400" />}
+  </div>
+)
+
+const InfoRow = ({
+  icon: Icon,
+  label,
+  value,
+  iconColor = 'text-gray-400',
+}: {
+  icon: IconType
+  label: string
+  value?: ReactNode
+  iconColor?: string
+}) => (
+  <div className="flex items-center justify-between py-2 border-b border-gray-50 last:border-b-0">
+    <div className="flex items-center">
+      <Icon className={`h-4 w-4 ${iconColor} mr-3`} />
+      <span className="text-gray-600">{label}:</span>
+    </div>
+    <span className="font-medium text-gray-900">{value || 'N/A'}</span>
+  </div>
+)
+
 export const ExpandableUnits = ({ property }: { property?: NonNullable<PropertyWithRelations> }) => {
   const [expandedUnits, setExpandedUnits] = useState(new Set())
 
   const units = property?.units
 
   if (!units) return null
-
-  const Card = ({ children, className = '' }: { children: ReactNode; className?: string }) => (
-    <div
-      className={`bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-shadow duration-200 ${className}`}
-    >
-      {children}
-    </div>
-  )
-
-  const CardHeader = ({ children, className = '' }: { children: ReactNode; className?: string }) => (
-    <div className={`px-6 py-4 border-b border-gray-100 ${className}`}>{children}</div>
-  )
-
-  const CardContent = ({ children, className = '' }: { children: ReactNode; className?: string }) => (
-    <div className={`px-6 py-4 ${className}`}>{children}</div>
-  )
-
-  const FeatureIcon = ({
-    icon: Icon,
-    label,
-    enabled,
-    enabledColor = 'text-green-600',
-    disabledColor = 'text-gray-400',
-  }: {
-    icon: ComponentType<SVGProps<SVGSVGElement>>
-    label: string
-    enabled?: boolean
-    enabledColor?: string
-    disabledColor?: string
-  }) => (
-    <div className="flex items-center space-x-2">
-      <Icon className={`h-4 w-4 ${enabled ? enabledColor : disabledColor}`} />
-      <span className={`text-sm ${enabled ? 'text-gray-900' : 'text-gray-500'}`}>{label}</span>
-      {enabled && <CheckCircle className="h-3 w-3 text-green-500" />}
-      {!enabled && <XCircle className="h-3 w-3 text-gray-400" />}
-    </div>
-  )
-
-  const InfoRow = ({
-    icon: Icon,
-    label,
-    value,
-    iconColor = 'text-gray-400',
-  }: {
-    icon: ComponentType<SVGProps<SVGSVGElement>>
-    label: string
-    value?: ReactNode
-    iconColor?: string
-  }) => (
-    <div className="flex items-center justify-between py-2 border-b border-gray-50 last:border-b-0">
-      <div className="flex items-center">
-        <Icon className={`h-4 w-4 ${iconColor} mr-3`} />
-        <span className="text-gray-600">{label}:</span>
-      </div>
-      <span className="font-medium text-gray-900">{value || 'N/A'}</span>
-    </div>
-  )
 
   // Función para obtener el estado del último pago
   const getPaymentStatus = (
@@ -607,7 +609,7 @@ export const ExpandableUnits = ({ property }: { property?: NonNullable<PropertyW
                                           key={payment.id}
                                           className="text-xs text-gray-600 flex items-start"
                                         >
-                                          <AlertCircle className="h-3 w-3 text-orange-500 mr-1 mt-0.5 flex-shrink-0" />
+                                          <AlertCircle className="h-3 w-3 text-orange-500 mr-1 mt-0.5 shrink-0" />
                                           <div>
                                             <span className="font-medium">
                                               {new Date(payment.dueDate).toLocaleDateString('es-CO')}:

@@ -105,18 +105,7 @@ export const getPropertiesWithAvailableUnits = async () =>
     orderBy: [{ city: 'asc' }, { neighborhood: 'asc' }, { name: 'asc' }],
   })
 
-export const reserveUnit = async ({
-  unitId,
-  tenantData,
-}: {
-  unitId: string
-  tenantData: {
-    tenantName: string
-    tenantEmail: string
-    startDate: Date
-    notes?: string
-  }
-}) => {
+export const reserveUnit = async ({ unitId }: { unitId: string }) => {
   const unit = await prisma.unit.findUnique({
     where: { id: unitId },
     select: {
@@ -220,17 +209,9 @@ export const getPropertiesWithAvailableUnitsAction = async () => {
   }
 }
 
-export const reserveUnitAction = async (
-  unitId: string,
-  tenantData: {
-    tenantName: string
-    tenantEmail: string
-    startDate: Date
-    notes?: string
-  }
-) => {
+export const reserveUnitAction = async (unitId: string) => {
   try {
-    const reservedUnit = await reserveUnit({ unitId, tenantData })
+    const reservedUnit = await reserveUnit({ unitId })
 
     // No usar la cache
     revalidatePath('/dashboard/units')

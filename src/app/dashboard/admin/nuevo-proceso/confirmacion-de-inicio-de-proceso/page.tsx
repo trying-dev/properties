@@ -18,9 +18,9 @@ import {
 import {
   getProcessDetailsAction,
   initializeContractAction,
+  ProcessDetails,
 } from '+/actions/confirmacion-de-inicio-de-proceso'
 import { useSession } from '+/hooks/useSession'
-import { ProcessDetails } from '+/actions/confirmacion-de-inicio-de-proceso/manager'
 
 export default function ConfirmacionDeInicioDeProceso() {
   const router = useRouter()
