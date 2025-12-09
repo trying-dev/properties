@@ -19,17 +19,17 @@ export default function Footer() {
             <h4 className="font-semibold text-gray-900 mb-4">Explorar</h4>
             <ul className="space-y-2 text-sm text-gray-600">
               <li>
-                <Link href="/propiedades" className="hover:text-gray-900">
+                <Link href="/" className="hover:text-gray-900">
                   Buscar propiedades
                 </Link>
               </li>
               <li>
-                <Link href="/sobre-nosotros" className="hover:text-gray-900">
+                <Link href="/" className="hover:text-gray-900">
                   Sobre nosotros
                 </Link>
               </li>
               <li>
-                <Link href="/contacto" className="hover:text-gray-900">
+                <Link href="/" className="hover:text-gray-900">
                   Contacto
                 </Link>
               </li>
@@ -39,12 +39,12 @@ export default function Footer() {
             <h4 className="font-semibold text-gray-900 mb-4">Legal</h4>
             <ul className="space-y-2 text-sm text-gray-600">
               <li>
-                <Link href="/terminos" className="hover:text-gray-900">
+                <Link href="/" className="hover:text-gray-900">
                   Términos y condiciones
                 </Link>
               </li>
               <li>
-                <Link href="/privacidad" className="hover:text-gray-900">
+                <Link href="/" className="hover:text-gray-900">
                   Política de privacidad
                 </Link>
               </li>

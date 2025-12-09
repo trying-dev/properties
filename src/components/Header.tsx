@@ -14,10 +14,10 @@ export default function Header() {
           </Link>
 
           <nav className="hidden md:flex items-center space-x-8">
-            <Link href="/propiedades" className="text-sm font-medium text-gray-900 hover:text-gray-700">
+            <Link href="/" className="text-sm font-medium text-gray-900 hover:text-gray-700">
               Buscar
             </Link>
-            <Link href="/sobre-nosotros" className="text-sm font-medium text-gray-600 hover:text-gray-900">
+            <Link href="/" className="text-sm font-medium text-gray-600 hover:text-gray-900">
               Sobre Nosotros
             </Link>
           </nav>
