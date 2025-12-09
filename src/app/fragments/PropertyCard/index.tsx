@@ -43,7 +43,7 @@ export default function PropertyCard({ unit, index }: PropertyCardProps) {
   return (
     <Link
       key={unit.id}
-      href={`/propiedades/${unit.id}`}
+      href={`/units/${unit.id}`}
       className="bg-white border border-gray-200 rounded-2xl overflow-hidden hover:shadow-xl transition-all group"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}

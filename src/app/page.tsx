@@ -2,9 +2,11 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
-import { Home, Search, SlidersHorizontal } from 'lucide-react'
+import { Search, SlidersHorizontal } from 'lucide-react'
 import { AvailableUnit, getAvailableUnitsAction } from '+/actions/nuevo-proceso'
 import PropertyCard from './fragments/PropertyCard'
+import Header from '+/components/Header'
+import Footer from '+/components/Footer'
 
 export default function PropertiesCatalog() {
   const [units, setUnits] = useState<AvailableUnit[]>([])
@@ -44,43 +46,7 @@ export default function PropertiesCatalog() {
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Header */}
-      <header className="border-b border-gray-200 bg-white sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            {/* Logo */}
-            <Link href="/" className="flex items-center space-x-3">
-              <div className="w-8 h-8 bg-gray-900 flex items-center justify-center">
-                <Home className="h-5 w-5 text-white" />
-              </div>
-              <span className="text-xl font-semibold text-gray-900">Properties</span>
-            </Link>
-
-            {/* Navigation */}
-            <nav className="hidden md:flex items-center space-x-8">
-              <Link href="/propiedades" className="text-sm font-medium text-gray-900">
-                Buscar
-              </Link>
-              <Link href="/sobre-nosotros" className="text-sm font-medium text-gray-600 hover:text-gray-900">
-                Sobre Nosotros
-              </Link>
-            </nav>
-
-            {/* Auth Buttons */}
-            <div className="flex items-center space-x-4">
-              <Link href="/auth" className="text-sm font-medium text-gray-900 hover:text-gray-700">
-                Registrarse
-              </Link>
-              <Link
-                href="/auth"
-                className="bg-gray-900 hover:bg-gray-800 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors"
-              >
-                Iniciar sesión
-              </Link>
-            </div>
-          </div>
-        </div>
-      </header>
+      <Header />
 
       {/* Hero Section with Search */}
       <section className="bg-linear-to-b from-gray-50 to-white border-b border-gray-200">
@@ -251,68 +217,7 @@ export default function PropertiesCatalog() {
         )}
       </section>
 
-      {/* Footer */}
-      <footer className="border-t border-gray-200 bg-gray-50 mt-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-            <div>
-              <div className="flex items-center space-x-3 mb-4">
-                <div className="w-8 h-8 bg-gray-900 flex items-center justify-center">
-                  <Home className="h-5 w-5 text-white" />
-                </div>
-                <span className="text-lg font-semibold text-gray-900">Properties</span>
-              </div>
-              <p className="text-sm text-gray-600">Encuentra tu próximo hogar con nosotros</p>
-            </div>
-            <div>
-              <h4 className="font-semibold text-gray-900 mb-4">Explorar</h4>
-              <ul className="space-y-2 text-sm text-gray-600">
-                <li>
-                  <Link href="/propiedades" className="hover:text-gray-900">
-                    Buscar propiedades
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/sobre-nosotros" className="hover:text-gray-900">
-                    Sobre nosotros
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/contacto" className="hover:text-gray-900">
-                    Contacto
-                  </Link>
-                </li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="font-semibold text-gray-900 mb-4">Legal</h4>
-              <ul className="space-y-2 text-sm text-gray-600">
-                <li>
-                  <Link href="/terminos" className="hover:text-gray-900">
-                    Términos y condiciones
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/privacidad" className="hover:text-gray-900">
-                    Política de privacidad
-                  </Link>
-                </li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="font-semibold text-gray-900 mb-4">Contacto</h4>
-              <ul className="space-y-2 text-sm text-gray-600">
-                <li>Email: info@properties.com</li>
-                <li>Tel: +57 300 123 4567</li>
-                <li>Lun - Vie: 8AM - 6PM</li>
-              </ul>
-            </div>
-          </div>
-          <div className="mt-8 pt-8 border-t border-gray-200 text-center text-sm text-gray-600">
-            <p>© 2025 Properties. Todos los derechos reservados.</p>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </div>
   )
 }

@@ -341,6 +341,7 @@ model Unit {
     // Información adicional
     description String? // postgres @db.Text
     images      String // String[] // URLs de imágenes
+    highlights  Json?
 
     // Última inspección
     lastInspectionDate DateTime?
