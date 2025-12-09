@@ -409,7 +409,11 @@ const createPropertyAndUnits = async (adminId: string) => {
       baseRent: 2_500_000,
       deposit: 7_500_000,
       description: 'Local comercial de 45 m² con excelente ubicación y vitrina.',
-      images: JSON.stringify(['https://ejemplo.com/local1.jpg']),
+      images: JSON.stringify([
+        'https://picsum.photos/seed/local101a/800/600',
+        'https://picsum.photos/seed/local101b/800/600',
+        'https://picsum.photos/seed/local101c/800/600',
+      ]),
       lastInspectionDate: new Date('2024-01-01'),
     },
   })
@@ -429,7 +433,11 @@ const createPropertyAndUnits = async (adminId: string) => {
       gasIncluded: true,
       status: UnitStatus.OCCUPIED,
       description: 'Local para oficina de 60 m². Baño privado y entrada independiente.',
-      images: JSON.stringify(['https://ejemplo.com/local2.jpg']),
+      images: JSON.stringify([
+        'https://picsum.photos/seed/local102a/800/600',
+        'https://picsum.photos/seed/local102b/800/600',
+        'https://picsum.photos/seed/local102c/800/600',
+      ]),
       lastInspectionDate: new Date('2024-01-10'),
     },
   })
@@ -450,7 +458,11 @@ const createPropertyAndUnits = async (adminId: string) => {
       deposit: 3_600_000,
       status: UnitStatus.OCCUPIED,
       description: 'Apartamento amplio con 2 habitaciones, vista al parque.',
-      images: JSON.stringify(['https://ejemplo.com/apt1.jpg']),
+      images: JSON.stringify([
+        'https://picsum.photos/seed/apto201a/800/600',
+        'https://picsum.photos/seed/apto201b/800/600',
+        'https://picsum.photos/seed/apto201c/800/600',
+      ]),
       lastInspectionDate: new Date('2024-03-01'),
     },
   })
@@ -471,7 +483,11 @@ const createPropertyAndUnits = async (adminId: string) => {
       deposit: 4_400_000,
       status: UnitStatus.OCCUPIED,
       description: 'Apartamento totalmente amoblado. Vista panorámica.',
-      images: JSON.stringify(['https://ejemplo.com/apt2.jpg']),
+      images: JSON.stringify([
+        'https://picsum.photos/seed/apto202a/800/600',
+        'https://picsum.photos/seed/apto202b/800/600',
+        'https://picsum.photos/seed/apto202c/800/600',
+      ]),
       lastInspectionDate: new Date('2024-03-15'),
     },
   })
@@ -506,7 +522,11 @@ const createExtraProperties = async (adminId: string) => {
           baseRent: 1_400_000,
           deposit: 1_400_000,
           description: 'Apto 1H/1B cerca a comercio y parques',
-          images: JSON.stringify(['https://picsum.photos/seed/extrae1101/800/600']),
+          images: JSON.stringify([
+            'https://picsum.photos/seed/extrae1101a/800/600',
+            'https://picsum.photos/seed/extrae1101b/800/600',
+            'https://picsum.photos/seed/extrae1101c/800/600',
+          ]),
         },
         {
           unitNumber: 'E1-201',
@@ -520,7 +540,11 @@ const createExtraProperties = async (adminId: string) => {
           baseRent: 1_800_000,
           deposit: 1_800_000,
           description: 'Apto 2H/1B amoblado, listo para mudarse',
-          images: JSON.stringify(['https://picsum.photos/seed/extrae1201/800/600']),
+          images: JSON.stringify([
+            'https://picsum.photos/seed/extrae1201a/800/600',
+            'https://picsum.photos/seed/extrae1201b/800/600',
+            'https://picsum.photos/seed/extrae1201c/800/600',
+          ]),
         },
       ],
     },
@@ -542,7 +566,11 @@ const createExtraProperties = async (adminId: string) => {
           baseRent: 2_000_000,
           deposit: 2_000_000,
           description: 'Apto 2H/1B con balcón y vista',
-          images: JSON.stringify(['https://picsum.photos/seed/extrae2101/800/600']),
+          images: JSON.stringify([
+            'https://picsum.photos/seed/extrae2101a/800/600',
+            'https://picsum.photos/seed/extrae2101b/800/600',
+            'https://picsum.photos/seed/extrae2101c/800/600',
+          ]),
         },
         {
           unitNumber: 'E2-201',
@@ -556,7 +584,11 @@ const createExtraProperties = async (adminId: string) => {
           baseRent: 2_600_000,
           deposit: 2_600_000,
           description: 'Apto 3H/2B amplio, ideal familias',
-          images: JSON.stringify(['https://picsum.photos/seed/extrae2201/800/600']),
+          images: JSON.stringify([
+            'https://picsum.photos/seed/extrae2201a/800/600',
+            'https://picsum.photos/seed/extrae2201b/800/600',
+            'https://picsum.photos/seed/extrae2201c/800/600',
+          ]),
         },
       ],
     },

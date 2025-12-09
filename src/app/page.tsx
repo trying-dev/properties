@@ -1,10 +1,10 @@
 'use client'
 
 import { useEffect, useMemo, useState } from 'react'
-import Image from 'next/image'
 import Link from 'next/link'
-import { Home, Search, MapPin, Bed, Bath, Maximize, Heart, SlidersHorizontal } from 'lucide-react'
+import { Home, Search, SlidersHorizontal } from 'lucide-react'
 import { AvailableUnit, getAvailableUnitsAction } from '+/actions/nuevo-proceso'
+import PropertyCard from './fragments/PropertyCard'
 
 export default function PropertiesCatalog() {
   const [units, setUnits] = useState<AvailableUnit[]>([])
@@ -41,13 +41,6 @@ export default function PropertiesCatalog() {
       return matchesSearch && matchesPrice && matchesBedrooms && matchesCity
     })
   }, [units, searchQuery, filters])
-
-  const formatCurrency = (amount?: number | null) =>
-    new Intl.NumberFormat('es-CO', {
-      style: 'currency',
-      currency: 'COP',
-      minimumFractionDigits: 0,
-    }).format(amount ?? 0)
 
   return (
     <div className="min-h-screen bg-white">
@@ -234,83 +227,9 @@ export default function PropertiesCatalog() {
 
         {/* Properties Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredUnits.map((unit, index) => {
-            const image = (() => {
-              try {
-                const parsed = unit.images ? (JSON.parse(unit.images) as string[]) : []
-                return parsed[0] ?? '/placeholder-apartment.jpg'
-              } catch {
-                return '/placeholder-apartment.jpg'
-              }
-            })()
-
-            return (
-              <Link
-                key={unit.id}
-                href={`/propiedades/${unit.id}`}
-                className="bg-white border border-gray-200 rounded-lg overflow-hidden hover:border-gray-400 hover:shadow-lg transition-all group"
-              >
-                {/* Property Image */}
-                <div className="relative h-48 bg-gray-200">
-                  <Image
-                    src={image}
-                    alt={unit.property.name}
-                    fill
-                    sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
-                    className="object-cover transition-transform duration-300 group-hover:scale-105"
-                    priority={index < 3}
-                  />
-                  {/* Favorite Button */}
-                  <button
-                    onClick={(e) => {
-                      e.preventDefault()
-                    }}
-                    className="absolute top-3 right-3 w-10 h-10 bg-white rounded-full flex items-center justify-center hover:bg-gray-50 shadow-md"
-                  >
-                    <Heart className="h-5 w-5 text-gray-600" />
-                  </button>
-                </div>
-
-                {/* Property Info */}
-                <div className="p-4">
-                  <div className="mb-3">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-1 group-hover:text-gray-700">
-                      {unit.property.name} - Unidad {unit.unitNumber}
-                    </h3>
-                    <p className="text-sm text-gray-600 flex items-center">
-                      <MapPin className="h-4 w-4 mr-1" />
-                      {unit.property.street} {unit.property.number}, {unit.property.neighborhood}
-                    </p>
-                  </div>
-
-                  <div className="flex items-center space-x-4 text-sm text-gray-600 mb-3">
-                    <span className="flex items-center">
-                      <Bed className="h-4 w-4 mr-1" />
-                      {unit.bedrooms}
-                    </span>
-                    <span className="flex items-center">
-                      <Bath className="h-4 w-4 mr-1" />
-                      {unit.bathrooms}
-                    </span>
-                    <span className="flex items-center">
-                      <Maximize className="h-4 w-4 mr-1" />
-                      {unit.area ? `${unit.area}m²` : 'N/A'}
-                    </span>
-                  </div>
-
-                  <div className="flex items-center justify-between pt-3 border-t border-gray-100">
-                    <div>
-                      <p className="text-xs text-gray-500">Renta mensual</p>
-                      <p className="text-xl font-bold text-gray-900">{formatCurrency(unit.baseRent)}</p>
-                    </div>
-                    <button className="text-sm font-medium text-gray-900 hover:text-gray-700">
-                      Ver detalles →
-                    </button>
-                  </div>
-                </div>
-              </Link>
-            )
-          })}
+          {filteredUnits.map((unit, index) => (
+            <PropertyCard key={unit.id} unit={unit} index={index} />
+          ))}
         </div>
 
         {/* Empty State */}
