@@ -23,5 +23,6 @@ export const getUserRole = async () => {
 }
 
 export const logout = async () => {
-  await signOut({ redirectTo: '/' })
+  // Solo limpiar sesión; el redireccionamiento se maneja en el cliente
+  await signOut({ redirectTo: '/', redirect: false })
 }

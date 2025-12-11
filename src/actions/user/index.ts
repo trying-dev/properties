@@ -3,7 +3,7 @@
 import { auth } from '+/lib/auth'
 import { prisma } from '+/lib/prisma'
 
-export const userSafeSelect = {
+const userSafeSelect = {
   id: true,
   email: true,
   emailVerified: true,

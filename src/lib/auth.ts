@@ -91,13 +91,8 @@ export const authConfig: NextAuthConfig = {
     authorized({ auth, request: { nextUrl } }) {
       const { pathname } = nextUrl
 
-      // Solo rutas públicas vs protegidas
-      if (!pathname.startsWith('/dashboard')) {
-        if (auth?.user && pathname === '/') {
-          return Response.redirect(new URL('/dashboard', nextUrl))
-        }
-        return true
-      }
+      // Solo proteger dashboard, dejar el resto (incluido "/") accesible aunque haya sesión
+      if (!pathname.startsWith('/dashboard')) return true
 
       return !!auth?.user // Dashboard requiere login
     },

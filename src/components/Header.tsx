@@ -1,7 +1,43 @@
+'use client'
+
+import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
-import { Home } from 'lucide-react'
+import { useRouter } from 'next/navigation'
+import { ChevronDown, Home, LogOut } from 'lucide-react'
+
+import { logout } from '+/hooks/getSession'
+import { useSession } from '+/hooks/useSession'
 
 export default function Header() {
+  const router = useRouter()
+  const { user, status, clearSession, refreshSession } = useSession()
+  const [open, setOpen] = useState(false)
+  const menuRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setOpen(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [])
+
+  const handleLogout = async () => {
+    await logout()
+    clearSession()
+    setOpen(false)
+    await refreshSession()
+    router.push('/')
+    router.refresh()
+  }
+
+  const isAuthenticated = status === 'authenticated'
+  const isLoadingSession = status === 'loading'
+  const initials = user?.name?.charAt(0)?.toUpperCase() || 'U'
+  const dashboardHref = user?.role === 'admin' ? '/dashboard/admin' : '/dashboard/tenant'
+
   return (
     <header className="border-b border-gray-200 bg-white sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -14,7 +50,7 @@ export default function Header() {
           </Link>
 
           <nav className="hidden md:flex items-center space-x-8">
-            <Link href="/" className="text-sm font-medium text-gray-900 hover:text-gray-700">
+            <Link href="/propiedades" className="text-sm font-medium text-gray-900 hover:text-gray-700">
               Buscar
             </Link>
             <Link href="/" className="text-sm font-medium text-gray-600 hover:text-gray-900">
@@ -22,17 +58,59 @@ export default function Header() {
             </Link>
           </nav>
 
-          <div className="flex items-center space-x-4">
-            <Link href="/auth" className="text-sm font-medium text-gray-900 hover:text-gray-700">
-              Registrarse
-            </Link>
-            <Link
-              href="/auth"
-              className="bg-gray-900 hover:bg-gray-800 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors"
-            >
-              Iniciar sesión
-            </Link>
-          </div>
+          {isLoadingSession ? (
+            <div className="w-28 h-9 rounded-md bg-gray-100 animate-pulse" />
+          ) : isAuthenticated ? (
+            <div className="relative" ref={menuRef}>
+              <button
+                onClick={() => setOpen((prev) => !prev)}
+                className="flex items-center space-x-3 hover:bg-gray-50 px-3 py-2 rounded-lg transition-colors"
+              >
+                <span className="text-sm font-medium text-gray-900 hidden sm:block">{user?.name}</span>
+                <div className="w-9 h-9 bg-gray-200 rounded-full flex items-center justify-center">
+                  <span className="text-sm font-semibold text-gray-700">{initials}</span>
+                </div>
+                <ChevronDown
+                  className={`h-4 w-4 text-gray-600 transition-transform ${open ? 'rotate-180' : ''}`}
+                />
+              </button>
+
+              {open && (
+                <div className="absolute right-0 mt-2 w-64 bg-white border border-gray-200 rounded-lg shadow-lg py-2">
+                  <div className="px-4 py-3 border-b border-gray-100">
+                    <p className="text-sm font-medium text-gray-900">{user?.name}</p>
+                    <p className="text-xs text-gray-500 mt-1">{user?.email}</p>
+                  </div>
+                  <Link
+                    href={dashboardHref}
+                    onClick={() => setOpen(false)}
+                    className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                  >
+                    Ir a mi perfil
+                  </Link>
+                  <button
+                    onClick={handleLogout}
+                    className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center space-x-2"
+                  >
+                    <LogOut className="h-4 w-4" />
+                    <span>Cerrar sesión</span>
+                  </button>
+                </div>
+              )}
+            </div>
+          ) : (
+            <div className="flex items-center space-x-4">
+              <Link href="/auth" className="text-sm font-medium text-gray-900 hover:text-gray-700">
+                Registrarse
+              </Link>
+              <Link
+                href="/auth"
+                className="bg-gray-900 hover:bg-gray-800 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors"
+              >
+                Iniciar sesión
+              </Link>
+            </div>
+          )}
         </div>
       </div>
     </header>

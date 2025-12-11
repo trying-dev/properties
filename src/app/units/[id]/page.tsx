@@ -22,6 +22,7 @@ import {
 import { getUnitByIdAction } from '+/actions/nuevo-proceso'
 import Header from '+/components/Header'
 import Footer from '+/components/Footer'
+import { auth } from '+/lib/auth'
 import Gallery from './gallery'
 
 const formatPrice = (amount?: number | null) =>
@@ -45,7 +46,7 @@ export default async function UnitDetailPage({ params }: { params: Promise<{ id:
     notFound()
   }
 
-  const result = await getUnitByIdAction(id)
+  const [result, session] = await Promise.all([getUnitByIdAction(id), auth()])
 
   if (!result.success || !result.data) {
     notFound()
@@ -114,6 +115,7 @@ export default async function UnitDetailPage({ params }: { params: Promise<{ id:
 
   const visibleFeatures = featureFlags.filter(({ key }) => Boolean((unit as Record<string, unknown>)[key]))
   const highlights = normalizeHighlights((unit as Record<string, unknown>).highlights, unit.property.name)
+  const reservationHref = session?.user ? '/aplication' : '/auth'
 
   return (
     <div className="min-h-screen bg-white">
@@ -191,7 +193,7 @@ export default async function UnitDetailPage({ params }: { params: Promise<{ id:
                 </button>
               </div>
               <Link
-                href="/auth"
+                href={reservationHref}
                 className="w-full inline-flex justify-center bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg transition"
               >
                 Reservar

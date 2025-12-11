@@ -112,20 +112,6 @@ export default async function proxy(request: NextRequest) {
     console.log(`✅ Acceso permitido`)
   }
 
-  if (session && pathname === '/') {
-    const userRole = session.user.role as UserRole
-    let redirectUrl = '/dashboard'
-
-    if (userRole === 'admin') {
-      redirectUrl = '/dashboard/admin'
-    } else if (userRole === 'tenant') {
-      redirectUrl = '/dashboard/tenant'
-    }
-
-    console.log(`🔄 Usuario ${userRole} redirigido a ${redirectUrl}`)
-    return NextResponse.redirect(new URL(redirectUrl, request.url))
-  }
-
   return NextResponse.next()
 }
 
