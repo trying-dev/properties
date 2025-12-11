@@ -3,8 +3,41 @@
 import { useState } from 'react'
 import { Check, Upload, FileText, Zap, ArrowLeft, ArrowRight, CheckCircle2 } from 'lucide-react'
 
+type FieldType = 'file' | 'text' | 'tel' | 'checkbox' | 'number'
+
+type Field = {
+  id: string
+  label: string
+  type: FieldType
+  accept?: string
+  multiple?: boolean
+  required?: boolean
+}
+
+type ProfileConfig = {
+  emoji: string
+  name: string
+  deposit: string
+  fields: Field[]
+}
+
+type UploadedDocsState = Record<string, FileList | File[] | undefined>
+
+const profileIds = [
+  'formal',
+  'independent',
+  'retired',
+  'entrepreneur',
+  'investor',
+  'student',
+  'foreignLocal',
+  'nomad',
+] as const
+
+type ProfileId = (typeof profileIds)[number]
+
 const ApplicationForm = () => {
-  const [selectedProfile, setSelectedProfile] = useState('')
+  const [selectedProfile, setSelectedProfile] = useState<ProfileId | ''>('')
   const [selectedSecurity, setSelectedSecurity] = useState('')
   const [acceptedDeposit, setAcceptedDeposit] = useState(false)
   const [activeStep, setActiveStep] = useState(1)
@@ -15,10 +48,13 @@ const ApplicationForm = () => {
     monthlyIncome: '',
     rentBudget: '',
   })
-  const [uploadedDocs, setUploadedDocs] = useState({})
+  const [uploadedDocs, setUploadedDocs] = useState<UploadedDocsState>({})
 
   // Mock Data por perfil
-  const mockDataByProfile = {
+  const mockDataByProfile: Record<
+    ProfileId,
+    { fullName: string; email: string; phone: string; monthlyIncome: string; rentBudget: string }
+  > = {
     formal: {
       fullName: 'Carlos Andrés Rodríguez',
       email: 'carlos.rodriguez@empresa.com',
@@ -77,7 +113,7 @@ const ApplicationForm = () => {
     },
   }
 
-  const profiles = {
+  const profiles: Record<ProfileId, ProfileConfig> = {
     formal: {
       emoji: '👔',
       name: 'Empleado Formal',
@@ -312,7 +348,13 @@ const ApplicationForm = () => {
     },
   }
 
-  const securityOptions = [
+  const securityOptions: Array<{
+    id: string
+    name: string
+    description: string
+    requirements: string
+    fields: Field[]
+  }> = [
     {
       id: 'double',
       name: 'Doble Garantía Personal',
@@ -448,21 +490,22 @@ const ApplicationForm = () => {
     },
   ]
 
-  const handleFileChange = (fieldId, files) => {
+  const handleFileChange = (fieldId: string, files: FileList | null) => {
+    if (!files) return
     setUploadedDocs((prev) => ({
       ...prev,
       [fieldId]: files,
     }))
   }
 
-  const createMockFile = (fileName) => {
+  const createMockFile = (fileName: string) => {
     return new File([''], fileName, { type: 'application/pdf' })
   }
 
   const fillMockDataStep2 = () => {
     if (!selectedProfile) return
     setApplicantInfo(mockDataByProfile[selectedProfile])
-    const mockDocs = {}
+    const mockDocs: UploadedDocsState = {}
     profiles[selectedProfile].fields.forEach((field) => {
       if (field.type === 'file') {
         if (field.multiple) {
@@ -482,8 +525,10 @@ const ApplicationForm = () => {
 
   const fillMockDataStep3 = () => {
     if (!selectedSecurity) return
-    const mockDocs = { ...uploadedDocs }
+    const mockDocs: UploadedDocsState = { ...uploadedDocs }
     const securityOption = securityOptions.find((opt) => opt.id === selectedSecurity)
+    if (!securityOption) return
+
     securityOption.fields.forEach((field) => {
       if (field.type === 'file') {
         if (field.multiple) {
@@ -506,7 +551,7 @@ const ApplicationForm = () => {
     applicantInfo.rentBudget.trim() &&
     acceptedDeposit
 
-  const renderField = (field) => {
+  const renderField = (field: Field) => {
     if (field.type === 'file') {
       return (
         <label
@@ -532,20 +577,25 @@ const ApplicationForm = () => {
               <Upload size={20} className="text-gray-500" />
               <span className="text-gray-600">
                 {uploadedDocs[field.id]
-                  ? `${uploadedDocs[field.id].length} archivo(s) seleccionado(s)`
+                  ? `${(uploadedDocs[field.id]?.length ?? 0)} archivo(s) seleccionado(s)`
                   : 'Haz clic para subir archivo'}
               </span>
             </label>
-            {uploadedDocs[field.id] && (
-              <div className="mt-2 space-y-1">
-                {Array.from(uploadedDocs[field.id]).map((file, idx) => (
-                  <div key={idx} className="flex items-center gap-2 text-xs text-gray-600">
-                    <FileText size={14} />
-                    <span>{file.name}</span>
-                  </div>
-                ))}
-              </div>
-            )}
+            {uploadedDocs[field.id] && (() => {
+              const files = uploadedDocs[field.id]
+              if (!files) return null
+              const fileArray = Array.from(files)
+              return (
+                <div className="mt-2 space-y-1">
+                  {fileArray.map((file, idx) => (
+                    <div key={idx} className="flex items-center gap-2 text-xs text-gray-600">
+                      <FileText size={14} />
+                      <span>{file.name}</span>
+                    </div>
+                  ))}
+                </div>
+              )
+            })()}
           </div>
         </label>
       )
@@ -697,7 +747,7 @@ const ApplicationForm = () => {
                   <button
                     key={key}
                     onClick={() => {
-                      setSelectedProfile(key)
+                      setSelectedProfile(key as ProfileId)
                       setAcceptedDeposit(false)
                       setUploadedDocs({})
                     }}
