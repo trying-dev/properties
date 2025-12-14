@@ -1,24 +1,28 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import { useMemo } from 'react'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
-import LoginForm from '+/app/auth/_/LoginForm'
-import RegisterForm from '+/app/auth/_/RegisterForm'
+import LoginForm from '+/components/auth/LoginForm'
+import RegisterForm from '+/components/auth/RegisterForm'
+import { useDispatch, useSelector } from '+/redux'
+import { setAuthModalOpen } from '+/redux/slices/auth'
 
 export default function AuthFormsPanel() {
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
   const shouldSync = pathname?.startsWith('/auth')
+  const dispatch = useDispatch()
+  const modalTab = useSelector((state) => state.auth.authModalTab)
 
-  const activeTab = useMemo(
-    () => (shouldSync && searchParams.get('tab') === 'register' ? 'register' : undefined),
-    [searchParams, shouldSync]
+  const queryTab = useMemo(
+    () => (searchParams.get('tab') === 'register' ? 'register' : undefined),
+    [searchParams]
   )
 
-  const [localTab, setLocalTab] = useState<'login' | 'register'>('login')
+  const activeTab = shouldSync ? queryTab : undefined
 
-  const currentTab = activeTab || localTab
+  const currentTab = activeTab || modalTab || 'login'
 
   const updateTab = (tab: 'login' | 'register') => {
     if (shouldSync) {
@@ -28,7 +32,7 @@ export default function AuthFormsPanel() {
       router.replace(`${pathname}${query ? `?${query}` : ''}`)
       return
     }
-    setLocalTab(tab)
+    dispatch(setAuthModalOpen({ open: true, tab }))
   }
 
   return (

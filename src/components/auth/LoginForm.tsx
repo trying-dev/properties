@@ -6,7 +6,7 @@ import { authenticate } from '+/actions/auth/login'
 import { authInitialState, type AuthActionState } from './types'
 import { demoUsers as defaultDemoUsers } from './users'
 import { useDispatch } from '+/redux'
-import { setAuthStatus, setResetPasswordModalOpen } from '+/redux/slices/auth'
+import { setAuthStatus, setAuthVerificationExpires, setResetPasswordModalOpen } from '+/redux/slices/auth'
 
 type LoginFormProps = {
   className?: string
@@ -27,9 +27,9 @@ export default function LoginForm({
   const demoUsers = defaultDemoUsers
 
   useEffect(() => {
-    if (state?.success) {
-      dispatch(setAuthStatus('success'))
-    }
+    if (!state?.success) return
+    dispatch(setAuthStatus('success'))
+    dispatch(setAuthVerificationExpires(null))
   }, [state?.success, dispatch])
 
   const isDisabled = isPending || Boolean(state?.success)

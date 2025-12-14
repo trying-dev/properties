@@ -1,7 +1,10 @@
 export const initialState = {
   auth: {
-    status: 'idle' as 'idle' | 'success',
+    status: 'idle' as 'idle' | 'success' | 'verify',
     resetPasswordModalOpen: false,
+    authModalOpen: false,
+    authModalTab: 'login' as 'login' | 'register',
+    verificationExpiresAt: null as number | null,
   },
   property: {},
 }

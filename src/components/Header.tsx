@@ -5,11 +5,17 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { ChevronDown, Home, LogOut } from 'lucide-react'
 
+import AuthModal from '+/components/auth/AuthModal'
+import ResetPasswordModal from '+/components/auth/ResetPasswordModal'
 import { logout } from '+/hooks/getSession'
 import { useSession } from '+/hooks/useSession'
+import { useDispatch, useSelector } from '+/redux'
+import { setAuthModalOpen, setAuthStatus, setAuthVerificationExpires } from '+/redux/slices/auth'
 
 export default function Header() {
   const router = useRouter()
+  const dispatch = useDispatch()
+  const authStatus = useSelector((state) => state.auth.status)
   const { user, status, clearSession, refreshSession } = useSession()
   const [open, setOpen] = useState(false)
   const menuRef = useRef<HTMLDivElement>(null)
@@ -37,6 +43,18 @@ export default function Header() {
   const isLoadingSession = status === 'loading'
   const initials = user?.name?.charAt(0)?.toUpperCase() || 'U'
   const dashboardHref = user?.role === 'admin' ? '/dashboard/admin' : '/dashboard/tenant'
+
+  useEffect(() => {
+    if (authStatus !== 'success') return
+    const syncSession = async () => {
+      await refreshSession()
+      dispatch(setAuthStatus('idle'))
+      dispatch(setAuthVerificationExpires(null))
+      dispatch(setAuthModalOpen({ open: false }))
+      router.refresh()
+    }
+    syncSession()
+  }, [authStatus, dispatch, refreshSession, router])
 
   return (
     <header className="border-b border-gray-200 bg-white sticky top-0 z-50">
@@ -100,19 +118,32 @@ export default function Header() {
             </div>
           ) : (
             <div className="flex items-center space-x-4">
-              <Link href="/auth?tab=register" className="text-sm font-medium text-gray-900 hover:text-gray-700">
+              <button
+                type="button"
+                onClick={() => {
+                  dispatch(setAuthModalOpen({ open: true, tab: 'register' }))
+                }}
+                className="text-sm font-medium text-gray-900 hover:text-gray-700"
+              >
                 Registrarse
-              </Link>
-              <Link
-                href="/auth"
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  dispatch(setAuthModalOpen({ open: true, tab: 'login' }))
+                }}
                 className="bg-gray-900 hover:bg-gray-800 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors"
               >
                 Iniciar sesión
-              </Link>
+              </button>
             </div>
           )}
         </div>
       </div>
+
+      <AuthModal />
+
+      <ResetPasswordModal />
     </header>
   )
 }

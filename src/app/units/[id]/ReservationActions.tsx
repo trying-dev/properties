@@ -3,10 +3,10 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import AuthFormsPanel from '+/app/auth/_/AuthFormsPanel'
+import AuthFormsPanel from '+/components/auth/AuthFormsPanel'
 import Modal from '+/components/Modal'
 import { useDispatch, useSelector } from '+/redux'
-import { setAuthStatus } from '+/redux/slices/auth'
+import { setAuthStatus, setAuthVerificationExpires } from '+/redux/slices/auth'
 
 type ReservationActionsProps = {
   isAuthenticated: boolean
@@ -58,10 +58,22 @@ function ReservationModal({ isOpen, onClose }: ReservationModalProps) {
     onClose()
     router.push('/aplication')
     dispatch(setAuthStatus('idle'))
+    dispatch(setAuthVerificationExpires(null))
   }, [authStatus, dispatch, isOpen, onClose, router])
 
+  const handleClose = () => {
+    if (authStatus === 'verify') return
+    onClose()
+  }
+
   return (
-    <Modal isOpen={isOpen} onClose={onClose} ariaLabel="Reserva sin iniciar sesión" className="max-w-2xl">
+    <Modal
+      isOpen={isOpen}
+      onClose={handleClose}
+      ariaLabel="Reserva sin iniciar sesión"
+      className="max-w-2xl"
+      disableClose={authStatus === 'verify'}
+    >
       <AuthFormsPanel />
     </Modal>
   )

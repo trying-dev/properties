@@ -1,11 +1,13 @@
 'use client'
 
-import { FormEvent, startTransition, useState, useActionState, useTransition } from 'react'
+import { FormEvent, startTransition, useEffect, useMemo, useState, useActionState, useTransition } from 'react'
 import { ArrowRight, CheckCircle, Eye, EyeOff, Lock, Mail, User } from 'lucide-react'
 import { useRouter } from 'next/navigation'
-import { signIn } from 'next-auth/react'
 import { registerUser, type RegisterActionState } from '+/actions/auth/register'
+import { authenticate } from '+/actions/auth/login'
 import { resendVerificationCode, verifyEmailCode } from '+/actions/auth/verify-email'
+import { useDispatch, useSelector } from '+/redux'
+import { setAuthStatus, setAuthVerificationExpires } from '+/redux/slices/auth'
 
 type RegisterFormProps = {
   className?: string
@@ -15,6 +17,7 @@ export default function RegisterForm({
   className = 'transition-opacity duration-500 opacity-100',
 }: RegisterFormProps) {
   const router = useRouter()
+  const dispatch = useDispatch()
   const [state, formAction, isPending] = useActionState<RegisterActionState, FormData>(registerUser, {
     success: false,
   })
@@ -31,6 +34,8 @@ export default function RegisterForm({
   const [emailForVerification, setEmailForVerification] = useState('')
   const [isVerifying, startVerifyTransition] = useTransition()
   const [isResending, startResendTransition] = useTransition()
+  const verificationExpiresAt = useSelector((s) => s.auth.verificationExpiresAt)
+  const [now, setNow] = useState(() => Date.now())
 
   const phase: 'register' | 'verify' | 'done' =
     phaseOverride === 'done' ? 'done' : state?.needsVerification ? 'verify' : 'register'
@@ -52,9 +57,20 @@ export default function RegisterForm({
     })
   }
 
+  useEffect(() => {
+    if (!state?.needsVerification) return
+    dispatch(setAuthStatus('verify'))
+    // fallback client timer; server already enforces 15 min
+    dispatch(setAuthVerificationExpires(Date.now() + 15 * 60 * 1000))
+  }, [dispatch, state?.needsVerification])
+
   const handleVerifyCode = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     if (!verificationCode.trim() || !emailForVerification) return
+    if (verificationExpiresAt && Date.now() > verificationExpiresAt) {
+      setVerificationError('El código ha expirado, solicita uno nuevo.')
+      return
+    }
     setVerificationError('')
     startVerifyTransition(async () => {
       const result = await verifyEmailCode(emailForVerification, verificationCode.trim())
@@ -62,16 +78,18 @@ export default function RegisterForm({
         setVerificationError(result?.errors?.form?.[0] || 'Código inválido')
         return
       }
-      setPhaseOverride('done')
-      const signInResult = await signIn('credentials', {
-        email: emailForVerification,
-        password,
-        redirect: false,
-      })
-      if (signInResult?.error) {
-        setSignInError('Código verificado, pero no pudimos iniciar sesión automáticamente.')
+      // Login via server action to avoid client-side next-auth route dependency
+      const loginForm = new FormData()
+      loginForm.append('email', emailForVerification)
+      loginForm.append('password', password)
+      const loginResult = await authenticate(undefined, loginForm)
+      if (!loginResult?.success) {
+        setSignInError(loginResult?.errors?.form?.[0] || 'Código verificado, pero no pudimos iniciar sesión.')
         return
       }
+      setPhaseOverride('done')
+      dispatch(setAuthStatus('success'))
+      dispatch(setAuthVerificationExpires(null))
       router.push('/dashboard')
     })
   }
@@ -83,9 +101,26 @@ export default function RegisterForm({
       const result = await resendVerificationCode(emailForVerification)
       if (!result?.success) {
         setVerificationError(result?.errors?.form?.[0] || 'No pudimos reenviar el código.')
+        return
       }
+      dispatch(setAuthVerificationExpires(Date.now() + 15 * 60 * 1000))
+      setNow(Date.now())
     })
   }
+
+  useEffect(() => {
+    if (!verificationExpiresAt || phase !== 'verify') return
+    const id = setInterval(() => setNow(Date.now()), 1000)
+    return () => clearInterval(id)
+  }, [verificationExpiresAt, phase])
+
+  const countdown = useMemo(() => {
+    if (!verificationExpiresAt || phase !== 'verify') return null
+    const remaining = Math.max(verificationExpiresAt - now, 0)
+    const minutes = Math.floor(remaining / 60000)
+    const seconds = Math.floor((remaining % 60000) / 1000)
+    return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`
+  }, [now, phase, verificationExpiresAt])
 
   const spaceY5Class = ['space-y-5', className].filter(Boolean).join(' ')
 
@@ -98,6 +133,11 @@ export default function RegisterForm({
             Enviamos un código a <span className="font-medium text-teal-600">{emailForVerification}</span>.
             Ingresa el código para activar tu cuenta.
           </p>
+          {countdown && (
+            <p className="text-xs text-gray-500">
+              Código válido por: <span className="font-semibold text-teal-600">{countdown}</span>
+            </p>
+          )}
         </div>
 
         <div className="space-y-2">
