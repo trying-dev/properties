@@ -9,12 +9,14 @@ import { combineReducers, PayloadAction } from '@reduxjs/toolkit'
 import { configureStore } from '@reduxjs/toolkit'
 
 import { State } from './store'
+import auth from './slices/auth'
 import property from './slices/property'
 
 export const REDUX_KEY_LOCAL_STORAGE = 'state'
 export const HYDRATE_ACTION_TYPE = 'HYDRATE'
 
 const rootReducer = combineReducers({
+  auth,
   property,
 })
 

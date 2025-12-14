@@ -1,4 +1,8 @@
 export const initialState = {
+  auth: {
+    status: 'idle' as 'idle' | 'success',
+    resetPasswordModalOpen: false,
+  },
   property: {},
 }
 

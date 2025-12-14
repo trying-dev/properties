@@ -1,4 +1,3 @@
-import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import type { ReactNode } from 'react'
 import {
@@ -24,6 +23,7 @@ import Header from '+/components/Header'
 import Footer from '+/components/Footer'
 import { auth } from '+/lib/auth'
 import Gallery from './gallery'
+import ReservationActions from './ReservationActions'
 
 const formatPrice = (amount?: number | null) =>
   amount != null ? `${new Intl.NumberFormat('de-DE').format(amount)} €` : 'Precio a consultar'
@@ -115,7 +115,7 @@ export default async function UnitDetailPage({ params }: { params: Promise<{ id:
 
   const visibleFeatures = featureFlags.filter(({ key }) => Boolean((unit as Record<string, unknown>)[key]))
   const highlights = normalizeHighlights((unit as Record<string, unknown>).highlights, unit.property.name)
-  const reservationHref = session?.user ? '/aplication' : '/auth'
+  const isAuthenticated = Boolean(session?.user)
 
   return (
     <div className="min-h-screen bg-white">
@@ -192,12 +192,7 @@ export default async function UnitDetailPage({ params }: { params: Promise<{ id:
                   <Share2 className="w-5 h-5 text-gray-700" />
                 </button>
               </div>
-              <Link
-                href={reservationHref}
-                className="w-full inline-flex justify-center bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg transition"
-              >
-                Reservar
-              </Link>
+              <ReservationActions isAuthenticated={isAuthenticated} />
             </div>
           </aside>
         </section>
@@ -288,12 +283,7 @@ export default async function UnitDetailPage({ params }: { params: Promise<{ id:
                   {unit.furnished && <p className="pl-6">Amoblado</p>}
                   {unit.petFriendly && <p className="pl-6">Pet friendly</p>}
                 </div>
-                <Link
-                  href="/auth"
-                  className="w-full inline-flex justify-center bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg transition"
-                >
-                  Reserve
-                </Link>
+                <ReservationActions isAuthenticated={isAuthenticated} buttonLabel="Reserve" />
               </div>
             </div>
           </aside>

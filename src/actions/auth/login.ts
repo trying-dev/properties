@@ -8,7 +8,6 @@ export const authenticate = async (
   prevState:
     | {
         success: boolean
-        message: string
         errors?: Record<string, string[]>
       }
     | undefined,
@@ -37,11 +36,7 @@ export const authenticate = async (
 
     if (Object.keys(errors).length > 0) {
       console.log(`❌ Errores de validación para ${email}:`, errors)
-      return {
-        success: false,
-        message: 'Por favor corrige los errores en el formulario',
-        errors,
-      }
+      return { success: false, errors }
     }
 
     // Intentar login SIN redirección automática
@@ -54,19 +49,13 @@ export const authenticate = async (
     // Verificar resultado
     if (result?.error) {
       console.log(`❌ Login fallido para ${email}: ${result.error}`)
-      return {
-        success: false,
-        message: 'Credenciales incorrectas. Verifica tu email y contraseña.',
-      }
+      return { success: false, errors: { form: ['Credenciales incorrectas. Verifica tu email y contraseña.'] } }
     }
 
     // ✅ Login exitoso - sin redirección automática
     console.log(`✅ Login exitoso para: ${email}`)
 
-    return {
-      success: true,
-      message: '¡Autenticación exitosa! Redirigiendo al dashboard...',
-    }
+    return { success: true }
   } catch (error) {
     let message = 'Error interno del servidor'
 
@@ -93,9 +82,6 @@ export const authenticate = async (
       timestamp: new Date().toISOString(),
     })
 
-    return {
-      success: false,
-      message,
-    }
+    return { success: false, errors: { form: [message] } }
   }
 }

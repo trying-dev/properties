@@ -387,6 +387,8 @@ model User {
     resetPasswordToken     String?
     resetPasswordExpiresAt DateTime?
     resetPasswordUsed      Boolean   @default(false)
+    verificationCode       String?
+    verificationCodeExpiresAt DateTime?
 
     // Información personal  
     name       String
@@ -401,11 +403,11 @@ model User {
     country    String?
     postalCode String?
 
-    documentType   DocumentType
-    documentNumber String       @unique
+    documentType   DocumentType?
+    documentNumber String?      @unique
 
-    gender        Gender
-    maritalStatus MaritalStatus
+    gender        Gender?
+    maritalStatus MaritalStatus?
     profession    String?
 
     // Avatar/foto

@@ -100,7 +100,7 @@ export default function Header() {
             </div>
           ) : (
             <div className="flex items-center space-x-4">
-              <Link href="/auth" className="text-sm font-medium text-gray-900 hover:text-gray-700">
+              <Link href="/auth?tab=register" className="text-sm font-medium text-gray-900 hover:text-gray-700">
                 Registrarse
               </Link>
               <Link
