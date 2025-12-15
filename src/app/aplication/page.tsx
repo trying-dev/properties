@@ -2,493 +2,24 @@
 
 import { useState } from 'react'
 import { Check, Upload, FileText, Zap, ArrowLeft, ArrowRight, CheckCircle2 } from 'lucide-react'
-
-type FieldType = 'file' | 'text' | 'tel' | 'checkbox' | 'number'
-
-type Field = {
-  id: string
-  label: string
-  type: FieldType
-  accept?: string
-  multiple?: boolean
-  required?: boolean
-}
-
-type ProfileConfig = {
-  emoji: string
-  name: string
-  deposit: string
-  fields: Field[]
-}
-
-type UploadedDocsState = Record<string, FileList | File[] | undefined>
-
-const profileIds = [
-  'formal',
-  'independent',
-  'retired',
-  'entrepreneur',
-  'investor',
-  'student',
-  'foreignLocal',
-  'nomad',
-] as const
-
-type ProfileId = (typeof profileIds)[number]
+import { mockDataByProfile } from './_/mockData'
+import { profiles, securityOptions } from './_/profiles'
+import { ApplicantInfo, Field, ProfileId, UploadedDocsState } from './_/types'
 
 const ApplicationForm = () => {
   const [selectedProfile, setSelectedProfile] = useState<ProfileId | ''>('')
   const [selectedSecurity, setSelectedSecurity] = useState('')
   const [acceptedDeposit, setAcceptedDeposit] = useState(false)
   const [activeStep, setActiveStep] = useState(1)
-  const [applicantInfo, setApplicantInfo] = useState({
+  const [applicantInfo, setApplicantInfo] = useState<ApplicantInfo>({
     fullName: '',
     email: '',
     phone: '',
+    documentType: 'cedula',
+    documentNumber: '',
     monthlyIncome: '',
-    rentBudget: '',
   })
   const [uploadedDocs, setUploadedDocs] = useState<UploadedDocsState>({})
-
-  // Mock Data por perfil
-  const mockDataByProfile: Record<
-    ProfileId,
-    { fullName: string; email: string; phone: string; monthlyIncome: string; rentBudget: string }
-  > = {
-    formal: {
-      fullName: 'Carlos Andrés Rodríguez',
-      email: 'carlos.rodriguez@empresa.com',
-      phone: '+57 310 555 1234',
-      monthlyIncome: '5500000',
-      rentBudget: '1800000',
-    },
-    independent: {
-      fullName: 'María Fernanda López',
-      email: 'mf.lopez@freelance.com',
-      phone: '+57 315 555 5678',
-      monthlyIncome: '6200000',
-      rentBudget: '2000000',
-    },
-    retired: {
-      fullName: 'Jorge Alberto Martínez',
-      email: 'jorge.martinez@gmail.com',
-      phone: '+57 320 555 9012',
-      monthlyIncome: '4800000',
-      rentBudget: '1500000',
-    },
-    entrepreneur: {
-      fullName: 'Ana Patricia Gómez',
-      email: 'ana.gomez@miempresa.com',
-      phone: '+57 312 555 3456',
-      monthlyIncome: '8500000',
-      rentBudget: '2800000',
-    },
-    investor: {
-      fullName: 'Roberto Carlos Sánchez',
-      email: 'roberto.sanchez@inversiones.com',
-      phone: '+57 318 555 7890',
-      monthlyIncome: '12000000',
-      rentBudget: '3500000',
-    },
-    student: {
-      fullName: 'Laura Valentina Moreno',
-      email: 'laura.moreno@universidad.edu.co',
-      phone: '+57 314 555 2345',
-      monthlyIncome: '2500000',
-      rentBudget: '1200000',
-    },
-    foreignLocal: {
-      fullName: 'Michael Anderson',
-      email: 'michael.anderson@company.com',
-      phone: '+57 316 555 6789',
-      monthlyIncome: '7500000',
-      rentBudget: '2500000',
-    },
-    nomad: {
-      fullName: 'Emma Johnson',
-      email: 'emma.johnson@remote.io',
-      phone: '+57 319 555 0123',
-      monthlyIncome: '9500000',
-      rentBudget: '3000000',
-    },
-  }
-
-  const profiles: Record<ProfileId, ProfileConfig> = {
-    formal: {
-      emoji: '👔',
-      name: 'Empleado Formal',
-      deposit: '2 meses',
-      fields: [
-        { id: 'cedula', label: 'Cédula', type: 'file', accept: '.pdf,.jpg,.png' },
-        {
-          id: 'cert_laboral',
-          label: 'Certificado laboral (antigüedad, cargo, salario)',
-          type: 'file',
-          accept: '.pdf',
-        },
-        { id: 'colillas', label: '3 últimas colillas de pago', type: 'file', accept: '.pdf', multiple: true },
-        {
-          id: 'extractos',
-          label: 'Extractos bancarios últimos 3 meses',
-          type: 'file',
-          accept: '.pdf',
-          multiple: true,
-        },
-        { id: 'ref_personal_1', label: 'Referencia Personal 1 - Nombre', type: 'text' },
-        { id: 'ref_personal_1_tel', label: 'Referencia Personal 1 - Teléfono', type: 'tel' },
-        { id: 'ref_personal_2', label: 'Referencia Personal 2 - Nombre', type: 'text' },
-        { id: 'ref_personal_2_tel', label: 'Referencia Personal 2 - Teléfono', type: 'tel' },
-      ],
-    },
-    independent: {
-      emoji: '💼',
-      name: 'Independiente',
-      deposit: '2 meses',
-      fields: [
-        { id: 'cedula', label: 'Cédula', type: 'file', accept: '.pdf,.jpg,.png' },
-        { id: 'rut', label: 'RUT actualizado', type: 'file', accept: '.pdf' },
-        {
-          id: 'declaracion_renta',
-          label: 'Declaración de renta últimos 2 años',
-          type: 'file',
-          accept: '.pdf',
-          multiple: true,
-        },
-        {
-          id: 'extractos',
-          label: 'Extractos bancarios últimos 6 meses',
-          type: 'file',
-          accept: '.pdf',
-          multiple: true,
-        },
-        {
-          id: 'facturas',
-          label: 'Facturas o contratos vigentes',
-          type: 'file',
-          accept: '.pdf',
-          multiple: true,
-        },
-        {
-          id: 'camara_comercio',
-          label: 'Certificado Cámara de Comercio (si aplica)',
-          type: 'file',
-          accept: '.pdf',
-          required: false,
-        },
-      ],
-    },
-    retired: {
-      emoji: '😊',
-      name: 'Pensionado',
-      deposit: '2 meses',
-      fields: [
-        { id: 'cedula', label: 'Cédula', type: 'file', accept: '.pdf,.jpg,.png' },
-        { id: 'cert_pension', label: 'Certificado de pensión actualizado', type: 'file', accept: '.pdf' },
-        { id: 'resolucion', label: 'Resolución de pensión', type: 'file', accept: '.pdf' },
-        {
-          id: 'colillas_mesada',
-          label: '3 últimas colillas de mesada',
-          type: 'file',
-          accept: '.pdf',
-          multiple: true,
-        },
-        {
-          id: 'extractos',
-          label: 'Extractos bancarios últimos 3 meses',
-          type: 'file',
-          accept: '.pdf',
-          multiple: true,
-        },
-      ],
-    },
-    entrepreneur: {
-      emoji: '🏢',
-      name: 'Empresario',
-      deposit: '2 meses',
-      fields: [
-        { id: 'cedula', label: 'Cédula', type: 'file', accept: '.pdf,.jpg,.png' },
-        {
-          id: 'estados_financieros',
-          label: 'Estados financieros (último año)',
-          type: 'file',
-          accept: '.pdf',
-        },
-        {
-          id: 'camara_comercio',
-          label: 'Certificado Cámara de Comercio vigente',
-          type: 'file',
-          accept: '.pdf',
-        },
-        {
-          id: 'declaracion_renta',
-          label: 'Declaración de renta últimos 2 años',
-          type: 'file',
-          accept: '.pdf',
-          multiple: true,
-        },
-        {
-          id: 'extractos_empresariales',
-          label: 'Extractos bancarios empresariales (6 meses)',
-          type: 'file',
-          accept: '.pdf',
-          multiple: true,
-        },
-        {
-          id: 'extractos_personales',
-          label: 'Extractos bancarios personales (6 meses)',
-          type: 'file',
-          accept: '.pdf',
-          multiple: true,
-        },
-      ],
-    },
-    investor: {
-      emoji: '📈',
-      name: 'Inversionista',
-      deposit: '2 meses',
-      fields: [
-        { id: 'cedula', label: 'Cédula', type: 'file', accept: '.pdf,.jpg,.png' },
-        {
-          id: 'cert_cdts',
-          label: 'Certificados de CDTs o inversiones',
-          type: 'file',
-          accept: '.pdf',
-          multiple: true,
-        },
-        {
-          id: 'contratos_arriendo',
-          label: 'Contratos de arriendo de otras propiedades',
-          type: 'file',
-          accept: '.pdf',
-          multiple: true,
-        },
-        {
-          id: 'cert_rendimientos',
-          label: 'Certificados de rendimientos financieros',
-          type: 'file',
-          accept: '.pdf',
-          multiple: true,
-        },
-        {
-          id: 'extractos',
-          label: 'Extractos bancarios últimos 3 meses',
-          type: 'file',
-          accept: '.pdf',
-          multiple: true,
-        },
-      ],
-    },
-    student: {
-      emoji: '🎓',
-      name: 'Estudiante',
-      deposit: '3 meses',
-      fields: [
-        { id: 'cedula', label: 'Cédula del estudiante', type: 'file', accept: '.pdf,.jpg,.png' },
-        { id: 'cert_matricula', label: 'Certificado de matrícula vigente', type: 'file', accept: '.pdf' },
-        {
-          id: 'carta_patrocinador',
-          label: 'Carta del patrocinador/padre autenticada',
-          type: 'file',
-          accept: '.pdf',
-        },
-        { id: 'nombre_patrocinador', label: 'Nombre completo del patrocinador', type: 'text' },
-        { id: 'cedula_patrocinador', label: 'Cédula del patrocinador', type: 'text' },
-        { id: 'tel_patrocinador', label: 'Teléfono del patrocinador', type: 'tel' },
-      ],
-    },
-    foreignLocal: {
-      emoji: '🌍',
-      name: 'Extranjero Local',
-      deposit: '3 meses',
-      fields: [
-        { id: 'pasaporte', label: 'Pasaporte', type: 'file', accept: '.pdf,.jpg,.png' },
-        { id: 'visa', label: 'Visa vigente', type: 'file', accept: '.pdf,.jpg,.png' },
-        { id: 'cedula_extranjeria', label: 'Cédula de extranjería', type: 'file', accept: '.pdf,.jpg,.png' },
-        { id: 'contrato_laboral', label: 'Contrato laboral en Colombia', type: 'file', accept: '.pdf' },
-        {
-          id: 'extractos',
-          label: 'Extractos cuenta bancaria colombiana (3 meses)',
-          type: 'file',
-          accept: '.pdf',
-          multiple: true,
-        },
-        { id: 'cert_laboral', label: 'Certificado laboral empresa colombiana', type: 'file', accept: '.pdf' },
-      ],
-    },
-    nomad: {
-      emoji: '🌐',
-      name: 'Nómada Digital',
-      deposit: '3-6 meses',
-      fields: [
-        { id: 'pasaporte', label: 'Pasaporte', type: 'file', accept: '.pdf,.jpg,.png' },
-        { id: 'visa', label: 'Visa (si aplica)', type: 'file', accept: '.pdf,.jpg,.png', required: false },
-        {
-          id: 'contratos',
-          label: 'Contratos laborales apostillados',
-          type: 'file',
-          accept: '.pdf',
-          multiple: true,
-        },
-        {
-          id: 'extractos_internacionales',
-          label: 'Extractos cuenta internacional (6 meses)',
-          type: 'file',
-          accept: '.pdf',
-          multiple: true,
-        },
-        {
-          id: 'comprobantes_ingresos',
-          label: 'Comprobantes de ingresos en USD/EUR',
-          type: 'file',
-          accept: '.pdf',
-          multiple: true,
-        },
-        { id: 'tipo_cambio', label: 'Tasa de cambio aplicada (COP)', type: 'number' },
-      ],
-    },
-  }
-
-  const securityOptions: Array<{
-    id: string
-    name: string
-    description: string
-    requirements: string
-    fields: Field[]
-  }> = [
-    {
-      id: 'double',
-      name: 'Doble Garantía Personal',
-      description: 'Dos Codeudores',
-      requirements: 'Ingresos combinados ≥ 3x canon',
-      fields: [
-        { id: 'cedula_codeudor_1', label: 'Cédula Codeudor 1', type: 'file', accept: '.pdf,.jpg,.png' },
-        { id: 'cedula_codeudor_2', label: 'Cédula Codeudor 2', type: 'file', accept: '.pdf,.jpg,.png' },
-        { id: 'cert_laboral_1', label: 'Certificado laboral Codeudor 1', type: 'file', accept: '.pdf' },
-        { id: 'cert_laboral_2', label: 'Certificado laboral Codeudor 2', type: 'file', accept: '.pdf' },
-        {
-          id: 'declaracion_renta_1',
-          label: 'Declaración de renta o extractos Codeudor 1',
-          type: 'file',
-          accept: '.pdf',
-          multiple: true,
-        },
-        {
-          id: 'declaracion_renta_2',
-          label: 'Declaración de renta o extractos Codeudor 2',
-          type: 'file',
-          accept: '.pdf',
-          multiple: true,
-        },
-        {
-          id: 'cert_tradicion_1',
-          label: 'Certificado de tradición Codeudor 1 (si aplica)',
-          type: 'file',
-          accept: '.pdf',
-          required: false,
-        },
-        {
-          id: 'cert_tradicion_2',
-          label: 'Certificado de tradición Codeudor 2 (si aplica)',
-          type: 'file',
-          accept: '.pdf',
-          required: false,
-        },
-        {
-          id: 'carta_aceptacion_1',
-          label: 'Carta de aceptación firmada Codeudor 1',
-          type: 'file',
-          accept: '.pdf',
-        },
-        {
-          id: 'carta_aceptacion_2',
-          label: 'Carta de aceptación firmada Codeudor 2',
-          type: 'file',
-          accept: '.pdf',
-        },
-      ],
-    },
-    {
-      id: 'reinforced',
-      name: 'Garantía Personal Reforzada',
-      description: 'Un Codeudor con Mayor Capacidad',
-      requirements: 'Ingresos del codeudor ≥ 4x canon',
-      fields: [
-        { id: 'cedula_codeudor', label: 'Cédula del codeudor', type: 'file', accept: '.pdf,.jpg,.png' },
-        { id: 'cert_laboral', label: 'Certificado laboral', type: 'file', accept: '.pdf' },
-        {
-          id: 'declaracion_renta',
-          label: 'Declaración de renta o extractos',
-          type: 'file',
-          accept: '.pdf',
-          multiple: true,
-        },
-        {
-          id: 'cert_tradicion',
-          label: 'Certificado de tradición (preferible)',
-          type: 'file',
-          accept: '.pdf',
-          required: false,
-        },
-        { id: 'carta_aceptacion', label: 'Carta de aceptación firmada', type: 'file', accept: '.pdf' },
-      ],
-    },
-    {
-      id: 'insurance',
-      name: 'Garantía con Aseguradora',
-      description: 'Póliza de Arrendamiento',
-      requirements: 'Score crediticio + Ingresos ≥ 3x canon',
-      fields: [
-        {
-          id: 'solicitud_poliza',
-          label: 'Solicitud de póliza (formato aseguradora)',
-          type: 'file',
-          accept: '.pdf',
-        },
-        { id: 'autorizacion_credito', label: 'Autorización estudio de crédito', type: 'checkbox' },
-        { id: 'cert_ingresos', label: 'Certificado de ingresos validado', type: 'file', accept: '.pdf' },
-        { id: 'poliza_pagada', label: 'Comprobante de pago de póliza', type: 'file', accept: '.pdf' },
-      ],
-    },
-    {
-      id: 'mixed',
-      name: 'Garantía Mixta Premium',
-      description: 'Codeudor + Póliza',
-      requirements: 'Codeudor con capacidad + Score crediticio',
-      fields: [
-        { id: 'cedula_codeudor', label: 'Cédula del codeudor', type: 'file', accept: '.pdf,.jpg,.png' },
-        { id: 'cert_laboral', label: 'Certificado laboral del codeudor', type: 'file', accept: '.pdf' },
-        {
-          id: 'declaracion_renta',
-          label: 'Declaración de renta o extractos del codeudor',
-          type: 'file',
-          accept: '.pdf',
-          multiple: true,
-        },
-        {
-          id: 'cert_tradicion',
-          label: 'Certificado de tradición (preferible)',
-          type: 'file',
-          accept: '.pdf',
-          required: false,
-        },
-        {
-          id: 'carta_aceptacion',
-          label: 'Carta de aceptación firmada del codeudor',
-          type: 'file',
-          accept: '.pdf',
-        },
-        {
-          id: 'solicitud_poliza',
-          label: 'Solicitud de póliza (formato aseguradora)',
-          type: 'file',
-          accept: '.pdf',
-        },
-        { id: 'autorizacion_credito', label: 'Autorización estudio de crédito', type: 'checkbox' },
-        { id: 'cert_ingresos', label: 'Certificado de ingresos validado', type: 'file', accept: '.pdf' },
-        { id: 'poliza_pagada', label: 'Comprobante de pago de póliza', type: 'file', accept: '.pdf' },
-      ],
-    },
-  ]
 
   const handleFileChange = (fieldId: string, files: FileList | null) => {
     if (!files) return
@@ -500,6 +31,18 @@ const ApplicationForm = () => {
 
   const createMockFile = (fileName: string) => {
     return new File([''], fileName, { type: 'application/pdf' })
+  }
+
+  const handleSelectProfile = (profileId: ProfileId) => {
+    setSelectedProfile(profileId)
+    setAcceptedDeposit(false)
+    setUploadedDocs({})
+    setApplicantInfo((prev) => ({
+      ...prev,
+      documentType: profileId === 'foreignLocal' || profileId === 'nomad' ? 'pasaporte' : 'cedula',
+      documentNumber: '',
+    }))
+    setActiveStep(2)
   }
 
   const fillMockDataStep2 = () => {
@@ -547,8 +90,8 @@ const ApplicationForm = () => {
     applicantInfo.fullName.trim() &&
     applicantInfo.email.trim() &&
     applicantInfo.phone.trim() &&
+    applicantInfo.documentNumber.trim() &&
     applicantInfo.monthlyIncome.trim() &&
-    applicantInfo.rentBudget.trim() &&
     acceptedDeposit
 
   const renderField = (field: Field) => {
@@ -577,25 +120,26 @@ const ApplicationForm = () => {
               <Upload size={20} className="text-gray-500" />
               <span className="text-gray-600">
                 {uploadedDocs[field.id]
-                  ? `${(uploadedDocs[field.id]?.length ?? 0)} archivo(s) seleccionado(s)`
+                  ? `${uploadedDocs[field.id]?.length ?? 0} archivo(s) seleccionado(s)`
                   : 'Haz clic para subir archivo'}
               </span>
             </label>
-            {uploadedDocs[field.id] && (() => {
-              const files = uploadedDocs[field.id]
-              if (!files) return null
-              const fileArray = Array.from(files)
-              return (
-                <div className="mt-2 space-y-1">
-                  {fileArray.map((file, idx) => (
-                    <div key={idx} className="flex items-center gap-2 text-xs text-gray-600">
-                      <FileText size={14} />
-                      <span>{file.name}</span>
-                    </div>
-                  ))}
-                </div>
-              )
-            })()}
+            {uploadedDocs[field.id] &&
+              (() => {
+                const files = uploadedDocs[field.id]
+                if (!files) return null
+                const fileArray = Array.from(files)
+                return (
+                  <div className="mt-2 space-y-1">
+                    {fileArray.map((file, idx) => (
+                      <div key={idx} className="flex items-center gap-2 text-xs text-gray-600">
+                        <FileText size={14} />
+                        <span>{file.name}</span>
+                      </div>
+                    ))}
+                  </div>
+                )
+              })()}
           </div>
         </label>
       )
@@ -634,7 +178,7 @@ const ApplicationForm = () => {
   ]
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 py-8 px-4">
+    <div className="min-h-screen bg-linear-to-br from-gray-50 to-blue-50 py-8 px-4">
       <div className="max-w-5xl mx-auto">
         {/* Header */}
         <div className="text-center mb-8">
@@ -711,7 +255,6 @@ const ApplicationForm = () => {
                   <span className="text-2xl">{profiles[selectedProfile].emoji}</span>
                   <div>
                     <p className="font-medium text-gray-900">{profiles[selectedProfile].name}</p>
-                    <p className="text-gray-600 text-xs">Depósito: {profiles[selectedProfile].deposit}</p>
                   </div>
                 </div>
               )}
@@ -719,10 +262,6 @@ const ApplicationForm = () => {
                 <div className="pt-2 border-t border-blue-200">
                   <p className="text-gray-700">
                     <span className="font-medium">Solicitante:</span> {applicantInfo.fullName}
-                  </p>
-                  <p className="text-gray-700">
-                    <span className="font-medium">Presupuesto:</span> $
-                    {parseInt(applicantInfo.rentBudget).toLocaleString('es-CO')} COP
                   </p>
                 </div>
               )}
@@ -747,9 +286,7 @@ const ApplicationForm = () => {
                   <button
                     key={key}
                     onClick={() => {
-                      setSelectedProfile(key as ProfileId)
-                      setAcceptedDeposit(false)
-                      setUploadedDocs({})
+                      handleSelectProfile(key as ProfileId)
                     }}
                     className={`p-6 border-2 rounded-xl text-left transition-all transform hover:scale-105 ${
                       selectedProfile === key
@@ -761,7 +298,6 @@ const ApplicationForm = () => {
                       <span className="text-4xl">{profile.emoji}</span>
                       <div>
                         <span className="font-bold text-lg text-gray-900 block">{profile.name}</span>
-                        <span className="text-sm text-gray-600">Depósito: {profile.deposit}</span>
                       </div>
                     </div>
                     {selectedProfile === key && (
@@ -776,20 +312,6 @@ const ApplicationForm = () => {
                 ))}
               </div>
 
-              <div className="mt-8 flex justify-end">
-                <button
-                  onClick={() => setActiveStep(2)}
-                  disabled={!canProceedToStep2}
-                  className={`flex items-center gap-2 px-8 py-4 rounded-lg font-semibold text-lg transition-all ${
-                    canProceedToStep2
-                      ? 'bg-blue-600 text-white hover:bg-blue-700 shadow-lg hover:shadow-xl'
-                      : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                  }`}
-                >
-                  <span>Continuar</span>
-                  <ArrowRight size={20} />
-                </button>
-              </div>
             </div>
           )}
 
@@ -857,6 +379,19 @@ const ApplicationForm = () => {
                   </label>
                   <label className="flex flex-col gap-2 text-sm text-gray-700">
                     <span className="font-medium">
+                      {applicantInfo.documentType === 'pasaporte' ? 'Pasaporte' : 'Cédula'}{' '}
+                      <span className="text-red-500">*</span>
+                    </span>
+                    <input
+                      type="text"
+                      value={applicantInfo.documentNumber}
+                      onChange={(e) => setApplicantInfo({ ...applicantInfo, documentNumber: e.target.value })}
+                      className="p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      placeholder={applicantInfo.documentType === 'pasaporte' ? 'AA1234567' : '1234567890'}
+                    />
+                  </label>
+                  <label className="flex flex-col gap-2 text-sm text-gray-700">
+                    <span className="font-medium">
                       Ingreso mensual (COP) <span className="text-red-500">*</span>
                     </span>
                     <input
@@ -865,18 +400,6 @@ const ApplicationForm = () => {
                       onChange={(e) => setApplicantInfo({ ...applicantInfo, monthlyIncome: e.target.value })}
                       className="p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                       placeholder="5,000,000"
-                    />
-                  </label>
-                  <label className="flex flex-col gap-2 text-sm text-gray-700 md:col-span-2">
-                    <span className="font-medium">
-                      Presupuesto de arriendo (COP) <span className="text-red-500">*</span>
-                    </span>
-                    <input
-                      type="number"
-                      value={applicantInfo.rentBudget}
-                      onChange={(e) => setApplicantInfo({ ...applicantInfo, rentBudget: e.target.value })}
-                      className="p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      placeholder="2,500,000"
                     />
                   </label>
                 </div>
