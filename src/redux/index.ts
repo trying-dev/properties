@@ -11,6 +11,7 @@ import { configureStore } from '@reduxjs/toolkit'
 import { State } from './store'
 import auth from './slices/auth'
 import property from './slices/property'
+import processSlice from './slices/process'
 
 export const REDUX_KEY_LOCAL_STORAGE = 'state'
 export const HYDRATE_ACTION_TYPE = 'HYDRATE'
@@ -18,6 +19,7 @@ export const HYDRATE_ACTION_TYPE = 'HYDRATE'
 const rootReducer = combineReducers({
   auth,
   property,
+  process: processSlice,
 })
 
 const reducer = (state: State | undefined, action: PayloadAction<State>) => {

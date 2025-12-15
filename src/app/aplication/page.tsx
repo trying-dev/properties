@@ -1,10 +1,14 @@
 'use client'
 
-import { useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { Check, Upload, FileText, Zap, ArrowLeft, ArrowRight, CheckCircle2 } from 'lucide-react'
 import { mockDataByProfile } from './_/mockData'
 import { profiles, securityOptions } from './_/profiles'
 import { ApplicantInfo, Field, ProfileId, UploadedDocsState } from './_/types'
+import { createProcessAction, updateProcessAction } from '+/actions/processes'
+import { useDispatch, useSelector } from 'src/redux'
+import { setProcessState } from 'src/redux/slices/process'
+import { useSession } from 'src/hooks/useSession'
 
 const ApplicationForm = () => {
   const [selectedProfile, setSelectedProfile] = useState<ProfileId | ''>('')
@@ -20,6 +24,13 @@ const ApplicationForm = () => {
     monthlyIncome: '',
   })
   const [uploadedDocs, setUploadedDocs] = useState<UploadedDocsState>({})
+  const saveTimeout = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const dispatch = useDispatch()
+  const processState = useSelector((state) => state.process)
+  const processId = processState?.processId ?? null
+  const tenantId = processState?.tenantId ?? null
+  const unitId = processState?.unitId ?? null
+  const { session } = useSession()
 
   const handleFileChange = (fieldId: string, files: FileList | null) => {
     if (!files) return
@@ -44,6 +55,73 @@ const ApplicationForm = () => {
     }))
     setActiveStep(2)
   }
+  const persistProcess = useCallback(
+    async (payload: Record<string, unknown>, step: number) => {
+      if (saveTimeout.current) {
+        clearTimeout(saveTimeout.current)
+      }
+
+      saveTimeout.current = setTimeout(async () => {
+        try {
+          if (!processId) {
+            const result = await createProcessAction({ payload, currentStep: step, tenantId, unitId })
+            if (result.success && result.data?.id) {
+              dispatch(setProcessState({ processId: result.data.id }))
+              if (typeof window !== 'undefined') {
+                localStorage.setItem('applicationProcessId', result.data.id)
+              }
+            }
+          } else {
+            await updateProcessAction({ processId, payloadPatch: payload, currentStep: step, tenantId, unitId })
+          }
+        } catch (error) {
+          console.error('Error al guardar el proceso:', error)
+        }
+      }, 800)
+    },
+    [dispatch, processId, tenantId, unitId]
+  )
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    const storedProcess = localStorage.getItem('applicationProcessId')
+    const storedTenant = localStorage.getItem('selectedTenantId') || localStorage.getItem('np:selectedTenantId')
+    const storedUnit = localStorage.getItem('np:selectedUnitId')
+
+    const patch: Record<string, string> = {}
+    if (storedProcess) patch.processId = storedProcess
+    if (storedTenant) patch.tenantId = storedTenant
+    if (storedUnit) patch.unitId = storedUnit
+
+    if (Object.keys(patch).length) {
+      dispatch(setProcessState(patch))
+    }
+  }, [dispatch])
+
+  useEffect(() => {
+    if (tenantId || !session?.user?.id || session.user.role !== 'tenant') return
+    dispatch(setProcessState({ tenantId: session.user.id }))
+  }, [dispatch, session?.user?.id, session?.user?.role, tenantId])
+
+  useEffect(() => {
+    const payload = {
+      applicantInfo,
+      selectedProfile,
+      selectedSecurity,
+      acceptedDeposit,
+      activeStep,
+    }
+    const hasData =
+      applicantInfo.fullName ||
+      applicantInfo.email ||
+      applicantInfo.phone ||
+      applicantInfo.documentNumber ||
+      selectedProfile
+
+    if (!hasData) return
+
+    persistProcess(payload, activeStep)
+  }, [applicantInfo, selectedProfile, selectedSecurity, acceptedDeposit, activeStep, persistProcess])
 
   const fillMockDataStep2 = () => {
     if (!selectedProfile) return

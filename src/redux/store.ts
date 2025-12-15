@@ -7,6 +7,11 @@ export const initialState = {
     verificationExpiresAt: null as number | null,
   },
   property: {},
+  process: {
+    processId: null as string | null,
+    tenantId: null as string | null,
+    unitId: null as string | null,
+  },
 }
 
 export type InitialState = typeof initialState

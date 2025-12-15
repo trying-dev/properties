@@ -1,0 +1,131 @@
+'use server'
+
+import { Prisma, ProcessStatus } from '@prisma/client'
+import { prisma } from '+/lib/prisma'
+
+type CreateProcessInput = {
+  tenantId?: string | null
+  unitId?: string | null
+  adminId?: string | null
+  contractId?: string | null
+  payload?: unknown
+  currentStep?: number
+}
+
+export const createProcessAction = async (input: CreateProcessInput) => {
+  try {
+    const tenantId = input.tenantId?.trim() || null
+    const unitId = input.unitId?.trim() || null
+    const adminId = input.adminId?.trim() || null
+    const contractId = input.contractId?.trim() || null
+
+    const [tenantExists, unitExists, adminExists, contractExists] = await Promise.all([
+      tenantId ? prisma.tenant.findUnique({ where: { id: tenantId }, select: { id: true } }) : Promise.resolve(null),
+      unitId ? prisma.unit.findUnique({ where: { id: unitId }, select: { id: true } }) : Promise.resolve(null),
+      adminId ? prisma.admin.findUnique({ where: { id: adminId }, select: { id: true } }) : Promise.resolve(null),
+      contractId ? prisma.contract.findUnique({ where: { id: contractId }, select: { id: true } }) : Promise.resolve(null),
+    ])
+
+    const data: Prisma.ProcessUncheckedCreateInput = {
+      currentStep: input.currentStep ?? 1,
+      status: ProcessStatus.OPEN,
+      payload: (input.payload ?? {}) as Prisma.InputJsonValue,
+    }
+
+    if (tenantExists) data.tenantId = tenantId
+    if (unitExists) data.unitId = unitId
+    if (adminExists) data.adminId = adminId
+    if (contractExists) data.contractId = contractId
+
+    const process = await prisma.process.create({
+      data,
+      select: { id: true },
+    })
+
+    return { success: true, data: process }
+  } catch (error) {
+    console.error('Error en createProcessAction:', error)
+    return { success: false, error: 'No se pudo crear el proceso' }
+  }
+}
+
+type UpdateProcessInput = {
+  processId: string
+  payloadPatch?: unknown
+  currentStep?: number
+  status?: ProcessStatus
+  tenantId?: string | null
+  unitId?: string | null
+  adminId?: string | null
+  contractId?: string | null
+}
+
+export const updateProcessAction = async (input: UpdateProcessInput) => {
+  const { processId, payloadPatch, currentStep, status } = input
+  try {
+    const existing = await prisma.process.findUnique({
+      where: { id: processId },
+      select: { payload: true },
+    })
+
+    if (!existing) {
+      return { success: false, error: 'Proceso no encontrado' }
+    }
+
+    const mergedPayload =
+      payloadPatch !== undefined
+        ? {
+            ...(existing.payload as Record<string, unknown> | null | undefined),
+            ...(payloadPatch as Record<string, unknown>),
+          }
+        : undefined
+
+    const data: Prisma.ProcessUncheckedUpdateInput = {}
+    if (mergedPayload !== undefined) data.payload = mergedPayload as Prisma.InputJsonValue
+    if (currentStep !== undefined) data.currentStep = currentStep
+    if (status) data.status = status
+
+    const tenantId = input.tenantId?.trim()
+    const unitId = input.unitId?.trim()
+    const adminId = input.adminId?.trim()
+    const contractId = input.contractId?.trim()
+
+    const [tenantExists, unitExists, adminExists, contractExists] = await Promise.all([
+      tenantId !== undefined
+        ? tenantId
+          ? prisma.tenant.findUnique({ where: { id: tenantId }, select: { id: true } })
+          : Promise.resolve(null)
+        : Promise.resolve(undefined),
+      unitId !== undefined
+        ? unitId
+          ? prisma.unit.findUnique({ where: { id: unitId }, select: { id: true } })
+          : Promise.resolve(null)
+        : Promise.resolve(undefined),
+      adminId !== undefined
+        ? adminId
+          ? prisma.admin.findUnique({ where: { id: adminId }, select: { id: true } })
+          : Promise.resolve(null)
+        : Promise.resolve(undefined),
+      contractId !== undefined
+        ? contractId
+          ? prisma.contract.findUnique({ where: { id: contractId }, select: { id: true } })
+          : Promise.resolve(null)
+        : Promise.resolve(undefined),
+    ])
+
+    if (tenantExists !== undefined) data.tenantId = tenantExists ? tenantId : null
+    if (unitExists !== undefined) data.unitId = unitExists ? unitId : null
+    if (adminExists !== undefined) data.adminId = adminExists ? adminId : null
+    if (contractExists !== undefined) data.contractId = contractExists ? contractId : null
+
+    await prisma.process.update({
+      where: { id: processId },
+      data,
+    })
+
+    return { success: true }
+  } catch (error) {
+    console.error('Error en updateProcessAction:', error)
+    return { success: false, error: 'No se pudo actualizar el proceso' }
+  }
+}

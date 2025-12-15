@@ -75,6 +75,7 @@ model Contract {
     tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Restrict)
 
     admins Admin[] @relation("ContractAdmins")
+    processes Process[] @relation("ProcessContract")
 
     payments  Payment[]
     documents ContractDocument[] // Documentos del contrato firmado
@@ -233,6 +234,46 @@ enum ContractPriority {
 }
 
 // ========================================
+// PROCESS (WIZARD / BORRADOR)
+// ========================================
+
+model Process {
+    id String @id @default(cuid())
+
+    tenantId   String?
+    unitId     String?
+    adminId    String?
+    contractId String?
+
+    status      ProcessStatus @default(OPEN)
+    currentStep Int            @default(1)
+    payload     Json?
+    notes       String?
+
+    tenant   Tenant?   @relation("ProcessTenant", fields: [tenantId], references: [id], onDelete: SetNull)
+    unit     Unit?     @relation("ProcessUnit", fields: [unitId], references: [id], onDelete: SetNull)
+    admin    Admin?    @relation("ProcessAdmin", fields: [adminId], references: [id], onDelete: SetNull)
+    contract Contract? @relation("ProcessContract", fields: [contractId], references: [id], onDelete: SetNull)
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    @@index([status, updatedAt])
+    @@index([tenantId, status])
+    @@index([unitId])
+    @@index([adminId])
+    @@index([contractId])
+    @@map("processes")
+}
+
+enum ProcessStatus {
+    OPEN
+    IN_PROGRESS
+    COMPLETED
+    CANCELLED
+}
+
+// ========================================
 // PROPERTY
 // ========================================
 
@@ -348,6 +389,7 @@ model Unit {
 
     property  Property   @relation(fields: [propertyId], references: [id], onDelete: Cascade)
     contracts Contract[]
+    processes Process[] @relation("ProcessUnit")
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
@@ -489,6 +531,7 @@ model Admin {
     // Relaciones
     properties Property[]
     contracts  Contract[] @relation("ContractAdmins")
+    processes  Process[]  @relation("ProcessAdmin")
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
@@ -521,6 +564,7 @@ model Tenant {
 
     user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
     contracts Contract[] // Contratos donde es el inquilino
+    processes Process[] @relation("ProcessTenant")
 
     registrationToken        String?
     registrationTokenExpires DateTime?

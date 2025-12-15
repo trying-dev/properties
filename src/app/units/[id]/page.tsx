@@ -192,7 +192,7 @@ export default async function UnitDetailPage({ params }: { params: Promise<{ id:
                   <Share2 className="w-5 h-5 text-gray-700" />
                 </button>
               </div>
-              <ReservationActions isAuthenticated={isAuthenticated} />
+              <ReservationActions isAuthenticated={isAuthenticated} unitId={unit.id} />
             </div>
           </aside>
         </section>
@@ -283,7 +283,7 @@ export default async function UnitDetailPage({ params }: { params: Promise<{ id:
                   {unit.furnished && <p className="pl-6">Amoblado</p>}
                   {unit.petFriendly && <p className="pl-6">Pet friendly</p>}
                 </div>
-                <ReservationActions isAuthenticated={isAuthenticated} buttonLabel="Reserve" />
+                <ReservationActions isAuthenticated={isAuthenticated} buttonLabel="Reserve" unitId={unit.id} />
               </div>
             </div>
           </aside>
