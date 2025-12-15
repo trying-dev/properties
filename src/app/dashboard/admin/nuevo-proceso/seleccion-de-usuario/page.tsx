@@ -89,7 +89,8 @@ export default function SeleccionDeUsuario() {
     }).format(amount)
   }
 
-  const getDocumentTypeLabel = (type: DocumentType) => {
+  const getDocumentTypeLabel = (type?: DocumentType | null) => {
+    if (!type) return 'No especificado'
     const types: Record<DocumentType, string> = {
       CC: 'Cédula de Ciudadanía',
       CE: 'Cédula de Extranjería',
@@ -98,7 +99,7 @@ export default function SeleccionDeUsuario() {
       NIT: 'NIT',
       OTHER: 'Otro',
     }
-    return types[type] ?? type
+    return types[type] ?? 'No especificado'
   }
 
   const goToConfirmationWith = (id: string) => {

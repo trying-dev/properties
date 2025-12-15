@@ -679,7 +679,8 @@ export default function TenantsManagement() {
     }).format(amount)
   }
 
-  const getDocumentTypeLabel = (type: string) => {
+  const getDocumentTypeLabel = (type?: string | null) => {
+    if (!type) return 'No especificado'
     const types = {
       CC: 'Cédula de Ciudadanía',
       CE: 'Cédula de Extranjería',
@@ -687,7 +688,7 @@ export default function TenantsManagement() {
       PASSPORT: 'Pasaporte',
       OTHER: 'Otro',
     } as const
-    return types[type as keyof typeof types] ?? type
+    return types[type as keyof typeof types] ?? 'No especificado'
   }
 
   const getStatusBadge = (tenant: TenantListItem) => {

@@ -64,7 +64,8 @@ export const ExpandablePropertyAdmin = ({ property }: { property: NonNullable<Pr
 
   if (!admin) return null
 
-  const formatDocumentType = (type: DocumentType) => {
+  const formatDocumentType = (type?: DocumentType | null) => {
+    if (!type) return 'No especificado'
     const types = {
       CC: 'Cédula de Ciudadanía',
       CE: 'Cédula de Extranjería',
@@ -73,20 +74,22 @@ export const ExpandablePropertyAdmin = ({ property }: { property: NonNullable<Pr
       NIT: 'NIT',
       OTHER: 'Otro',
     }
-    return types[type]
+    return types[type] ?? 'No especificado'
   }
 
-  const formatGender = (gender: Gender) => {
+  const formatGender = (gender?: Gender | null) => {
+    if (!gender) return 'No especificado'
     const genders = {
       MALE: 'Masculino',
       FEMALE: 'Femenino',
       OTHER: 'Otro',
       PREFER_NOT_TO_SAY: 'Prefiere no decir',
     }
-    return genders[gender]
+    return genders[gender] ?? 'No especificado'
   }
 
-  const formatMaritalStatus = (status: MaritalStatus) => {
+  const formatMaritalStatus = (status?: MaritalStatus | null) => {
+    if (!status) return 'No especificado'
     const statuses = {
       SINGLE: 'Soltero(a)',
       MARRIED: 'Casado(a)',
@@ -95,7 +98,7 @@ export const ExpandablePropertyAdmin = ({ property }: { property: NonNullable<Pr
       SEPARATED: 'Separado(a)',
       COMMON_LAW: 'Unión libre',
     }
-    return statuses[status]
+    return statuses[status] ?? 'No especificado'
   }
 
   const getAdminLevelColor = (level: AdminLevel) => {
