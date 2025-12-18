@@ -7,6 +7,10 @@ const processSlice = createSlice({
   name: 'process',
   initialState: initialState.process,
   reducers: {
+    initProcess: (state, action: PayloadAction<{ unitId: string }>) => ({
+      ...initialState.process,
+      unitId: action.payload.unitId,
+    }),
     setProcessState: (state, action: PayloadAction<Partial<ProcessState>>) => ({
       ...state,
       ...action.payload,
@@ -15,5 +19,5 @@ const processSlice = createSlice({
   },
 })
 
-export const { setProcessState, resetProcess } = processSlice.actions
+export const { initProcess, setProcessState, resetProcess } = processSlice.actions
 export default processSlice.reducer

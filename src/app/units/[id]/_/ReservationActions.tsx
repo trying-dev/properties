@@ -6,7 +6,7 @@ import AuthFormsPanel from '+/components/auth/AuthFormsPanel'
 import Modal from '+/components/Modal'
 import { useDispatch, useSelector } from '+/redux'
 import { setAuthStatus, setAuthVerificationExpires } from '+/redux/slices/auth'
-import { setProcessState } from '+/redux/slices/process'
+import { initProcess } from '+/redux/slices/process'
 
 type ReservationActionsProps = {
   isAuthenticated: boolean
@@ -30,8 +30,8 @@ export default function ReservationActions({
   const buttonClass = buttonClassName || baseButtonClass
 
   const handleGoToApplication = () => {
-    dispatch(setProcessState({ unitId }))
-    router.push('/aplication/profile')
+    dispatch(initProcess({ unitId }))
+    router.push('/aplication')
   }
 
   if (isAuthenticated) {
@@ -66,7 +66,7 @@ function ReservationModal({ isOpen, onClose, unitId }: ReservationModalProps) {
   useEffect(() => {
     if (!isOpen || authStatus !== 'success') return
     onClose()
-    dispatch(setProcessState({ unitId }))
+    dispatch(initProcess({ unitId }))
     router.push('/aplication')
     dispatch(setAuthStatus('idle'))
     dispatch(setAuthVerificationExpires(null))

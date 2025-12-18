@@ -3,24 +3,30 @@
 import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 
-import useApplicationProcess from './_/useApplicationProcess'
+import { useDispatch, useSelector } from '+/redux'
+import { setProcessState } from '+/redux/slices/process'
 
 const ApplicationRootPage = () => {
   const router = useRouter()
-  const { application } = useApplicationProcess(1)
+  const dispatch = useDispatch()
+
+  const unitId = useSelector((state) => state.process.unitId)
+  const { id: tenantId, applicationProfile } = useSelector((state) => state.user?.tenant) ?? {}
 
   useEffect(() => {
-    const { selectedProfile, selectedSecurity, activeStep } = application
-    if (activeStep >= 3 || selectedSecurity) {
-      router.replace('/aplication/security')
+    if (!unitId || !tenantId) {
+      console.error('No hay unitId o tenantId', { unitId, tenantId })
       return
     }
-    if (selectedProfile) {
-      router.replace('/aplication/information')
-      return
+
+    if (applicationProfile) {
+      dispatch(setProcessState({ tenantId, unitId, applicationProfile, step: 2 }))
+      router.push('/aplication/information')
+    } else {
+      dispatch(setProcessState({ tenantId, unitId }))
+      router.push('/aplication/information')
     }
-    router.replace('/aplication/profile')
-  }, [application.activeStep, application.selectedProfile, application.selectedSecurity, router])
+  }, [applicationProfile, dispatch, router, tenantId, unitId])
 
   return null
 }

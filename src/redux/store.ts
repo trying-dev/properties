@@ -14,6 +14,8 @@ export const initialState = {
     processId: null as string | null,
     tenantId: null as string | null,
     unitId: null as string | null,
+    applicationProfile: null as string | null,
+    step: 1,
   },
   application: {
     activeStep: 1,

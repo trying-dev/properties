@@ -117,7 +117,7 @@ export const adminSelection = {
 export interface Tenant {
   id: string
   //   userId: string
-  applicationProfile?: string
+  applicationProfile?: string | null
   //   emergencyContact?: string
   //   emergencyContactPhone?: string
   //   employmentStatus?: EmploymentStatus

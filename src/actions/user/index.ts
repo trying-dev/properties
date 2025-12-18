@@ -112,3 +112,21 @@ export const getUserAfterLogin = async ({ email }: { email: string }) => {
     throw error
   }
 }
+
+export const updateProfileAplication = async ({
+  tenantId,
+  data,
+}: {
+  tenantId: string
+  data: { applicationProfile: string | null }
+}) => {
+  try {
+    return await prisma.user.update({
+      where: { id: tenantId },
+      data,
+    })
+  } catch (error) {
+    console.error('Error updating tenant:', error)
+    throw error
+  }
+}

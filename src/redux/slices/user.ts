@@ -10,9 +10,16 @@ const userSlice = createSlice({
   initialState: initialState.user,
   reducers: {
     setUser: (state, action: PayloadAction<UserForRedux | null>) => action.payload,
+    updateTenantProfile: (state, action: PayloadAction<string>) => {
+      if (!state || !state.tenant) return state
+      return {
+        ...state,
+        tenant: { ...state.tenant, applicationProfile: action.payload },
+      }
+    },
   },
 })
 
-export const { setUser } = userSlice.actions
+export const { setUser, updateTenantProfile } = userSlice.actions
 export type { UserState }
 export default userSlice.reducer
