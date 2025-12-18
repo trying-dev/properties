@@ -10,12 +10,12 @@ import { useSession } from '+/hooks/useSession'
 import { useDispatch } from '+/redux'
 import { setProcessState } from '+/redux/slices/process'
 
-type ProcessListItem = Awaited<ReturnType<typeof getTenantProcessesAction>> extends { data: infer D } ? D extends
-  | undefined
-  | null
-  ? never
-  : D[number]
-  : never
+type ProcessListItem =
+  Awaited<ReturnType<typeof getTenantProcessesAction>> extends { data: infer D }
+    ? D extends undefined | null
+      ? never
+      : D[number]
+    : never
 
 export default function TenantProcessesPage() {
   const router = useRouter()
@@ -45,7 +45,9 @@ export default function TenantProcessesPage() {
       CANCELLED: { label: 'Cancelado', className: 'bg-red-100 text-red-800' },
     }
     const data = map[status] ?? { label: status, className: 'bg-gray-100 text-gray-800' }
-    return <span className={`px-2 py-1 rounded-full text-xs font-semibold ${data.className}`}>{data.label}</span>
+    return (
+      <span className={`px-2 py-1 rounded-full text-xs font-semibold ${data.className}`}>{data.label}</span>
+    )
   }
 
   const getStatusIcon = (status: string) => {
@@ -101,13 +103,15 @@ export default function TenantProcessesPage() {
                     if (session?.user?.id) localStorage.setItem('selectedTenantId', session.user.id)
                     if (process.unitId) localStorage.setItem('np:selectedUnitId', process.unitId)
                   }
-                  router.push('/aplication')
+                  router.push('/aplication/profile')
                 }}
               >
                 <div className="flex items-center justify-between mb-2">
                   <div className="flex items-center gap-2">
                     {getStatusIcon(process.status)}
-                    <span className="text-sm text-gray-800 font-medium">Proceso #{process.id.slice(0, 6)}</span>
+                    <span className="text-sm text-gray-800 font-medium">
+                      Proceso #{process.id.slice(0, 6)}
+                    </span>
                   </div>
                   {statusBadge(process.status)}
                 </div>

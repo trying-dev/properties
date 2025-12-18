@@ -12,6 +12,7 @@ import { State } from './store'
 import auth from './slices/auth'
 import property from './slices/property'
 import processSlice from './slices/process'
+import applicationSlice from './slices/application'
 
 export const REDUX_KEY_LOCAL_STORAGE = 'state'
 export const HYDRATE_ACTION_TYPE = 'HYDRATE'
@@ -20,6 +21,7 @@ const rootReducer = combineReducers({
   auth,
   property,
   process: processSlice,
+  application: applicationSlice,
 })
 
 const reducer = (state: State | undefined, action: PayloadAction<State>) => {
@@ -34,11 +36,29 @@ const reducer = (state: State | undefined, action: PayloadAction<State>) => {
 
 const devTools = process.env.NODE_ENV !== 'production'
 
-export const store = configureStore({ reducer, devTools })
+export const store = configureStore({
+  reducer,
+  devTools,
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: {
+        ignoredActions: ['application/setUploadedDocs', 'application/setApplicationState'],
+        ignoredPaths: ['application.uploadedDocs'],
+      },
+    }),
+})
 
 store.subscribe(() => {
   const state = store.getState()
-  localStorage.setItem(REDUX_KEY_LOCAL_STORAGE, JSON.stringify(state))
+  const { uploadedDocs, ...restApplication } = state.application
+  const serializableState = {
+    ...state,
+    application: {
+      ...restApplication,
+      uploadedDocs: {},
+    },
+  }
+  localStorage.setItem(REDUX_KEY_LOCAL_STORAGE, JSON.stringify(serializableState))
 })
 
 export type RootState = ReturnType<typeof store.getState>

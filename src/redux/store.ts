@@ -12,6 +12,21 @@ export const initialState = {
     tenantId: null as string | null,
     unitId: null as string | null,
   },
+  application: {
+    activeStep: 1,
+    selectedProfile: '' as string,
+    selectedSecurity: '' as string,
+    acceptedDeposit: false,
+    applicantInfo: {
+      fullName: '',
+      email: '',
+      phone: '',
+      documentType: 'cedula' as 'cedula' | 'pasaporte',
+      documentNumber: '',
+      monthlyIncome: '',
+    },
+    uploadedDocs: {} as Record<string, FileList | File[] | undefined>,
+  },
 }
 
 export type InitialState = typeof initialState

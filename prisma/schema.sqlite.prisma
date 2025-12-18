@@ -451,6 +451,7 @@ model User {
     gender        Gender?
     maritalStatus MaritalStatus?
     profession    String?
+    applicationProfile String? // Perfil de aplicación (ej. formal, independent, etc.)
 
     // Avatar/foto
     profileImage String?

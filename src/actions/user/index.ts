@@ -23,6 +23,7 @@ const userSafeSelect = {
   gender: true,
   maritalStatus: true,
   profession: true,
+  applicationProfile: true,
   profileImage: true,
   disable: true,
   timezone: true,

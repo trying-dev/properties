@@ -31,7 +31,7 @@ export default function ReservationActions({
 
   const handleGoToApplication = () => {
     dispatch(setProcessState({ unitId }))
-    router.push('/aplication')
+    router.push('/aplication/profile')
   }
 
   if (isAuthenticated) {

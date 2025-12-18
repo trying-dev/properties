@@ -22,8 +22,8 @@ import { getUnitByIdAction } from '+/actions/nuevo-proceso'
 import Header from '+/components/Header'
 import Footer from '+/components/Footer'
 import { auth } from '+/lib/auth'
-import Gallery from './gallery'
-import ReservationActions from './ReservationActions'
+import Gallery from './_/gallery'
+import ReservationActions from './_/ReservationActions'
 
 const formatPrice = (amount?: number | null) =>
   amount != null ? `${new Intl.NumberFormat('de-DE').format(amount)} €` : 'Precio a consultar'
@@ -283,7 +283,11 @@ export default async function UnitDetailPage({ params }: { params: Promise<{ id:
                   {unit.furnished && <p className="pl-6">Amoblado</p>}
                   {unit.petFriendly && <p className="pl-6">Pet friendly</p>}
                 </div>
-                <ReservationActions isAuthenticated={isAuthenticated} buttonLabel="Reserve" unitId={unit.id} />
+                <ReservationActions
+                  isAuthenticated={isAuthenticated}
+                  buttonLabel="Reserve"
+                  unitId={unit.id}
+                />
               </div>
             </div>
           </aside>

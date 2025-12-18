@@ -9,6 +9,7 @@ interface User {
   email: string
   image?: string
   role: 'admin' | 'tenant'
+  applicationProfile?: string | null
   adminLevel?: string
   emailVerified?: Date | null
   phoneVerified?: Date | null
