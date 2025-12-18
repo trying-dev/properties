@@ -49,10 +49,12 @@ export const authenticate = async (
     // Verificar resultado
     if (result?.error) {
       console.log(`❌ Login fallido para ${email}: ${result.error}`)
-      return { success: false, errors: { form: ['Credenciales incorrectas. Verifica tu email y contraseña.'] } }
+      return {
+        success: false,
+        errors: { form: ['Credenciales incorrectas. Verifica tu email y contraseña.'] },
+      }
     }
 
-    // ✅ Login exitoso - sin redirección automática
     console.log(`✅ Login exitoso para: ${email}`)
 
     return { success: true }

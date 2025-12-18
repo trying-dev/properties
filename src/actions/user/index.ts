@@ -2,6 +2,9 @@
 
 import { auth } from '+/lib/auth'
 import { prisma } from '+/lib/prisma'
+import { serializeDate } from '+/utils'
+
+import { adminSelection, tenantSelection, UserForRedux, userSelection } from './types'
 
 const userSafeSelect = {
   id: true,
@@ -68,3 +71,44 @@ export const getUserTenant = async () => {
 }
 
 export type UserTenant = NonNullable<Awaited<ReturnType<typeof getUserTenant>>>
+
+export const getUserAfterLogin = async ({ email }: { email: string }) => {
+  const normalizedEmail = email?.trim().toLowerCase()
+  if (!normalizedEmail) return null
+
+  try {
+    const user = await prisma.user.findUnique({
+      where: { email: normalizedEmail },
+      select: {
+        ...userSelection,
+        admin: { select: adminSelection },
+        tenant: { select: tenantSelection },
+      },
+    })
+
+    if (!user) return null
+
+    const role = user.admin ? 'admin' : 'tenant'
+
+    const serializeDates = {
+      emailVerified: serializeDate(user.emailVerified),
+      phoneVerified: serializeDate(user.phoneVerified),
+      birthDate: serializeDate(user.birthDate),
+      createdAt: serializeDate(user.createdAt),
+      updatedAt: serializeDate(user.updatedAt),
+      deletedAt: serializeDate(user.deletedAt),
+      lastLoginAt: serializeDate(user.lastLoginAt),
+    }
+
+    const userToReturn: UserForRedux = {
+      role,
+      ...user,
+      ...serializeDates,
+    }
+
+    return userToReturn
+  } catch (error) {
+    console.error('Error fetching user by email:', error)
+    throw error
+  }
+}

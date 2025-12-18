@@ -10,6 +10,7 @@ import { configureStore } from '@reduxjs/toolkit'
 
 import { State } from './store'
 import auth from './slices/auth'
+import user from './slices/user'
 import property from './slices/property'
 import processSlice from './slices/process'
 import applicationSlice from './slices/application'
@@ -19,6 +20,7 @@ export const HYDRATE_ACTION_TYPE = 'HYDRATE'
 
 const rootReducer = combineReducers({
   auth,
+  user,
   property,
   process: processSlice,
   application: applicationSlice,

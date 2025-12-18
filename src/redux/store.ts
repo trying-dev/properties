@@ -1,3 +1,5 @@
+import { UserForRedux } from '+/actions/user/types'
+
 export const initialState = {
   auth: {
     status: 'idle' as 'idle' | 'success' | 'verify',
@@ -6,6 +8,7 @@ export const initialState = {
     authModalTab: 'login' as 'login' | 'register',
     verificationExpiresAt: null as number | null,
   },
+  user: null as UserForRedux | null,
   property: {},
   process: {
     processId: null as string | null,

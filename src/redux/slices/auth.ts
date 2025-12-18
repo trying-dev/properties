@@ -25,7 +25,11 @@ const authSlice = createSlice({
   },
 })
 
-export const { setAuthStatus, setResetPasswordModalOpen, setAuthModalOpen, setAuthVerificationExpires } =
-  authSlice.actions
+export const {
+  setAuthStatus,
+  setResetPasswordModalOpen,
+  setAuthModalOpen,
+  setAuthVerificationExpires,
+} = authSlice.actions
 export type { AuthState }
 export default authSlice.reducer

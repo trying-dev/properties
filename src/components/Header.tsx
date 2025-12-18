@@ -11,12 +11,14 @@ import { logout } from '+/hooks/getSession'
 import { useSession } from '+/hooks/useSession'
 import { useDispatch, useSelector } from '+/redux'
 import { setAuthModalOpen, setAuthStatus, setAuthVerificationExpires } from '+/redux/slices/auth'
+import { setUser } from '+/redux/slices/user'
 
 export default function Header() {
   const router = useRouter()
   const dispatch = useDispatch()
   const authStatus = useSelector((state) => state.auth.status)
-  const { user, status, clearSession, refreshSession } = useSession()
+  const user = useSelector((state) => state.user)
+  const { status, clearSession, refreshSession } = useSession()
   const [open, setOpen] = useState(false)
   const menuRef = useRef<HTMLDivElement>(null)
 
@@ -33,6 +35,7 @@ export default function Header() {
   const handleLogout = async () => {
     await logout()
     clearSession()
+    dispatch(setUser(null))
     setOpen(false)
     await refreshSession()
     router.push('/')
