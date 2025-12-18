@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { Home, Search, Heart, User, Building2, MessageSquare } from 'lucide-react'
+import { Home, Search, Heart, User, Building2, MessageSquare, FileText } from 'lucide-react'
 
 import { getUserTenant, type UserTenant } from '+/actions/user'
 import Footer from '+/components/Footer'
@@ -33,6 +33,14 @@ export default function TenantDashboard() {
       title: 'Mensajes',
       description: 'Comunicación con administración',
       onClick: () => router.push('/dashboard/tenant/mensajes'),
+      badge: null,
+    },
+    {
+      id: 'processes',
+      icon: FileText,
+      title: 'Procesos',
+      description: 'Revisa tus procesos abiertos',
+      onClick: () => router.push('/dashboard/tenant/processes'),
       badge: null,
     },
     {

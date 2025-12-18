@@ -1,16 +1,448 @@
 'use client'
 
-import { useCallback, useEffect, useRef, useState } from 'react'
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  type Dispatch,
+  type SetStateAction,
+  type ReactNode,
+} from 'react'
+import { useSearchParams } from 'next/navigation'
 import { Check, Upload, FileText, Zap, ArrowLeft, ArrowRight, CheckCircle2 } from 'lucide-react'
+
 import { mockDataByProfile } from './_/mockData'
 import { profiles, securityOptions } from './_/profiles'
 import { ApplicantInfo, Field, ProfileId, UploadedDocsState } from './_/types'
-import { createProcessAction, updateProcessAction } from '+/actions/processes'
-import { useDispatch, useSelector } from 'src/redux'
-import { setProcessState } from 'src/redux/slices/process'
-import { useSession } from 'src/hooks/useSession'
 
-const ApplicationForm = () => {
+import { createProcessAction, getProcessAction, updateProcessAction } from '+/actions/processes'
+
+import { useDispatch, useSelector } from '+/redux'
+import { setProcessState } from '+/redux/slices/process'
+
+import { useSession } from '+/hooks/useSession'
+
+import Header from '+/components/Header'
+import Footer from '+/components/Footer'
+
+type StepDefinition = { number: number; title: string; description: string }
+type SummarySidebarProps = {
+  activeStep: number
+  selectedProfile: ProfileId | ''
+  applicantInfo: ApplicantInfo
+}
+type StepSelectProfileProps = {
+  selectedProfile: ProfileId | ''
+  onSelectProfile: (profileId: ProfileId) => void
+}
+type StepApplicantInfoProps = {
+  applicantInfo: ApplicantInfo
+  setApplicantInfo: Dispatch<SetStateAction<ApplicantInfo>>
+  selectedProfile: ProfileId | ''
+  renderField: (field: Field) => ReactNode
+  fillMockDataStep2: () => void
+  acceptedDeposit: boolean
+  setAcceptedDeposit: Dispatch<SetStateAction<boolean>>
+  canProceedToStep3: boolean
+  onBack: () => void
+  onNext: () => void
+}
+type StepSecurityProps = {
+  selectedSecurity: string
+  setSelectedSecurity: Dispatch<SetStateAction<string>>
+  renderField: (field: Field) => ReactNode
+  fillMockDataStep3: () => void
+  onBack: () => void
+}
+
+const steps: StepDefinition[] = [
+  { number: 1, title: 'Identificación de Perfil', description: 'Selecciona tu tipo de perfil' },
+  { number: 2, title: 'Información y Documentos', description: 'Completa tus datos personales' },
+  { number: 3, title: 'Seguridad del Contrato', description: 'Elige tu tipo de garantía' },
+]
+
+const StepProgress = ({ activeStep }: { activeStep: number }) => (
+  <>
+    <div className="mb-12">
+      <div className="flex items-center justify-between relative">
+        <div className="absolute top-5 left-0 right-0 h-1 bg-gray-200 -z-10">
+          <div
+            className="h-full bg-blue-600 transition-all duration-500"
+            style={{ width: `${((activeStep - 1) / (steps.length - 1)) * 100}%` }}
+          />
+        </div>
+
+        {steps.map((step) => (
+          <div key={step.number} className="flex flex-col items-center flex-1">
+            <div
+              className={`w-12 h-12 rounded-full flex items-center justify-center font-bold text-lg mb-2 transition-all duration-300 ${
+                activeStep > step.number
+                  ? 'bg-green-500 text-white'
+                  : activeStep === step.number
+                    ? 'bg-blue-600 text-white ring-4 ring-blue-200'
+                    : 'bg-gray-200 text-gray-500'
+              }`}
+            >
+              {activeStep > step.number ? <CheckCircle2 size={24} /> : step.number}
+            </div>
+            <div className="text-center hidden md:block">
+              <p
+                className={`text-sm font-semibold ${
+                  activeStep >= step.number ? 'text-gray-900' : 'text-gray-400'
+                }`}
+              >
+                {step.title}
+              </p>
+              <p className="text-xs text-gray-500 mt-1">{step.description}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+
+    <div className="bg-white rounded-lg shadow-sm p-4 mb-6">
+      <div className="flex items-center gap-2 text-sm">
+        <span className="text-gray-500">Paso {activeStep} de 3</span>
+        <span className="text-gray-300">•</span>
+        <span className="font-semibold text-gray-900">{steps[activeStep - 1].title}</span>
+      </div>
+      <div className="mt-3 h-2 bg-gray-100 rounded-full overflow-hidden">
+        <div
+          className="h-full bg-blue-600 transition-all duration-500"
+          style={{ width: `${(activeStep / steps.length) * 100}%` }}
+        />
+      </div>
+    </div>
+  </>
+)
+
+const SummarySidebar = ({ activeStep, selectedProfile, applicantInfo }: SummarySidebarProps) => {
+  if (activeStep <= 1) return null
+
+  return (
+    <div className="bg-blue-50 border-l-4 border-blue-500 rounded-lg p-4 mb-6">
+      <h3 className="font-semibold text-blue-900 mb-3 flex items-center gap-2">
+        <CheckCircle2 size={20} />
+        Resumen de tu solicitud
+      </h3>
+      <div className="space-y-2 text-sm">
+        {selectedProfile && (
+          <div className="flex items-center gap-2">
+            <span className="text-2xl">{profiles[selectedProfile].emoji}</span>
+            <div>
+              <p className="font-medium text-gray-900">{profiles[selectedProfile].name}</p>
+            </div>
+          </div>
+        )}
+        {activeStep > 2 && applicantInfo.fullName && (
+          <div className="pt-2 border-t border-blue-200">
+            <p className="text-gray-700">
+              <span className="font-medium">Solicitante:</span> {applicantInfo.fullName}
+            </p>
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
+
+const StepSelectProfile = ({ selectedProfile, onSelectProfile }: StepSelectProfileProps) => (
+  <div className="p-8 animate-fadeIn">
+    <div className="mb-6">
+      <h2 className="text-2xl font-bold text-gray-900 mb-2">¿Cuál es tu perfil?</h2>
+      <p className="text-gray-600">Selecciona el perfil que mejor describe tu situación laboral actual</p>
+    </div>
+
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      {Object.entries(profiles).map(([key, profile]) => (
+        <button
+          key={key}
+          onClick={() => onSelectProfile(key as ProfileId)}
+          className={`p-6 border-2 rounded-xl text-left transition-all transform hover:scale-105 ${
+            selectedProfile === key
+              ? 'border-blue-600 bg-blue-50 shadow-lg ring-2 ring-blue-200'
+              : 'border-gray-200 hover:border-blue-300 hover:shadow-md'
+          }`}
+        >
+          <div className="flex items-center gap-3 mb-3">
+            <span className="text-4xl">{profile.emoji}</span>
+            <div>
+              <span className="font-bold text-lg text-gray-900 block">{profile.name}</span>
+            </div>
+          </div>
+          {selectedProfile === key && (
+            <div className="mt-3 pt-3 border-t border-blue-200">
+              <div className="flex items-center gap-2 text-blue-700 text-sm font-medium">
+                <CheckCircle2 size={16} />
+                <span>Perfil seleccionado</span>
+              </div>
+            </div>
+          )}
+        </button>
+      ))}
+    </div>
+  </div>
+)
+
+const StepApplicantInfo = ({
+  applicantInfo,
+  setApplicantInfo,
+  selectedProfile,
+  renderField,
+  fillMockDataStep2,
+  acceptedDeposit,
+  setAcceptedDeposit,
+  canProceedToStep3,
+  onBack,
+  onNext,
+}: StepApplicantInfoProps) => (
+  <div className="p-8 animate-fadeIn">
+    <div className="mb-6 flex justify-between items-start">
+      <div>
+        <h2 className="text-2xl font-bold text-gray-900 mb-2">Información y Documentos</h2>
+        <p className="text-gray-600">Completa tus datos y sube los documentos requeridos</p>
+      </div>
+      <button
+        onClick={fillMockDataStep2}
+        className="flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-all shadow-md text-sm"
+      >
+        <Zap size={16} />
+        <span>Datos de prueba</span>
+      </button>
+    </div>
+
+    <div className="mb-8">
+      <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+        <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center">
+          <span className="text-blue-600 font-bold">1</span>
+        </div>
+        Información Básica
+      </h3>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pl-10">
+        <label className="flex flex-col gap-2 text-sm text-gray-700">
+          <span className="font-medium">
+            Nombre completo <span className="text-red-500">*</span>
+          </span>
+          <input
+            type="text"
+            value={applicantInfo.fullName}
+            onChange={(e) => setApplicantInfo({ ...applicantInfo, fullName: e.target.value })}
+            className="p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            placeholder="Juan Pérez"
+          />
+        </label>
+        <label className="flex flex-col gap-2 text-sm text-gray-700">
+          <span className="font-medium">
+            Correo electrónico <span className="text-red-500">*</span>
+          </span>
+          <input
+            type="email"
+            value={applicantInfo.email}
+            onChange={(e) => setApplicantInfo({ ...applicantInfo, email: e.target.value })}
+            className="p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            placeholder="correo@ejemplo.com"
+          />
+        </label>
+        <label className="flex flex-col gap-2 text-sm text-gray-700">
+          <span className="font-medium">
+            Teléfono <span className="text-red-500">*</span>
+          </span>
+          <input
+            type="tel"
+            value={applicantInfo.phone}
+            onChange={(e) => setApplicantInfo({ ...applicantInfo, phone: e.target.value })}
+            className="p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            placeholder="+57 300 000 0000"
+          />
+        </label>
+        <label className="flex flex-col gap-2 text-sm text-gray-700">
+          <span className="font-medium">
+            {applicantInfo.documentType === 'pasaporte' ? 'Pasaporte' : 'Cédula'}{' '}
+            <span className="text-red-500">*</span>
+          </span>
+          <input
+            type="text"
+            value={applicantInfo.documentNumber}
+            onChange={(e) => setApplicantInfo({ ...applicantInfo, documentNumber: e.target.value })}
+            className="p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            placeholder={applicantInfo.documentType === 'pasaporte' ? 'AA1234567' : '1234567890'}
+          />
+        </label>
+        <label className="flex flex-col gap-2 text-sm text-gray-700">
+          <span className="font-medium">
+            Ingreso mensual (COP) <span className="text-red-500">*</span>
+          </span>
+          <input
+            type="number"
+            value={applicantInfo.monthlyIncome}
+            onChange={(e) => setApplicantInfo({ ...applicantInfo, monthlyIncome: e.target.value })}
+            className="p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            placeholder="5,000,000"
+          />
+        </label>
+      </div>
+    </div>
+
+    {selectedProfile && (
+      <div className="mb-8">
+        <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+          <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center">
+            <span className="text-blue-600 font-bold">2</span>
+          </div>
+          Documentos Requeridos
+        </h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pl-10">
+          {profiles[selectedProfile].fields.map((field) => renderField(field))}
+        </div>
+      </div>
+    )}
+
+    <div className="bg-yellow-50 border-2 border-yellow-300 rounded-xl p-6 mb-8">
+      <h4 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
+        <span className="text-2xl">⚠️</span>
+        Confirmación de Depósito
+      </h4>
+      <p className="text-gray-700 mb-4">
+        El depósito mínimo requerido es de{' '}
+        <strong className="text-yellow-800 text-lg">
+          {selectedProfile ? profiles[selectedProfile].deposit : ''}
+        </strong>
+      </p>
+      <label className="flex items-start gap-3 cursor-pointer">
+        <input
+          type="checkbox"
+          checked={acceptedDeposit}
+          onChange={(e) => setAcceptedDeposit(e.target.checked)}
+          className="mt-1 w-5 h-5 text-blue-600 rounded"
+        />
+        <span className="text-gray-700">Acepto y estoy de acuerdo con el depósito mínimo requerido</span>
+      </label>
+    </div>
+
+    <div className="flex justify-between">
+      <button
+        onClick={onBack}
+        className="flex items-center gap-2 px-6 py-3 rounded-lg font-semibold bg-gray-100 text-gray-700 hover:bg-gray-200 transition-all"
+      >
+        <ArrowLeft size={20} />
+        <span>Atrás</span>
+      </button>
+      <button
+        onClick={onNext}
+        disabled={!canProceedToStep3}
+        className={`flex items-center gap-2 px-8 py-4 rounded-lg font-semibold text-lg transition-all ${
+          canProceedToStep3
+            ? 'bg-blue-600 text-white hover:bg-blue-700 shadow-lg hover:shadow-xl'
+            : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+        }`}
+      >
+        <span>Continuar</span>
+        <ArrowRight size={20} />
+      </button>
+    </div>
+  </div>
+)
+
+const StepSecurity = ({
+  selectedSecurity,
+  setSelectedSecurity,
+  renderField,
+  fillMockDataStep3,
+  onBack,
+}: StepSecurityProps) => (
+  <div className="p-8 animate-fadeIn">
+    <div className="mb-6 flex justify-between items-start">
+      <div>
+        <h2 className="text-2xl font-bold text-gray-900 mb-2">Seguridad del Contrato</h2>
+        <p className="text-gray-600">Selecciona tu opción de garantía preferida</p>
+      </div>
+      {selectedSecurity && (
+        <button
+          onClick={fillMockDataStep3}
+          className="flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-all shadow-md text-sm"
+        >
+          <Zap size={16} />
+          <span>Datos de prueba</span>
+        </button>
+      )}
+    </div>
+
+    <div className="space-y-4 mb-8">
+      {securityOptions.map((option) => (
+        <div
+          key={option.id}
+          className={`border-2 rounded-xl transition-all ${
+            selectedSecurity === option.id
+              ? 'border-blue-600 bg-blue-50 shadow-lg'
+              : 'border-gray-200 hover:border-blue-300 hover:shadow-md'
+          }`}
+        >
+          <button
+            onClick={() => setSelectedSecurity(selectedSecurity === option.id ? '' : option.id)}
+            className="w-full p-6 text-left"
+          >
+            <div className="flex items-start justify-between">
+              <div className="flex-1">
+                <h4 className="font-bold text-gray-900 text-xl mb-1">{option.name}</h4>
+                <p className="text-gray-600 text-sm mb-2">{option.description}</p>
+                <p className="text-blue-700 text-sm font-medium flex items-center gap-1">
+                  <span>📊</span>
+                  {option.requirements}
+                </p>
+              </div>
+              <div
+                className={`w-7 h-7 rounded-full border-2 flex items-center justify-center flex-shrink-0 ml-4 transition-all ${
+                  selectedSecurity === option.id ? 'border-blue-600 bg-blue-600' : 'border-gray-300'
+                }`}
+              >
+                {selectedSecurity === option.id && <Check size={18} className="text-white" />}
+              </div>
+            </div>
+          </button>
+        </div>
+      ))}
+    </div>
+
+    {selectedSecurity && (
+      <div className="bg-gray-50 border border-gray-200 rounded-xl p-6 mb-8">
+        <h4 className="text-lg font-semibold text-gray-900 mb-4">
+          Documentos de {securityOptions.find((opt) => opt.id === selectedSecurity)?.name}
+        </h4>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {securityOptions
+            .find((opt) => opt.id === selectedSecurity)
+            ?.fields.map((field) => renderField(field))}
+        </div>
+      </div>
+    )}
+
+    <div className="flex justify-between">
+      <button
+        onClick={onBack}
+        className="flex items-center gap-2 px-6 py-3 rounded-lg font-semibold bg-gray-100 text-gray-700 hover:bg-gray-200 transition-all"
+      >
+        <ArrowLeft size={20} />
+        <span>Atrás</span>
+      </button>
+      <button
+        disabled={!selectedSecurity}
+        className={`flex items-center gap-2 px-8 py-4 rounded-lg font-semibold text-lg transition-all ${
+          selectedSecurity
+            ? 'bg-green-600 text-white hover:bg-green-700 shadow-lg hover:shadow-xl'
+            : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+        }`}
+      >
+        <CheckCircle2 size={20} />
+        <span>Enviar Solicitud</span>
+      </button>
+    </div>
+  </div>
+)
+
+export default function Application() {
+  const dispatch = useDispatch()
+
   const [selectedProfile, setSelectedProfile] = useState<ProfileId | ''>('')
   const [selectedSecurity, setSelectedSecurity] = useState('')
   const [acceptedDeposit, setAcceptedDeposit] = useState(false)
@@ -25,12 +457,15 @@ const ApplicationForm = () => {
   })
   const [uploadedDocs, setUploadedDocs] = useState<UploadedDocsState>({})
   const saveTimeout = useRef<ReturnType<typeof setTimeout> | null>(null)
-  const dispatch = useDispatch()
+
   const processState = useSelector((state) => state.process)
   const processId = processState?.processId ?? null
   const tenantId = processState?.tenantId ?? null
   const unitId = processState?.unitId ?? null
   const { session } = useSession()
+  const searchParams = useSearchParams()
+  const urlProcessId = searchParams?.get('processId')
+  const hasHydratedProcess = useRef(false)
 
   const handleFileChange = (fieldId: string, files: FileList | null) => {
     if (!files) return
@@ -40,9 +475,7 @@ const ApplicationForm = () => {
     }))
   }
 
-  const createMockFile = (fileName: string) => {
-    return new File([''], fileName, { type: 'application/pdf' })
-  }
+  const createMockFile = (fileName: string) => new File([''], fileName, { type: 'application/pdf' })
 
   const handleSelectProfile = (profileId: ProfileId) => {
     setSelectedProfile(profileId)
@@ -54,30 +487,51 @@ const ApplicationForm = () => {
       documentNumber: '',
     }))
     setActiveStep(2)
+    const payload = {
+      applicantInfo,
+      selectedProfile: profileId,
+      selectedSecurity,
+      acceptedDeposit,
+      activeStep: 2,
+      tenantId,
+      unitId,
+    }
+    persistProcess(payload, 2, true)
   }
+
   const persistProcess = useCallback(
-    async (payload: Record<string, unknown>, step: number) => {
+    async (payload: Record<string, unknown>, step: number, immediate = false) => {
       if (saveTimeout.current) {
         clearTimeout(saveTimeout.current)
       }
 
-      saveTimeout.current = setTimeout(async () => {
+      const run = async () => {
+        console.log({ payload, step, tenantId, unitId, processId })
         try {
           if (!processId) {
             const result = await createProcessAction({ payload, currentStep: step, tenantId, unitId })
             if (result.success && result.data?.id) {
               dispatch(setProcessState({ processId: result.data.id }))
-              if (typeof window !== 'undefined') {
-                localStorage.setItem('applicationProcessId', result.data.id)
-              }
             }
           } else {
-            await updateProcessAction({ processId, payloadPatch: payload, currentStep: step, tenantId, unitId })
+            await updateProcessAction({
+              processId,
+              payloadPatch: payload,
+              currentStep: step,
+              tenantId,
+              unitId,
+            })
           }
         } catch (error) {
           console.error('Error al guardar el proceso:', error)
         }
-      }, 800)
+      }
+
+      if (immediate) {
+        run()
+      } else {
+        saveTimeout.current = setTimeout(run, 800)
+      }
     },
     [dispatch, processId, tenantId, unitId]
   )
@@ -85,7 +539,8 @@ const ApplicationForm = () => {
   useEffect(() => {
     if (typeof window === 'undefined') return
     const storedProcess = localStorage.getItem('applicationProcessId')
-    const storedTenant = localStorage.getItem('selectedTenantId') || localStorage.getItem('np:selectedTenantId')
+    const storedTenant =
+      localStorage.getItem('selectedTenantId') || localStorage.getItem('np:selectedTenantId')
     const storedUnit = localStorage.getItem('np:selectedUnitId')
 
     const patch: Record<string, string> = {}
@@ -102,6 +557,46 @@ const ApplicationForm = () => {
     if (tenantId || !session?.user?.id || session.user.role !== 'tenant') return
     dispatch(setProcessState({ tenantId: session.user.id }))
   }, [dispatch, session?.user?.id, session?.user?.role, tenantId])
+
+  useEffect(() => {
+    if (!urlProcessId || processId === urlProcessId) return
+    dispatch(setProcessState({ processId: urlProcessId }))
+  }, [dispatch, processId, urlProcessId])
+
+  useEffect(() => {
+    const pid = urlProcessId || processId
+    if (!pid || hasHydratedProcess.current) return
+
+    const loadProcess = async () => {
+      try {
+        const result = await getProcessAction(pid)
+        if (!result.success || !result.data) return
+
+        const { payload, currentStep, tenantId: storedTenantId, unitId: storedUnitId } = result.data
+        const payloadData = (payload as Record<string, unknown>) ?? {}
+
+        if (storedTenantId) dispatch(setProcessState({ tenantId: storedTenantId }))
+        if (storedUnitId) dispatch(setProcessState({ unitId: storedUnitId }))
+
+        if (payloadData.selectedProfile) setSelectedProfile(payloadData.selectedProfile as ProfileId)
+        if (payloadData.selectedSecurity) setSelectedSecurity((payloadData.selectedSecurity as string) || '')
+        if (payloadData.acceptedDeposit !== undefined)
+          setAcceptedDeposit(Boolean(payloadData.acceptedDeposit))
+        if (payloadData.applicantInfo && typeof payloadData.applicantInfo === 'object') {
+          setApplicantInfo((prev) => ({
+            ...prev,
+            ...(payloadData.applicantInfo as ApplicantInfo),
+          }))
+        }
+        setActiveStep((payloadData.activeStep as number | undefined) ?? currentStep ?? activeStep ?? 1)
+        hasHydratedProcess.current = true
+      } catch (error) {
+        console.error('Error al cargar el proceso:', error)
+      }
+    }
+
+    loadProcess()
+  }, [activeStep, dispatch, processId, urlProcessId])
 
   useEffect(() => {
     const payload = {
@@ -162,14 +657,16 @@ const ApplicationForm = () => {
     setUploadedDocs(mockDocs)
   }
 
-  const canProceedToStep2 = selectedProfile
+  const canProceedToStep2 = Boolean(selectedProfile)
   const canProceedToStep3 =
     canProceedToStep2 &&
-    applicantInfo.fullName.trim() &&
-    applicantInfo.email.trim() &&
-    applicantInfo.phone.trim() &&
-    applicantInfo.documentNumber.trim() &&
-    applicantInfo.monthlyIncome.trim() &&
+    Boolean(
+      applicantInfo.fullName.trim() &&
+      applicantInfo.email.trim() &&
+      applicantInfo.phone.trim() &&
+      applicantInfo.documentNumber.trim() &&
+      applicantInfo.monthlyIncome.trim()
+    ) &&
     acceptedDeposit
 
   const renderField = (field: Field) => {
@@ -249,14 +746,10 @@ const ApplicationForm = () => {
     )
   }
 
-  const steps = [
-    { number: 1, title: 'Identificación de Perfil', description: 'Selecciona tu tipo de perfil' },
-    { number: 2, title: 'Información y Documentos', description: 'Completa tus datos personales' },
-    { number: 3, title: 'Seguridad del Contrato', description: 'Elige tu tipo de garantía' },
-  ]
-
   return (
     <div className="min-h-screen bg-linear-to-br from-gray-50 to-blue-50 py-8 px-4">
+      <Header />
+
       <div className="max-w-5xl mx-auto">
         {/* Header */}
         <div className="text-center mb-8">
@@ -264,380 +757,46 @@ const ApplicationForm = () => {
           <p className="text-gray-600">Completa los siguientes pasos para enviar tu solicitud</p>
         </div>
 
-        {/* Progress Indicator */}
-        <div className="mb-12">
-          <div className="flex items-center justify-between relative">
-            {/* Progress Line */}
-            <div className="absolute top-5 left-0 right-0 h-1 bg-gray-200 -z-10">
-              <div
-                className="h-full bg-blue-600 transition-all duration-500"
-                style={{ width: `${((activeStep - 1) / (steps.length - 1)) * 100}%` }}
-              />
-            </div>
+        <StepProgress activeStep={activeStep} />
 
-            {/* Steps */}
-            {steps.map((step) => (
-              <div key={step.number} className="flex flex-col items-center flex-1">
-                <div
-                  className={`w-12 h-12 rounded-full flex items-center justify-center font-bold text-lg mb-2 transition-all duration-300 ${
-                    activeStep > step.number
-                      ? 'bg-green-500 text-white'
-                      : activeStep === step.number
-                        ? 'bg-blue-600 text-white ring-4 ring-blue-200'
-                        : 'bg-gray-200 text-gray-500'
-                  }`}
-                >
-                  {activeStep > step.number ? <CheckCircle2 size={24} /> : step.number}
-                </div>
-                <div className="text-center hidden md:block">
-                  <p
-                    className={`text-sm font-semibold ${
-                      activeStep >= step.number ? 'text-gray-900' : 'text-gray-400'
-                    }`}
-                  >
-                    {step.title}
-                  </p>
-                  <p className="text-xs text-gray-500 mt-1">{step.description}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Breadcrumb */}
-        <div className="bg-white rounded-lg shadow-sm p-4 mb-6">
-          <div className="flex items-center gap-2 text-sm">
-            <span className="text-gray-500">Paso {activeStep} de 3</span>
-            <span className="text-gray-300">•</span>
-            <span className="font-semibold text-gray-900">{steps[activeStep - 1].title}</span>
-          </div>
-          {/* Progress bar */}
-          <div className="mt-3 h-2 bg-gray-100 rounded-full overflow-hidden">
-            <div
-              className="h-full bg-blue-600 transition-all duration-500"
-              style={{ width: `${(activeStep / steps.length) * 100}%` }}
-            />
-          </div>
-        </div>
-
-        {/* Summary Sidebar for completed steps */}
-        {activeStep > 1 && (
-          <div className="bg-blue-50 border-l-4 border-blue-500 rounded-lg p-4 mb-6">
-            <h3 className="font-semibold text-blue-900 mb-3 flex items-center gap-2">
-              <CheckCircle2 size={20} />
-              Resumen de tu solicitud
-            </h3>
-            <div className="space-y-2 text-sm">
-              {selectedProfile && (
-                <div className="flex items-center gap-2">
-                  <span className="text-2xl">{profiles[selectedProfile].emoji}</span>
-                  <div>
-                    <p className="font-medium text-gray-900">{profiles[selectedProfile].name}</p>
-                  </div>
-                </div>
-              )}
-              {activeStep > 2 && applicantInfo.fullName && (
-                <div className="pt-2 border-t border-blue-200">
-                  <p className="text-gray-700">
-                    <span className="font-medium">Solicitante:</span> {applicantInfo.fullName}
-                  </p>
-                </div>
-              )}
-            </div>
-          </div>
-        )}
+        <SummarySidebar
+          activeStep={activeStep}
+          selectedProfile={selectedProfile}
+          applicantInfo={applicantInfo}
+        />
 
         {/* Main Content Card */}
         <div className="bg-white rounded-xl shadow-lg overflow-hidden">
           {/* PASO 1: Identificación de Perfil */}
           {activeStep === 1 && (
-            <div className="p-8 animate-fadeIn">
-              <div className="mb-6">
-                <h2 className="text-2xl font-bold text-gray-900 mb-2">¿Cuál es tu perfil?</h2>
-                <p className="text-gray-600">
-                  Selecciona el perfil que mejor describe tu situación laboral actual
-                </p>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {Object.entries(profiles).map(([key, profile]) => (
-                  <button
-                    key={key}
-                    onClick={() => {
-                      handleSelectProfile(key as ProfileId)
-                    }}
-                    className={`p-6 border-2 rounded-xl text-left transition-all transform hover:scale-105 ${
-                      selectedProfile === key
-                        ? 'border-blue-600 bg-blue-50 shadow-lg ring-2 ring-blue-200'
-                        : 'border-gray-200 hover:border-blue-300 hover:shadow-md'
-                    }`}
-                  >
-                    <div className="flex items-center gap-3 mb-3">
-                      <span className="text-4xl">{profile.emoji}</span>
-                      <div>
-                        <span className="font-bold text-lg text-gray-900 block">{profile.name}</span>
-                      </div>
-                    </div>
-                    {selectedProfile === key && (
-                      <div className="mt-3 pt-3 border-t border-blue-200">
-                        <div className="flex items-center gap-2 text-blue-700 text-sm font-medium">
-                          <CheckCircle2 size={16} />
-                          <span>Perfil seleccionado</span>
-                        </div>
-                      </div>
-                    )}
-                  </button>
-                ))}
-              </div>
-
-            </div>
+            <StepSelectProfile selectedProfile={selectedProfile} onSelectProfile={handleSelectProfile} />
           )}
 
           {/* PASO 2: Información y Documentos */}
           {activeStep === 2 && (
-            <div className="p-8 animate-fadeIn">
-              <div className="mb-6 flex justify-between items-start">
-                <div>
-                  <h2 className="text-2xl font-bold text-gray-900 mb-2">Información y Documentos</h2>
-                  <p className="text-gray-600">Completa tus datos y sube los documentos requeridos</p>
-                </div>
-                <button
-                  onClick={fillMockDataStep2}
-                  className="flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-all shadow-md text-sm"
-                >
-                  <Zap size={16} />
-                  <span>Datos de prueba</span>
-                </button>
-              </div>
-
-              {/* Información Básica */}
-              <div className="mb-8">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center">
-                    <span className="text-blue-600 font-bold">1</span>
-                  </div>
-                  Información Básica
-                </h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pl-10">
-                  <label className="flex flex-col gap-2 text-sm text-gray-700">
-                    <span className="font-medium">
-                      Nombre completo <span className="text-red-500">*</span>
-                    </span>
-                    <input
-                      type="text"
-                      value={applicantInfo.fullName}
-                      onChange={(e) => setApplicantInfo({ ...applicantInfo, fullName: e.target.value })}
-                      className="p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      placeholder="Juan Pérez"
-                    />
-                  </label>
-                  <label className="flex flex-col gap-2 text-sm text-gray-700">
-                    <span className="font-medium">
-                      Correo electrónico <span className="text-red-500">*</span>
-                    </span>
-                    <input
-                      type="email"
-                      value={applicantInfo.email}
-                      onChange={(e) => setApplicantInfo({ ...applicantInfo, email: e.target.value })}
-                      className="p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      placeholder="correo@ejemplo.com"
-                    />
-                  </label>
-                  <label className="flex flex-col gap-2 text-sm text-gray-700">
-                    <span className="font-medium">
-                      Teléfono <span className="text-red-500">*</span>
-                    </span>
-                    <input
-                      type="tel"
-                      value={applicantInfo.phone}
-                      onChange={(e) => setApplicantInfo({ ...applicantInfo, phone: e.target.value })}
-                      className="p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      placeholder="+57 300 000 0000"
-                    />
-                  </label>
-                  <label className="flex flex-col gap-2 text-sm text-gray-700">
-                    <span className="font-medium">
-                      {applicantInfo.documentType === 'pasaporte' ? 'Pasaporte' : 'Cédula'}{' '}
-                      <span className="text-red-500">*</span>
-                    </span>
-                    <input
-                      type="text"
-                      value={applicantInfo.documentNumber}
-                      onChange={(e) => setApplicantInfo({ ...applicantInfo, documentNumber: e.target.value })}
-                      className="p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      placeholder={applicantInfo.documentType === 'pasaporte' ? 'AA1234567' : '1234567890'}
-                    />
-                  </label>
-                  <label className="flex flex-col gap-2 text-sm text-gray-700">
-                    <span className="font-medium">
-                      Ingreso mensual (COP) <span className="text-red-500">*</span>
-                    </span>
-                    <input
-                      type="number"
-                      value={applicantInfo.monthlyIncome}
-                      onChange={(e) => setApplicantInfo({ ...applicantInfo, monthlyIncome: e.target.value })}
-                      className="p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      placeholder="5,000,000"
-                    />
-                  </label>
-                </div>
-              </div>
-
-              {/* Documentos */}
-              {selectedProfile && (
-                <div className="mb-8">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                    <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center">
-                      <span className="text-blue-600 font-bold">2</span>
-                    </div>
-                    Documentos Requeridos
-                  </h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pl-10">
-                    {profiles[selectedProfile].fields.map((field) => renderField(field))}
-                  </div>
-                </div>
-              )}
-
-              {/* Confirmación de depósito */}
-              <div className="bg-yellow-50 border-2 border-yellow-300 rounded-xl p-6 mb-8">
-                <h4 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
-                  <span className="text-2xl">⚠️</span>
-                  Confirmación de Depósito
-                </h4>
-                <p className="text-gray-700 mb-4">
-                  El depósito mínimo requerido es de{' '}
-                  <strong className="text-yellow-800 text-lg">
-                    {selectedProfile ? profiles[selectedProfile].deposit : ''}
-                  </strong>
-                </p>
-                <label className="flex items-start gap-3 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={acceptedDeposit}
-                    onChange={(e) => setAcceptedDeposit(e.target.checked)}
-                    className="mt-1 w-5 h-5 text-blue-600 rounded"
-                  />
-                  <span className="text-gray-700">
-                    Acepto y estoy de acuerdo con el depósito mínimo requerido
-                  </span>
-                </label>
-              </div>
-
-              <div className="flex justify-between">
-                <button
-                  onClick={() => setActiveStep(1)}
-                  className="flex items-center gap-2 px-6 py-3 rounded-lg font-semibold bg-gray-100 text-gray-700 hover:bg-gray-200 transition-all"
-                >
-                  <ArrowLeft size={20} />
-                  <span>Atrás</span>
-                </button>
-                <button
-                  onClick={() => setActiveStep(3)}
-                  disabled={!canProceedToStep3}
-                  className={`flex items-center gap-2 px-8 py-4 rounded-lg font-semibold text-lg transition-all ${
-                    canProceedToStep3
-                      ? 'bg-blue-600 text-white hover:bg-blue-700 shadow-lg hover:shadow-xl'
-                      : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                  }`}
-                >
-                  <span>Continuar</span>
-                  <ArrowRight size={20} />
-                </button>
-              </div>
-            </div>
+            <StepApplicantInfo
+              applicantInfo={applicantInfo}
+              setApplicantInfo={setApplicantInfo}
+              selectedProfile={selectedProfile}
+              renderField={renderField}
+              fillMockDataStep2={fillMockDataStep2}
+              acceptedDeposit={acceptedDeposit}
+              setAcceptedDeposit={setAcceptedDeposit}
+              canProceedToStep3={canProceedToStep3}
+              onBack={() => setActiveStep(1)}
+              onNext={() => setActiveStep(3)}
+            />
           )}
 
           {/* PASO 3: Seguridad del Contrato */}
           {activeStep === 3 && (
-            <div className="p-8 animate-fadeIn">
-              <div className="mb-6 flex justify-between items-start">
-                <div>
-                  <h2 className="text-2xl font-bold text-gray-900 mb-2">Seguridad del Contrato</h2>
-                  <p className="text-gray-600">Selecciona tu opción de garantía preferida</p>
-                </div>
-                {selectedSecurity && (
-                  <button
-                    onClick={fillMockDataStep3}
-                    className="flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-all shadow-md text-sm"
-                  >
-                    <Zap size={16} />
-                    <span>Datos de prueba</span>
-                  </button>
-                )}
-              </div>
-
-              {/* Opciones de garantía */}
-              <div className="space-y-4 mb-8">
-                {securityOptions.map((option) => (
-                  <div
-                    key={option.id}
-                    className={`border-2 rounded-xl transition-all ${
-                      selectedSecurity === option.id
-                        ? 'border-blue-600 bg-blue-50 shadow-lg'
-                        : 'border-gray-200 hover:border-blue-300 hover:shadow-md'
-                    }`}
-                  >
-                    <button
-                      onClick={() => setSelectedSecurity(selectedSecurity === option.id ? '' : option.id)}
-                      className="w-full p-6 text-left"
-                    >
-                      <div className="flex items-start justify-between">
-                        <div className="flex-1">
-                          <h4 className="font-bold text-gray-900 text-xl mb-1">{option.name}</h4>
-                          <p className="text-gray-600 text-sm mb-2">{option.description}</p>
-                          <p className="text-blue-700 text-sm font-medium flex items-center gap-1">
-                            <span>📊</span>
-                            {option.requirements}
-                          </p>
-                        </div>
-                        <div
-                          className={`w-7 h-7 rounded-full border-2 flex items-center justify-center flex-shrink-0 ml-4 transition-all ${
-                            selectedSecurity === option.id ? 'border-blue-600 bg-blue-600' : 'border-gray-300'
-                          }`}
-                        >
-                          {selectedSecurity === option.id && <Check size={18} className="text-white" />}
-                        </div>
-                      </div>
-                    </button>
-                  </div>
-                ))}
-              </div>
-
-              {/* Formulario de documentos */}
-              {selectedSecurity && (
-                <div className="bg-gray-50 border border-gray-200 rounded-xl p-6 mb-8">
-                  <h4 className="text-lg font-semibold text-gray-900 mb-4">
-                    Documentos de {securityOptions.find((opt) => opt.id === selectedSecurity)?.name}
-                  </h4>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {securityOptions
-                      .find((opt) => opt.id === selectedSecurity)
-                      ?.fields.map((field) => renderField(field))}
-                  </div>
-                </div>
-              )}
-
-              <div className="flex justify-between">
-                <button
-                  onClick={() => setActiveStep(2)}
-                  className="flex items-center gap-2 px-6 py-3 rounded-lg font-semibold bg-gray-100 text-gray-700 hover:bg-gray-200 transition-all"
-                >
-                  <ArrowLeft size={20} />
-                  <span>Atrás</span>
-                </button>
-                <button
-                  disabled={!selectedSecurity}
-                  className={`flex items-center gap-2 px-8 py-4 rounded-lg font-semibold text-lg transition-all ${
-                    selectedSecurity
-                      ? 'bg-green-600 text-white hover:bg-green-700 shadow-lg hover:shadow-xl'
-                      : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                  }`}
-                >
-                  <CheckCircle2 size={20} />
-                  <span>Enviar Solicitud</span>
-                </button>
-              </div>
-            </div>
+            <StepSecurity
+              selectedSecurity={selectedSecurity}
+              setSelectedSecurity={setSelectedSecurity}
+              renderField={renderField}
+              fillMockDataStep3={fillMockDataStep3}
+              onBack={() => setActiveStep(2)}
+            />
           )}
         </div>
       </div>
@@ -657,8 +816,8 @@ const ApplicationForm = () => {
           animation: fadeIn 0.3s ease-out;
         }
       `}</style>
+
+      <Footer />
     </div>
   )
 }
-
-export default ApplicationForm

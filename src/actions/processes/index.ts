@@ -129,3 +129,46 @@ export const updateProcessAction = async (input: UpdateProcessInput) => {
     return { success: false, error: 'No se pudo actualizar el proceso' }
   }
 }
+
+export const getProcessAction = async (processId: string) => {
+  if (!processId) return { success: false, error: 'Falta processId' }
+  try {
+    const process = await prisma.process.findUnique({
+      where: { id: processId },
+      select: {
+        id: true,
+        payload: true,
+        currentStep: true,
+        tenantId: true,
+        unitId: true,
+      },
+    })
+
+    if (!process) return { success: false, error: 'Proceso no encontrado' }
+    return { success: true, data: process }
+  } catch (error) {
+    console.error('Error en getProcessAction:', error)
+    return { success: false, error: 'No se pudo obtener el proceso' }
+  }
+}
+
+export const getTenantProcessesAction = async (tenantId: string) => {
+  if (!tenantId) return { success: false, error: 'Falta tenantId' }
+  try {
+    const processes = await prisma.process.findMany({
+      where: { tenantId },
+      select: {
+        id: true,
+        status: true,
+        currentStep: true,
+        updatedAt: true,
+        unitId: true,
+      },
+      orderBy: { updatedAt: 'desc' },
+    })
+    return { success: true, data: processes }
+  } catch (error) {
+    console.error('Error en getTenantProcessesAction:', error)
+    return { success: false, error: 'No se pudieron obtener los procesos' }
+  }
+}
