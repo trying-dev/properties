@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { Home, Search, Heart, User, Building2, MessageSquare, FileText } from 'lucide-react'
 
 import { getUserTenant, type UserTenant } from '+/actions/user'
+import { getTenantProcessesAction } from '+/actions/processes'
 import Footer from '+/components/Footer'
 import Header from '+/components/Header'
 
@@ -12,12 +13,19 @@ export default function TenantDashboard() {
   const router = useRouter()
   const [user, setUser] = useState<UserTenant>()
   const [loading, setLoading] = useState(true)
+  const [processesCount, setProcessesCount] = useState(0)
 
   useEffect(() => {
     const fetchData = async () => {
       const userData = await getUserTenant()
       if (userData) {
         setUser(userData)
+        if (userData.tenant?.id) {
+          const processes = await getTenantProcessesAction(userData.tenant.id)
+          if (processes.success && processes.data) {
+            setProcessesCount(processes.data.length)
+          }
+        }
         setLoading(false)
       }
     }
@@ -41,7 +49,7 @@ export default function TenantDashboard() {
       title: 'Procesos',
       description: 'Revisa tus procesos abiertos',
       onClick: () => router.push('/dashboard/tenant/processes'),
-      badge: null,
+      badge: processesCount > 0 ? processesCount : null,
     },
     {
       id: 'search',

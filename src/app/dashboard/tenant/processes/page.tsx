@@ -5,10 +5,13 @@ import { useRouter } from 'next/navigation'
 import { FileText, Clock, CheckCircle, XCircle, ArrowLeft } from 'lucide-react'
 import Header from '+/components/Header'
 import Footer from '+/components/Footer'
-import { getTenantProcessesAction } from '+/actions/processes'
+import { getProcessAction, getTenantProcessesAction } from '+/actions/processes'
+import { getUserTenant } from '+/actions/user'
 import { useSession } from '+/hooks/useSession'
 import { useDispatch } from '+/redux'
 import { setProcessState } from '+/redux/slices/process'
+import { BasicInfo, ProfileId } from '+/app/aplication/_/types'
+import { pickBasicInfoUpdates } from '+/app/aplication/_/basicInfoUtils'
 
 type ProcessListItem =
   Awaited<ReturnType<typeof getTenantProcessesAction>> extends { data: infer D }
@@ -17,25 +20,66 @@ type ProcessListItem =
       : D[number]
     : never
 
+type UserTenantResult = Awaited<ReturnType<typeof getUserTenant>>
+
+const normalizeBirthDate = (value?: string | Date | null) => {
+  if (!value) return ''
+  if (typeof value === 'string') return value.slice(0, 10)
+  return value.toISOString().slice(0, 10)
+}
+
+const buildBasicInfoFromUser = (user: UserTenantResult): BasicInfo | null => {
+  if (!user) return null
+  return {
+    name: user.name ?? '',
+    lastName: user.lastName ?? '',
+    email: user.email ?? '',
+    phone: user.phone ?? '',
+    birthDate: normalizeBirthDate(user.birthDate),
+    birthPlace: user.birthPlace ?? '',
+    documentType: (user.documentType ?? '') as BasicInfo['documentType'],
+    documentNumber: user.documentNumber ?? '',
+    gender: (user.gender ?? '') as BasicInfo['gender'],
+    maritalStatus: (user.maritalStatus ?? '') as BasicInfo['maritalStatus'],
+    profession: user.profession ?? '',
+    monthlyIncome: user.monthlyIncome != null ? String(user.monthlyIncome) : '',
+  }
+}
+
 export default function TenantProcessesPage() {
   const router = useRouter()
   const dispatch = useDispatch()
-  const { session, isAuthenticated, isLoading } = useSession()
+  const { isAuthenticated, isLoading } = useSession()
   const [processes, setProcesses] = useState<ProcessListItem[]>([])
   const [loading, setLoading] = useState(true)
+  const [tenantId, setTenantId] = useState<string | null>(null)
+  const [tenantProfile, setTenantProfile] = useState<ProfileId | ''>('')
+  const [tenantBasicInfo, setTenantBasicInfo] = useState<BasicInfo | null>(null)
 
   useEffect(() => {
-    if (!isAuthenticated || !session?.user?.id) return
+    if (!isAuthenticated) return
     const load = async () => {
       setLoading(true)
-      const result = await getTenantProcessesAction(session.user.id)
+      const user = await getUserTenant()
+      const userTenantId = user?.tenant?.id ?? null
+      const userTenantProfile = (user?.tenant?.profile ?? '') as ProfileId | ''
+      const userBasicInfo = buildBasicInfoFromUser(user)
+      setTenantId(userTenantId)
+      setTenantProfile(userTenantProfile)
+      setTenantBasicInfo(userBasicInfo)
+      if (!userTenantId) {
+        setProcesses([])
+        setLoading(false)
+        return
+      }
+      const result = await getTenantProcessesAction(userTenantId)
       if (result.success && result.data) {
         setProcesses(result.data)
       }
       setLoading(false)
     }
     load()
-  }, [isAuthenticated, session?.user?.id])
+  }, [isAuthenticated])
 
   const statusBadge = (status: string) => {
     const map: Record<string, { label: string; className: string }> = {
@@ -55,6 +99,56 @@ export default function TenantProcessesPage() {
     if (status === 'CANCELLED') return <XCircle className="w-4 h-4 text-red-600" />
     if (status === 'IN_PROGRESS') return <Clock className="w-4 h-4 text-yellow-600" />
     return <Clock className="w-4 h-4 text-blue-600" />
+  }
+
+  const resolveNextRoute = (step: number | null, profile?: ProfileId | '') => {
+    if (!profile) return '/aplication/profile'
+    if (step && step >= 4) return '/aplication/security'
+    if (step && step >= 3) return '/aplication/complementInfo'
+    return '/aplication/basicInformation'
+  }
+
+  const resumeProcess = async (processId: string) => {
+    const result = await getProcessAction(processId)
+    if (!result.success || !result.data) {
+      console.error('No se pudo cargar el proceso', result.error)
+      return
+    }
+
+    const payload = (result.data.payload ?? {}) as {
+      basicInfo?: BasicInfo
+      profile?: ProfileId
+    }
+
+    const resolvedProfile = payload.profile ?? tenantProfile ?? ''
+    const resolvedBasicInfo = payload.basicInfo
+      ? {
+          ...payload.basicInfo,
+          ...(tenantBasicInfo ? pickBasicInfoUpdates(payload.basicInfo, tenantBasicInfo) : {}),
+        }
+      : tenantBasicInfo ?? undefined
+    const nextState = {
+      processId: result.data.id,
+      tenantId: result.data.tenantId ?? tenantId,
+      unitId: result.data.unitId ?? null,
+      step: result.data.currentStep ?? 1,
+      profile: resolvedProfile,
+    }
+    if (resolvedBasicInfo) {
+      Object.assign(nextState, { basicInfo: resolvedBasicInfo })
+    }
+    dispatch(setProcessState(nextState))
+
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('applicationProcessId', result.data.id)
+      if (result.data.tenantId ?? tenantId) {
+        localStorage.setItem('selectedTenantId', (result.data.tenantId ?? tenantId) as string)
+      }
+      if (result.data.unitId) localStorage.setItem('np:selectedUnitId', result.data.unitId)
+    }
+
+    const nextRoute = resolveNextRoute(result.data.currentStep, resolvedProfile)
+    router.push(nextRoute)
   }
 
   return (
@@ -91,19 +185,7 @@ export default function TenantProcessesPage() {
                 key={process.id}
                 className="border border-gray-200 rounded-lg p-4 text-left hover:border-gray-300 hover:shadow-sm transition"
                 onClick={() => {
-                  dispatch(
-                    setProcessState({
-                      processId: process.id,
-                      tenantId: session?.user?.id ?? null,
-                      unitId: process.unitId ?? null,
-                    })
-                  )
-                  if (typeof window !== 'undefined') {
-                    localStorage.setItem('applicationProcessId', process.id)
-                    if (session?.user?.id) localStorage.setItem('selectedTenantId', session.user.id)
-                    if (process.unitId) localStorage.setItem('np:selectedUnitId', process.unitId)
-                  }
-                  router.push('/aplication/profile')
+                  void resumeProcess(process.id)
                 }}
               >
                 <div className="flex items-center justify-between mb-2">
