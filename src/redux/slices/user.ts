@@ -10,6 +10,13 @@ const userSlice = createSlice({
   initialState: initialState.user,
   reducers: {
     setUser: (state, action: PayloadAction<UserForRedux | null>) => action.payload,
+    updateUserBasicInfo: (state, action: PayloadAction<Partial<UserForRedux>>) => {
+      if (!state) return state
+      return {
+        ...state,
+        ...action.payload,
+      }
+    },
     updateTenantProfile: (state, action: PayloadAction<string>) => {
       if (!state || !state.tenant) return state
       return {
@@ -20,6 +27,6 @@ const userSlice = createSlice({
   },
 })
 
-export const { setUser, updateTenantProfile } = userSlice.actions
+export const { setUser, updateUserBasicInfo, updateTenantProfile } = userSlice.actions
 export type { UserState }
 export default userSlice.reducer

@@ -6,9 +6,10 @@ import { ArrowLeft, ArrowRight, Zap } from 'lucide-react'
 
 import { useDispatch, useSelector } from '+/redux'
 import { setProcessState, setUploadedDocs, updateBasicInfo } from '+/redux/slices/process'
+import { updateUserBasicInfo as updateUserBasicInfoInStore } from '+/redux/slices/user'
 
 import { updateUserBasicInfo } from '+/actions/user'
-import { createProcessAction } from '+/actions/processes'
+import { createProcessAction, updateProcessAction } from '+/actions/processes'
 import { mockDataByProfile } from '../../_/mockData'
 import { profiles } from '../../_/profiles'
 import { pickBasicInfoUpdates } from '../../_/basicInfoUtils'
@@ -48,6 +49,7 @@ const BasicInformation = () => {
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const hasMountedRef = useRef(false)
   const hasSyncedUserRef = useRef(false)
+  const isCreatingProcessRef = useRef(false)
 
   const isMinor = useMemo(() => {
     if (!basicInfo.birthDate) return false
@@ -128,21 +130,73 @@ const BasicInformation = () => {
       clearTimeout(debounceRef.current)
     }
     debounceRef.current = setTimeout(() => {
-      void updateUserBasicInfo({
-        data: {
-          name: basicInfo.name,
-          lastName: basicInfo.lastName,
-          phone: basicInfo.phone ?? null,
-          birthDate: basicInfo.birthDate ?? null,
-          birthPlace: basicInfo.birthPlace ?? null,
-          documentType: basicInfo.documentType ? basicInfo.documentType : null,
-          documentNumber: basicInfo.documentNumber ?? null,
-          gender: basicInfo.gender ? basicInfo.gender : null,
-          maritalStatus: basicInfo.maritalStatus ? basicInfo.maritalStatus : null,
-          profession: basicInfo.profession ?? null,
-          monthlyIncome: basicInfo.monthlyIncome,
-        },
+      const monthlyIncomeNumber = Number(basicInfo.monthlyIncome.trim())
+      const monthlyIncome = Number.isFinite(monthlyIncomeNumber) ? monthlyIncomeNumber : null
+
+      const payload = {
+        name: basicInfo.name,
+        lastName: basicInfo.lastName,
+        phone: basicInfo.phone ?? null,
+        birthDate: basicInfo.birthDate ?? null,
+        birthPlace: basicInfo.birthPlace ?? null,
+        documentType: basicInfo.documentType ? basicInfo.documentType : null,
+        documentNumber: basicInfo.documentNumber ?? null,
+        gender: basicInfo.gender ? basicInfo.gender : null,
+        maritalStatus: basicInfo.maritalStatus ? basicInfo.maritalStatus : null,
+        profession: basicInfo.profession ?? null,
+        monthlyIncome: basicInfo.monthlyIncome,
+      }
+
+      dispatch(
+        updateUserBasicInfoInStore({
+          name: payload.name,
+          lastName: payload.lastName,
+          phone: payload.phone ?? undefined,
+          birthDate: payload.birthDate ?? undefined,
+          birthPlace: payload.birthPlace ?? undefined,
+          documentType: payload.documentType ?? undefined,
+          documentNumber: payload.documentNumber ?? undefined,
+          gender: payload.gender ?? undefined,
+          maritalStatus: payload.maritalStatus ?? undefined,
+          profession: payload.profession ?? undefined,
+          monthlyIncome,
+        })
+      )
+
+      void updateUserBasicInfo({ data: payload })
+
+      if (processState.processId) {
+        void updateProcessAction({
+          processId: processState.processId,
+          currentStep: 2,
+          payloadPatch: { basicInfo, profile },
+        })
+          .then((result) => {
+            if (!result.success) {
+              console.error('No se pudo actualizar el proceso', result.error)
+            }
+          })
+        return
+      }
+
+      if (isCreatingProcessRef.current) return
+      isCreatingProcessRef.current = true
+      void createProcessAction({
+        tenantId: processState.tenantId,
+        unitId: processState.unitId,
+        currentStep: 2,
+        payload: { basicInfo, profile },
       })
+        .then((result) => {
+          if (result.success) {
+            dispatch(setProcessState({ processId: result.data.id }))
+          } else {
+            console.error('No se pudo crear el proceso', result.error)
+          }
+        })
+        .finally(() => {
+          isCreatingProcessRef.current = false
+        })
     }, 700)
 
     return () => {
@@ -150,7 +204,7 @@ const BasicInformation = () => {
         clearTimeout(debounceRef.current)
       }
     }
-  }, [basicInfo, profile])
+  }, [basicInfo, dispatch, processState.processId, processState.tenantId, processState.unitId, profile])
 
   if (!profile) return null
 
@@ -162,23 +216,8 @@ const BasicInformation = () => {
     router.push('/aplication/profile')
   }
 
-  const handleNext = async () => {
+  const handleNext = () => {
     dispatch(setProcessState({ step: 3 }))
-
-    if (!processState.processId) {
-      const result = await createProcessAction({
-        tenantId: processState.tenantId,
-        unitId: processState.unitId,
-        currentStep: 3,
-        payload: { basicInfo, profile },
-      })
-      if (result.success) {
-        dispatch(setProcessState({ processId: result.data.id }))
-      } else {
-        console.error('No se pudo crear el proceso', result.error)
-      }
-    }
-
     router.push('/aplication/complementInfo')
   }
 
