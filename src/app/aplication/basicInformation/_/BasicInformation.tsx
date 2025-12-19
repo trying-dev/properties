@@ -8,6 +8,7 @@ import { useDispatch, useSelector } from '+/redux'
 import { setProcessState, setUploadedDocs, updateBasicInfo } from '+/redux/slices/process'
 
 import { updateUserBasicInfo } from '+/actions/user'
+import { createProcessAction } from '+/actions/processes'
 import { mockDataByProfile } from '../../_/mockData'
 import { profiles } from '../../_/profiles'
 import { pickBasicInfoUpdates } from '../../_/basicInfoUtils'
@@ -134,10 +135,10 @@ const BasicInformation = () => {
           phone: basicInfo.phone ?? null,
           birthDate: basicInfo.birthDate ?? null,
           birthPlace: basicInfo.birthPlace ?? null,
-          documentType: basicInfo.documentType ?? null,
+          documentType: basicInfo.documentType ? basicInfo.documentType : null,
           documentNumber: basicInfo.documentNumber ?? null,
-          gender: basicInfo.gender ?? null,
-          maritalStatus: basicInfo.maritalStatus ?? null,
+          gender: basicInfo.gender ? basicInfo.gender : null,
+          maritalStatus: basicInfo.maritalStatus ? basicInfo.maritalStatus : null,
           profession: basicInfo.profession ?? null,
           monthlyIncome: basicInfo.monthlyIncome,
         },
@@ -161,8 +162,23 @@ const BasicInformation = () => {
     router.push('/aplication/profile')
   }
 
-  const handleNext = () => {
+  const handleNext = async () => {
     dispatch(setProcessState({ step: 3 }))
+
+    if (!processState.processId) {
+      const result = await createProcessAction({
+        tenantId: processState.tenantId,
+        unitId: processState.unitId,
+        currentStep: 3,
+        payload: { basicInfo, profile },
+      })
+      if (result.success) {
+        dispatch(setProcessState({ processId: result.data.id }))
+      } else {
+        console.error('No se pudo crear el proceso', result.error)
+      }
+    }
+
     router.push('/aplication/complementInfo')
   }
 
