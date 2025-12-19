@@ -17,7 +17,7 @@ import {
   Heart,
 } from 'lucide-react'
 
-import { DocumentType, Gender, MaritalStatus, EmploymentStatus } from '@prisma/client'
+import { DocumentType, Gender, MaritalStatus, Profile } from '@prisma/client'
 
 interface UserData {
   name: string
@@ -41,7 +41,7 @@ interface UserData {
 interface TenantData {
   emergencyContact: string
   emergencyContactPhone: string
-  employmentStatus: EmploymentStatus | ''
+  profile: Profile | ''
   monthlyIncome: string
 }
 
@@ -97,7 +97,7 @@ export default function TenantCompleteForm() {
   const [tenantData, setTenantData] = useState<TenantData>({
     emergencyContact: '',
     emergencyContactPhone: '',
-    employmentStatus: '',
+    profile: '',
     monthlyIncome: '',
   })
 
@@ -130,13 +130,16 @@ export default function TenantCompleteForm() {
     { value: 'COMMON_LAW', label: 'Unión libre' },
   ]
 
-  const employmentStatuses: SelectOption[] = [
+  const profileOptions: SelectOption[] = [
     { value: 'EMPLOYED', label: 'Empleado/a' },
-    { value: 'SELF_EMPLOYED', label: 'Independiente' },
-    { value: 'UNEMPLOYED', label: 'Desempleado/a' },
+    { value: 'INDEPENDENT', label: 'Independiente' },
+    { value: 'RETIRED', label: 'Pensionado/a' },
+    { value: 'ENTREPRENEUR', label: 'Empresario/a' },
+    { value: 'INVESTOR', label: 'Inversionista' },
     { value: 'STUDENT', label: 'Estudiante' },
-    { value: 'RETIRED', label: 'Jubilado/a' },
-    { value: 'OTHER', label: 'Otro' },
+    { value: 'FOREIGN', label: 'Extranjero/a' },
+    { value: 'NOMAD', label: 'Nómada' },
+    { value: 'UNEMPLOYED', label: 'Desempleado/a' },
   ]
 
   const handleUserDataChange = (field: keyof UserData, value: string) => {
@@ -195,7 +198,7 @@ export default function TenantCompleteForm() {
     }
 
     // 🔴 VALIDACIONES TENANT - TODOS OBLIGATORIOS
-    if (!tenantData.employmentStatus) newErrors.employmentStatus = 'Estado laboral es requerido'
+    if (!tenantData.profile) newErrors.profile = 'Perfil es requerido'
     if (!tenantData.monthlyIncome.trim()) newErrors.monthlyIncome = 'Ingresos mensuales son requeridos'
     if (!tenantData.emergencyContact.trim())
       newErrors.emergencyContact = 'Contacto de emergencia es requerido'
@@ -474,11 +477,11 @@ export default function TenantCompleteForm() {
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {renderFormField({
-                  label: 'Estado Laboral',
-                  name: 'employmentStatus',
+                  label: 'Perfil',
+                  name: 'profile',
                   type: 'text',
                   required: true,
-                  options: employmentStatuses,
+                  options: profileOptions,
                   section: 'tenant',
                   icon: <Briefcase size={16} />,
                 })}

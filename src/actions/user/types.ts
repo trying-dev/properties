@@ -31,6 +31,7 @@ export interface userSelected {
   gender?: Gender | null
   maritalStatus?: MaritalStatus | null
   profession?: string | null
+  monthlyIncome?: number | null
 
   profileImage?: string | null
 
@@ -76,6 +77,7 @@ export const userSelection = {
   gender: true,
   maritalStatus: true,
   profession: true,
+  monthlyIncome: true,
 
   profileImage: true,
 
@@ -117,7 +119,7 @@ export const adminSelection = {
 export interface Tenant {
   id: string
   //   userId: string
-  applicationProfile?: string | null
+  profile?: string | null
   //   emergencyContact?: string
   //   emergencyContactPhone?: string
   //   employmentStatus?: EmploymentStatus
@@ -135,7 +137,7 @@ export interface Tenant {
 
 export const tenantSelection = {
   id: true,
-  applicationProfile: true,
+  profile: true,
 }
 
 export type Roleuser = 'admin' | 'tenant'

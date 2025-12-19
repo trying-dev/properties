@@ -452,6 +452,7 @@ model User {
     gender        Gender?
     maritalStatus MaritalStatus?
     profession    String?
+    monthlyIncome Float? // postgres @db.Decimal(10, 2)
 
     // Avatar/foto
     profileImage String?
@@ -509,13 +510,16 @@ enum MaritalStatus {
     COMMON_LAW // Unión libre
 }
 
-enum EmploymentStatus {
+enum Profile {
     EMPLOYED
-    SELF_EMPLOYED
-    UNEMPLOYED
-    STUDENT
+    INDEPENDENT
     RETIRED
-    OTHER
+    ENTREPRENEUR
+    INVESTOR
+    STUDENT
+    FOREIGN
+    NOMAD
+    UNEMPLOYED
 }
 
 model Admin {
@@ -555,12 +559,11 @@ model Tenant {
     userId String @unique
 
     // process
-    applicationProfile String? // Perfil de aplicación (ej. formal, independent, etc.)
+    profile Profile?
 
     // Información específica del inquilino
     emergencyContact      String?
     emergencyContactPhone String?
-    employmentStatus      EmploymentStatus?
     monthlyIncome         Float?
 
     // Referencias

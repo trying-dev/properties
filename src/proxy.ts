@@ -72,13 +72,13 @@ export default async function proxy(request: NextRequest) {
     return NextResponse.next()
   }
 
-  console.log(
-    `🛡️ ${pathname} - ${session ? `${session.user.email} (${session.user.role}${session.user.adminLevel ? `:${session.user.adminLevel}` : ''})` : 'Anonymous'}`
-  )
+  // console.log(
+  //   `🛡️ ${pathname} - ${session ? `${session.user.email} (${session.user.role}${session.user.adminLevel ? `:${session.user.adminLevel}` : ''})` : 'Anonymous'}`
+  // )
 
-  // 🚫 Proteger todas las rutas de dashboard
-  if (!session && pathname.startsWith('/dashboard')) {
-    console.log(`❌ No autenticado, redirigiendo a login`)
+  // 🚫 Proteger rutas de dashboard y aplicación
+  if (!session && (pathname.startsWith('/dashboard') || pathname.startsWith('/aplication'))) {
+    // console.log(`❌ No autenticado, redirigiendo a login`)
     return NextResponse.redirect(new URL('/', request.url))
   }
 

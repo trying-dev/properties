@@ -5,6 +5,7 @@ import { prisma } from '+/lib/prisma'
 import { serializeDate } from '+/utils'
 
 import { adminSelection, tenantSelection, UserForRedux, userSelection } from './types'
+import { Profile } from '@prisma/client'
 
 const userSafeSelect = {
   id: true,
@@ -26,7 +27,7 @@ const userSafeSelect = {
   gender: true,
   maritalStatus: true,
   profession: true,
-  applicationProfile: true,
+  monthlyIncome: true,
   profileImage: true,
   disable: true,
   timezone: true,
@@ -113,20 +114,91 @@ export const getUserAfterLogin = async ({ email }: { email: string }) => {
   }
 }
 
-export const updateProfileAplication = async ({
+export const updateTenantProfile = async ({
   tenantId,
   data,
 }: {
   tenantId: string
-  data: { applicationProfile: string | null }
+  data: { profile: Profile | null }
 }) => {
   try {
-    return await prisma.user.update({
+    return await prisma.tenant.update({
       where: { id: tenantId },
       data,
     })
   } catch (error) {
     console.error('Error updating tenant:', error)
+    throw error
+  }
+}
+
+type BasicInfoUpdatePayload = {
+  name?: string
+  lastName?: string
+  phone?: string | null
+  birthDate?: string | null
+  birthPlace?: string | null
+  documentType?: UserForRedux['documentType'] | null
+  documentNumber?: string | null
+  gender?: UserForRedux['gender'] | null
+  maritalStatus?: UserForRedux['maritalStatus'] | null
+  profession?: string | null
+  monthlyIncome?: string | number | null
+}
+
+const normalizeOptionalString = (value?: string | null) => {
+  if (value == null) return null
+  const trimmed = value.trim()
+  return trimmed.length > 0 ? trimmed : null
+}
+
+const normalizeOptionalDate = (value?: string | null) => {
+  if (value == null || value.trim().length === 0) return null
+  const parsed = new Date(value)
+  return Number.isNaN(parsed.getTime()) ? null : parsed
+}
+
+const normalizeOptionalNumber = (value?: string | number | null) => {
+  if (value == null) return null
+  if (typeof value === 'number') return Number.isFinite(value) ? value : null
+  const trimmed = value.trim()
+  if (!trimmed) return null
+  const parsed = Number(trimmed)
+  return Number.isFinite(parsed) ? parsed : null
+}
+
+export const updateUserBasicInfo = async ({ data }: { data: BasicInfoUpdatePayload }) => {
+  const session = await auth()
+  if (!session?.user.id) return null
+
+  const normalizedData = {
+    ...(data.name?.trim() ? { name: data.name.trim() } : {}),
+    ...(data.lastName?.trim() ? { lastName: data.lastName.trim() } : {}),
+    ...(data.phone !== undefined ? { phone: normalizeOptionalString(data.phone) } : {}),
+    ...(data.birthDate !== undefined ? { birthDate: normalizeOptionalDate(data.birthDate) } : {}),
+    ...(data.birthPlace !== undefined ? { birthPlace: normalizeOptionalString(data.birthPlace) } : {}),
+    ...(data.documentType !== undefined ? { documentType: data.documentType || null } : {}),
+    ...(data.documentNumber !== undefined
+      ? { documentNumber: normalizeOptionalString(data.documentNumber) }
+      : {}),
+    ...(data.gender !== undefined ? { gender: data.gender || null } : {}),
+    ...(data.maritalStatus !== undefined ? { maritalStatus: data.maritalStatus || null } : {}),
+    ...(data.profession !== undefined ? { profession: normalizeOptionalString(data.profession) } : {}),
+    ...(data.monthlyIncome !== undefined
+      ? { monthlyIncome: normalizeOptionalNumber(data.monthlyIncome) }
+      : {}),
+  }
+
+  try {
+    const result = await prisma.user.update({
+      where: { id: session.user.id },
+      data: normalizedData,
+    })
+
+    console.log('updateUserBasicInfo full:', result)
+    return result
+  } catch (error) {
+    console.error('Error updating basic info:', error)
     throw error
   }
 }

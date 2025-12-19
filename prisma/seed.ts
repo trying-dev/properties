@@ -3,7 +3,7 @@ import {
   AdminLevel,
   ContractStatus,
   DocumentType,
-  EmploymentStatus,
+  Profile,
   Gender,
   MaritalStatus,
   PaymentMethod,
@@ -71,6 +71,7 @@ const createAdmins = async (hashedPassword: string) => {
           state: 'Cundinamarca',
           country: 'Colombia',
           profession: 'Administrador de Propiedades',
+          monthlyIncome: 12_000_000,
         },
       },
     },
@@ -98,6 +99,7 @@ const createAdmins = async (hashedPassword: string) => {
           state: 'Cundinamarca',
           country: 'Colombia',
           profession: 'Supervisora de Mantenimiento',
+          monthlyIncome: 7_000_000,
         },
       },
     },
@@ -125,6 +127,7 @@ const createAdmins = async (hashedPassword: string) => {
           state: 'Cundinamarca',
           country: 'Colombia',
           profession: 'Gerente General',
+          monthlyIncome: 9_000_000,
         },
       },
     },
@@ -152,6 +155,7 @@ const createAdmins = async (hashedPassword: string) => {
           state: 'Cundinamarca',
           country: 'Colombia',
           profession: 'Vigilante',
+          monthlyIncome: 3_000_000,
         },
       },
     },
@@ -177,7 +181,7 @@ const createTenants = async (hashedPassword: string) => {
     data: {
       emergencyContact: 'María Comerciante',
       emergencyContactPhone: '+57 300 999 9999',
-      employmentStatus: EmploymentStatus.SELF_EMPLOYED,
+      profile: Profile.ENTREPRENEUR,
       monthlyIncome: 5_000_000,
       user: {
         create: {
@@ -196,6 +200,7 @@ const createTenants = async (hashedPassword: string) => {
           state: 'Cundinamarca',
           country: 'Colombia',
           profession: 'Comerciante',
+          monthlyIncome: 5_000_000,
         },
       },
       references: {
@@ -220,7 +225,7 @@ const createTenants = async (hashedPassword: string) => {
     data: {
       emergencyContact: 'Sandra Empresaria',
       emergencyContactPhone: '+57 300 888 8888',
-      employmentStatus: EmploymentStatus.SELF_EMPLOYED,
+      profile: Profile.ENTREPRENEUR,
       monthlyIncome: 8_000_000,
       user: {
         create: {
@@ -239,6 +244,7 @@ const createTenants = async (hashedPassword: string) => {
           state: 'Cundinamarca',
           country: 'Colombia',
           profession: 'Empresario',
+          monthlyIncome: 8_000_000,
         },
       },
       references: {
@@ -258,7 +264,7 @@ const createTenants = async (hashedPassword: string) => {
     data: {
       emergencyContact: 'Roberto Profesional',
       emergencyContactPhone: '+57 300 777 7777',
-      employmentStatus: EmploymentStatus.EMPLOYED,
+      profile: Profile.EMPLOYED,
       monthlyIncome: 4_000_000,
       user: {
         create: {
@@ -277,6 +283,7 @@ const createTenants = async (hashedPassword: string) => {
           state: 'Cundinamarca',
           country: 'Colombia',
           profession: 'Ingeniera',
+          monthlyIncome: 4_000_000,
         },
       },
       references: {
@@ -296,7 +303,7 @@ const createTenants = async (hashedPassword: string) => {
     data: {
       emergencyContact: 'Sarah Smith',
       emergencyContactPhone: '+1 555 123 4567',
-      employmentStatus: EmploymentStatus.SELF_EMPLOYED,
+      profile: Profile.FOREIGN,
       monthlyIncome: 6_000_000,
       user: {
         create: {
@@ -315,6 +322,7 @@ const createTenants = async (hashedPassword: string) => {
           state: 'Cundinamarca',
           country: 'Estados Unidos',
           profession: 'Consultor Internacional',
+          monthlyIncome: 6_000_000,
         },
       },
       references: {

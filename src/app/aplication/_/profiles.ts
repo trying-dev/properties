@@ -1,7 +1,7 @@
 import { ProfileConfig, ProfileId, SecurityOption } from './types'
 
 export const profiles: Record<ProfileId, ProfileConfig> = {
-  formal: {
+  EMPLOYED: {
     emoji: '👔',
     name: 'Empleado Formal',
     deposit: '2 meses',
@@ -26,7 +26,7 @@ export const profiles: Record<ProfileId, ProfileConfig> = {
       { id: 'ref_personal_2_tel', label: 'Referencia Personal 2 - Teléfono', type: 'tel' },
     ],
   },
-  independent: {
+  INDEPENDENT: {
     emoji: '💼',
     name: 'Independiente',
     deposit: '2 meses',
@@ -62,7 +62,7 @@ export const profiles: Record<ProfileId, ProfileConfig> = {
       },
     ],
   },
-  retired: {
+  RETIRED: {
     emoji: '😊',
     name: 'Pensionado',
     deposit: '2 meses',
@@ -85,7 +85,7 @@ export const profiles: Record<ProfileId, ProfileConfig> = {
       },
     ],
   },
-  entrepreneur: {
+  ENTREPRENEUR: {
     emoji: '🏢',
     name: 'Empresario',
     deposit: '2 meses',
@@ -125,7 +125,7 @@ export const profiles: Record<ProfileId, ProfileConfig> = {
       },
     ],
   },
-  investor: {
+  INVESTOR: {
     emoji: '📈',
     name: 'Inversionista',
     deposit: '2 meses',
@@ -160,7 +160,7 @@ export const profiles: Record<ProfileId, ProfileConfig> = {
       },
     ],
   },
-  student: {
+  STUDENT: {
     emoji: '🎓',
     name: 'Estudiante',
     deposit: '3 meses',
@@ -177,7 +177,7 @@ export const profiles: Record<ProfileId, ProfileConfig> = {
       { id: 'tel_patrocinador', label: 'Teléfono del patrocinador', type: 'tel' },
     ],
   },
-  foreignLocal: {
+  FOREIGN: {
     emoji: '🌍',
     name: 'Extranjero Local',
     deposit: '3 meses',
@@ -196,7 +196,7 @@ export const profiles: Record<ProfileId, ProfileConfig> = {
       { id: 'cert_laboral', label: 'Certificado laboral empresa colombiana', type: 'file', accept: '.pdf' },
     ],
   },
-  nomad: {
+  NOMAD: {
     emoji: '🌐',
     name: 'Nómada Digital',
     deposit: '3-6 meses',
@@ -224,6 +224,18 @@ export const profiles: Record<ProfileId, ProfileConfig> = {
         accept: '.pdf',
         multiple: true,
       },
+    ],
+  },
+  UNEMPLOYED: {
+    emoji: '🧾',
+    name: 'Desempleado',
+    deposit: '2 meses',
+    fields: [
+      { id: 'ref_personal_1', label: 'Referencia Personal 1 - Nombre', type: 'text' },
+      { id: 'ref_personal_1_tel', label: 'Referencia Personal 1 - Teléfono', type: 'tel' },
+      { id: 'ref_personal_2', label: 'Referencia Personal 2 - Nombre', type: 'text' },
+      { id: 'ref_personal_2_tel', label: 'Referencia Personal 2 - Teléfono', type: 'tel' },
+      { id: 'extractos', label: 'Extractos bancarios últimos 3 meses', type: 'file', accept: '.pdf', multiple: true },
     ],
   },
 }

@@ -1,8 +1,12 @@
 import { UserForRedux } from '+/actions/user/types'
+import { ProfileId } from '+/app/aplication/_/types'
 
 export const initialState = {
   auth: {
-    status: 'idle' as 'idle' | 'success' | 'verify',
+    isAuthenticated: false,
+    loginState: 'idle' as 'idle' | 'start' | 'loading' | 'success',
+    registerState: 'idle' as 'idle' | 'start' | 'loading' | 'success',
+    codeVerificationState: 'idle' as 'idle' | 'start' | 'loading' | 'success',
     resetPasswordModalOpen: false,
     authModalOpen: false,
     authModalTab: 'login' as 'login' | 'register',
@@ -14,20 +18,22 @@ export const initialState = {
     processId: null as string | null,
     tenantId: null as string | null,
     unitId: null as string | null,
-    applicationProfile: null as string | null,
+    profile: '' as ProfileId | '',
     step: 1,
-  },
-  application: {
-    activeStep: 1,
-    selectedProfile: '' as string,
     selectedSecurity: '' as string,
     acceptedDeposit: false,
-    applicantInfo: {
-      fullName: '',
+    basicInfo: {
+      name: '',
+      lastName: '',
       email: '',
       phone: '',
-      documentType: 'cedula' as 'cedula' | 'pasaporte',
+      birthDate: '',
+      birthPlace: '',
+      documentType: '' as '' | 'CC' | 'CE' | 'TI' | 'PASSPORT' | 'NIT' | 'OTHER',
       documentNumber: '',
+      gender: '' as '' | 'MALE' | 'FEMALE' | 'OTHER' | 'PREFER_NOT_TO_SAY',
+      maritalStatus: '' as '' | 'SINGLE' | 'MARRIED' | 'DIVORCED' | 'WIDOWED' | 'SEPARATED' | 'COMMON_LAW',
+      profession: '',
       monthlyIncome: '',
     },
     uploadedDocs: {} as Record<string, FileList | File[] | undefined>,

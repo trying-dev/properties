@@ -6,24 +6,30 @@ import { useRouter } from 'next/navigation'
 
 import { FileText, Upload } from 'lucide-react'
 
-import ApplicationLayout from '../_components/ApplicationLayout'
-import StepSecurity from '../_components/StepSecurity'
-import useApplicationProcess from '../_/useApplicationProcess'
+import ApplicationLayout from '../_/ApplicationLayout'
+import StepSecurity from './_/StepSecurity'
 import { securityOptions } from '../_/profiles'
-import { Field, UploadedDocsState } from '../_/types'
+import { Field, ProfileId, UploadedDocsState, profileIds } from '../_/types'
 
-import { useDispatch } from '+/redux'
-import { setApplicationState, setUploadedDocs } from '+/redux/slices/application'
+import { useDispatch, useSelector } from '+/redux'
+import { setProcessState, setUploadedDocs } from '+/redux/slices/process'
 
 const SecurityStepPage = () => {
   const router = useRouter()
   const dispatch = useDispatch()
-  const { application, processState, persistProcess } = useApplicationProcess(3)
-  const { selectedSecurity, selectedProfile, uploadedDocs } = application
+  const processState = useSelector((state) => state.process)
+  const { selectedSecurity, profile, uploadedDocs } = processState
+  const isProfileId = (value: string): value is ProfileId => profileIds.includes(value as ProfileId)
+  const resolvedProfile = isProfileId(profile) ? profile : ''
 
   useEffect(() => {
-    if (!selectedProfile) router.replace('/aplication/profile')
-  }, [router, selectedProfile])
+    if (processState.step === 4) return
+    dispatch(setProcessState({ step: 4 }))
+  }, [dispatch, processState.step])
+
+  useEffect(() => {
+    if (!resolvedProfile) router.replace('/aplication/profile')
+  }, [router, resolvedProfile])
 
   const handleFileChange = (fieldId: string, files: FileList | null) => {
     if (!files) return
@@ -112,24 +118,14 @@ const SecurityStepPage = () => {
     )
   }
 
-  const handleBack = () => router.push('/aplication/information')
+  const handleBack = () => router.push('/aplication/complementInfo')
 
   const handleSelectSecurity = (securityId: string) => {
-    dispatch(setApplicationState({ selectedSecurity: securityId }))
-    const payload = {
-      applicantInfo: application.applicantInfo,
-      selectedProfile: application.selectedProfile,
-      selectedSecurity: securityId,
-      acceptedDeposit: application.acceptedDeposit,
-      activeStep: 3,
-      tenantId: processState.tenantId,
-      unitId: processState.unitId,
-    }
-    persistProcess({ payload, step: 3 })
+    dispatch(setProcessState({ selectedSecurity: securityId, step: 4 }))
   }
 
   return (
-    <ApplicationLayout currentStep={3}>
+    <ApplicationLayout>
       <StepSecurity
         selectedSecurity={selectedSecurity}
         setSelectedSecurity={handleSelectSecurity}

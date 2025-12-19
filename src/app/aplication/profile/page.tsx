@@ -1,14 +1,12 @@
 'use client'
 
-import ApplicationLayout from '../_components/ApplicationLayout'
-import StepSelectProfile from '../_components/StepSelectProfile'
+import ApplicationLayout from '../_/ApplicationLayout'
+import Profile from './_/Profile'
 
-const ProfileStepPage = () => {
-  return (
-    <ApplicationLayout currentStep={1}>
-      <StepSelectProfile />
-    </ApplicationLayout>
-  )
-}
+const ProfileStepPage = () => (
+  <ApplicationLayout>
+    <Profile />
+  </ApplicationLayout>
+)
 
 export default ProfileStepPage

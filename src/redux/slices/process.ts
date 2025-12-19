@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
+import { BasicInfo } from '+/app/aplication/_/types'
 import { initialState } from '../store'
 
 type ProcessState = typeof initialState.process
@@ -15,9 +16,21 @@ const processSlice = createSlice({
       ...state,
       ...action.payload,
     }),
+    updateBasicInfo: (state, action: PayloadAction<Partial<BasicInfo>>) => ({
+      ...state,
+      basicInfo: { ...state.basicInfo, ...action.payload },
+    }),
+    setUploadedDocs: (
+      state,
+      action: PayloadAction<ProcessState['uploadedDocs']>
+    ) => ({
+      ...state,
+      uploadedDocs: { ...state.uploadedDocs, ...action.payload },
+    }),
     resetProcess: () => initialState.process,
   },
 })
 
-export const { initProcess, setProcessState, resetProcess } = processSlice.actions
+export const { initProcess, setProcessState, updateBasicInfo, setUploadedDocs, resetProcess } =
+  processSlice.actions
 export default processSlice.reducer

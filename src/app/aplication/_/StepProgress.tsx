@@ -2,14 +2,20 @@
 
 import { CheckCircle2 } from 'lucide-react'
 
+import { useSelector } from '+/redux'
+
 export const steps = [
   { number: 1, title: 'Identificación de Perfil', description: 'Selecciona tu tipo de perfil' },
-  { number: 2, title: 'Información y Documentos', description: 'Completa tus datos personales' },
-  { number: 3, title: 'Seguridad del Contrato', description: 'Elige tu tipo de garantía' },
+  { number: 2, title: 'Información Básica', description: 'Completa tus datos personales' },
+  { number: 3, title: 'Información Complementaria', description: 'Sube documentos y confirma el depósito' },
+  { number: 4, title: 'Seguridad del Contrato', description: 'Elige tu tipo de garantía' },
 ] as const
 
-const StepProgress = ({ activeStep }: { activeStep: number }) => (
-  <>
+const StepProgress = () => {
+  const activeStep = useSelector((state) => state.process.step)
+
+  return (
+    <>
     <div className="mb-12">
       <div className="flex items-center justify-between relative">
         <div className="absolute top-5 left-0 right-0 h-1 bg-gray-200 -z-10">
@@ -49,7 +55,7 @@ const StepProgress = ({ activeStep }: { activeStep: number }) => (
 
     <div className="bg-white rounded-lg shadow-sm p-4 mb-6">
       <div className="flex items-center gap-2 text-sm">
-        <span className="text-gray-500">Paso {activeStep} de 3</span>
+        <span className="text-gray-500">Paso {activeStep} de 4</span>
         <span className="text-gray-300">•</span>
         <span className="font-semibold text-gray-900">{steps[activeStep - 1]?.title}</span>
       </div>
@@ -60,7 +66,8 @@ const StepProgress = ({ activeStep }: { activeStep: number }) => (
         />
       </div>
     </div>
-  </>
-)
+    </>
+  )
+}
 
 export default StepProgress

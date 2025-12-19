@@ -4,8 +4,8 @@ import { ReactNode } from 'react'
 
 import { Check, CheckCircle2, ArrowLeft, Zap } from 'lucide-react'
 
-import { securityOptions } from '../_/profiles'
-import { Field } from '../_/types'
+import { securityOptions } from '../../_/profiles'
+import { Field } from '../../_/types'
 
 type StepSecurityProps = {
   selectedSecurity: string

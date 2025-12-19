@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { initialState } from '../store'
 
-export type AuthStatus = 'idle' | 'success' | 'verify'
+export type AuthStepState = 'idle' | 'start' | 'loading' | 'success'
 
 type AuthState = typeof initialState.auth
 
@@ -9,8 +9,23 @@ const authSlice = createSlice({
   name: 'auth',
   initialState: initialState.auth,
   reducers: {
-    setAuthStatus: (state, action: PayloadAction<AuthStatus>) => {
-      state.status = action.payload
+    setIsAuthenticated: (state, action: PayloadAction<boolean>) => {
+      state.isAuthenticated = action.payload
+    },
+    setLoginState: (state, action: PayloadAction<AuthStepState>) => {
+      state.loginState = action.payload
+    },
+    setRegisterState: (state, action: PayloadAction<AuthStepState>) => {
+      state.registerState = action.payload
+    },
+    setCodeVerificationState: (state, action: PayloadAction<AuthStepState>) => {
+      state.codeVerificationState = action.payload
+    },
+    resetAuthProcess: (state) => {
+      state.loginState = 'idle'
+      state.registerState = 'idle'
+      state.codeVerificationState = 'idle'
+      state.verificationExpiresAt = null
     },
     setResetPasswordModalOpen: (state, action: PayloadAction<boolean>) => {
       state.resetPasswordModalOpen = action.payload
@@ -26,7 +41,11 @@ const authSlice = createSlice({
 })
 
 export const {
-  setAuthStatus,
+  setIsAuthenticated,
+  setLoginState,
+  setRegisterState,
+  setCodeVerificationState,
+  resetAuthProcess,
   setResetPasswordModalOpen,
   setAuthModalOpen,
   setAuthVerificationExpires,

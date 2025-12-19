@@ -14,7 +14,7 @@ const userSlice = createSlice({
       if (!state || !state.tenant) return state
       return {
         ...state,
-        tenant: { ...state.tenant, applicationProfile: action.payload },
+        tenant: { ...state.tenant, profile: action.payload },
       }
     },
   },

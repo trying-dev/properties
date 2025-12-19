@@ -5,15 +5,18 @@ import {
 } from 'react-redux'
 
 import { combineReducers, PayloadAction } from '@reduxjs/toolkit'
+import type { Middleware } from '@reduxjs/toolkit'
 
 import { configureStore } from '@reduxjs/toolkit'
 
 import { State } from './store'
-import auth from './slices/auth'
+import auth, {
+  setIsAuthenticated,
+  resetAuthProcess,
+} from './slices/auth'
 import user from './slices/user'
 import property from './slices/property'
 import processSlice from './slices/process'
-import applicationSlice from './slices/application'
 
 export const REDUX_KEY_LOCAL_STORAGE = 'state'
 export const HYDRATE_ACTION_TYPE = 'HYDRATE'
@@ -23,7 +26,6 @@ const rootReducer = combineReducers({
   user,
   property,
   process: processSlice,
-  application: applicationSlice,
 })
 
 const reducer = (state: State | undefined, action: PayloadAction<State>) => {
@@ -38,25 +40,33 @@ const reducer = (state: State | undefined, action: PayloadAction<State>) => {
 
 const devTools = process.env.NODE_ENV !== 'production'
 
+const authResetMiddleware: Middleware = (storeApi) => (next) => (action) => {
+  const result = next(action)
+  if (setIsAuthenticated.match(action)) {
+    storeApi.dispatch(resetAuthProcess())
+  }
+  return result
+}
+
 export const store = configureStore({
   reducer,
   devTools,
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: {
-        ignoredActions: ['application/setUploadedDocs', 'application/setApplicationState'],
-        ignoredPaths: ['application.uploadedDocs'],
+        ignoredActions: ['process/setUploadedDocs', 'process/setProcessState'],
+        ignoredPaths: ['process.uploadedDocs'],
       },
-    }),
+    }).concat(authResetMiddleware),
 })
 
 store.subscribe(() => {
   const state = store.getState()
-  const { uploadedDocs, ...restApplication } = state.application
+  const { uploadedDocs, ...restProcess } = state.process
   const serializableState = {
     ...state,
-    application: {
-      ...restApplication,
+    process: {
+      ...restProcess,
       uploadedDocs: {},
     },
   }

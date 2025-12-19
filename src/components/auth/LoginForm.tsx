@@ -6,7 +6,12 @@ import { authenticate } from '+/actions/auth/login'
 import { authInitialState, type AuthActionState } from './types'
 import { demoUsers as defaultDemoUsers } from './users'
 import { useDispatch } from '+/redux'
-import { setAuthStatus, setAuthVerificationExpires, setResetPasswordModalOpen } from '+/redux/slices/auth'
+import {
+  setAuthVerificationExpires,
+  setIsAuthenticated,
+  setLoginState,
+  setResetPasswordModalOpen,
+} from '+/redux/slices/auth'
 import { setUser } from '+/redux/slices/user'
 import { getUserAfterLogin } from '+/actions/user'
 
@@ -31,16 +36,23 @@ export default function LoginForm({
   useEffect(() => {
     if (!state?.success) return
 
-    dispatch(setAuthStatus('success'))
     dispatch(setAuthVerificationExpires(null))
+    dispatch(setLoginState('success'))
+    dispatch(setIsAuthenticated(true))
 
     const syncUser = async () => {
       const user = await getUserAfterLogin({ email })
       dispatch(setUser(user))
+      dispatch(setLoginState('idle'))
     }
 
     void syncUser()
   }, [state?.success, dispatch, email])
+
+  useEffect(() => {
+    if (!state?.errors) return
+    dispatch(setLoginState('idle'))
+  }, [dispatch, state?.errors])
 
   const isDisabled = isPending || Boolean(state?.success)
   const inputPadding = 'py-3'
@@ -52,6 +64,7 @@ export default function LoginForm({
     const formData = new FormData()
     formData.append('email', email.trim())
     formData.append('password', password)
+    dispatch(setLoginState('loading'))
     startTransition(() => {
       formAction(formData)
     })

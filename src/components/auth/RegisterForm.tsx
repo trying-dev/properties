@@ -7,7 +7,12 @@ import { registerUser, type RegisterActionState } from '+/actions/auth/register'
 import { authenticate } from '+/actions/auth/login'
 import { resendVerificationCode, verifyEmailCode } from '+/actions/auth/verify-email'
 import { useDispatch, useSelector } from '+/redux'
-import { setAuthStatus, setAuthVerificationExpires } from '+/redux/slices/auth'
+import {
+  setAuthVerificationExpires,
+  setCodeVerificationState,
+  setIsAuthenticated,
+  setRegisterState,
+} from '+/redux/slices/auth'
 
 type RegisterFormProps = {
   className?: string
@@ -45,6 +50,7 @@ export default function RegisterForm({
     e.preventDefault()
     if (!agreeTerms) return
     setEmailForVerification(email.trim())
+    dispatch(setRegisterState('loading'))
     const formData = new FormData()
     formData.append('firstName', firstName.trim())
     formData.append('lastName', lastName.trim())
@@ -59,10 +65,17 @@ export default function RegisterForm({
 
   useEffect(() => {
     if (!state?.needsVerification) return
-    dispatch(setAuthStatus('verify'))
+    dispatch(setRegisterState('success'))
+    dispatch(setRegisterState('idle'))
+    dispatch(setCodeVerificationState('start'))
     // fallback client timer; server already enforces 15 min
     dispatch(setAuthVerificationExpires(Date.now() + 15 * 60 * 1000))
   }, [dispatch, state?.needsVerification])
+
+  useEffect(() => {
+    if (!state?.errors) return
+    dispatch(setRegisterState('idle'))
+  }, [dispatch, state?.errors])
 
   const handleVerifyCode = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -72,10 +85,12 @@ export default function RegisterForm({
       return
     }
     setVerificationError('')
+    dispatch(setCodeVerificationState('loading'))
     startVerifyTransition(async () => {
       const result = await verifyEmailCode(emailForVerification, verificationCode.trim())
       if (!result?.success) {
         setVerificationError(result?.errors?.form?.[0] || 'Código inválido')
+        dispatch(setCodeVerificationState('idle'))
         return
       }
       // Login via server action to avoid client-side next-auth route dependency
@@ -85,11 +100,14 @@ export default function RegisterForm({
       const loginResult = await authenticate(undefined, loginForm)
       if (!loginResult?.success) {
         setSignInError(loginResult?.errors?.form?.[0] || 'Código verificado, pero no pudimos iniciar sesión.')
+        dispatch(setCodeVerificationState('idle'))
         return
       }
       setPhaseOverride('done')
-      dispatch(setAuthStatus('success'))
+      dispatch(setCodeVerificationState('success'))
       dispatch(setAuthVerificationExpires(null))
+      dispatch(setIsAuthenticated(true))
+      dispatch(setCodeVerificationState('idle'))
       router.push('/dashboard')
     })
   }

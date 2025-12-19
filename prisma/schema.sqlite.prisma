@@ -452,6 +452,7 @@ model User {
     gender        Gender?
     maritalStatus MaritalStatus?
     profession    String?
+    monthlyIncome Float?
 
     // Avatar/foto
     profileImage String?
@@ -509,13 +510,16 @@ enum MaritalStatus {
     COMMON_LAW // Unión libre
 }
 
-enum EmploymentStatus {
+enum Profile {
     EMPLOYED
-    SELF_EMPLOYED
-    UNEMPLOYED
-    STUDENT
+    INDEPENDENT
     RETIRED
-    OTHER
+    ENTREPRENEUR
+    INVESTOR
+    STUDENT
+    FOREIGN
+    NOMAD
+    UNEMPLOYED
 }
 
 model Admin {
@@ -554,14 +558,13 @@ model Tenant {
     id     String @id @default(cuid())
     userId String @unique
 
+    // process
+    profile Profile?
+
     // Información específica del inquilino
     emergencyContact      String?
     emergencyContactPhone String?
-    employmentStatus      EmploymentStatus?
     monthlyIncome         Float?
-
-    // process
-    applicationProfile String? // Perfil de aplicación (ej. formal, independent, etc.)
 
     // Referencias
     references Reference[]

@@ -1,31 +1,33 @@
 'use client'
 
 import { CheckCircle2 } from 'lucide-react'
+import { useRouter } from 'next/navigation'
 
 import { useDispatch, useSelector } from '+/redux'
 import { setProcessState } from '+/redux/slices/process'
-
-import { profiles } from '../_/profiles'
-import { ProfileId } from '../_/types'
-import { updateProfileAplication } from '+/actions/user'
-import { useRouter } from 'next/navigation'
 import { updateTenantProfile } from '+/redux/slices/user'
+import type { Profile as PrismaProfile } from '@prisma/client'
 
-const StepSelectProfile = () => {
+import { updateTenantProfile as updateTenantProfileAction } from '+/actions/user'
+import { profiles } from '+/app/aplication/_/profiles'
+import { ProfileId } from '+/app/aplication/_/types'
+
+const Profile = () => {
   const dispatch = useDispatch()
   const router = useRouter()
 
-  const { applicationProfile, tenantId } = useSelector((state) => state.process)
-
-  const updateProfile = ({ applicationProfile }: { applicationProfile: ProfileId }) => {
+  const { profile, tenantId } = useSelector((state) => state.process)
+  const updateProfile = ({ profile }: { profile: ProfileId }) => {
     if (!tenantId) {
       console.error('No hay tenantId')
       return
     }
-    dispatch(setProcessState({ applicationProfile }))
-    updateProfileAplication({ tenantId, data: { applicationProfile } })
-    dispatch(updateTenantProfile(applicationProfile))
-    router.push('/aplication/information')
+    dispatch(setProcessState({ profile, step: 2 }))
+    dispatch(updateTenantProfile(profile))
+    void updateTenantProfileAction({ tenantId, data: { profile: profile as PrismaProfile } }).catch((error) => {
+      console.error('Error actualizando el perfil del tenant:', error)
+    })
+    router.push('/aplication/basicInformation')
   }
 
   return (
@@ -36,23 +38,23 @@ const StepSelectProfile = () => {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {Object.entries(profiles).map(([key, profile]) => (
+        {Object.entries(profiles).map(([key, profileObject]) => (
           <button
             key={key}
-            onClick={() => updateProfile({ applicationProfile: key as ProfileId })}
+            onClick={() => updateProfile({ profile: key as ProfileId })}
             className={`p-6 border-2 rounded-xl text-left transition-all transform hover:scale-105 ${
-              applicationProfile === key
+              profile === key
                 ? 'border-blue-600 bg-blue-50 shadow-lg ring-2 ring-blue-200'
                 : 'border-gray-200 hover:border-blue-300 hover:shadow-md'
             }`}
           >
             <div className="flex items-center gap-3 mb-3">
-              <span className="text-4xl">{profile.emoji}</span>
+              <span className="text-4xl">{profileObject.emoji}</span>
               <div>
-                <span className="font-bold text-lg text-gray-900 block">{profile.name}</span>
+                <span className="font-bold text-lg text-gray-900 block">{profileObject.name}</span>
               </div>
             </div>
-            {applicationProfile === key && (
+            {profile === key && (
               <div className="mt-3 pt-3 border-t border-blue-200">
                 <div className="flex items-center gap-2 text-blue-700 text-sm font-medium">
                   <CheckCircle2 size={16} />
@@ -67,4 +69,4 @@ const StepSelectProfile = () => {
   )
 }
 
-export default StepSelectProfile
+export default Profile

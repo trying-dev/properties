@@ -32,7 +32,7 @@ export interface TenantFormData {
 
   // Profesional
   profession?: string
-  employmentStatus?: string
+  profile?: string
   monthlyIncome?: number | '' // mantenemos "" en UI y convertimos al enviar
 
   // Emergencia
@@ -59,7 +59,7 @@ export interface CreateTenantSubmit {
     profession?: string
   }
   tenant: {
-    employmentStatus?: string
+    profile?: string
     monthlyIncome?: number
     emergencyContact?: string
     emergencyContactPhone?: string
@@ -92,11 +92,25 @@ export const CreateTenantForm = ({ isOpen, onClose, onSubmit }: Props) => {
         state: '',
         country: 'Colombia',
         profession: '',
-        employmentStatus: '',
+        profile: '',
         monthlyIncome: '',
         emergencyContact: '',
         emergencyContactPhone: '',
       }) as TenantFormData,
+    []
+  )
+  const profileOptions = useMemo(
+    () => [
+      { value: 'EMPLOYED', label: 'Empleado/a' },
+      { value: 'INDEPENDENT', label: 'Independiente' },
+      { value: 'RETIRED', label: 'Pensionado/a' },
+      { value: 'ENTREPRENEUR', label: 'Empresario/a' },
+      { value: 'INVESTOR', label: 'Inversionista' },
+      { value: 'STUDENT', label: 'Estudiante' },
+      { value: 'FOREIGN', label: 'Extranjero/a' },
+      { value: 'NOMAD', label: 'Nómada' },
+      { value: 'UNEMPLOYED', label: 'Desempleado/a' },
+    ],
     []
   )
 
@@ -168,7 +182,7 @@ export const CreateTenantForm = ({ isOpen, onClose, onSubmit }: Props) => {
         profession: formData.profession?.trim() || undefined,
       },
       tenant: {
-        employmentStatus: formData.employmentStatus?.trim() || undefined,
+        profile: formData.profile?.trim() || undefined,
         monthlyIncome: monthlyIncomeNumber,
         emergencyContact: formData.emergencyContact?.trim() || undefined,
         emergencyContactPhone: formData.emergencyContactPhone?.trim() || undefined,
@@ -414,14 +428,19 @@ export const CreateTenantForm = ({ isOpen, onClose, onSubmit }: Props) => {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Estado Laboral</label>
-                  <input
-                    type="text"
-                    className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    value={formData.employmentStatus}
-                    onChange={(e) => handleInputChange('employmentStatus', e.target.value)}
-                    placeholder="Empleado, Independiente, Pensionado..."
-                  />
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Perfil</label>
+                  <select
+                    className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                    value={formData.profile}
+                    onChange={(e) => handleInputChange('profile', e.target.value)}
+                  >
+                    <option value="">Selecciona un perfil</option>
+                    {profileOptions.map((option) => (
+                      <option key={option.value} value={option.value}>
+                        {option.label}
+                      </option>
+                    ))}
+                  </select>
                 </div>
 
                 <div>

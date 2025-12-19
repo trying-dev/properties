@@ -1,20 +1,20 @@
 'use server'
 
-import { DocumentType, MaritalStatus, Prisma, ContractStatus, EmploymentStatus } from '@prisma/client'
+import { DocumentType, MaritalStatus, Prisma, ContractStatus, Profile } from '@prisma/client'
 import { revalidatePath } from 'next/cache'
 import { prisma } from '+/lib/prisma'
 import { CreateTenantSubmit } from '+/app/dashboard/admin/nuevo-proceso/seleccion-de-usuario/CreateTenantForm'
 
-const toEmploymentStatus = (status?: string): EmploymentStatus | undefined =>
-  status && Object.values(EmploymentStatus).includes(status as EmploymentStatus)
-    ? (status as EmploymentStatus)
+const toProfile = (value?: string): Profile | undefined =>
+  value && Object.values(Profile).includes(value as Profile)
+    ? (value as Profile)
     : undefined
 
 export const getTenantsAction = async (filters?: {
   search?: string
   city?: string
   documentType?: DocumentType
-  employmentStatus?: string
+  profile?: string
   page?: number
   pageSize?: number
 }) => {
@@ -25,9 +25,9 @@ export const getTenantsAction = async (filters?: {
 
     const tenants = await prisma.tenant.findMany({
       where: {
-        ...(filters?.employmentStatus &&
-          toEmploymentStatus(filters.employmentStatus) && {
-            employmentStatus: toEmploymentStatus(filters.employmentStatus),
+        ...(filters?.profile &&
+          toProfile(filters.profile) && {
+            profile: toProfile(filters.profile),
           }),
         user: {
           is: {
@@ -118,7 +118,7 @@ export const getTenantByIdAction = async (tenantId: string) => {
 export const createTenantAction = async (tenantData: CreateTenantSubmit) => {
   try {
     const { user, tenant, references } = tenantData
-    const employmentStatusValue = toEmploymentStatus(tenant.employmentStatus)
+    const profileValue = toProfile(tenant.profile)
 
     const existingUser = await prisma.user.findFirst({
       where: { OR: [{ email: user.email }, { documentNumber: user.documentNumber }] },
@@ -128,7 +128,7 @@ export const createTenantAction = async (tenantData: CreateTenantSubmit) => {
 
     const result = await prisma.tenant.create({
       data: {
-        employmentStatus: employmentStatusValue,
+        profile: profileValue,
         monthlyIncome: tenant.monthlyIncome,
         emergencyContact: tenant.emergencyContact,
         emergencyContactPhone: tenant.emergencyContactPhone,
@@ -177,7 +177,7 @@ export const updateTenantAction = async (
     maritalStatus?: MaritalStatus
     emergencyContact?: string
     emergencyContactPhone?: string
-    employmentStatus?: string
+    profile?: string
     monthlyIncome?: number
   }
 ) => {
@@ -197,7 +197,7 @@ export const updateTenantAction = async (
     const tenantData = {
       emergencyContact: updateData.emergencyContact,
       emergencyContactPhone: updateData.emergencyContactPhone,
-      employmentStatus: updateData.employmentStatus,
+      profile: updateData.profile,
       monthlyIncome: updateData.monthlyIncome,
     }
 
@@ -208,7 +208,7 @@ export const updateTenantAction = async (
       })
       if (!tenant) throw new Error('Tenant no encontrado')
 
-      const employmentStatusUpdate = toEmploymentStatus(tenantData.employmentStatus)
+      const profileUpdate = toProfile(tenantData.profile)
 
       const userUpdateData: Prisma.UserUpdateInput = {
         ...(userData.name !== undefined && { name: userData.name }),
@@ -232,7 +232,7 @@ export const updateTenantAction = async (
         ...(tenantData.emergencyContactPhone !== undefined && {
           emergencyContactPhone: tenantData.emergencyContactPhone,
         }),
-        ...(employmentStatusUpdate !== undefined && { employmentStatus: employmentStatusUpdate }),
+        ...(profileUpdate !== undefined && { profile: profileUpdate }),
         ...(tenantData.monthlyIncome !== undefined && { monthlyIncome: tenantData.monthlyIncome }),
       }
 

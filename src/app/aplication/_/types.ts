@@ -26,26 +26,35 @@ export type SecurityOption = {
   fields: Field[]
 }
 
-export type DocumentType = 'cedula' | 'pasaporte'
+export type DocumentType = 'CC' | 'CE' | 'TI' | 'PASSPORT' | 'NIT' | 'OTHER'
+export type Gender = 'MALE' | 'FEMALE' | 'OTHER' | 'PREFER_NOT_TO_SAY'
+export type MaritalStatus = 'SINGLE' | 'MARRIED' | 'DIVORCED' | 'WIDOWED' | 'SEPARATED' | 'COMMON_LAW'
 
-export type ApplicantInfo = {
-  fullName: string
+export type BasicInfo = {
+  name: string
+  lastName: string
   email: string
-  phone: string
-  documentType: DocumentType
-  documentNumber: string
+  phone?: string
+  birthDate?: string
+  birthPlace?: string
+  documentType?: DocumentType | ''
+  documentNumber?: string
+  gender?: Gender | ''
+  maritalStatus?: MaritalStatus | ''
+  profession?: string
   monthlyIncome: string
 }
 
 export const profileIds = [
-  'formal',
-  'independent',
-  'retired',
-  'entrepreneur',
-  'investor',
-  'student',
-  'foreignLocal',
-  'nomad',
+  'EMPLOYED',
+  'INDEPENDENT',
+  'RETIRED',
+  'ENTREPRENEUR',
+  'INVESTOR',
+  'STUDENT',
+  'FOREIGN',
+  'NOMAD',
+  'UNEMPLOYED',
 ] as const
 
 export type ProfileId = (typeof profileIds)[number]

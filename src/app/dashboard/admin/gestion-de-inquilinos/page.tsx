@@ -42,7 +42,7 @@ type CreateTenantFormValues = {
   state: string
   country: string
   profession: string
-  employmentStatus: string
+  profile: string
   monthlyIncome: string
   emergencyContact: string
   emergencyContactPhone: string
@@ -59,7 +59,7 @@ type TenantFilters = {
   search: string
   city: string
   documentType: string
-  employmentStatus: string
+  profile: string
   page: number
   pageSize: number
 }
@@ -69,6 +69,18 @@ type TenantStats = {
   activeContracts: number
   citiesDistribution: { city: string | null; _count: number }[]
 }
+
+const profileOptions = [
+  { value: 'EMPLOYED', label: 'Empleado/a' },
+  { value: 'INDEPENDENT', label: 'Independiente' },
+  { value: 'RETIRED', label: 'Pensionado/a' },
+  { value: 'ENTREPRENEUR', label: 'Empresario/a' },
+  { value: 'INVESTOR', label: 'Inversionista' },
+  { value: 'STUDENT', label: 'Estudiante' },
+  { value: 'FOREIGN', label: 'Extranjero/a' },
+  { value: 'NOMAD', label: 'Nómada' },
+  { value: 'UNEMPLOYED', label: 'Desempleado/a' },
+]
 
 // Formulario de creación de tenant
 const CreateTenantForm = ({ isOpen, onClose, onSubmit }: CreateTenantFormProps) => {
@@ -92,7 +104,7 @@ const CreateTenantForm = ({ isOpen, onClose, onSubmit }: CreateTenantFormProps) 
 
     // Información profesional
     profession: '',
-    employmentStatus: '',
+    profile: '',
     monthlyIncome: '',
 
     // Contacto de emergencia
@@ -149,7 +161,7 @@ const CreateTenantForm = ({ isOpen, onClose, onSubmit }: CreateTenantFormProps) 
         profession: formData.profession.trim() || undefined,
       },
       tenant: {
-        employmentStatus: formData.employmentStatus.trim() || undefined,
+        profile: formData.profile.trim() || undefined,
         monthlyIncome: formData.monthlyIncome ? parseFloat(formData.monthlyIncome) : undefined,
         emergencyContact: formData.emergencyContact.trim() || undefined,
         emergencyContactPhone: formData.emergencyContactPhone.trim() || undefined,
@@ -182,7 +194,7 @@ const CreateTenantForm = ({ isOpen, onClose, onSubmit }: CreateTenantFormProps) 
       state: '',
       country: 'Colombia',
       profession: '',
-      employmentStatus: '',
+      profile: '',
       monthlyIncome: '',
       emergencyContact: '',
       emergencyContactPhone: '',
@@ -391,14 +403,19 @@ const CreateTenantForm = ({ isOpen, onClose, onSubmit }: CreateTenantFormProps) 
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Estado Laboral</label>
-                  <input
-                    type="text"
-                    className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    value={formData.employmentStatus}
-                    onChange={(e) => handleInputChange('employmentStatus', e.target.value)}
-                    placeholder="Empleado, Independiente, Pensionado..."
-                  />
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Perfil</label>
+                  <select
+                    className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                    value={formData.profile}
+                    onChange={(e) => handleInputChange('profile', e.target.value)}
+                  >
+                    <option value="">Selecciona un perfil</option>
+                    {profileOptions.map((option) => (
+                      <option key={option.value} value={option.value}>
+                        {option.label}
+                      </option>
+                    ))}
+                  </select>
                 </div>
 
                 <div>
@@ -557,7 +574,7 @@ export default function TenantsManagement() {
     search: '',
     city: '',
     documentType: '',
-    employmentStatus: '',
+    profile: '',
     page: 1,
     pageSize: 20,
   })

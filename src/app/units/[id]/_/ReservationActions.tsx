@@ -1,12 +1,12 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { useRouter } from 'next/navigation'
 import AuthFormsPanel from '+/components/auth/AuthFormsPanel'
 import Modal from '+/components/Modal'
 import { useDispatch, useSelector } from '+/redux'
-import { setAuthStatus, setAuthVerificationExpires } from '+/redux/slices/auth'
+import { setAuthVerificationExpires, setCodeVerificationState } from '+/redux/slices/auth'
 import { initProcess } from '+/redux/slices/process'
+import { useAppRouter } from '+/hooks/useAppRouter'
 
 type ReservationActionsProps = {
   isAuthenticated: boolean
@@ -22,7 +22,7 @@ export default function ReservationActions({
   buttonLabel = 'Reservar',
 }: ReservationActionsProps) {
   const dispatch = useDispatch()
-  const router = useRouter()
+  const push = useAppRouter()
   const [isModalOpen, setIsModalOpen] = useState(false)
 
   const baseButtonClass =
@@ -31,7 +31,7 @@ export default function ReservationActions({
 
   const handleGoToApplication = () => {
     dispatch(initProcess({ unitId }))
-    router.push('/aplication')
+    push('/aplication')
   }
 
   if (isAuthenticated) {
@@ -47,7 +47,9 @@ export default function ReservationActions({
       <button type="button" onClick={() => setIsModalOpen(true)} className={buttonClass}>
         {buttonLabel}
       </button>
-      <ReservationModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} unitId={unitId} />
+      {isModalOpen && (
+        <ReservationModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} unitId={unitId} />
+      )}
     </>
   )
 }
@@ -59,21 +61,27 @@ type ReservationModalProps = {
 }
 
 function ReservationModal({ isOpen, onClose, unitId }: ReservationModalProps) {
-  const router = useRouter()
   const dispatch = useDispatch()
-  const authStatus = useSelector((state) => state.auth.status)
+  const push = useAppRouter()
+  const codeVerificationState = useSelector((state) => state.auth.codeVerificationState)
+  const isAuthenticated = useSelector((state) => state.auth.isAuthenticated)
+  const tenantId = useSelector((state) => state.user?.tenant?.id)
 
   useEffect(() => {
-    if (!isOpen || authStatus !== 'success') return
+    if (!isOpen) return
+    if (!isAuthenticated) return
+    if (!tenantId) return
+
+    console.log({ isOpen, isAuthenticated, tenantId })
+
     onClose()
     dispatch(initProcess({ unitId }))
-    router.push('/aplication')
-    dispatch(setAuthStatus('idle'))
+    push('/aplication')
     dispatch(setAuthVerificationExpires(null))
-  }, [authStatus, dispatch, isOpen, onClose, router, unitId])
+  }, [dispatch, isAuthenticated, isOpen, onClose, push, tenantId, unitId])
 
   const handleClose = () => {
-    if (authStatus === 'verify') return
+    if (codeVerificationState === 'loading') return
     onClose()
   }
 
@@ -83,7 +91,7 @@ function ReservationModal({ isOpen, onClose, unitId }: ReservationModalProps) {
       onClose={handleClose}
       ariaLabel="Reserva sin iniciar sesión"
       className="max-w-2xl"
-      disableClose={authStatus === 'verify'}
+      disableClose={codeVerificationState === 'loading'}
     >
       <AuthFormsPanel />
     </Modal>
