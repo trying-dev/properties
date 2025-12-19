@@ -193,9 +193,8 @@ export const updateUserBasicInfo = async ({ data }: { data: BasicInfoUpdatePaylo
     const result = await prisma.user.update({
       where: { id: session.user.id },
       data: normalizedData,
+      select: { id: true },
     })
-
-    console.log('updateUserBasicInfo full:', result)
     return result
   } catch (error) {
     console.error('Error updating basic info:', error)

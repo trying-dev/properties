@@ -9,6 +9,7 @@ import { setProcessState, setUploadedDocs, updateBasicInfo } from '+/redux/slice
 
 import { mockDataByProfile } from '../../_/mockData'
 import { profiles } from '../../_/profiles'
+import { pickBasicInfoUpdates } from '../../_/basicInfoUtils'
 import { UploadedDocsState } from '../../_/types'
 import { DepositConfirmation, DocumentsSection } from '../../_/ApplicantInfoSections'
 
@@ -72,7 +73,10 @@ const StepComplementInfo = () => {
   const fillMockData = () => {
     if (!profile) return
 
-    dispatch(updateBasicInfo(mockDataByProfile[profile]))
+    const updates = pickBasicInfoUpdates(basicInfo, mockDataByProfile[profile])
+    if (Object.keys(updates).length > 0) {
+      dispatch(updateBasicInfo(updates))
+    }
 
     const mockDocs: UploadedDocsState = {}
     profiles[profile].fields.forEach((field) => {

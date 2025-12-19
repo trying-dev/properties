@@ -10,6 +10,7 @@ import { setProcessState, setUploadedDocs, updateBasicInfo } from '+/redux/slice
 import { updateUserBasicInfo } from '+/actions/user'
 import { mockDataByProfile } from '../../_/mockData'
 import { profiles } from '../../_/profiles'
+import { pickBasicInfoUpdates } from '../../_/basicInfoUtils'
 import { BasicInfo, UploadedDocsState } from '../../_/types'
 import { SelectInput, TextInput } from '../../_/ApplicantInfoSections'
 
@@ -41,9 +42,11 @@ const BasicInformation = () => {
   const router = useRouter()
   const dispatch = useDispatch()
   const processState = useSelector((state) => state.process)
+  const user = useSelector((state) => state.user)
   const { basicInfo, profile } = processState
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const hasMountedRef = useRef(false)
+  const hasSyncedUserRef = useRef(false)
 
   const isMinor = useMemo(() => {
     if (!basicInfo.birthDate) return false
@@ -84,6 +87,35 @@ const BasicInformation = () => {
       router.replace('/aplication')
     }
   }, [router, profile])
+
+  useEffect(() => {
+    if (!user || hasSyncedUserRef.current) return
+
+    const birthDate =
+      typeof user.birthDate === 'string' && user.birthDate.length >= 10 ? user.birthDate.slice(0, 10) : ''
+
+    const userInfo: Partial<BasicInfo> = {
+      name: user.name?.trim() ? user.name : undefined,
+      lastName: user.lastName?.trim() ? user.lastName : undefined,
+      email: user.email?.trim() ? user.email : undefined,
+      phone: user.phone?.trim() ? user.phone : undefined,
+      birthDate: birthDate || undefined,
+      birthPlace: user.birthPlace?.trim() ? user.birthPlace : undefined,
+      documentType: user.documentType ?? undefined,
+      documentNumber: user.documentNumber?.trim() ? user.documentNumber : undefined,
+      gender: user.gender ?? undefined,
+      maritalStatus: user.maritalStatus ?? undefined,
+      profession: user.profession?.trim() ? user.profession : undefined,
+      monthlyIncome: user.monthlyIncome != null ? String(user.monthlyIncome) : undefined,
+    }
+
+    const updates = pickBasicInfoUpdates(basicInfo, userInfo)
+    if (Object.keys(updates).length > 0) {
+      dispatch(updateBasicInfo(updates))
+    }
+
+    hasSyncedUserRef.current = true
+  }, [basicInfo, dispatch, user])
 
   useEffect(() => {
     if (!profile) return
@@ -135,7 +167,10 @@ const BasicInformation = () => {
   }
 
   const fillMockData = () => {
-    dispatch(updateBasicInfo(mockDataByProfile[profile]))
+    const updates = pickBasicInfoUpdates(basicInfo, mockDataByProfile[profile])
+    if (Object.keys(updates).length > 0) {
+      dispatch(updateBasicInfo(updates))
+    }
 
     const mockDocs: UploadedDocsState = {}
     profiles[profile].fields.forEach((field) => {
