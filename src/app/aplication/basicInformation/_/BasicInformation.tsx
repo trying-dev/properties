@@ -188,7 +188,7 @@ const BasicInformation = () => {
         payload: { basicInfo, profile },
       })
         .then((result) => {
-          if (result.success) {
+          if (result.success && result.data) {
             dispatch(setProcessState({ processId: result.data.id }))
           } else {
             console.error('No se pudo crear el proceso', result.error)
@@ -208,7 +208,7 @@ const BasicInformation = () => {
 
   if (!profile) return null
 
-  const handleInfoChange = (field: keyof BasicInfo, value: string) => {
+  const handleInfoChange = (field: keyof BasicInfo, value: string | undefined) => {
     dispatch(updateBasicInfo({ [field]: value } as Partial<BasicInfo>))
   }
 
@@ -289,7 +289,7 @@ const BasicInformation = () => {
           <SelectInput
             label="Tipo de documento"
             value={basicInfo.documentType ?? ''}
-            onChange={(value) => handleInfoChange('documentType', value)}
+            onChange={(value) => handleInfoChange('documentType', value || undefined)}
             options={documentTypeOptions}
             required={false}
             showPlaceholder={false}
@@ -336,7 +336,7 @@ const BasicInformation = () => {
           <SelectInput
             label="Género"
             value={basicInfo.gender ?? ''}
-            onChange={(value) => handleInfoChange('gender', value)}
+            onChange={(value) => handleInfoChange('gender', value || undefined)}
             options={genderOptions}
             required={false}
           />
@@ -344,7 +344,7 @@ const BasicInformation = () => {
           <SelectInput
             label="Estado civil"
             value={basicInfo.maritalStatus ?? ''}
-            onChange={(value) => handleInfoChange('maritalStatus', value)}
+            onChange={(value) => handleInfoChange('maritalStatus', value || undefined)}
             options={maritalStatusOptions}
             required={false}
           />

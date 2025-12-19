@@ -37,10 +37,10 @@ export type BasicInfo = {
   phone?: string
   birthDate?: string
   birthPlace?: string
-  documentType?: DocumentType | ''
+  documentType?: DocumentType
   documentNumber?: string
-  gender?: Gender | ''
-  maritalStatus?: MaritalStatus | ''
+  gender?: Gender
+  maritalStatus?: MaritalStatus
   profession?: string
   monthlyIncome: string
 }

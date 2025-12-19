@@ -1,5 +1,5 @@
 import { UserForRedux } from '+/actions/user/types'
-import { ProfileId } from '+/app/aplication/_/types'
+import { DocumentType, Gender, MaritalStatus, ProfileId } from '+/app/aplication/_/types'
 
 export const initialState = {
   auth: {
@@ -29,10 +29,10 @@ export const initialState = {
       phone: '',
       birthDate: '',
       birthPlace: '',
-      documentType: '' as '' | 'CC' | 'CE' | 'TI' | 'PASSPORT' | 'NIT' | 'OTHER',
+      documentType: undefined as DocumentType | undefined,
       documentNumber: '',
-      gender: '' as '' | 'MALE' | 'FEMALE' | 'OTHER' | 'PREFER_NOT_TO_SAY',
-      maritalStatus: '' as '' | 'SINGLE' | 'MARRIED' | 'DIVORCED' | 'WIDOWED' | 'SEPARATED' | 'COMMON_LAW',
+      gender: undefined as Gender | undefined,
+      maritalStatus: undefined as MaritalStatus | undefined,
       profession: '',
       monthlyIncome: '',
     },

@@ -5,8 +5,8 @@ type SessionStatus = 'loading' | 'authenticated' | 'unauthenticated'
 
 interface User {
   id: string
-  name: string
-  email: string
+  name?: string | null
+  email?: string | null
   image?: string
   role: 'admin' | 'tenant'
   profile?: string | null

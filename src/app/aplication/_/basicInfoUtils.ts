@@ -6,15 +6,17 @@ const isEmptyValue = (value: BasicInfo[keyof BasicInfo]) => {
   return false
 }
 
-export const pickBasicInfoUpdates = (current: BasicInfo, incoming: Partial<BasicInfo>) => {
+export const pickBasicInfoUpdates = (current: BasicInfo, incoming: Partial<BasicInfo>): Partial<BasicInfo> => {
+  type BasicInfoKey = keyof BasicInfo
   const updates: Partial<BasicInfo> = {}
-  const entries = Object.entries(incoming) as [keyof BasicInfo, BasicInfo[keyof BasicInfo]][]
+  const keys = Object.keys(incoming) as BasicInfoKey[]
 
-  entries.forEach(([key, value]) => {
+  keys.forEach((key) => {
+    const value = incoming[key]
     if (value == null) return
     if (typeof value === 'string' && value.trim().length === 0) return
     if (isEmptyValue(current[key])) {
-      updates[key] = value
+      Object.assign(updates, { [key]: value } as Partial<BasicInfo>)
     }
   })
 

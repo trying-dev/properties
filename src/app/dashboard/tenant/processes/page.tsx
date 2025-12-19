@@ -13,12 +13,13 @@ import { setProcessState } from '+/redux/slices/process'
 import { BasicInfo, ProfileId } from '+/app/aplication/_/types'
 import { pickBasicInfoUpdates } from '+/app/aplication/_/basicInfoUtils'
 
-type ProcessListItem =
-  Awaited<ReturnType<typeof getTenantProcessesAction>> extends { data: infer D }
-    ? D extends undefined | null
-      ? never
-      : D[number]
-    : never
+type ProcessListItem = {
+  id: string
+  status: string
+  currentStep: number | null
+  updatedAt: string | Date
+  unitId: string | null
+}
 
 type UserTenantResult = Awaited<ReturnType<typeof getUserTenant>>
 
@@ -37,10 +38,10 @@ const buildBasicInfoFromUser = (user: UserTenantResult): BasicInfo | null => {
     phone: user.phone ?? '',
     birthDate: normalizeBirthDate(user.birthDate),
     birthPlace: user.birthPlace ?? '',
-    documentType: (user.documentType ?? '') as BasicInfo['documentType'],
+    documentType: (user.documentType ?? undefined) as BasicInfo['documentType'],
     documentNumber: user.documentNumber ?? '',
-    gender: (user.gender ?? '') as BasicInfo['gender'],
-    maritalStatus: (user.maritalStatus ?? '') as BasicInfo['maritalStatus'],
+    gender: (user.gender ?? undefined) as BasicInfo['gender'],
+    maritalStatus: (user.maritalStatus ?? undefined) as BasicInfo['maritalStatus'],
     profession: user.profession ?? '',
     monthlyIncome: user.monthlyIncome != null ? String(user.monthlyIncome) : '',
   }
