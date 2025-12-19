@@ -36,7 +36,14 @@ export const authConfig: NextAuthConfig = {
         try {
           const user = await prisma.user.findUnique({
             where: { email: credentials.email as string },
-            select: { id: true, password: true, disable: true },
+            select: {
+              id: true,
+              email: true,
+              name: true,
+              password: true,
+              disable: true,
+              admin: { select: { adminLevel: true } },
+            },
           })
 
           if (!user || !user.password) return null
@@ -49,7 +56,13 @@ export const authConfig: NextAuthConfig = {
 
           await prisma.user.update({ where: { id: user.id }, data: { lastLoginAt: new Date() } })
 
-          return { id: user.id }
+          return {
+            id: user.id,
+            email: user.email,
+            name: user.name ?? undefined,
+            role: user.admin ? 'admin' : 'tenant',
+            adminLevel: user.admin?.adminLevel ?? undefined,
+          }
         } catch (error) {
           console.error('Error durante la autenticación:', error)
           return null
@@ -68,13 +81,44 @@ export const authConfig: NextAuthConfig = {
       return !!auth?.user // Dashboard requiere login
     },
 
-    async jwt({ token }) {
+    async jwt({ token, user }) {
+      if (user) {
+        const userRole = (user as { role?: 'admin' | 'tenant' }).role
+        const adminLevel = (user as { adminLevel?: string }).adminLevel
+        const email = (user as { email?: string }).email
+        const name = (user as { name?: string }).name
+
+        if (userRole) token.role = userRole
+        if (adminLevel) token.adminLevel = adminLevel
+        if (email) token.email = email
+        if (name) token.name = name
+        return token
+      }
+
+      if (!token.role && token.sub) {
+        const dbUser = await prisma.user.findUnique({
+          where: { id: token.sub },
+          select: {
+            admin: { select: { adminLevel: true } },
+          },
+        })
+
+        if (dbUser) {
+          token.role = dbUser.admin ? 'admin' : 'tenant'
+          token.adminLevel = dbUser.admin?.adminLevel ?? undefined
+        }
+      }
+
       return token
     },
 
     async session({ session, token }) {
       if (token) {
         session.user.id = token.sub!
+        session.user.role = token.role ?? 'tenant'
+        session.user.adminLevel = token.adminLevel
+        if (token.email) session.user.email = token.email
+        if (token.name) session.user.name = token.name
       }
       return session
     },
