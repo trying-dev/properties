@@ -152,6 +152,42 @@ export const getProcessAction = async (processId: string) => {
   }
 }
 
+export const getProcessDetailsAction = async (processId: string) => {
+  if (!processId) return { success: false, error: 'Falta processId' }
+  try {
+    const process = await prisma.process.findUnique({
+      where: { id: processId },
+      select: {
+        id: true,
+        status: true,
+        currentStep: true,
+        createdAt: true,
+        updatedAt: true,
+        payload: true,
+        tenant: {
+          select: {
+            id: true,
+            user: { select: { name: true, lastName: true, email: true, phone: true } },
+          },
+        },
+        unit: {
+          select: {
+            id: true,
+            unitNumber: true,
+            property: { select: { id: true, name: true, city: true } },
+          },
+        },
+      },
+    })
+
+    if (!process) return { success: false, error: 'Proceso no encontrado' }
+    return { success: true, data: process }
+  } catch (error) {
+    console.error('Error en getProcessDetailsAction:', error)
+    return { success: false, error: 'No se pudo obtener el detalle del proceso' }
+  }
+}
+
 export const getTenantProcessesAction = async (tenantId: string) => {
   if (!tenantId) return { success: false, error: 'Falta tenantId' }
   try {
@@ -170,5 +206,41 @@ export const getTenantProcessesAction = async (tenantId: string) => {
   } catch (error) {
     console.error('Error en getTenantProcessesAction:', error)
     return { success: false, error: 'No se pudieron obtener los procesos' }
+  }
+}
+
+export const getAdminProcessesAction = async (userId?: string) => {
+  try {
+    const processes = await prisma.process.findMany({
+      where: {
+        status: { in: [ProcessStatus.OPEN, ProcessStatus.IN_PROGRESS] },
+      },
+      select: {
+        id: true,
+        status: true,
+        currentStep: true,
+        updatedAt: true,
+        createdAt: true,
+        tenant: {
+          select: {
+            id: true,
+            user: { select: { name: true, lastName: true, email: true } },
+          },
+        },
+        unit: {
+          select: {
+            id: true,
+            unitNumber: true,
+            property: { select: { name: true } },
+          },
+        },
+      },
+      orderBy: { updatedAt: 'desc' },
+    })
+
+    return { success: true, data: processes }
+  } catch (error) {
+    console.error('Error en getAdminProcessesAction:', error)
+    return { success: false, error: 'No se pudieron obtener las aplicaciones' }
   }
 }

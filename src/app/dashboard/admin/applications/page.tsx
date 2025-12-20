@@ -5,6 +5,7 @@ import { Building2, Calendar, TrendingUp, Users, FileText } from 'lucide-react'
 import Link from 'next/link'
 
 import { getProperties } from '+/actions/property'
+import { getAdminProcessesAction } from '+/actions/processes'
 import Header from '+/components/Header'
 
 interface DashboardStats {
@@ -14,6 +15,23 @@ interface DashboardStats {
   monthlyRevenue: number
 }
 
+type AdminProcess = {
+  id: string
+  status: 'OPEN' | 'IN_PROGRESS'
+  currentStep: number
+  updatedAt: string
+  createdAt: string
+  tenant: {
+    id: string
+    user: { name: string | null; lastName: string | null; email: string | null }
+  } | null
+  unit: {
+    id: string
+    unitNumber: string
+    property: { name: string }
+  } | null
+}
+
 export default function AdminApplicationsPage() {
   const [stats, setStats] = useState<DashboardStats>({
     totalProperties: 0,
@@ -21,6 +39,9 @@ export default function AdminApplicationsPage() {
     pendingTasks: 0,
     monthlyRevenue: 0,
   })
+  const [processes, setProcesses] = useState<AdminProcess[]>([])
+  const [processesError, setProcessesError] = useState<string | null>(null)
+  const [processesLoading, setProcessesLoading] = useState(true)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [, startTransition] = useTransition()
@@ -49,6 +70,23 @@ export default function AdminApplicationsPage() {
         setIsLoading(false)
       }
     })
+  }, [])
+
+  useEffect(() => {
+    const loadProcesses = async () => {
+      setProcessesLoading(true)
+      setProcessesError(null)
+      const result = await getAdminProcessesAction()
+      if (!result.success || !result.data) {
+        setProcessesError(result.error ?? 'No se pudieron cargar las aplicaciones.')
+        setProcessesLoading(false)
+        return
+      }
+      setProcesses(result.data as AdminProcess[])
+      setProcessesLoading(false)
+    }
+
+    void loadProcesses()
   }, [])
 
   const formatCurrency = (amount: number) => {
@@ -103,6 +141,70 @@ export default function AdminApplicationsPage() {
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">Aplicaciones</h1>
           <p className="text-gray-600">Gestiona procesos y revisa el estado general.</p>
+        </div>
+
+        <div className="bg-white rounded-lg border shadow-sm p-6 mb-10">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-lg font-semibold text-gray-900">Aplicaciones en progreso</h2>
+            <span className="text-sm text-gray-500">
+              {processesLoading ? 'Cargando...' : `${processes.length} activas`}
+            </span>
+          </div>
+
+          {processesLoading ? (
+            <div className="space-y-3">
+              {[1, 2, 3].map((item) => (
+                <div key={item} className="h-16 bg-gray-100 rounded-lg animate-pulse" />
+              ))}
+            </div>
+          ) : processesError ? (
+            <div className="text-sm text-red-600">{processesError}</div>
+          ) : processes.length === 0 ? (
+            <div className="text-sm text-gray-600">No hay aplicaciones en progreso por ahora.</div>
+          ) : (
+            <div className="space-y-3">
+              {processes.map((process) => {
+                const tenantName = [process.tenant?.user?.name, process.tenant?.user?.lastName]
+                  .filter(Boolean)
+                  .join(' ')
+                const unitLabel = process.unit?.unitNumber ? `Unidad ${process.unit.unitNumber}` : 'Unidad'
+                const propertyName = process.unit?.property?.name ?? 'Propiedad'
+
+                return (
+                  <div
+                    key={process.id}
+                    className="flex flex-col gap-2 rounded-lg border border-gray-200 px-4 py-3 sm:flex-row sm:items-center sm:justify-between"
+                  >
+                    <div>
+                      <p className="text-sm font-semibold text-gray-900">
+                        {tenantName || process.tenant?.user?.email || 'Solicitud sin nombre'}
+                      </p>
+                      <p className="text-xs text-gray-500">
+                        {propertyName} · {unitLabel}
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <Link
+                        href={`/dashboard/admin/applications/${process.id}`}
+                        className="text-xs font-semibold text-gray-700 hover:text-gray-900 underline"
+                      >
+                        Ver detalle
+                      </Link>
+                      <span className="rounded-full bg-blue-50 px-2.5 py-1 text-xs font-semibold text-blue-700">
+                        Paso {process.currentStep}
+                      </span>
+                      <span className="rounded-full bg-gray-100 px-2.5 py-1 text-xs font-semibold text-gray-700">
+                        {process.status === 'OPEN' ? 'Abierto' : 'En progreso'}
+                      </span>
+                      <span className="text-xs text-gray-500">
+                        {new Date(process.updatedAt).toLocaleDateString('es-MX')}
+                      </span>
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          )}
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
