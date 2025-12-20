@@ -22,17 +22,8 @@ const StepComplementInfo = () => {
   const { basicInfo, acceptedDeposit, profile, selectedSecurity, uploadedDocs } = processState
 
   const hasBasicInfo = useMemo(() => {
-    return Boolean(
-      basicInfo.name.trim() &&
-      basicInfo.lastName.trim() &&
-      basicInfo.monthlyIncome.trim()
-    )
+    return Boolean(basicInfo.name.trim() && basicInfo.lastName.trim() && basicInfo.monthlyIncome.trim())
   }, [basicInfo])
-
-  useEffect(() => {
-    if (processState.step === 3) return
-    dispatch(setProcessState({ step: 3 }))
-  }, [dispatch, processState.step])
 
   useEffect(() => {
     if (!profile) {

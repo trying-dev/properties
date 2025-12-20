@@ -17,6 +17,7 @@ const Profile = () => {
   const router = useRouter()
 
   const { profile, tenantId } = useSelector((state) => state.process)
+
   const updateProfile = ({ profile }: { profile: ProfileId }) => {
     if (!tenantId) {
       console.error('No hay tenantId')

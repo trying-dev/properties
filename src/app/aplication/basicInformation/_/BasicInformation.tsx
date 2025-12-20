@@ -170,12 +170,11 @@ const BasicInformation = () => {
           processId: processState.processId,
           currentStep: 2,
           payloadPatch: { basicInfo, profile },
+        }).then((result) => {
+          if (!result.success) {
+            console.error('No se pudo actualizar el proceso', result.error)
+          }
         })
-          .then((result) => {
-            if (!result.success) {
-              console.error('No se pudo actualizar el proceso', result.error)
-            }
-          })
         return
       }
 

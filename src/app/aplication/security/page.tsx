@@ -23,11 +23,6 @@ const SecurityStepPage = () => {
   const resolvedProfile = isProfileId(profile) ? profile : ''
 
   useEffect(() => {
-    if (processState.step === 4) return
-    dispatch(setProcessState({ step: 4 }))
-  }, [dispatch, processState.step])
-
-  useEffect(() => {
     if (!resolvedProfile) router.replace('/aplication/profile')
   }, [router, resolvedProfile])
 
