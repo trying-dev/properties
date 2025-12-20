@@ -1,4 +1,4 @@
-export type FieldType = 'file' | 'text' | 'tel' | 'checkbox' | 'number'
+export type FieldType = 'file' | 'text' | 'tel' | 'checkbox' | 'number' | 'email' | 'date'
 
 export type Field = {
   id: string
@@ -17,6 +17,7 @@ export type ProfileConfig = {
 }
 
 export type UploadedDocsState = Record<string, FileList | File[] | undefined>
+export type SecurityFieldValue = string | boolean
 
 export type SecurityOption = {
   id: string

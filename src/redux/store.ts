@@ -1,5 +1,5 @@
 import { UserForRedux } from '+/actions/user/types'
-import { DocumentType, Gender, MaritalStatus, ProfileId } from '+/app/aplication/_/types'
+import { DocumentType, Gender, MaritalStatus, ProfileId, SecurityFieldValue } from '+/app/aplication/_/types'
 
 export const initialState = {
   auth: {
@@ -37,6 +37,7 @@ export const initialState = {
       monthlyIncome: '',
     },
     uploadedDocs: {} as Record<string, FileList | File[] | undefined>,
+    securityFields: {} as Record<string, SecurityFieldValue>,
   },
 }
 
