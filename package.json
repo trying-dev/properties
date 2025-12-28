@@ -7,7 +7,7 @@
     "build": "next build",
     "initPrisma": "prisma generate && prisma db push --accept-data-loss",
     "start": "next start",
-    "lint": "next lint",
+    "lint": "eslint",
     "db:generate": "prisma generate",
     "db:push": "prisma db push",
     "db:migrate": "prisma migrate dev",
