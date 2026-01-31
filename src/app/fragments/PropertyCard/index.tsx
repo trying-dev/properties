@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { Heart, MapPin, ChevronLeft, ChevronRight } from 'lucide-react'
@@ -22,7 +22,6 @@ interface PropertyCardProps {
 
 export default function PropertyCard({ unit, index }: PropertyCardProps) {
   const [activeImage, setActiveImage] = useState(0)
-  const [isHovered, setIsHovered] = useState(false)
   const images = parseImages(unit.images)
   const currentImage = images[activeImage] || '/placeholder-apartment.jpg'
 
@@ -30,23 +29,11 @@ export default function PropertyCard({ unit, index }: PropertyCardProps) {
   const areaLabel = unit.area ? `${unit.area} m²` : 'N/D'
   const bedroomsLabel = unit.bedrooms ? `${unit.bedrooms} Zi.` : 'N/D'
 
-  // Auto-advance carousel when not hovered
-  useEffect(() => {
-    if (images.length < 2) return
-    const id = setInterval(() => {
-      if (isHovered) return
-      setActiveImage((prev) => (prev + 1) % images.length)
-    }, 4000)
-    return () => clearInterval(id)
-  }, [images.length, isHovered])
-
   return (
     <Link
       key={unit.id}
       href={`/units/${unit.id}`}
       className="bg-white border border-gray-200 rounded-2xl overflow-hidden hover:shadow-xl transition-all group"
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
     >
       <div className="relative h-56 bg-gray-100">
         <Image
