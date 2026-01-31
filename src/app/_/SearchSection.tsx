@@ -40,7 +40,7 @@ export default function SearchSection({
                 placeholder="Ciudad, dirección o código postal"
                 value={searchQuery}
                 onChange={(e) => onSearchQueryChange(e.target.value)}
-                className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent"
+                className="w-full px-4 py-3 border border-gray-200 rounded-lg text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent"
               />
             </div>
             <div className="md:col-span-2">
@@ -49,14 +49,14 @@ export default function SearchSection({
                 placeholder="Precio máximo"
                 value={filters.priceMax}
                 onChange={(e) => onFiltersChange({ ...filters, priceMax: e.target.value })}
-                className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent"
+                className="w-full px-4 py-3 border border-gray-200 rounded-lg text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent"
               />
             </div>
             <div className="md:col-span-2">
               <select
                 value={filters.bedrooms}
                 onChange={(e) => onFiltersChange({ ...filters, bedrooms: e.target.value })}
-                className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent appearance-none bg-white"
+                className="w-full px-4 py-3 border border-gray-200 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent appearance-none bg-white"
               >
                 <option value="">Habitaciones</option>
                 <option value="1">1+</option>
@@ -69,7 +69,7 @@ export default function SearchSection({
               <select
                 value={filters.city}
                 onChange={(e) => onFiltersChange({ ...filters, city: e.target.value })}
-                className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent appearance-none bg-white"
+                className="w-full px-4 py-3 border border-gray-200 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent appearance-none bg-white"
               >
                 <option value="">Ciudad</option>
                 <option value="bogotá">Bogotá</option>

@@ -7,12 +7,12 @@ export default function ExtraFilters() {
           <input
             type="number"
             placeholder="50"
-            className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900"
+            className="w-full px-4 py-2 border border-gray-200 rounded-lg text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-900"
           />
         </div>
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">Baños</label>
-          <select className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900">
+          <select className="w-full px-4 py-2 border border-gray-200 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900">
             <option value="">Cualquiera</option>
             <option value="1">1+</option>
             <option value="2">2+</option>
