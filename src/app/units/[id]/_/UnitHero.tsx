@@ -13,8 +13,8 @@ export default function UnitHero({ unit }: UnitHeroProps) {
         <Star className="w-4 h-4 fill-amber-400 text-amber-400" />
         <Star className="w-4 h-4 fill-amber-400 text-amber-400" />
         <Star className="w-4 h-4 fill-amber-400 text-amber-400" />
-        <Star className="w-4 h-4 text-amber-400" />
-        <span className="ml-1 text-amber-600 font-semibold">4.0</span>
+        <Star className="w-4 h-4 fill-amber-400 text-amber-400" />
+        <span className="ml-1 text-amber-600 font-semibold">5.0</span>
       </div>
       <h1 className="text-3xl font-bold text-gray-900">
         {unit.property.name} — Unidad {unit.unitNumber}

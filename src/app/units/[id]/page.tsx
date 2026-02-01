@@ -43,11 +43,7 @@ export default async function UnitDetailPage({ params }: { params: Promise<{ id:
 
         <UnitFeatures unit={unit} />
         <PopularServices unit={unit} />
-        <HighlightsSection
-          unit={unit}
-          isAuthenticated={isAuthenticated}
-          rawHighlights={(unit as Record<string, unknown>).highlights}
-        />
+        <HighlightsSection unit={unit} isAuthenticated={isAuthenticated} rawHighlights={(unit as Record<string, unknown>).highlights} />
       </main>
       <Footer />
     </div>
