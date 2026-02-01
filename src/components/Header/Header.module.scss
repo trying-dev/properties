@@ -1,0 +1,240 @@
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: $color-white;
+  border-bottom: 1px solid $color-gray-200;
+}
+
+.container {
+  max-width: 80rem;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+@media (min-width: 640px) {
+  .container {
+    padding: 0 1.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .container {
+    padding: 0 2rem;
+  }
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 4rem;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.logo {
+  width: 2rem;
+  height: 2rem;
+  background: $color-gray-900;
+  color: $color-white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: $radius-md;
+}
+
+.brandText {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: $color-gray-900;
+}
+
+.nav {
+  display: none;
+  align-items: center;
+  gap: 2rem;
+}
+
+@media (min-width: 768px) {
+  .nav {
+    display: flex;
+  }
+}
+
+.navLinkPrimary,
+.navLinkSecondary,
+.registerBtn {
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: color 160ms ease;
+}
+
+.navLinkPrimary,
+.registerBtn {
+  color: $color-gray-900;
+}
+
+.navLinkPrimary:hover,
+.registerBtn:hover {
+  color: $color-gray-700;
+}
+
+.navLinkSecondary {
+  color: $color-gray-600;
+}
+
+.navLinkSecondary:hover {
+  color: $color-gray-900;
+}
+
+.skeleton {
+  width: 7rem;
+  height: 2.25rem;
+  border-radius: $radius-sm;
+  background: $color-gray-100;
+  animation: pulse 1.4s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.45;
+  }
+}
+
+.menuWrapper {
+  position: relative;
+}
+
+.menuButton {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: $radius-md;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: background-color 160ms ease;
+}
+
+.menuButton:hover {
+  background: $color-gray-50;
+}
+
+.userName {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: $color-gray-900;
+  display: none;
+}
+
+@media (min-width: 640px) {
+  .userName {
+    display: inline;
+  }
+}
+
+.avatar {
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: $radius-full;
+  background: $color-gray-200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.initials {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: $color-gray-700;
+}
+
+.chevron {
+  width: 1rem;
+  height: 1rem;
+  color: $color-gray-600;
+  transition: transform 160ms ease;
+}
+
+.chevronOpen {
+  transform: rotate(180deg);
+}
+
+.dropdown {
+  position: absolute;
+  right: 0;
+  margin-top: 0.5rem;
+  width: 16rem;
+  background: $color-white;
+  border: 1px solid $color-gray-200;
+  border-radius: $radius-md;
+  padding: 0.5rem 0;
+  box-shadow: $shadow-dropdown;
+}
+
+.dropdownLink {
+  display: block;
+  width: 100%;
+  padding: 0.5rem 1rem;
+  text-align: left;
+  font-size: 0.875rem;
+  color: $color-gray-700;
+  text-decoration: none;
+  transition: background-color 160ms ease;
+}
+
+.dropdownLink:hover {
+  background: $color-gray-50;
+}
+
+.logoutBtn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  color: $color-red-600;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  transition: background-color 160ms ease;
+}
+
+.logoutBtn:hover {
+  background: $color-red-50;
+}
+
+.authActions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.loginBtn {
+  background: $color-gray-900;
+  color: $color-white;
+  font-size: 0.875rem;
+  font-weight: 500;
+  padding: 0.5rem 1rem;
+  border-radius: $radius-md;
+  border: none;
+  cursor: pointer;
+  transition: background-color 160ms ease;
+}
+
+.loginBtn:hover {
+  background: $color-gray-800;
+}
