@@ -46,13 +46,7 @@ export class EmailService {
     }
   }
 
-  async sendExistingUserContinueEmail({
-    tenantEmail,
-    tenantName,
-  }: {
-    tenantEmail: string
-    tenantName: string
-  }) {
+  async sendExistingUserContinueEmail({ tenantEmail, tenantName }: { tenantEmail: string; tenantName: string }) {
     try {
       const emailResult = await this.resend.emails.send({
         from: process.env.FROM_EMAIL as string,

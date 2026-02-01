@@ -114,13 +114,7 @@ export const getUserAfterLogin = async ({ email }: { email: string }) => {
   }
 }
 
-export const updateTenantProfile = async ({
-  tenantId,
-  data,
-}: {
-  tenantId: string
-  data: { profile: Profile | null }
-}) => {
+export const updateTenantProfile = async ({ tenantId, data }: { tenantId: string; data: { profile: Profile | null } }) => {
   try {
     return await prisma.tenant.update({
       where: { id: tenantId },
@@ -178,15 +172,11 @@ export const updateUserBasicInfo = async ({ data }: { data: BasicInfoUpdatePaylo
     ...(data.birthDate !== undefined ? { birthDate: normalizeOptionalDate(data.birthDate) } : {}),
     ...(data.birthPlace !== undefined ? { birthPlace: normalizeOptionalString(data.birthPlace) } : {}),
     ...(data.documentType !== undefined ? { documentType: data.documentType || null } : {}),
-    ...(data.documentNumber !== undefined
-      ? { documentNumber: normalizeOptionalString(data.documentNumber) }
-      : {}),
+    ...(data.documentNumber !== undefined ? { documentNumber: normalizeOptionalString(data.documentNumber) } : {}),
     ...(data.gender !== undefined ? { gender: data.gender || null } : {}),
     ...(data.maritalStatus !== undefined ? { maritalStatus: data.maritalStatus || null } : {}),
     ...(data.profession !== undefined ? { profession: normalizeOptionalString(data.profession) } : {}),
-    ...(data.monthlyIncome !== undefined
-      ? { monthlyIncome: normalizeOptionalNumber(data.monthlyIncome) }
-      : {}),
+    ...(data.monthlyIncome !== undefined ? { monthlyIncome: normalizeOptionalNumber(data.monthlyIncome) } : {}),
   }
 
   try {

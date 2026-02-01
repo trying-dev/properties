@@ -52,10 +52,7 @@ export default function AdminApplicationsPage() {
         setIsLoading(true)
         setError(null)
 
-        const [propertiesData] = await Promise.all([
-          getProperties(),
-          new Promise((resolve) => setTimeout(resolve, 450)),
-        ])
+        const [propertiesData] = await Promise.all([getProperties(), new Promise((resolve) => setTimeout(resolve, 450))])
 
         setStats({
           totalProperties: propertiesData.length,
@@ -146,9 +143,7 @@ export default function AdminApplicationsPage() {
         <div className="bg-white rounded-lg border shadow-sm p-6 mb-10">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-lg font-semibold text-gray-900">Aplicaciones en progreso</h2>
-            <span className="text-sm text-gray-500">
-              {processesLoading ? 'Cargando...' : `${processes.length} activas`}
-            </span>
+            <span className="text-sm text-gray-500">{processesLoading ? 'Cargando...' : `${processes.length} activas`}</span>
           </div>
 
           {processesLoading ? (
@@ -164,9 +159,7 @@ export default function AdminApplicationsPage() {
           ) : (
             <div className="space-y-3">
               {processes.map((process) => {
-                const tenantName = [process.tenant?.user?.name, process.tenant?.user?.lastName]
-                  .filter(Boolean)
-                  .join(' ')
+                const tenantName = [process.tenant?.user?.name, process.tenant?.user?.lastName].filter(Boolean).join(' ')
                 const unitLabel = process.unit?.unitNumber ? `Unidad ${process.unit.unitNumber}` : 'Unidad'
                 const propertyName = process.unit?.property?.name ?? 'Propiedad'
 
@@ -176,9 +169,7 @@ export default function AdminApplicationsPage() {
                     className="flex flex-col gap-2 rounded-lg border border-gray-200 px-4 py-3 sm:flex-row sm:items-center sm:justify-between"
                   >
                     <div>
-                      <p className="text-sm font-semibold text-gray-900">
-                        {tenantName || process.tenant?.user?.email || 'Solicitud sin nombre'}
-                      </p>
+                      <p className="text-sm font-semibold text-gray-900">{tenantName || process.tenant?.user?.email || 'Solicitud sin nombre'}</p>
                       <p className="text-xs text-gray-500">
                         {propertyName} · {unitLabel}
                       </p>
@@ -190,15 +181,11 @@ export default function AdminApplicationsPage() {
                       >
                         Ver detalle
                       </Link>
-                      <span className="rounded-full bg-blue-50 px-2.5 py-1 text-xs font-semibold text-blue-700">
-                        Paso {process.currentStep}
-                      </span>
+                      <span className="rounded-full bg-blue-50 px-2.5 py-1 text-xs font-semibold text-blue-700">Paso {process.currentStep}</span>
                       <span className="rounded-full bg-gray-100 px-2.5 py-1 text-xs font-semibold text-gray-700">
                         {process.status === 'OPEN' ? 'Abierto' : 'En progreso'}
                       </span>
-                      <span className="text-xs text-gray-500">
-                        {new Date(process.updatedAt).toLocaleDateString('es-MX')}
-                      </span>
+                      <span className="text-xs text-gray-500">{new Date(process.updatedAt).toLocaleDateString('es-MX')}</span>
                     </div>
                   </div>
                 )

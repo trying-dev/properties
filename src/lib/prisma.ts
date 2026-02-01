@@ -12,13 +12,9 @@ const globalForPrisma = globalThis as unknown as {
 }
 
 const isPostgres = databaseUrl.toLowerCase().startsWith('postgres')
-const isLibSql =
-  databaseUrl.toLowerCase().startsWith('libsql') || databaseUrl.toLowerCase().startsWith('file:')
+const isLibSql = databaseUrl.toLowerCase().startsWith('libsql') || databaseUrl.toLowerCase().startsWith('file:')
 
-const adapter =
-  !isPostgres && isLibSql
-    ? (globalForPrisma.prismaAdapter ?? new PrismaLibSql({ url: databaseUrl }))
-    : undefined
+const adapter = !isPostgres && isLibSql ? (globalForPrisma.prismaAdapter ?? new PrismaLibSql({ url: databaseUrl })) : undefined
 
 const accelerateUrl = process.env.PRISMA_DATABASE_URL
 

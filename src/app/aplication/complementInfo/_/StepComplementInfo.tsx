@@ -73,11 +73,7 @@ const StepComplementInfo = () => {
     profiles[profile].fields.forEach((field) => {
       if (field.type === 'file') {
         if (field.multiple) {
-          mockDocs[field.id] = [
-            createMockFile(`${field.id}_1.pdf`),
-            createMockFile(`${field.id}_2.pdf`),
-            createMockFile(`${field.id}_3.pdf`),
-          ]
+          mockDocs[field.id] = [createMockFile(`${field.id}_1.pdf`), createMockFile(`${field.id}_2.pdf`), createMockFile(`${field.id}_3.pdf`)]
         } else {
           mockDocs[field.id] = [createMockFile(`${field.id}.pdf`)]
         }
@@ -116,11 +112,7 @@ const StepComplementInfo = () => {
 
       <DocumentsSection profile={profile} uploadedDocs={uploadedDocs} onFileChange={handleFileChange} />
 
-      <DepositConfirmation
-        deposit={profiles[profile].deposit}
-        acceptedDeposit={acceptedDeposit}
-        onAcceptChange={handleAcceptDepositChange}
-      />
+      <DepositConfirmation deposit={profiles[profile].deposit} acceptedDeposit={acceptedDeposit} onAcceptChange={handleAcceptDepositChange} />
 
       <div className="flex justify-between">
         <button

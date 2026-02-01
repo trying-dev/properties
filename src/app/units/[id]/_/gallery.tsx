@@ -26,40 +26,21 @@ export default function Gallery({ images, propertyName }: Props) {
           onClick={() => setSelectedIdx(selectedIdx)}
           className="col-span-2 row-span-2 relative overflow-hidden rounded-xl aspect-4/3 focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
         >
-          <Image
-            src={main}
-            alt={propertyName}
-            fill
-            sizes="(max-width: 1024px) 100vw, 66vw"
-            className="object-cover"
-            priority
-          />
+          <Image src={main} alt={propertyName} fill sizes="(max-width: 1024px) 100vw, 66vw" className="object-cover" priority />
         </button>
         <button
           type="button"
           onClick={() => setSelectedIdx((selectedIdx + 1) % safeImages.length)}
           className="relative overflow-hidden rounded-xl aspect-4/3 focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
         >
-          <Image
-            src={rightTop}
-            alt={`${propertyName} vista 2`}
-            fill
-            sizes="(max-width: 1024px) 50vw, 33vw"
-            className="object-cover"
-          />
+          <Image src={rightTop} alt={`${propertyName} vista 2`} fill sizes="(max-width: 1024px) 50vw, 33vw" className="object-cover" />
         </button>
         <button
           type="button"
           onClick={() => setSelectedIdx((selectedIdx + 2) % safeImages.length)}
           className="relative overflow-hidden rounded-xl aspect-4/3 focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
         >
-          <Image
-            src={rightBottom}
-            alt={`${propertyName} vista 3`}
-            fill
-            sizes="(max-width: 1024px) 50vw, 33vw"
-            className="object-cover"
-          />
+          <Image src={rightBottom} alt={`${propertyName} vista 3`} fill sizes="(max-width: 1024px) 50vw, 33vw" className="object-cover" />
         </button>
       </div>
 
@@ -75,13 +56,7 @@ export default function Gallery({ images, propertyName }: Props) {
                 onClick={() => setSelectedIdx(originalIdx >= 0 ? originalIdx : 0)}
                 className="relative overflow-hidden rounded-xl aspect-4/3 focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
               >
-                <Image
-                  src={img}
-                  alt={`${propertyName} thumb ${idx + 4}`}
-                  fill
-                  sizes="(max-width: 1024px) 33vw, 20vw"
-                  className="object-cover"
-                />
+                <Image src={img} alt={`${propertyName} thumb ${idx + 4}`} fill sizes="(max-width: 1024px) 33vw, 20vw" className="object-cover" />
                 {isLast && (
                   <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
                     <span className="text-white font-semibold text-sm sm:text-base">+{extraCount} fotos</span>

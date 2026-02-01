@@ -39,7 +39,6 @@ const homeSlice = createSlice({
   },
 })
 
-export const { setUnits, setShowFilters, setSearchQuery, setFilters, resetFilters } =
-  homeSlice.actions
+export const { setUnits, setShowFilters, setSearchQuery, setFilters, resetFilters } = homeSlice.actions
 
 export default homeSlice.reducer

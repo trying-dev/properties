@@ -46,17 +46,12 @@ export default function Modal({ isOpen, onClose, children, ariaLabel, disableClo
   if (!isVisible) return null
 
   return (
-    <div
-      className={`${styles.overlay} ${isClosing || isAnimatingIn ? styles.overlayHidden : styles.overlayVisible}`}
-      onClick={handleOverlayClick}
-    >
+    <div className={`${styles.overlay} ${isClosing || isAnimatingIn ? styles.overlayHidden : styles.overlayVisible}`} onClick={handleOverlayClick}>
       <div
         role="dialog"
         aria-modal="true"
         aria-label={ariaLabel}
-        className={`${styles.panel} ${
-          isClosing || isAnimatingIn ? styles.panelHidden : styles.panelVisible
-        } ${className || ''}`}
+        className={`${styles.panel} ${isClosing || isAnimatingIn ? styles.panelHidden : styles.panelVisible} ${className || ''}`}
         onClick={(e) => e.stopPropagation()}
       >
         {children}

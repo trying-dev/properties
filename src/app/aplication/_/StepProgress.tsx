@@ -19,10 +19,7 @@ const StepProgress = () => {
       <div className="mb-12">
         <div className="flex items-center justify-between relative">
           <div className="absolute top-5 left-0 right-0 h-1 bg-gray-200 -z-10">
-            <div
-              className="h-full bg-blue-600 transition-all duration-500"
-              style={{ width: `${((activeStep - 1) / (steps.length - 1)) * 100}%` }}
-            />
+            <div className="h-full bg-blue-600 transition-all duration-500" style={{ width: `${((activeStep - 1) / (steps.length - 1)) * 100}%` }} />
           </div>
 
           {steps.map((step) => (
@@ -39,13 +36,7 @@ const StepProgress = () => {
                 {activeStep > step.number ? <CheckCircle2 size={24} /> : step.number}
               </div>
               <div className="text-center hidden md:block">
-                <p
-                  className={`text-sm font-semibold ${
-                    activeStep >= step.number ? 'text-gray-900' : 'text-gray-400'
-                  }`}
-                >
-                  {step.title}
-                </p>
+                <p className={`text-sm font-semibold ${activeStep >= step.number ? 'text-gray-900' : 'text-gray-400'}`}>{step.title}</p>
                 <p className="text-xs text-gray-500 mt-1">{step.description}</p>
               </div>
             </div>
@@ -60,10 +51,7 @@ const StepProgress = () => {
           <span className="font-semibold text-gray-900">{steps[activeStep - 1]?.title}</span>
         </div>
         <div className="mt-3 h-2 bg-gray-100 rounded-full overflow-hidden">
-          <div
-            className="h-full bg-blue-600 transition-all duration-500"
-            style={{ width: `${(activeStep / steps.length) * 100}%` }}
-          />
+          <div className="h-full bg-blue-600 transition-all duration-500" style={{ width: `${(activeStep / steps.length) * 100}%` }} />
         </div>
       </div>
     </>

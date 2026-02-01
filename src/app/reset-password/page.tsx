@@ -156,10 +156,7 @@ function ResetPasswordContent() {
           </div>
           <h3 className="text-2xl font-bold text-gray-800 mb-3">Token Inválido</h3>
           <p className="text-gray-600 mb-8">{validationMessage}</p>
-          <Link
-            href="/auth"
-            className="inline-flex items-center space-x-2 text-teal-600 hover:text-teal-700 font-medium"
-          >
+          <Link href="/auth" className="inline-flex items-center space-x-2 text-teal-600 hover:text-teal-700 font-medium">
             <ArrowLeft className="w-5 h-5" />
             <span>Volver al login</span>
           </Link>
@@ -249,9 +246,7 @@ function ResetPasswordContent() {
                     >
                       {passwordStrength.hasMinLength && <Check className="w-3 h-3 text-white" />}
                     </div>
-                    <span className={passwordStrength.hasMinLength ? 'text-green-600' : 'text-gray-500'}>
-                      Al menos 8 caracteres
-                    </span>
+                    <span className={passwordStrength.hasMinLength ? 'text-green-600' : 'text-gray-500'}>Al menos 8 caracteres</span>
                   </div>
                   <div className="flex items-center space-x-2">
                     <div
@@ -261,9 +256,7 @@ function ResetPasswordContent() {
                     >
                       {passwordStrength.hasUpperCase && <Check className="w-3 h-3 text-white" />}
                     </div>
-                    <span className={passwordStrength.hasUpperCase ? 'text-green-600' : 'text-gray-500'}>
-                      Una letra mayúscula
-                    </span>
+                    <span className={passwordStrength.hasUpperCase ? 'text-green-600' : 'text-gray-500'}>Una letra mayúscula</span>
                   </div>
                   <div className="flex items-center space-x-2">
                     <div
@@ -273,9 +266,7 @@ function ResetPasswordContent() {
                     >
                       {passwordStrength.hasLowerCase && <Check className="w-3 h-3 text-white" />}
                     </div>
-                    <span className={passwordStrength.hasLowerCase ? 'text-green-600' : 'text-gray-500'}>
-                      Una letra minúscula
-                    </span>
+                    <span className={passwordStrength.hasLowerCase ? 'text-green-600' : 'text-gray-500'}>Una letra minúscula</span>
                   </div>
                   <div className="flex items-center space-x-2">
                     <div
@@ -285,9 +276,7 @@ function ResetPasswordContent() {
                     >
                       {passwordStrength.hasNumber && <Check className="w-3 h-3 text-white" />}
                     </div>
-                    <span className={passwordStrength.hasNumber ? 'text-green-600' : 'text-gray-500'}>
-                      Un número
-                    </span>
+                    <span className={passwordStrength.hasNumber ? 'text-green-600' : 'text-gray-500'}>Un número</span>
                   </div>
                 </div>
               )}
@@ -338,11 +327,7 @@ function ResetPasswordContent() {
             <button
               type="submit"
               disabled={
-                isPending ||
-                !newPassword ||
-                !confirmPassword ||
-                newPassword !== confirmPassword ||
-                !Object.values(passwordStrength).every(Boolean)
+                isPending || !newPassword || !confirmPassword || newPassword !== confirmPassword || !Object.values(passwordStrength).every(Boolean)
               }
               className="w-full bg-linear-to-r from-teal-500 to-cyan-500 text-white font-semibold py-3.5 px-6 rounded-xl hover:from-teal-600 hover:to-cyan-600 focus:outline-none focus:ring-4 focus:ring-teal-500/50 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2 shadow-lg hover:shadow-xl transform hover:scale-[1.02] disabled:transform-none"
             >
@@ -361,10 +346,7 @@ function ResetPasswordContent() {
 
             {/* Back to Login */}
             <div className="text-center">
-              <Link
-                href="/auth"
-                className="inline-flex items-center space-x-2 text-teal-600 hover:text-teal-700 font-medium text-sm"
-              >
+              <Link href="/auth" className="inline-flex items-center space-x-2 text-teal-600 hover:text-teal-700 font-medium text-sm">
                 <ArrowLeft className="w-4 h-4" />
                 <span>Back to login</span>
               </Link>

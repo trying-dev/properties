@@ -6,12 +6,7 @@ import { authenticate } from '+/actions/auth/login'
 import { authInitialState, type AuthActionState } from './types'
 import { demoUsers as defaultDemoUsers } from './users'
 import { useDispatch } from '+/redux'
-import {
-  setAuthVerificationExpires,
-  setIsAuthenticated,
-  setLoginState,
-  setResetPasswordModalOpen,
-} from '+/redux/slices/auth'
+import { setAuthVerificationExpires, setIsAuthenticated, setLoginState, setResetPasswordModalOpen } from '+/redux/slices/auth'
 import { setUser } from '+/redux/slices/user'
 import { getUserAfterLogin } from '+/actions/user'
 
@@ -19,14 +14,9 @@ type LoginFormProps = {
   className?: string
 }
 
-export default function LoginForm({
-  className = 'transition-opacity duration-500 opacity-100',
-}: LoginFormProps) {
+export default function LoginForm({ className = 'transition-opacity duration-500 opacity-100' }: LoginFormProps) {
   const dispatch = useDispatch()
-  const [state, formAction, isPending] = useActionState<AuthActionState, FormData>(
-    authenticate,
-    authInitialState
-  )
+  const [state, formAction, isPending] = useActionState<AuthActionState, FormData>(authenticate, authInitialState)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)

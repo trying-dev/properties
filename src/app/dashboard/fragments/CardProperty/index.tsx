@@ -9,12 +9,7 @@ export default function CardProperty({ property }: { property: Property }) {
   const [isHovered, setIsHovered] = useState(false)
   const [showMenu, setShowMenu] = useState(false)
 
-  const {
-    name = 'Nombre de Propiedad',
-    street = 'Calle',
-    number = '000',
-    neighborhood = 'Colonia',
-  } = property
+  const { name = 'Nombre de Propiedad', street = 'Calle', number = '000', neighborhood = 'Colonia' } = property
 
   const fullAddress = `${street} ${number}, ${neighborhood}`
 
@@ -66,9 +61,7 @@ export default function CardProperty({ property }: { property: Property }) {
         <div className="flex-1 min-w-0">
           <div className="flex items-start justify-between">
             <div className="flex-1 min-w-0">
-              <h3 className="font-semibold text-gray-900 truncate group-hover:text-blue-700 transition-colors">
-                {name}
-              </h3>
+              <h3 className="font-semibold text-gray-900 truncate group-hover:text-blue-700 transition-colors">{name}</h3>
               <div className="flex items-center text-sm text-gray-600 mt-1">
                 <MapPin className="h-4 w-4 mr-1 text-gray-400" />
                 <span className="truncate">{fullAddress}</span>
@@ -90,11 +83,7 @@ export default function CardProperty({ property }: { property: Property }) {
                 }}
                 className={`
                   p-2 rounded-full transition-all duration-200
-                  ${
-                    isHovered
-                      ? 'bg-white shadow-sm border border-gray-200 opacity-100'
-                      : 'opacity-0 group-hover:opacity-100'
-                  }
+                  ${isHovered ? 'bg-white shadow-sm border border-gray-200 opacity-100' : 'opacity-0 group-hover:opacity-100'}
                   hover:bg-gray-50
                 `}
               >
@@ -104,17 +93,11 @@ export default function CardProperty({ property }: { property: Property }) {
               {/* Dropdown Menu */}
               {showMenu && (
                 <div className="absolute right-0 top-full mt-1 w-32 bg-white rounded-md shadow-lg border border-gray-200 py-1 z-10">
-                  <button
-                    onClick={handleView}
-                    className="flex items-center w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-50"
-                  >
+                  <button onClick={handleView} className="flex items-center w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-50">
                     <Eye className="h-4 w-4 mr-2" />
                     Ver detalles
                   </button>
-                  <button
-                    onClick={handleEdit}
-                    className="flex items-center w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-50"
-                  >
+                  <button onClick={handleEdit} className="flex items-center w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-50">
                     <Edit3 className="h-4 w-4 mr-2" />
                     Editar
                   </button>

@@ -20,17 +20,11 @@ const processSlice = createSlice({
       ...state,
       basicInfo: { ...state.basicInfo, ...action.payload },
     }),
-    setUploadedDocs: (
-      state,
-      action: PayloadAction<ProcessState['uploadedDocs']>
-    ) => ({
+    setUploadedDocs: (state, action: PayloadAction<ProcessState['uploadedDocs']>) => ({
       ...state,
       uploadedDocs: { ...state.uploadedDocs, ...action.payload },
     }),
-    setSecurityFields: (
-      state,
-      action: PayloadAction<Record<string, SecurityFieldValue>>
-    ) => ({
+    setSecurityFields: (state, action: PayloadAction<Record<string, SecurityFieldValue>>) => ({
       ...state,
       securityFields: { ...state.securityFields, ...action.payload },
     }),
@@ -38,12 +32,5 @@ const processSlice = createSlice({
   },
 })
 
-export const {
-  initProcess,
-  setProcessState,
-  updateBasicInfo,
-  setUploadedDocs,
-  setSecurityFields,
-  resetProcess,
-} = processSlice.actions
+export const { initProcess, setProcessState, updateBasicInfo, setUploadedDocs, setSecurityFields, resetProcess } = processSlice.actions
 export default processSlice.reducer

@@ -6,9 +6,7 @@ import { prisma } from '+/lib/prisma'
 import { CreateTenantSubmit } from '+/app/dashboard/admin/nuevo-proceso/seleccion-de-usuario/CreateTenantForm'
 
 const toProfile = (value?: string): Profile | undefined =>
-  value && Object.values(Profile).includes(value as Profile)
-    ? (value as Profile)
-    : undefined
+  value && Object.values(Profile).includes(value as Profile) ? (value as Profile) : undefined
 
 export const getTenantsAction = async (filters?: {
   search?: string

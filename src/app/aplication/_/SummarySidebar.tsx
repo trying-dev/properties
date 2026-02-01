@@ -29,8 +29,7 @@ const SummarySidebar = () => {
         {step > 1 && (basicInfo.name || basicInfo.lastName) && (
           <div className="pt-2 border-t border-blue-200">
             <p className="text-gray-700">
-              <span className="font-medium">Solicitante:</span>{' '}
-              {[basicInfo.name, basicInfo.lastName].filter(Boolean).join(' ')}
+              <span className="font-medium">Solicitante:</span> {[basicInfo.name, basicInfo.lastName].filter(Boolean).join(' ')}
             </p>
           </div>
         )}

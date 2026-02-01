@@ -118,9 +118,7 @@ export const sendCoDebtorConfirmationEmailsAction = async ({
         if (!emailToSend) {
           return Promise.reject(new Error('Email destino no definido'))
         }
-        const confirmUrl = `${appUrl}/codeudor/confirmar?processId=${encodeURIComponent(
-          processId
-        )}&token=${encodeURIComponent(coDebtor.token)}`
+        const confirmUrl = `${appUrl}/codeudor/confirmar?processId=${encodeURIComponent(processId)}&token=${encodeURIComponent(coDebtor.token)}`
 
         return resend.emails.send({
           from: fromEmail,

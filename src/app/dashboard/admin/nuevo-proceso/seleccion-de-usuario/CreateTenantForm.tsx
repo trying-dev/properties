@@ -129,11 +129,7 @@ export const CreateTenantForm = ({ isOpen, onClose, onSubmit }: Props) => {
     setReferences((prev) => prev.filter((_, i) => i !== index))
   }
 
-  const updateReference = <K extends keyof ReferenceForm>(
-    index: number,
-    field: K,
-    value: ReferenceForm[K]
-  ) => {
+  const updateReference = <K extends keyof ReferenceForm>(index: number, field: K, value: ReferenceForm[K]) => {
     setReferences((prev) => prev.map((ref, i) => (i === index ? { ...ref, [field]: value } : ref)))
   }
 
@@ -146,15 +142,9 @@ export const CreateTenantForm = ({ isOpen, onClose, onSubmit }: Props) => {
     e.preventDefault()
 
     // Sanitización/conversión
-    const monthlyIncomeNumber =
-      formData.monthlyIncome === '' || formData.monthlyIncome == null
-        ? undefined
-        : Number(formData.monthlyIncome)
+    const monthlyIncomeNumber = formData.monthlyIncome === '' || formData.monthlyIncome == null ? undefined : Number(formData.monthlyIncome)
 
-    const birthDateISO =
-      formData.birthDate && formData.birthDate.trim() !== ''
-        ? new Date(formData.birthDate).toISOString()
-        : undefined
+    const birthDateISO = formData.birthDate && formData.birthDate.trim() !== '' ? new Date(formData.birthDate).toISOString() : undefined
 
     const filteredRefs = references
       .map((r) => ({
@@ -216,13 +206,7 @@ export const CreateTenantForm = ({ isOpen, onClose, onSubmit }: Props) => {
             <h2 id="new-tenant-title" className="text-xl font-semibold text-gray-900">
               Crear Nuevo Inquilino
             </h2>
-            <button
-              type="button"
-              onClick={onClose}
-              className="text-gray-400 hover:text-gray-600"
-              aria-label="Cerrar"
-              title="Cerrar"
-            >
+            <button type="button" onClick={onClose} className="text-gray-400 hover:text-gray-600" aria-label="Cerrar" title="Cerrar">
               <X className="w-6 h-6" />
             </button>
           </div>
@@ -293,9 +277,7 @@ export const CreateTenantForm = ({ isOpen, onClose, onSubmit }: Props) => {
 
                 {/* Número Doc */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Número de Documento *
-                  </label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Número de Documento *</label>
                   <input
                     type="text"
                     required
@@ -453,10 +435,7 @@ export const CreateTenantForm = ({ isOpen, onClose, onSubmit }: Props) => {
                     onChange={(e) => {
                       const val = e.target.value
                       // Permitimos "" para limpiar el campo
-                      handleInputChange(
-                        'monthlyIncome',
-                        val === '' ? '' : (Number(val) as TenantFormData['monthlyIncome'])
-                      )
+                      handleInputChange('monthlyIncome', val === '' ? '' : (Number(val) as TenantFormData['monthlyIncome']))
                     }}
                     placeholder="1000000"
                   />
@@ -479,9 +458,7 @@ export const CreateTenantForm = ({ isOpen, onClose, onSubmit }: Props) => {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Teléfono del Contacto
-                  </label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Teléfono del Contacto</label>
                   <input
                     type="tel"
                     className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -496,11 +473,7 @@ export const CreateTenantForm = ({ isOpen, onClose, onSubmit }: Props) => {
             <section>
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-medium text-gray-900">Referencias</h3>
-                <button
-                  type="button"
-                  onClick={addReference}
-                  className="text-blue-600 hover:text-blue-800 text-sm font-medium"
-                >
+                <button type="button" onClick={addReference} className="text-blue-600 hover:text-blue-800 text-sm font-medium">
                   + Agregar Referencia
                 </button>
               </div>
@@ -511,11 +484,7 @@ export const CreateTenantForm = ({ isOpen, onClose, onSubmit }: Props) => {
                     <div className="flex items-center justify-between mb-3">
                       <span className="text-sm font-medium text-gray-700">Referencia {index + 1}</span>
                       {references.length > 1 && (
-                        <button
-                          type="button"
-                          onClick={() => removeReference(index)}
-                          className="text-red-600 hover:text-red-800 text-sm"
-                        >
+                        <button type="button" onClick={() => removeReference(index)} className="text-red-600 hover:text-red-800 text-sm">
                           Eliminar
                         </button>
                       )}
@@ -561,11 +530,7 @@ export const CreateTenantForm = ({ isOpen, onClose, onSubmit }: Props) => {
 
           {/* Botones */}
           <div className="flex justify-end gap-3 mt-8 pt-6 border-t border-gray-200">
-            <button
-              type="button"
-              onClick={onClose}
-              className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
-            >
+            <button type="button" onClick={onClose} className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50">
               Cancelar
             </button>
             <button type="submit" className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">

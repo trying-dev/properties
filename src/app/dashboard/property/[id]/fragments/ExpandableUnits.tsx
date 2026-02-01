@@ -38,11 +38,7 @@ import { formatAdminLevel } from '../utils'
 type IconType = ComponentType<SVGProps<SVGSVGElement>>
 
 const Card = ({ children, className = '' }: { children: ReactNode; className?: string }) => (
-  <div
-    className={`bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-shadow duration-200 ${className}`}
-  >
-    {children}
-  </div>
+  <div className={`bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-shadow duration-200 ${className}`}>{children}</div>
 )
 
 const CardHeader = ({ children, className = '' }: { children: ReactNode; className?: string }) => (
@@ -102,9 +98,7 @@ export const ExpandableUnits = ({ property }: { property?: NonNullable<PropertyW
   if (!units) return null
 
   // Función para obtener el estado del último pago
-  const getPaymentStatus = (
-    payments: NonNullable<PropertyWithRelations>['units'][0]['contracts'][0]['payments']
-  ) => {
+  const getPaymentStatus = (payments: NonNullable<PropertyWithRelations>['units'][0]['contracts'][0]['payments']) => {
     if (!payments || payments.length === 0) return { status: 'Sin pagos', color: 'gray' }
 
     const latestPayment = payments[0]
@@ -194,20 +188,14 @@ export const ExpandableUnits = ({ property }: { property?: NonNullable<PropertyW
     return colors[status]
   }
 
-  const calculatePaymentStats = (
-    payments: NonNullable<PropertyWithRelations>['units'][0]['contracts'][0]['payments']
-  ) => {
+  const calculatePaymentStats = (payments: NonNullable<PropertyWithRelations>['units'][0]['contracts'][0]['payments']) => {
     const totalPaid = payments.filter((p) => p.status === 'PAID').reduce((sum, p) => sum + p.amount, 0)
 
-    const totalPending = payments
-      .filter((p) => p.status === 'PENDING' || p.status === 'OVERDUE')
-      .reduce((sum, p) => sum + p.amount, 0)
+    const totalPending = payments.filter((p) => p.status === 'PENDING' || p.status === 'OVERDUE').reduce((sum, p) => sum + p.amount, 0)
 
     const overdueCount = payments.filter((p) => p.status === 'OVERDUE').length
 
-    const totalLateFees = payments
-      .filter((p) => p.lateFeeApplied && p.lateFeeAmount)
-      .reduce((sum, p) => sum + (p.lateFeeAmount || 0), 0)
+    const totalLateFees = payments.filter((p) => p.lateFeeApplied && p.lateFeeAmount).reduce((sum, p) => sum + (p.lateFeeAmount || 0), 0)
 
     return {
       totalPaid,
@@ -238,10 +226,7 @@ export const ExpandableUnits = ({ property }: { property?: NonNullable<PropertyW
             const paymentStats = activeContract ? calculatePaymentStats(activeContract.payments) : null
 
             return (
-              <div
-                key={unit.id}
-                className={`border border-gray-100 rounded-lg transition-colors ${isExpanded ? 'col-span-2' : ''}`}
-              >
+              <div key={unit.id} className={`border border-gray-100 rounded-lg transition-colors ${isExpanded ? 'col-span-2' : ''}`}>
                 {/* Header compacto (siempre visible) */}
                 <div className="p-4 hover:bg-gray-50">
                   <div className="flex items-center justify-between mb-3">
@@ -253,11 +238,7 @@ export const ExpandableUnits = ({ property }: { property?: NonNullable<PropertyW
                         className="ml-3 flex items-center justify-center w-6 h-6 rounded-full bg-orange-50 hover:bg-orange-100 transition-colors duration-200"
                         title={isExpanded ? 'Contraer detalles' : 'Ver detalles completos'}
                       >
-                        {isExpanded ? (
-                          <Minus className="h-3 w-3 text-orange-600" />
-                        ) : (
-                          <Plus className="h-3 w-3 text-orange-600" />
-                        )}
+                        {isExpanded ? <Minus className="h-3 w-3 text-orange-600" /> : <Plus className="h-3 w-3 text-orange-600" />}
                       </button>
                     </div>
                     <div className="flex items-center space-x-2">
@@ -277,9 +258,7 @@ export const ExpandableUnits = ({ property }: { property?: NonNullable<PropertyW
                           {paymentStatus.status}
                         </span>
                       )}
-                      <span
-                        className={`px-2 py-1 rounded-full text-xs font-medium ${getUnitStatusColor(unit.status)}`}
-                      >
+                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${getUnitStatusColor(unit.status)}`}>
                         {formatUnitStatus(unit.status)}
                       </span>
                     </div>
@@ -290,18 +269,14 @@ export const ExpandableUnits = ({ property }: { property?: NonNullable<PropertyW
                       {/* admins */}
                       {activeContract.admins && activeContract.admins.length > 0 && (
                         <div className="mb-3 p-2 bg-blue-50 rounded">
-                          <p className="text-sm font-medium text-blue-900">
-                            Administradores ({activeContract.admins.length}):
-                          </p>
+                          <p className="text-sm font-medium text-blue-900">Administradores ({activeContract.admins.length}):</p>
                           <div className="space-y-1">
                             {activeContract.admins.map((admin) => (
                               <div key={admin.id} className="flex items-center justify-between">
                                 <p className="text-xs text-blue-700">
                                   {admin.user.name} {admin.user.lastName}
                                 </p>
-                                <span className="text-xs bg-blue-200 text-blue-800 px-2 py-0.5 rounded">
-                                  {formatAdminLevel(admin.adminLevel)}
-                                </span>
+                                <span className="text-xs bg-blue-200 text-blue-800 px-2 py-0.5 rounded">{formatAdminLevel(admin.adminLevel)}</span>
                               </div>
                             ))}
                           </div>
@@ -322,9 +297,7 @@ export const ExpandableUnits = ({ property }: { property?: NonNullable<PropertyW
                   <div className="grid grid-cols-4 gap-4 text-sm">
                     <div>
                       <span className="text-gray-600">Renta:</span>
-                      <p className="font-medium text-green-600">
-                        ${(activeContract?.rent || unit.baseRent)?.toLocaleString() || 'N/A'}
-                      </p>
+                      <p className="font-medium text-green-600">${(activeContract?.rent || unit.baseRent)?.toLocaleString() || 'N/A'}</p>
                     </div>
                   </div>
                 </div>
@@ -354,36 +327,11 @@ export const ExpandableUnits = ({ property }: { property?: NonNullable<PropertyW
                             Detalles de la Unidad
                           </h5>
                           <div className="space-y-1 bg-white rounded-lg p-3">
-                            <InfoRow
-                              icon={Key}
-                              label="Número de unidad"
-                              value={unit.unitNumber}
-                              iconColor="text-orange-600"
-                            />
-                            <InfoRow
-                              icon={MapPin}
-                              label="Piso"
-                              value={unit.floor}
-                              iconColor="text-blue-600"
-                            />
-                            <InfoRow
-                              icon={Ruler}
-                              label="Área total"
-                              value={unit.area ? `${unit.area} m²` : 'N/A'}
-                              iconColor="text-green-600"
-                            />
-                            <InfoRow
-                              icon={Bed}
-                              label="Habitaciones"
-                              value={unit.bedrooms}
-                              iconColor="text-purple-600"
-                            />
-                            <InfoRow
-                              icon={Bath}
-                              label="Baños"
-                              value={unit.bathrooms}
-                              iconColor="text-blue-500"
-                            />
+                            <InfoRow icon={Key} label="Número de unidad" value={unit.unitNumber} iconColor="text-orange-600" />
+                            <InfoRow icon={MapPin} label="Piso" value={unit.floor} iconColor="text-blue-600" />
+                            <InfoRow icon={Ruler} label="Área total" value={unit.area ? `${unit.area} m²` : 'N/A'} iconColor="text-green-600" />
+                            <InfoRow icon={Bed} label="Habitaciones" value={unit.bedrooms} iconColor="text-purple-600" />
+                            <InfoRow icon={Bath} label="Baños" value={unit.bathrooms} iconColor="text-blue-500" />
                             <InfoRow
                               icon={DollarSign}
                               label="Renta base"
@@ -399,11 +347,7 @@ export const ExpandableUnits = ({ property }: { property?: NonNullable<PropertyW
                             <InfoRow
                               icon={Eye}
                               label="Última inspección"
-                              value={
-                                unit.lastInspectionDate
-                                  ? new Date(unit.lastInspectionDate).toLocaleDateString('es-CO')
-                                  : 'N/A'
-                              }
+                              value={unit.lastInspectionDate ? new Date(unit.lastInspectionDate).toLocaleDateString('es-CO') : 'N/A'}
                               iconColor="text-gray-600"
                             />
                           </div>
@@ -424,16 +368,8 @@ export const ExpandableUnits = ({ property }: { property?: NonNullable<PropertyW
                                 <FeatureIcon icon={MapPin} label="Balcón" enabled={unit.balcony} />
                                 <FeatureIcon icon={Car} label="Parqueadero" enabled={unit.parking} />
                                 <FeatureIcon icon={Archive} label="Depósito" enabled={unit.storage} />
-                                <FeatureIcon
-                                  icon={Heart}
-                                  label="Acepta mascotas"
-                                  enabled={unit.petFriendly}
-                                />
-                                <FeatureIcon
-                                  icon={Cigarette}
-                                  label="Permite fumar"
-                                  enabled={unit.smokingAllowed}
-                                />
+                                <FeatureIcon icon={Heart} label="Acepta mascotas" enabled={unit.petFriendly} />
+                                <FeatureIcon icon={Cigarette} label="Permite fumar" enabled={unit.smokingAllowed} />
                               </div>
                             </div>
 
@@ -469,8 +405,7 @@ export const ExpandableUnits = ({ property }: { property?: NonNullable<PropertyW
                                       <div className="flex items-center">
                                         <User className="h-3 w-3 text-gray-400 mr-2" />
                                         <span className="text-sm">
-                                          {activeContract.tenant.user.name}{' '}
-                                          {activeContract.tenant.user.lastName}
+                                          {activeContract.tenant.user.name} {activeContract.tenant.user.lastName}
                                         </span>
                                       </div>
                                       <div className="flex items-center">
@@ -486,9 +421,7 @@ export const ExpandableUnits = ({ property }: { property?: NonNullable<PropertyW
 
                                   {activeContract.additionalResidents.length && (
                                     <div>
-                                      <h6 className="text-sm font-medium text-gray-700 mb-2">
-                                        Residentes adicionales:
-                                      </h6>
+                                      <h6 className="text-sm font-medium text-gray-700 mb-2">Residentes adicionales:</h6>
                                       <div className="flex flex-col gap-3">
                                         {activeContract.additionalResidents.map((additionalResident) => (
                                           <div key={additionalResident.id} className="space-y-1">
@@ -519,9 +452,7 @@ export const ExpandableUnits = ({ property }: { property?: NonNullable<PropertyW
 
                                 {/* Detalles del Contrato */}
                                 <div>
-                                  <h6 className="text-sm font-medium text-gray-700 mb-2">
-                                    Detalles del Contrato:
-                                  </h6>
+                                  <h6 className="text-sm font-medium text-gray-700 mb-2">Detalles del Contrato:</h6>
                                   <div className="space-y-1">
                                     <InfoRow
                                       icon={DollarSign}
@@ -568,27 +499,19 @@ export const ExpandableUnits = ({ property }: { property?: NonNullable<PropertyW
                                 </h6>
                                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                                   <div className="text-center">
-                                    <div className="text-lg font-bold text-green-600">
-                                      ${paymentStats.totalPaid.toLocaleString()}
-                                    </div>
+                                    <div className="text-lg font-bold text-green-600">${paymentStats.totalPaid.toLocaleString()}</div>
                                     <div className="text-xs text-gray-500">Total Pagado</div>
                                   </div>
                                   <div className="text-center">
-                                    <div className="text-lg font-bold text-yellow-600">
-                                      ${paymentStats.totalPending.toLocaleString()}
-                                    </div>
+                                    <div className="text-lg font-bold text-yellow-600">${paymentStats.totalPending.toLocaleString()}</div>
                                     <div className="text-xs text-gray-500">Pendiente</div>
                                   </div>
                                   <div className="text-center">
-                                    <div className="text-lg font-bold text-red-600">
-                                      {paymentStats.overdueCount}
-                                    </div>
+                                    <div className="text-lg font-bold text-red-600">{paymentStats.overdueCount}</div>
                                     <div className="text-xs text-gray-500">Pagos Vencidos</div>
                                   </div>
                                   <div className="text-center">
-                                    <div className="text-lg font-bold text-orange-600">
-                                      ${paymentStats.totalLateFees.toLocaleString()}
-                                    </div>
+                                    <div className="text-lg font-bold text-orange-600">${paymentStats.totalLateFees.toLocaleString()}</div>
                                     <div className="text-xs text-gray-500">Recargos por Mora</div>
                                   </div>
                                 </div>
@@ -605,15 +528,10 @@ export const ExpandableUnits = ({ property }: { property?: NonNullable<PropertyW
                                     {activeContract.payments
                                       .filter((p) => p.notes)
                                       .map((payment) => (
-                                        <div
-                                          key={payment.id}
-                                          className="text-xs text-gray-600 flex items-start"
-                                        >
+                                        <div key={payment.id} className="text-xs text-gray-600 flex items-start">
                                           <AlertCircle className="h-3 w-3 text-orange-500 mr-1 mt-0.5 shrink-0" />
                                           <div>
-                                            <span className="font-medium">
-                                              {new Date(payment.dueDate).toLocaleDateString('es-CO')}:
-                                            </span>{' '}
+                                            <span className="font-medium">{new Date(payment.dueDate).toLocaleDateString('es-CO')}:</span>{' '}
                                             {payment.notes}
                                           </div>
                                         </div>
@@ -626,35 +544,20 @@ export const ExpandableUnits = ({ property }: { property?: NonNullable<PropertyW
                                 <table className="w-full text-sm">
                                   <thead className="bg-gray-50 sticky top-0">
                                     <tr>
-                                      <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">
-                                        Fecha Venc.
-                                      </th>
-                                      <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">
-                                        Estado
-                                      </th>
-                                      <th className="px-3 py-2 text-right text-xs font-medium text-gray-500 uppercase">
-                                        Monto
-                                      </th>
-                                      <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">
-                                        Método
-                                      </th>
-                                      <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">
-                                        Pagado
-                                      </th>
+                                      <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">Fecha Venc.</th>
+                                      <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">Estado</th>
+                                      <th className="px-3 py-2 text-right text-xs font-medium text-gray-500 uppercase">Monto</th>
+                                      <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">Método</th>
+                                      <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">Pagado</th>
                                     </tr>
                                   </thead>
                                   <tbody className="divide-y divide-gray-200">
                                     {[...activeContract.payments].reverse().map((payment) => (
-                                      <tr
-                                        key={payment.id}
-                                        className={`hover:bg-gray-50 ${payment.status === 'OVERDUE' ? 'bg-red-50' : ''}`}
-                                      >
+                                      <tr key={payment.id} className={`hover:bg-gray-50 ${payment.status === 'OVERDUE' ? 'bg-red-50' : ''}`}>
                                         <td className="px-3 py-2">
                                           <div className="flex items-center">
                                             <Calendar className="h-3 w-3 text-gray-400 mr-1" />
-                                            <span className="text-xs">
-                                              {new Date(payment.dueDate).toLocaleDateString('es-CO')}
-                                            </span>
+                                            <span className="text-xs">{new Date(payment.dueDate).toLocaleDateString('es-CO')}</span>
                                           </div>
                                         </td>
                                         <td className="px-3 py-2">
@@ -663,22 +566,14 @@ export const ExpandableUnits = ({ property }: { property?: NonNullable<PropertyW
                                               payment.status
                                             )}`}
                                           >
-                                            {payment.status === 'OVERDUE' && (
-                                              <AlertTriangle className="h-3 w-3 mr-1" />
-                                            )}
-                                            {payment.status === 'PAID' && (
-                                              <CheckCircle className="h-3 w-3 mr-1" />
-                                            )}
-                                            {payment.status === 'PENDING' && (
-                                              <Clock className="h-3 w-3 mr-1" />
-                                            )}
+                                            {payment.status === 'OVERDUE' && <AlertTriangle className="h-3 w-3 mr-1" />}
+                                            {payment.status === 'PAID' && <CheckCircle className="h-3 w-3 mr-1" />}
+                                            {payment.status === 'PENDING' && <Clock className="h-3 w-3 mr-1" />}
                                             {formatPaymentStatus(payment.status)}
                                           </span>
                                         </td>
                                         <td className="px-3 py-2 text-right">
-                                          <div className="text-sm font-medium text-gray-900">
-                                            ${payment.amount.toLocaleString()}
-                                          </div>
+                                          <div className="text-sm font-medium text-gray-900">${payment.amount.toLocaleString()}</div>
                                           {payment.lateFeeApplied && payment.lateFeeAmount && (
                                             <div className="text-xs text-red-600">
                                               +$
@@ -686,20 +581,12 @@ export const ExpandableUnits = ({ property }: { property?: NonNullable<PropertyW
                                             </div>
                                           )}
                                         </td>
-                                        <td className="px-3 py-2 text-xs text-gray-600">
-                                          {formatPaymentMethod(payment.paymentMethod)}
-                                        </td>
+                                        <td className="px-3 py-2 text-xs text-gray-600">{formatPaymentMethod(payment.paymentMethod)}</td>
                                         <td className="px-3 py-2">
                                           {payment.paidDate ? (
                                             <div className="text-xs">
-                                              <div className="text-gray-900">
-                                                {new Date(payment.paidDate).toLocaleDateString('es-CO')}
-                                              </div>
-                                              {payment.receiptNumber && (
-                                                <div className="text-gray-500">
-                                                  Recibo: {payment.receiptNumber}
-                                                </div>
-                                              )}
+                                              <div className="text-gray-900">{new Date(payment.paidDate).toLocaleDateString('es-CO')}</div>
+                                              {payment.receiptNumber && <div className="text-gray-500">Recibo: {payment.receiptNumber}</div>}
                                             </div>
                                           ) : (
                                             <span className="text-xs text-gray-400">-</span>
@@ -720,9 +607,7 @@ export const ExpandableUnits = ({ property }: { property?: NonNullable<PropertyW
                         <div className="lg:col-span-2">
                           <div className="bg-gray-100 rounded-lg p-6 text-center">
                             <AlertCircle className="h-8 w-8 text-gray-400 mx-auto mb-2" />
-                            <p className="text-gray-600 text-sm">
-                              Esta unidad no tiene un contrato activo actualmente.
-                            </p>
+                            <p className="text-gray-600 text-sm">Esta unidad no tiene un contrato activo actualmente.</p>
                           </div>
                         </div>
                       )}

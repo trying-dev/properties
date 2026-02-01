@@ -78,9 +78,7 @@ export default function AdminPropertiesPage() {
             <h1 className="text-3xl font-bold text-gray-900 mb-2">Propiedades</h1>
             <p className="text-gray-600">Administra tus propiedades y su información.</p>
           </div>
-          <span className="bg-gray-900 text-white text-sm font-semibold px-3 py-1 rounded-full">
-            {properties.length}
-          </span>
+          <span className="bg-gray-900 text-white text-sm font-semibold px-3 py-1 rounded-full">{properties.length}</span>
         </div>
 
         <div className="bg-white rounded-lg border shadow-sm">

@@ -17,14 +17,7 @@ interface TextInputProps {
   required?: boolean
 }
 
-export const TextInput = ({
-  label,
-  value,
-  onChange,
-  type = 'text',
-  placeholder,
-  required = true,
-}: TextInputProps) => (
+export const TextInput = ({ label, value, onChange, type = 'text', placeholder, required = true }: TextInputProps) => (
   <label className="flex flex-col gap-2 text-sm text-gray-700">
     <span className="font-medium">
       {label} {required && <span className="text-red-500">*</span>}
@@ -127,9 +120,7 @@ const FileUploadField = ({ field, uploadedFiles, onFileChange }: FileUploadField
               d="M7 16a4 4 0 01-.88-7.903A5 5 0 0115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
             />
           </svg>
-          <span className="text-gray-600">
-            {fileCount > 0 ? `${fileCount} archivo(s) seleccionado(s)` : 'Haz clic para subir archivo'}
-          </span>
+          <span className="text-gray-600">{fileCount > 0 ? `${fileCount} archivo(s) seleccionado(s)` : 'Haz clic para subir archivo'}</span>
         </label>
 
         {fileCount > 0 && (
@@ -204,14 +195,7 @@ export const DocumentsSection = ({ profile, uploadedDocs, onFileChange }: Docume
 
   const renderDynamicField = (field: Field) => {
     if (field.type === 'file') {
-      return (
-        <FileUploadField
-          key={field.id}
-          field={field}
-          uploadedFiles={uploadedDocs[field.id]}
-          onFileChange={onFileChange}
-        />
-      )
+      return <FileUploadField key={field.id} field={field} uploadedFiles={uploadedDocs[field.id]} onFileChange={onFileChange} />
     }
 
     if (field.type === 'checkbox') {
@@ -249,11 +233,7 @@ interface DepositConfirmationProps {
   onAcceptChange: (accepted: boolean) => void
 }
 
-export const DepositConfirmation = ({
-  deposit,
-  acceptedDeposit,
-  onAcceptChange,
-}: DepositConfirmationProps) => {
+export const DepositConfirmation = ({ deposit, acceptedDeposit, onAcceptChange }: DepositConfirmationProps) => {
   return (
     <div className="bg-yellow-50 border-2 border-yellow-300 rounded-xl p-6 mb-8">
       <h4 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
@@ -270,9 +250,7 @@ export const DepositConfirmation = ({
           onChange={(e) => onAcceptChange(e.target.checked)}
           className="mt-1 w-5 h-5 text-blue-600 rounded cursor-pointer"
         />
-        <span className="text-gray-700 group-hover:text-gray-900 transition-colors">
-          Acepto y estoy de acuerdo con el depósito mínimo requerido
-        </span>
+        <span className="text-gray-700 group-hover:text-gray-900 transition-colors">Acepto y estoy de acuerdo con el depósito mínimo requerido</span>
       </label>
     </div>
   )

@@ -32,9 +32,7 @@ export default function DashboardLoading() {
           }
 
           const { role, adminLevel } = session.user
-          console.log(
-            `👤 Usuario autenticado: ${session.user.email} (${role}${adminLevel ? `:${adminLevel}` : ''})`
-          )
+          console.log(`👤 Usuario autenticado: ${session.user.email} (${role}${adminLevel ? `:${adminLevel}` : ''})`)
 
           setIsRedirecting(true)
 
@@ -108,12 +106,7 @@ export default function DashboardLoading() {
       <div className="text-center">
         {/* Logo o Icono */}
         <div className="w-20 h-20 mx-auto mb-6 text-blue-600">
-          <svg
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-            className={`${isRedirecting ? 'animate-bounce' : 'animate-pulse'}`}
-          >
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" className={`${isRedirecting ? 'animate-bounce' : 'animate-pulse'}`}>
             <path
               strokeLinecap="round"
               strokeLinejoin="round"
@@ -125,20 +118,12 @@ export default function DashboardLoading() {
 
         {/* Spinner de carga */}
         <div className="w-12 h-12 mx-auto mb-6">
-          <div
-            className={`animate-spin rounded-full h-12 w-12 border-b-2 ${
-              isRedirecting ? 'border-green-600' : 'border-blue-600'
-            }`}
-          ></div>
+          <div className={`animate-spin rounded-full h-12 w-12 border-b-2 ${isRedirecting ? 'border-green-600' : 'border-blue-600'}`}></div>
         </div>
 
         {/* Texto del estado */}
         <h2 className="text-2xl font-semibold text-gray-900 mb-2">
-          {isRedirecting
-            ? '¡Acceso Confirmado!'
-            : isLoading
-              ? 'Verificando acceso...'
-              : 'Preparando dashboard...'}
+          {isRedirecting ? '¡Acceso Confirmado!' : isLoading ? 'Verificando acceso...' : 'Preparando dashboard...'}
         </h2>
 
         <p className="text-gray-600 mb-4">
@@ -160,27 +145,17 @@ export default function DashboardLoading() {
 
         {/* Estados de progreso */}
         <div className="flex justify-center space-x-4 mb-6">
-          <div
-            className={`flex items-center space-x-2 ${
-              status !== 'loading' ? 'text-green-600' : 'text-gray-400'
-            }`}
-          >
-            <div
-              className={`w-3 h-3 rounded-full ${status !== 'loading' ? 'bg-green-600' : 'bg-gray-300'}`}
-            ></div>
+          <div className={`flex items-center space-x-2 ${status !== 'loading' ? 'text-green-600' : 'text-gray-400'}`}>
+            <div className={`w-3 h-3 rounded-full ${status !== 'loading' ? 'bg-green-600' : 'bg-gray-300'}`}></div>
             <span className="text-sm">Sesión</span>
           </div>
 
-          <div
-            className={`flex items-center space-x-2 ${session?.user ? 'text-green-600' : 'text-gray-400'}`}
-          >
+          <div className={`flex items-center space-x-2 ${session?.user ? 'text-green-600' : 'text-gray-400'}`}>
             <div className={`w-3 h-3 rounded-full ${session?.user ? 'bg-green-600' : 'bg-gray-300'}`}></div>
             <span className="text-sm">Usuario</span>
           </div>
 
-          <div
-            className={`flex items-center space-x-2 ${isRedirecting ? 'text-green-600' : 'text-gray-400'}`}
-          >
+          <div className={`flex items-center space-x-2 ${isRedirecting ? 'text-green-600' : 'text-gray-400'}`}>
             <div className={`w-3 h-3 rounded-full ${isRedirecting ? 'bg-green-600' : 'bg-gray-300'}`}></div>
             <span className="text-sm">Redirección</span>
           </div>

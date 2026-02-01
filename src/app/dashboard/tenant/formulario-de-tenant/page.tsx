@@ -1,21 +1,7 @@
 'use client'
 
 import { useState, type FormEvent, type ReactNode } from 'react'
-import {
-  User,
-  MapPin,
-  Briefcase,
-  Users,
-  Save,
-  AlertCircle,
-  CheckCircle2,
-  Phone,
-  Mail,
-  CreditCard,
-  Calendar,
-  Home,
-  Heart,
-} from 'lucide-react'
+import { User, MapPin, Briefcase, Users, Save, AlertCircle, CheckCircle2, Phone, Mail, CreditCard, Calendar, Home, Heart } from 'lucide-react'
 
 import { DocumentType, Gender, MaritalStatus, Profile } from '@prisma/client'
 
@@ -200,10 +186,8 @@ export default function TenantCompleteForm() {
     // 🔴 VALIDACIONES TENANT - TODOS OBLIGATORIOS
     if (!tenantData.profile) newErrors.profile = 'Perfil es requerido'
     if (!tenantData.monthlyIncome.trim()) newErrors.monthlyIncome = 'Ingresos mensuales son requeridos'
-    if (!tenantData.emergencyContact.trim())
-      newErrors.emergencyContact = 'Contacto de emergencia es requerido'
-    if (!tenantData.emergencyContactPhone.trim())
-      newErrors.emergencyContactPhone = 'Teléfono de emergencia es requerido'
+    if (!tenantData.emergencyContact.trim()) newErrors.emergencyContact = 'Contacto de emergencia es requerido'
+    if (!tenantData.emergencyContactPhone.trim()) newErrors.emergencyContactPhone = 'Teléfono de emergencia es requerido'
 
     // Validación de ingresos
     if (tenantData.monthlyIncome && parseFloat(tenantData.monthlyIncome) <= 0) {
@@ -211,12 +195,9 @@ export default function TenantCompleteForm() {
     }
 
     // 🔴 VALIDAR REFERENCIAS - AL MENOS 2 COMPLETAS
-    const validReferences = references.filter(
-      (ref) => ref.name.trim() && ref.phone.trim() && ref.relationship.trim()
-    )
+    const validReferences = references.filter((ref) => ref.name.trim() && ref.phone.trim() && ref.relationship.trim())
     if (validReferences.length < 2) {
-      newErrors.references =
-        'Debe proporcionar al menos 2 referencias completas (nombre, teléfono y relación)'
+      newErrors.references = 'Debe proporcionar al menos 2 referencias completas (nombre, teléfono y relación)'
     }
 
     setErrors(newErrors)
@@ -242,9 +223,7 @@ export default function TenantCompleteForm() {
       const formData = {
         userData,
         tenantData,
-        references: references.filter(
-          (ref) => ref.name.trim() && ref.phone.trim() && ref.relationship.trim()
-        ),
+        references: references.filter((ref) => ref.name.trim() && ref.phone.trim() && ref.relationship.trim()),
       }
 
       console.log('Datos del formulario:', formData)
@@ -361,9 +340,7 @@ export default function TenantCompleteForm() {
               <User size={28} />
               Completar Información Personal
             </h1>
-            <p className="text-blue-100 mt-2">
-              Completa todos los campos requeridos para continuar con el proceso de contrato
-            </p>
+            <p className="text-blue-100 mt-2">Completa todos los campos requeridos para continuar con el proceso de contrato</p>
             <div className="mt-3 bg-blue-500 bg-opacity-50 rounded-lg p-3">
               <p className="text-sm text-blue-100 flex items-center gap-2">
                 <AlertCircle size={16} />
@@ -546,11 +523,7 @@ export default function TenantCompleteForm() {
                     <div className="flex items-center justify-between mb-3">
                       <h4 className="font-medium text-gray-700">Referencia {index + 1}</h4>
                       {references.length > 2 && (
-                        <button
-                          type="button"
-                          onClick={() => removeReference(index)}
-                          className="text-red-500 hover:text-red-700 text-sm"
-                        >
+                        <button type="button" onClick={() => removeReference(index)} className="text-red-500 hover:text-red-700 text-sm">
                           Eliminar
                         </button>
                       )}

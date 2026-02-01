@@ -56,15 +56,10 @@ const StepSecurity = ({
         <div
           key={option.id}
           className={`border-2 rounded-xl transition-all ${
-            selectedSecurity === option.id
-              ? 'border-blue-600 bg-blue-50 shadow-lg'
-              : 'border-gray-200 hover:border-blue-300 hover:shadow-md'
+            selectedSecurity === option.id ? 'border-blue-600 bg-blue-50 shadow-lg' : 'border-gray-200 hover:border-blue-300 hover:shadow-md'
           }`}
         >
-          <button
-            onClick={() => setSelectedSecurity(selectedSecurity === option.id ? '' : option.id)}
-            className="w-full p-6 text-left"
-          >
+          <button onClick={() => setSelectedSecurity(selectedSecurity === option.id ? '' : option.id)} className="w-full p-6 text-left">
             <div className="flex items-start justify-between">
               <div className="flex-1">
                 <h4 className="font-bold text-gray-900 text-xl mb-1">{option.name}</h4>
@@ -93,9 +88,7 @@ const StepSecurity = ({
           Datos y documentos de {securityOptions.find((opt) => opt.id === selectedSecurity)?.name}
         </h4>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {securityOptions
-            .find((opt) => opt.id === selectedSecurity)
-            ?.fields.map((field) => renderField(field))}
+          {securityOptions.find((opt) => opt.id === selectedSecurity)?.fields.map((field) => renderField(field))}
         </div>
       </div>
     )}
@@ -110,19 +103,14 @@ const StepSecurity = ({
             className="mt-1 h-4 w-4 text-blue-600 border-gray-300 rounded"
           />
           <span>
-            Se enviara un email a los codeudores para que confirmen que estan de acuerdo con ser codeudores
-            de esta solicitud y del contrato. Al continuar, confirmas que ya los informaste y que deben
-            aprobar haciendo click en el enlace del correo.
+            Se enviara un email a los codeudores para que confirmen que estan de acuerdo con ser codeudores de esta solicitud y del contrato. Al
+            continuar, confirmas que ya los informaste y que deben aprobar haciendo click en el enlace del correo.
           </span>
         </label>
       </div>
     )}
 
-    {submitError && (
-      <div className="mb-6 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
-        {submitError}
-      </div>
-    )}
+    {submitError && <div className="mb-6 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{submitError}</div>}
 
     <div className="flex justify-between">
       <button
@@ -134,9 +122,7 @@ const StepSecurity = ({
       </button>
       <button
         onClick={onSubmit}
-        disabled={
-          !selectedSecurity || isSubmitting || (requiresCoDebtorConsent && !coDebtorConsentChecked)
-        }
+        disabled={!selectedSecurity || isSubmitting || (requiresCoDebtorConsent && !coDebtorConsentChecked)}
         className={`flex items-center gap-2 px-8 py-4 rounded-lg font-semibold text-lg transition-all ${
           selectedSecurity && !isSubmitting && (!requiresCoDebtorConsent || coDebtorConsentChecked)
             ? 'bg-green-600 text-white hover:bg-green-700 shadow-lg hover:shadow-xl'

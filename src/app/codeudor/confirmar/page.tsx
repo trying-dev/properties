@@ -29,13 +29,11 @@ export default async function ConfirmCoDebtorPage({ searchParams }: ConfirmPageP
   return (
     <div className="min-h-screen flex items-center justify-center bg-white px-4">
       <div className="max-w-md text-center">
-        <h1 className="text-2xl font-bold text-gray-900 mb-2">
-          {result.success ? 'Confirmacion exitosa' : 'No se pudo confirmar'}
-        </h1>
+        <h1 className="text-2xl font-bold text-gray-900 mb-2">{result.success ? 'Confirmacion exitosa' : 'No se pudo confirmar'}</h1>
         <p className="text-gray-600">
           {result.success
             ? 'Gracias por confirmar tu participacion como codeudor.'
-            : result.error ?? 'Intenta nuevamente desde el enlace recibido.'}
+            : (result.error ?? 'Intenta nuevamente desde el enlace recibido.')}
         </p>
       </div>
     </div>

@@ -2,24 +2,8 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import {
-  Home,
-  User,
-  Mail,
-  Phone,
-  MapPin,
-  FileText,
-  Send,
-  ArrowLeft,
-  AlertTriangle,
-  Clock,
-  Check,
-} from 'lucide-react'
-import {
-  getProcessDetailsAction,
-  initializeContractAction,
-  ProcessDetails,
-} from '+/actions/confirmacion-de-inicio-de-proceso'
+import { Home, User, Mail, Phone, MapPin, FileText, Send, ArrowLeft, AlertTriangle, Clock, Check } from 'lucide-react'
+import { getProcessDetailsAction, initializeContractAction, ProcessDetails } from '+/actions/confirmacion-de-inicio-de-proceso'
 import { useSession } from '+/hooks/useSession'
 
 export default function ConfirmacionDeInicioDeProceso() {
@@ -136,10 +120,7 @@ export default function ConfirmacionDeInicioDeProceso() {
           <AlertTriangle className="w-16 h-16 text-red-500 mx-auto mb-4" />
           <h2 className="text-xl font-semibold text-gray-900 mb-2">Error</h2>
           <p className="text-gray-600 mb-4">{error}</p>
-          <button
-            onClick={handleGoBack}
-            className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700"
-          >
+          <button onClick={handleGoBack} className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700">
             Volver
           </button>
         </div>
@@ -156,10 +137,7 @@ export default function ConfirmacionDeInicioDeProceso() {
               <Check className="w-8 h-8 text-green-600" />
             </div>
             <h2 className="text-2xl font-bold text-gray-900 mb-2">¡Contrato Inicializado!</h2>
-            <p className="text-gray-600">
-              El contrato ha sido inicializado exitosamente y se ha enviado un email de notificación al
-              inquilino.
-            </p>
+            <p className="text-gray-600">El contrato ha sido inicializado exitosamente y se ha enviado un email de notificación al inquilino.</p>
           </div>
 
           <div className="bg-blue-50 p-4 rounded-lg mb-6">
@@ -167,16 +145,11 @@ export default function ConfirmacionDeInicioDeProceso() {
               <Mail className="w-5 h-5 mr-2" />
               <span className="font-medium">Email Enviado</span>
             </div>
-            <p className="text-blue-600 text-sm">
-              El inquilino recibirá instrucciones para continuar con el proceso.
-            </p>
+            <p className="text-blue-600 text-sm">El inquilino recibirá instrucciones para continuar con el proceso.</p>
           </div>
 
           <div className="space-y-3">
-            <button
-              onClick={handleGoToDashboard}
-              className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700"
-            >
+            <button onClick={handleGoToDashboard} className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700">
               Ir al Dashboard
             </button>
             <button
@@ -202,9 +175,7 @@ export default function ConfirmacionDeInicioDeProceso() {
           </button>
 
           <h1 className="text-3xl font-bold text-gray-900 mb-2">Inicialización de Contrato</h1>
-          <p className="text-gray-600">
-            Revisa los detalles y confirma la inicialización del contrato de alquiler
-          </p>
+          <p className="text-gray-600">Revisa los detalles y confirma la inicialización del contrato de alquiler</p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">

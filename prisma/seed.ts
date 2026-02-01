@@ -763,8 +763,7 @@ const createContracts = async (params: {
       renewalPeriod: 12,
       startDate: new Date('2024-01-01'),
       endDate: new Date('2024-12-31'),
-      terms:
-        'El arrendatario se compromete a mantener el local en buen estado y a pagar puntualmente el arriendo cada mes.',
+      terms: 'El arrendatario se compromete a mantener el local en buen estado y a pagar puntualmente el arriendo cada mes.',
       status: ContractStatus.ACTIVE,
       notes: 'Local comercial para tienda de ropa. Incluye vitrina frontal.',
       signedAt: new Date('2023-12-15'),
@@ -852,8 +851,7 @@ const createContracts = async (params: {
       renewalPeriod: 12,
       startDate: new Date('2024-03-01'),
       endDate: new Date('2025-02-28'),
-      terms:
-        'El arrendatario acepta pagar puntualmente cada mes y mantener el inmueble en óptimas condiciones.',
+      terms: 'El arrendatario acepta pagar puntualmente cada mes y mantener el inmueble en óptimas condiciones.',
       status: ContractStatus.ACTIVE,
       notes: 'Apartamento de 2 habitaciones. Incluye servicios básicos.',
       signedAt: new Date('2024-02-25'),
@@ -873,8 +871,7 @@ const createContracts = async (params: {
       autoRenewal: false,
       startDate: new Date('2024-04-01'),
       endDate: new Date('2025-03-31'),
-      terms:
-        'No se permiten mascotas sin autorización previa. El arrendamiento incluye muebles pero no parqueadero.',
+      terms: 'No se permiten mascotas sin autorización previa. El arrendamiento incluye muebles pero no parqueadero.',
       status: ContractStatus.ACTIVE,
       notes: 'Apartamento amoblado de 2 habitaciones. Vista panorámica.',
       signedAt: new Date('2024-03-25'),
@@ -1071,14 +1068,9 @@ const printSummary = async (params: {
 }) => {
   const { property, contracts } = params
 
-  const totalRent =
-    contracts.contract1.rent + contracts.contract2.rent + contracts.contract3.rent + contracts.contract4.rent
+  const totalRent = contracts.contract1.rent + contracts.contract2.rent + contracts.contract3.rent + contracts.contract4.rent
 
-  const totalDeposits =
-    contracts.contract1.deposit +
-    contracts.contract2.deposit +
-    contracts.contract3.deposit +
-    contracts.contract4.deposit
+  const totalDeposits = contracts.contract1.deposit + contracts.contract2.deposit + contracts.contract3.deposit + contracts.contract4.deposit
 
   const userCount = await prisma.user.count()
   const adminCount = await prisma.admin.count()

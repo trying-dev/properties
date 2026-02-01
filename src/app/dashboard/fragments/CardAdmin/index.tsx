@@ -55,11 +55,7 @@ export default function CardAdmin({ admin = mockAdmin }: { admin?: AdminData }) 
   }
 
   return (
-    <div
-      className="relative group"
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-    >
+    <div className="relative group" onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)}>
       <div
         className={`
         flex items-center gap-4 p-4 rounded-lg border transition-all duration-200
@@ -69,13 +65,7 @@ export default function CardAdmin({ admin = mockAdmin }: { admin?: AdminData }) 
         {/* Admin Avatar */}
         <div className="relative shrink-0">
           <div className="w-16 h-16 rounded-full overflow-hidden bg-gray-100 ring-2 ring-white shadow-sm">
-            <Image
-              src="/images/img2.png"
-              alt={`Avatar de ${admin.name}`}
-              width={64}
-              height={64}
-              className="w-full h-full object-cover"
-            />
+            <Image src="/images/img2.png" alt={`Avatar de ${admin.name}`} width={64} height={64} className="w-full h-full object-cover" />
           </div>
 
           {/* Online Status */}
@@ -96,9 +86,7 @@ export default function CardAdmin({ admin = mockAdmin }: { admin?: AdminData }) 
           <div className="flex items-start justify-between">
             <div className="flex-1 min-w-0">
               <div className="flex items-center space-x-2">
-                <h3 className="font-semibold text-gray-900 truncate group-hover:text-green-700 transition-colors">
-                  {admin.name}
-                </h3>
+                <h3 className="font-semibold text-gray-900 truncate group-hover:text-green-700 transition-colors">{admin.name}</h3>
                 <Shield className="h-4 w-4 text-gray-400" />
               </div>
 
@@ -115,9 +103,7 @@ export default function CardAdmin({ admin = mockAdmin }: { admin?: AdminData }) 
                   {roleLabels[admin.role]}
                 </span>
 
-                <span className="text-xs text-gray-500">
-                  {admin.isOnline ? 'En línea' : admin.lastActive}
-                </span>
+                <span className="text-xs text-gray-500">{admin.isOnline ? 'En línea' : admin.lastActive}</span>
               </div>
             </div>
 
@@ -130,11 +116,7 @@ export default function CardAdmin({ admin = mockAdmin }: { admin?: AdminData }) 
                 }}
                 className={`
                   p-2 rounded-full transition-all duration-200
-                  ${
-                    isHovered
-                      ? 'bg-white shadow-sm border border-gray-200 opacity-100'
-                      : 'opacity-0 group-hover:opacity-100'
-                  }
+                  ${isHovered ? 'bg-white shadow-sm border border-gray-200 opacity-100' : 'opacity-0 group-hover:opacity-100'}
                   hover:bg-gray-50
                 `}
               >
@@ -160,10 +142,7 @@ export default function CardAdmin({ admin = mockAdmin }: { admin?: AdminData }) 
                       Llamar
                     </button>
                   )}
-                  <button
-                    onClick={handleManage}
-                    className="flex items-center w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-50"
-                  >
+                  <button onClick={handleManage} className="flex items-center w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-50">
                     <UserCheck className="h-4 w-4 mr-2" />
                     Gestionar
                   </button>

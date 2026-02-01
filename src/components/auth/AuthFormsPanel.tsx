@@ -15,10 +15,7 @@ export default function AuthFormsPanel() {
   const dispatch = useDispatch()
   const modalTab = useSelector((state) => state.auth.authModalTab)
 
-  const queryTab = useMemo(
-    () => (searchParams.get('tab') === 'register' ? 'register' : undefined),
-    [searchParams]
-  )
+  const queryTab = useMemo(() => (searchParams.get('tab') === 'register' ? 'register' : undefined), [searchParams])
 
   const activeTab = shouldSync ? queryTab : undefined
 
@@ -42,9 +39,7 @@ export default function AuthFormsPanel() {
           <button
             onClick={() => updateTab('login')}
             className={`flex-1 py-3 px-6 rounded-xl font-semibold transition-all duration-300 ${
-              currentTab === 'login'
-                ? 'bg-white text-teal-600 shadow-md'
-                : 'text-gray-500 hover:text-gray-700'
+              currentTab === 'login' ? 'bg-white text-teal-600 shadow-md' : 'text-gray-500 hover:text-gray-700'
             }`}
           >
             Login
@@ -52,9 +47,7 @@ export default function AuthFormsPanel() {
           <button
             onClick={() => updateTab('register')}
             className={`flex-1 py-3 px-6 rounded-xl font-semibold transition-all duration-300 ${
-              currentTab === 'register'
-                ? 'bg-white text-teal-600 shadow-md'
-                : 'text-gray-500 hover:text-gray-700'
+              currentTab === 'register' ? 'bg-white text-teal-600 shadow-md' : 'text-gray-500 hover:text-gray-700'
             }`}
           >
             Register

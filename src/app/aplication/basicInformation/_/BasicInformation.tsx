@@ -94,8 +94,7 @@ const BasicInformation = () => {
   useEffect(() => {
     if (!user || hasSyncedUserRef.current) return
 
-    const birthDate =
-      typeof user.birthDate === 'string' && user.birthDate.length >= 10 ? user.birthDate.slice(0, 10) : ''
+    const birthDate = typeof user.birthDate === 'string' && user.birthDate.length >= 10 ? user.birthDate.slice(0, 10) : ''
 
     const userInfo: Partial<BasicInfo> = {
       name: user.name?.trim() ? user.name : undefined,
@@ -230,11 +229,7 @@ const BasicInformation = () => {
     profiles[profile].fields.forEach((field) => {
       if (field.type === 'file') {
         if (field.multiple) {
-          mockDocs[field.id] = [
-            createMockFile(`${field.id}_1.pdf`),
-            createMockFile(`${field.id}_2.pdf`),
-            createMockFile(`${field.id}_3.pdf`),
-          ]
+          mockDocs[field.id] = [createMockFile(`${field.id}_1.pdf`), createMockFile(`${field.id}_2.pdf`), createMockFile(`${field.id}_3.pdf`)]
         } else {
           mockDocs[field.id] = [createMockFile(`${field.id}.pdf`)]
         }
@@ -271,12 +266,7 @@ const BasicInformation = () => {
         </h3>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pl-10">
-          <TextInput
-            label="Nombre(s)"
-            value={basicInfo.name}
-            onChange={(value) => handleInfoChange('name', value)}
-            placeholder="Juan Pérez"
-          />
+          <TextInput label="Nombre(s)" value={basicInfo.name} onChange={(value) => handleInfoChange('name', value)} placeholder="Juan Pérez" />
 
           <TextInput
             label="Apellido(s)"
@@ -309,11 +299,7 @@ const BasicInformation = () => {
             onChange={(value) => handleInfoChange('birthDate', value)}
             required={false}
           />
-          {isMinor && (
-            <p className="text-xs text-red-600 md:col-span-2 -mt-2 pl-1">
-              No se puede ofrecer una aplicación a menores de edad.
-            </p>
-          )}
+          {isMinor && <p className="text-xs text-red-600 md:col-span-2 -mt-2 pl-1">No se puede ofrecer una aplicación a menores de edad.</p>}
 
           <TextInput
             label="Lugar de nacimiento: Ciudad, Pais"

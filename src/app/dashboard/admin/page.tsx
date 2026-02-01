@@ -90,14 +90,10 @@ export default function AdminDashboard() {
                   <option.icon className="h-8 w-8 text-gray-900" strokeWidth={1.5} />
                 </div>
                 {option.badge !== null && (
-                  <span className="bg-gray-900 text-white text-xs font-semibold px-2.5 py-1 rounded-full">
-                    {option.badge}
-                  </span>
+                  <span className="bg-gray-900 text-white text-xs font-semibold px-2.5 py-1 rounded-full">{option.badge}</span>
                 )}
               </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-1 group-hover:text-gray-700">
-                {option.title}
-              </h3>
+              <h3 className="text-lg font-semibold text-gray-900 mb-1 group-hover:text-gray-700">{option.title}</h3>
               <p className="text-sm text-gray-600">{option.description}</p>
             </button>
           ))}

@@ -76,9 +76,7 @@ export default function PropertyPage() {
   // Calcular estadísticas dinámicamente
   const calculateStats = (units: NonNullable<PropertyWithRelations>['units']) => {
     const totalUnits = units.length
-    const occupiedUnits = units.filter((unit) =>
-      unit.contracts.some((contract) => contract.status === 'ACTIVE')
-    ).length
+    const occupiedUnits = units.filter((unit) => unit.contracts.some((contract) => contract.status === 'ACTIVE')).length
     const vacantUnits = totalUnits - occupiedUnits
     const occupancyRate = totalUnits > 0 ? Math.round((occupiedUnits / totalUnits) * 100) : 0
 
@@ -98,9 +96,7 @@ export default function PropertyPage() {
 
   // Componentes auxiliares
   const Card = ({ children, className = '' }: { children: ReactNode; className?: string }) => (
-    <div
-      className={`bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-shadow duration-200 ${className}`}
-    >
+    <div className={`bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-shadow duration-200 ${className}`}>
       {children}
     </div>
   )
@@ -168,9 +164,7 @@ export default function PropertyPage() {
           <div className="text-center py-12">
             <Building2 className="h-12 w-12 text-gray-400 mx-auto mb-4" />
             <h3 className="text-lg font-medium text-gray-900 mb-2">No se encontró la propiedad</h3>
-            <p className="text-gray-500">
-              La propiedad solicitada no existe o no tienes permisos para verla.
-            </p>
+            <p className="text-gray-500">La propiedad solicitada no existe o no tienes permisos para verla.</p>
           </div>
         </div>
       </div>
@@ -240,9 +234,7 @@ export default function PropertyPage() {
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-600">Ingresos mensuales:</span>
-                  <span className="font-medium text-green-600">
-                    ${stats.totalMonthlyRent.toLocaleString()}
-                  </span>
+                  <span className="font-medium text-green-600">${stats.totalMonthlyRent.toLocaleString()}</span>
                 </div>
               </div>
             </CardContent>
@@ -271,10 +263,7 @@ export default function PropertyPage() {
             <div className="space-y-4">
               {commonZones.length > 0 ? (
                 commonZones.map((zone, index) => (
-                  <div
-                    key={zone.id || `zone-${index}`}
-                    className="border border-gray-100 rounded-lg p-4 hover:bg-gray-50 transition-colors"
-                  >
+                  <div key={zone.id || `zone-${index}`} className="border border-gray-100 rounded-lg p-4 hover:bg-gray-50 transition-colors">
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center">
                         <Settings className="h-4 w-4 text-gray-400 mr-2" />
@@ -300,9 +289,7 @@ export default function PropertyPage() {
                     )}
 
                     {/* Capacidad si está disponible */}
-                    {zone.capacity && (
-                      <div className="text-xs text-gray-500 mb-1">Capacidad: {zone.capacity} personas</div>
-                    )}
+                    {zone.capacity && <div className="text-xs text-gray-500 mb-1">Capacidad: {zone.capacity} personas</div>}
 
                     {/* Información del administrador responsable */}
                     <div className="text-xs text-gray-500">

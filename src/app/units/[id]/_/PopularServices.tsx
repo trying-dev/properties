@@ -1,27 +1,8 @@
 import type { ReactNode } from 'react'
-import {
-  Bath as BathIcon,
-  Flame,
-  Home,
-  Package,
-  ParkingSquare,
-  PawPrint,
-  Sun,
-  Tv,
-  Wifi,
-} from 'lucide-react'
+import { Bath as BathIcon, Flame, Home, Package, ParkingSquare, PawPrint, Sun, Tv, Wifi } from 'lucide-react'
 import type { UnitWithRelations } from '+/actions/nuevo-proceso'
 
-type FeatureKey =
-  | 'parking'
-  | 'balcony'
-  | 'petFriendly'
-  | 'internet'
-  | 'waterIncluded'
-  | 'gasIncluded'
-  | 'furnished'
-  | 'cableTV'
-  | 'storage'
+type FeatureKey = 'parking' | 'balcony' | 'petFriendly' | 'internet' | 'waterIncluded' | 'gasIncluded' | 'furnished' | 'cableTV' | 'storage'
 
 const featureFlags: { key: FeatureKey; label: string; icon: ReactNode }[] = [
   { key: 'parking', label: 'Parqueadero', icon: <ParkingSquare className="w-5 h-5" /> },

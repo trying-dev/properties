@@ -3,11 +3,7 @@
 import { Suspense, useState, useEffect, type KeyboardEvent } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { Eye, EyeOff, CheckCircle, XCircle, Loader2 } from 'lucide-react'
-import {
-  completeUserRegistration,
-  validateRegistrationToken,
-  type TenantValidationRegistrationToken,
-} from '+/actions/registro-con-token'
+import { completeUserRegistration, validateRegistrationToken, type TenantValidationRegistrationToken } from '+/actions/registro-con-token'
 
 function RegisterWithTokenContent() {
   const router = useRouter()
@@ -172,8 +168,7 @@ function RegisterWithTokenContent() {
           <XCircle className="w-16 h-16 text-red-500 mx-auto mb-4" />
           <h2 className="text-2xl font-bold text-gray-900 mb-4">Enlace inválido</h2>
           <p className="text-gray-600 mb-6">
-            El enlace de registro ha expirado o no es válido. Por favor, contacta con tu administrador para
-            obtener un nuevo enlace.
+            El enlace de registro ha expirado o no es válido. Por favor, contacta con tu administrador para obtener un nuevo enlace.
           </p>
           <button
             onClick={() => router.push('/')}
@@ -195,8 +190,7 @@ function RegisterWithTokenContent() {
           <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />
           <h1 className="text-2xl font-bold text-gray-900 mb-2">¡Bienvenido!</h1>
           <p className="text-gray-600">
-            Hola <span className="font-semibold">{validationState.tenant?.user.name}</span>, completa tu
-            registro para continuar
+            Hola <span className="font-semibold">{validationState.tenant?.user.name}</span>, completa tu registro para continuar
           </p>
         </div>
 
@@ -270,9 +264,7 @@ function RegisterWithTokenContent() {
               />
               <button
                 type="button"
-                onClick={() =>
-                  setUiState((prev) => ({ ...prev, showConfirmPassword: !prev.showConfirmPassword }))
-                }
+                onClick={() => setUiState((prev) => ({ ...prev, showConfirmPassword: !prev.showConfirmPassword }))}
                 className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700 disabled:opacity-50"
                 disabled={uiState.isSubmitting}
               >
@@ -303,27 +295,19 @@ function RegisterWithTokenContent() {
             <h4 className="text-sm font-medium text-gray-700 mb-2">Requisitos de contraseña:</h4>
             <ul className="text-xs text-gray-600 space-y-1">
               <li className={`flex items-center ${formData.password.length >= 8 ? 'text-green-600' : ''}`}>
-                <span
-                  className={`w-2 h-2 rounded-full mr-2 ${formData.password.length >= 8 ? 'bg-green-500' : 'bg-gray-300'}`}
-                ></span>
+                <span className={`w-2 h-2 rounded-full mr-2 ${formData.password.length >= 8 ? 'bg-green-500' : 'bg-gray-300'}`}></span>
                 Al menos 8 caracteres
               </li>
               <li className={`flex items-center ${/[A-Z]/.test(formData.password) ? 'text-green-600' : ''}`}>
-                <span
-                  className={`w-2 h-2 rounded-full mr-2 ${/[A-Z]/.test(formData.password) ? 'bg-green-500' : 'bg-gray-300'}`}
-                ></span>
+                <span className={`w-2 h-2 rounded-full mr-2 ${/[A-Z]/.test(formData.password) ? 'bg-green-500' : 'bg-gray-300'}`}></span>
                 Una letra mayúscula
               </li>
               <li className={`flex items-center ${/[a-z]/.test(formData.password) ? 'text-green-600' : ''}`}>
-                <span
-                  className={`w-2 h-2 rounded-full mr-2 ${/[a-z]/.test(formData.password) ? 'bg-green-500' : 'bg-gray-300'}`}
-                ></span>
+                <span className={`w-2 h-2 rounded-full mr-2 ${/[a-z]/.test(formData.password) ? 'bg-green-500' : 'bg-gray-300'}`}></span>
                 Una letra minúscula
               </li>
               <li className={`flex items-center ${/[0-9]/.test(formData.password) ? 'text-green-600' : ''}`}>
-                <span
-                  className={`w-2 h-2 rounded-full mr-2 ${/[0-9]/.test(formData.password) ? 'bg-green-500' : 'bg-gray-300'}`}
-                ></span>
+                <span className={`w-2 h-2 rounded-full mr-2 ${/[0-9]/.test(formData.password) ? 'bg-green-500' : 'bg-gray-300'}`}></span>
                 Un número
               </li>
             </ul>
@@ -332,12 +316,7 @@ function RegisterWithTokenContent() {
           {/* Submit button */}
           <button
             onClick={handleSubmit}
-            disabled={
-              uiState.isSubmitting ||
-              !formData.password ||
-              !formData.confirmPassword ||
-              formData.password !== formData.confirmPassword
-            }
+            disabled={uiState.isSubmitting || !formData.password || !formData.confirmPassword || formData.password !== formData.confirmPassword}
             className="w-full bg-green-600 text-white py-3 px-4 rounded-lg font-medium hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition duration-200 flex items-center justify-center"
           >
             {uiState.isSubmitting ? (
@@ -353,9 +332,7 @@ function RegisterWithTokenContent() {
 
         {/* Footer */}
         <div className="mt-6 text-center">
-          <p className="text-xs text-gray-500">
-            Al completar el registro, aceptas nuestros términos y condiciones
-          </p>
+          <p className="text-xs text-gray-500">Al completar el registro, aceptas nuestros términos y condiciones</p>
         </div>
       </div>
     </div>

@@ -46,16 +46,6 @@ export type BasicInfo = {
   monthlyIncome: string
 }
 
-export const profileIds = [
-  'EMPLOYED',
-  'INDEPENDENT',
-  'RETIRED',
-  'ENTREPRENEUR',
-  'INVESTOR',
-  'STUDENT',
-  'FOREIGN',
-  'NOMAD',
-  'UNEMPLOYED',
-] as const
+export const profileIds = ['EMPLOYED', 'INDEPENDENT', 'RETIRED', 'ENTREPRENEUR', 'INVESTOR', 'STUDENT', 'FOREIGN', 'NOMAD', 'UNEMPLOYED'] as const
 
 export type ProfileId = (typeof profileIds)[number]

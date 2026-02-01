@@ -69,9 +69,7 @@ export default function ResetPasswordModal() {
         </button>
         <div className="pr-8">
           <h3 className="text-2xl font-bold text-gray-800">Reset Password</h3>
-          <p className="text-gray-500 text-sm mt-2">
-            Enter your email address and we{`'`}ll send you a link to reset your password
-          </p>
+          <p className="text-gray-500 text-sm mt-2">Enter your email address and we{`'`}ll send you a link to reset your password</p>
         </div>
       </div>
 
@@ -141,9 +139,7 @@ export default function ResetPasswordModal() {
                 Por favor revisa tu bandeja de entrada y sigue las instrucciones para resetear tu contraseña.
               </p>
             </div>
-            <p className="text-sm text-gray-500">
-              ¿No lo ves? Revisa tu carpeta de spam o correo no deseado.
-            </p>
+            <p className="text-sm text-gray-500">¿No lo ves? Revisa tu carpeta de spam o correo no deseado.</p>
           </div>
         )}
       </div>
@@ -153,11 +149,7 @@ export default function ResetPasswordModal() {
         <div className="px-6 pb-6">
           <div className="text-center text-sm text-gray-500">
             Remember your password?{' '}
-            <button
-              onClick={closeModal}
-              className="text-teal-600 hover:text-teal-700 font-medium"
-              disabled={isSubmitting}
-            >
+            <button onClick={closeModal} className="text-teal-600 hover:text-teal-700 font-medium" disabled={isSubmitting}>
               Back to login
             </button>
           </div>

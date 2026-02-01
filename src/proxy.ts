@@ -102,9 +102,7 @@ export default async function proxy(request: NextRequest) {
     const hasAccess = allowedRoutes.some((route) => pathname.startsWith(route))
 
     if (!hasAccess) {
-      console.log(
-        `❌ ${userRole}${session.user.adminLevel ? `:${session.user.adminLevel}` : ''} no tiene acceso a ${pathname}`
-      )
+      console.log(`❌ ${userRole}${session.user.adminLevel ? `:${session.user.adminLevel}` : ''} no tiene acceso a ${pathname}`)
       console.log(`📋 Rutas permitidas: ${allowedRoutes.join(', ')}`)
       return NextResponse.redirect(new URL('/', request.url))
     }

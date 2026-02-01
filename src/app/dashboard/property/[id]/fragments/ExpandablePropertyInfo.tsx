@@ -6,11 +6,7 @@ import { PropertyType } from '@prisma/client'
 type IconType = ComponentType<SVGProps<SVGSVGElement>>
 
 const Card = ({ children, className = '' }: { children: ReactNode; className?: string }) => (
-  <div
-    className={`bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-shadow duration-200 ${className}`}
-  >
-    {children}
-  </div>
+  <div className={`bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-shadow duration-200 ${className}`}>{children}</div>
 )
 
 const CardHeader = ({ children, className = '' }: { children: ReactNode; className?: string }) => (
@@ -62,20 +58,14 @@ export const ExpandablePropertyInfo = ({ property }: { property: NonNullable<Pro
         <div className="flex items-center justify-between">
           <div className="flex items-center">
             <Building2 className="h-5 w-5 text-blue-600 mr-2" />
-            <h3 className="text-lg font-semibold text-gray-900">
-              {isExpanded ? 'Información Completa' : 'Información'}
-            </h3>
+            <h3 className="text-lg font-semibold text-gray-900">{isExpanded ? 'Información Completa' : 'Información'}</h3>
           </div>
           <button
             onClick={() => setIsExpanded(!isExpanded)}
             className="flex items-center justify-center w-8 h-8 rounded-full bg-blue-50 hover:bg-blue-100 transition-colors duration-200"
             title={isExpanded ? 'Contraer información' : 'Ver información completa'}
           >
-            {isExpanded ? (
-              <Minus className="h-4 w-4 text-blue-600" />
-            ) : (
-              <Plus className="h-4 w-4 text-blue-600" />
-            )}
+            {isExpanded ? <Minus className="h-4 w-4 text-blue-600" /> : <Plus className="h-4 w-4 text-blue-600" />}
           </button>
         </div>
       </CardHeader>
@@ -115,48 +105,18 @@ export const ExpandablePropertyInfo = ({ property }: { property: NonNullable<Pro
                 Información Básica
               </h4>
               <div className="space-y-1">
-                <InfoRow
-                  icon={FileText}
-                  label="Descripción"
-                  value={property.description}
-                  iconColor="text-amber-600"
-                />
-                <InfoRow
-                  icon={Building2}
-                  label="Tipo de propiedad"
-                  value={formatPropertyType(property.propertyType)}
-                  iconColor="text-blue-600"
-                />
-                <InfoRow
-                  icon={Ruler}
-                  label="Área construida"
-                  value={`${property.builtArea} m²`}
-                  iconColor="text-green-600"
-                />
+                <InfoRow icon={FileText} label="Descripción" value={property.description} iconColor="text-amber-600" />
+                <InfoRow icon={Building2} label="Tipo de propiedad" value={formatPropertyType(property.propertyType)} iconColor="text-blue-600" />
+                <InfoRow icon={Ruler} label="Área construida" value={`${property.builtArea} m²`} iconColor="text-green-600" />
                 <InfoRow
                   icon={Ruler}
                   label="Área total del lote"
                   value={property.totalLandArea ? `${property.totalLandArea} m²` : 'N/A'}
                   iconColor="text-green-600"
                 />
-                <InfoRow
-                  icon={Building2}
-                  label="Número de pisos"
-                  value={property.floors}
-                  iconColor="text-purple-600"
-                />
-                <InfoRow
-                  icon={Calendar}
-                  label="Antigüedad"
-                  value={`${property.age} años`}
-                  iconColor="text-orange-600"
-                />
-                <InfoRow
-                  icon={Car}
-                  label="Parqueaderos"
-                  value={property.parking}
-                  iconColor="text-indigo-600"
-                />
+                <InfoRow icon={Building2} label="Número de pisos" value={property.floors} iconColor="text-purple-600" />
+                <InfoRow icon={Calendar} label="Antigüedad" value={`${property.age} años`} iconColor="text-orange-600" />
+                <InfoRow icon={Car} label="Parqueaderos" value={property.parking} iconColor="text-indigo-600" />
               </div>
             </div>
 
@@ -167,27 +127,12 @@ export const ExpandablePropertyInfo = ({ property }: { property: NonNullable<Pro
                 Ubicación
               </h4>
               <div className="space-y-1">
-                <InfoRow
-                  icon={MapPin}
-                  label="Dirección"
-                  value={`${property.street} #${property.number}`}
-                  iconColor="text-red-600"
-                />
-                <InfoRow
-                  icon={MapPin}
-                  label="Barrio"
-                  value={property.neighborhood}
-                  iconColor="text-red-500"
-                />
+                <InfoRow icon={MapPin} label="Dirección" value={`${property.street} #${property.number}`} iconColor="text-red-600" />
+                <InfoRow icon={MapPin} label="Barrio" value={property.neighborhood} iconColor="text-red-500" />
                 <InfoRow icon={MapPin} label="Ciudad" value={property.city} iconColor="text-red-500" />
                 <InfoRow icon={MapPin} label="Departamento" value={property.state} iconColor="text-red-500" />
                 <InfoRow icon={MapPin} label="País" value={property.country} iconColor="text-red-500" />
-                <InfoRow
-                  icon={MapPin}
-                  label="Código postal"
-                  value={property.postalCode}
-                  iconColor="text-red-500"
-                />
+                <InfoRow icon={MapPin} label="Código postal" value={property.postalCode} iconColor="text-red-500" />
               </div>
             </div>
 
@@ -198,30 +143,10 @@ export const ExpandablePropertyInfo = ({ property }: { property: NonNullable<Pro
                 Características Adicionales
               </h4>
               <div className="space-y-1">
-                <InfoRow
-                  icon={Car}
-                  label="Ubicación parqueadero"
-                  value={property.parkingLocation}
-                  iconColor="text-indigo-600"
-                />
-                <InfoRow
-                  icon={Home}
-                  label="Jardín/Patio"
-                  value={property.yardOrGarden}
-                  iconColor="text-green-600"
-                />
-                <InfoRow
-                  icon={Building2}
-                  label="Balcones/Terrazas"
-                  value={property.balconiesAndTerraces}
-                  iconColor="text-blue-600"
-                />
-                <InfoRow
-                  icon={Users}
-                  label="Áreas recreativas"
-                  value={property.recreationalAreas}
-                  iconColor="text-purple-600"
-                />
+                <InfoRow icon={Car} label="Ubicación parqueadero" value={property.parkingLocation} iconColor="text-indigo-600" />
+                <InfoRow icon={Home} label="Jardín/Patio" value={property.yardOrGarden} iconColor="text-green-600" />
+                <InfoRow icon={Building2} label="Balcones/Terrazas" value={property.balconiesAndTerraces} iconColor="text-blue-600" />
+                <InfoRow icon={Users} label="Áreas recreativas" value={property.recreationalAreas} iconColor="text-purple-600" />
               </div>
             </div>
 
@@ -232,12 +157,7 @@ export const ExpandablePropertyInfo = ({ property }: { property: NonNullable<Pro
                 Información del Sistema
               </h4>
               <div className="space-y-1">
-                <InfoRow
-                  icon={MapPin}
-                  label="Coordenadas GPS"
-                  value={property.gpsCoordinates}
-                  iconColor="text-red-600"
-                />
+                <InfoRow icon={MapPin} label="Coordenadas GPS" value={property.gpsCoordinates} iconColor="text-red-600" />
                 <InfoRow
                   icon={Calendar}
                   label="Fecha de registro"

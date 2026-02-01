@@ -1,5 +1,4 @@
-export const formatPrice = (amount?: number | null) =>
-  amount != null ? `${new Intl.NumberFormat('de-DE').format(amount)} €` : 'Precio a consultar'
+export const formatPrice = (amount?: number | null) => (amount != null ? `${new Intl.NumberFormat('de-DE').format(amount)} €` : 'Precio a consultar')
 
 export const formatArea = (area?: number | null) => (area ? `${area} m²` : 'N/D')
 

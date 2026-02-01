@@ -2,26 +2,8 @@
 
 import { useState, useEffect, useRef, type FormEvent, useCallback } from 'react'
 import type { DocumentType, Gender, MaritalStatus } from '@prisma/client'
-import {
-  Search,
-  Plus,
-  User,
-  Phone,
-  Mail,
-  MapPin,
-  Briefcase,
-  Edit,
-  Eye,
-  UserX,
-  Download,
-  X,
-} from 'lucide-react'
-import {
-  createTenantAction,
-  disableTenantAction,
-  getTenantsAction,
-  getTenantsStatsAction,
-} from '+/actions/gestion-de-inquilinos'
+import { Search, Plus, User, Phone, Mail, MapPin, Briefcase, Edit, Eye, UserX, Download, X } from 'lucide-react'
+import { createTenantAction, disableTenantAction, getTenantsAction, getTenantsStatsAction } from '+/actions/gestion-de-inquilinos'
 import type { TenantListItem } from '+/actions/gestion-de-inquilinos'
 import type { CreateTenantSubmit } from '+/app/dashboard/admin/nuevo-proceso/seleccion-de-usuario/CreateTenantForm'
 
@@ -117,10 +99,7 @@ const CreateTenantForm = ({ isOpen, onClose, onSubmit }: CreateTenantFormProps) 
 
   const [references, setReferences] = useState<ReferenceEntry[]>([{ name: '', phone: '', relationship: '' }])
 
-  const handleInputChange = <K extends keyof CreateTenantFormValues>(
-    field: K,
-    value: CreateTenantFormValues[K]
-  ) => {
+  const handleInputChange = <K extends keyof CreateTenantFormValues>(field: K, value: CreateTenantFormValues[K]) => {
     setFormData((prev) => ({ ...prev, [field]: value }))
   }
 
@@ -132,11 +111,7 @@ const CreateTenantForm = ({ isOpen, onClose, onSubmit }: CreateTenantFormProps) 
     setReferences((prev) => prev.filter((_, i) => i !== index))
   }
 
-  const updateReference = <K extends keyof ReferenceEntry>(
-    index: number,
-    field: K,
-    value: ReferenceEntry[K]
-  ) => {
+  const updateReference = <K extends keyof ReferenceEntry>(index: number, field: K, value: ReferenceEntry[K]) => {
     setReferences((prev) => prev.map((ref, i) => (i === index ? { ...ref, [field]: value } : ref)))
   }
 
@@ -278,9 +253,7 @@ const CreateTenantForm = ({ isOpen, onClose, onSubmit }: CreateTenantFormProps) 
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Número de Documento *
-                  </label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Número de Documento *</label>
                   <input
                     type="text"
                     required
@@ -446,9 +419,7 @@ const CreateTenantForm = ({ isOpen, onClose, onSubmit }: CreateTenantFormProps) 
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Teléfono del Contacto
-                  </label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Teléfono del Contacto</label>
                   <input
                     type="tel"
                     className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -463,11 +434,7 @@ const CreateTenantForm = ({ isOpen, onClose, onSubmit }: CreateTenantFormProps) 
             <div>
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-medium text-gray-900">Referencias</h3>
-                <button
-                  type="button"
-                  onClick={addReference}
-                  className="text-blue-600 hover:text-blue-800 text-sm font-medium"
-                >
+                <button type="button" onClick={addReference} className="text-blue-600 hover:text-blue-800 text-sm font-medium">
                   + Agregar Referencia
                 </button>
               </div>
@@ -478,11 +445,7 @@ const CreateTenantForm = ({ isOpen, onClose, onSubmit }: CreateTenantFormProps) 
                     <div className="flex items-center justify-between mb-3">
                       <span className="text-sm font-medium text-gray-700">Referencia {index + 1}</span>
                       {references.length > 1 && (
-                        <button
-                          type="button"
-                          onClick={() => removeReference(index)}
-                          className="text-red-600 hover:text-red-800 text-sm"
-                        >
+                        <button type="button" onClick={() => removeReference(index)} className="text-red-600 hover:text-red-800 text-sm">
                           Eliminar
                         </button>
                       )}
@@ -530,9 +493,7 @@ const CreateTenantForm = ({ isOpen, onClose, onSubmit }: CreateTenantFormProps) 
               <h3 className="text-lg font-medium text-gray-900 mb-4">Acceso al Sistema</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Contraseña Temporal (Opcional)
-                  </label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Contraseña Temporal (Opcional)</label>
                   <input
                     type="password"
                     className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -547,11 +508,7 @@ const CreateTenantForm = ({ isOpen, onClose, onSubmit }: CreateTenantFormProps) 
 
           {/* Botones */}
           <div className="flex justify-end space-x-3 mt-8 pt-6 border-t border-gray-200">
-            <button
-              type="button"
-              onClick={onClose}
-              className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
-            >
+            <button type="button" onClick={onClose} className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50">
               Cancelar
             </button>
             <button type="submit" className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
@@ -587,9 +544,9 @@ export default function TenantsManagement() {
     const currentReq = ++reqCounter.current
 
     try {
-      const cleanFilters = Object.fromEntries(
-        Object.entries(filters).filter(([, value]) => value !== '' && value !== null)
-      ) as Parameters<typeof getTenantsAction>[0]
+      const cleanFilters = Object.fromEntries(Object.entries(filters).filter(([, value]) => value !== '' && value !== null)) as Parameters<
+        typeof getTenantsAction
+      >[0]
 
       const result = await getTenantsAction(cleanFilters)
 
@@ -867,27 +824,13 @@ export default function TenantsManagement() {
             <table className="w-full">
               <thead className="bg-gray-50">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Inquilino
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Contacto
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Documento
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Ubicación
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Estado
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Contratos
-                  </th>
-                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Acciones
-                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Inquilino</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contacto</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Documento</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ubicación</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contratos</th>
+                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
@@ -904,9 +847,7 @@ export default function TenantsManagement() {
                           <div className="text-sm font-medium text-gray-900">
                             {tenant.user.name} {tenant.user.lastName}
                           </div>
-                          <div className="text-sm text-gray-500">
-                            {tenant.user.profession || 'Sin profesión especificada'}
-                          </div>
+                          <div className="text-sm text-gray-500">{tenant.user.profession || 'Sin profesión especificada'}</div>
                         </div>
                       </div>
                     </td>
@@ -925,9 +866,7 @@ export default function TenantsManagement() {
                     </td>
 
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900">
-                        {getDocumentTypeLabel(tenant.user.documentType)}
-                      </div>
+                      <div className="text-sm text-gray-900">{getDocumentTypeLabel(tenant.user.documentType)}</div>
                       <div className="text-sm text-gray-500">{tenant.user.documentNumber}</div>
                     </td>
 
@@ -941,19 +880,13 @@ export default function TenantsManagement() {
 
                     <td className="px-6 py-4 whitespace-nowrap">
                       {getStatusBadge(tenant)}
-                      {tenant.monthlyIncome && (
-                        <div className="text-xs text-gray-500 mt-1">
-                          {formatCurrency(tenant.monthlyIncome)}
-                        </div>
-                      )}
+                      {tenant.monthlyIncome && <div className="text-xs text-gray-500 mt-1">{formatCurrency(tenant.monthlyIncome)}</div>}
                     </td>
 
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm text-gray-900">{tenant.contracts.length} contrato(s)</div>
                       {tenant.contracts.length > 0 && (
-                        <div className="text-xs text-gray-500">
-                          Último: {tenant.contracts[0]?.unit?.property?.name}
-                        </div>
+                        <div className="text-xs text-gray-500">Último: {tenant.contracts[0]?.unit?.property?.name}</div>
                       )}
                     </td>
 
@@ -966,11 +899,7 @@ export default function TenantsManagement() {
                           <Edit className="w-4 h-4" />
                         </button>
                         {!tenant.user.disable && (
-                          <button
-                            onClick={() => handleDisableTenant(tenant.id)}
-                            className="text-red-600 hover:text-red-900"
-                            title="Deshabilitar"
-                          >
+                          <button onClick={() => handleDisableTenant(tenant.id)} className="text-red-600 hover:text-red-900" title="Deshabilitar">
                             <UserX className="w-4 h-4" />
                           </button>
                         )}
@@ -985,11 +914,7 @@ export default function TenantsManagement() {
       </div>
 
       {/* Modal de Creación */}
-      <CreateTenantForm
-        isOpen={showCreateModal}
-        onClose={() => setShowCreateModal(false)}
-        onSubmit={handleCreateTenant}
-      />
+      <CreateTenantForm isOpen={showCreateModal} onClose={() => setShowCreateModal(false)} onSubmit={handleCreateTenant} />
     </div>
   )
 }

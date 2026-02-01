@@ -44,9 +44,7 @@ const Profile = () => {
             key={key}
             onClick={() => updateProfile({ profile: key as ProfileId })}
             className={`p-6 border-2 rounded-xl text-left transition-all transform hover:scale-105 ${
-              profile === key
-                ? 'border-blue-600 bg-blue-50 shadow-lg ring-2 ring-blue-200'
-                : 'border-gray-200 hover:border-blue-300 hover:shadow-md'
+              profile === key ? 'border-blue-600 bg-blue-50 shadow-lg ring-2 ring-blue-200' : 'border-gray-200 hover:border-blue-300 hover:shadow-md'
             }`}
           >
             <div className="flex items-center gap-3 mb-3">

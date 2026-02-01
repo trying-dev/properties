@@ -53,12 +53,7 @@ export const getAvailableUnits = async (filters?: {
         },
       },
     },
-    orderBy: [
-      { property: { city: 'asc' } },
-      { property: { neighborhood: 'asc' } },
-      { property: { name: 'asc' } },
-      { unitNumber: 'asc' },
-    ],
+    orderBy: [{ property: { city: 'asc' } }, { property: { neighborhood: 'asc' } }, { property: { name: 'asc' } }, { unitNumber: 'asc' }],
   })
 }
 

@@ -130,13 +130,7 @@ export default function Header() {
             </Link>
           </nav>
 
-          {isLoadingSession ? (
-            <div className={styles.skeleton} />
-          ) : isAuthenticatedSession ? (
-            Authorized
-          ) : (
-            Unauthorized
-          )}
+          {isLoadingSession ? <div className={styles.skeleton} /> : isAuthenticatedSession ? Authorized : Unauthorized}
         </div>
       </div>
 

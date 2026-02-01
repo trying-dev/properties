@@ -7,20 +7,13 @@ import { registerUser, type RegisterActionState } from '+/actions/auth/register'
 import { authenticate } from '+/actions/auth/login'
 import { resendVerificationCode, verifyEmailCode } from '+/actions/auth/verify-email'
 import { useDispatch, useSelector } from '+/redux'
-import {
-  setAuthVerificationExpires,
-  setCodeVerificationState,
-  setIsAuthenticated,
-  setRegisterState,
-} from '+/redux/slices/auth'
+import { setAuthVerificationExpires, setCodeVerificationState, setIsAuthenticated, setRegisterState } from '+/redux/slices/auth'
 
 type RegisterFormProps = {
   className?: string
 }
 
-export default function RegisterForm({
-  className = 'transition-opacity duration-500 opacity-100',
-}: RegisterFormProps) {
+export default function RegisterForm({ className = 'transition-opacity duration-500 opacity-100' }: RegisterFormProps) {
   const router = useRouter()
   const dispatch = useDispatch()
   const [state, formAction, isPending] = useActionState<RegisterActionState, FormData>(registerUser, {
@@ -42,8 +35,7 @@ export default function RegisterForm({
   const verificationExpiresAt = useSelector((s) => s.auth.verificationExpiresAt)
   const [now, setNow] = useState(() => Date.now())
 
-  const phase: 'register' | 'verify' | 'done' =
-    phaseOverride === 'done' ? 'done' : state?.needsVerification ? 'verify' : 'register'
+  const phase: 'register' | 'verify' | 'done' = phaseOverride === 'done' ? 'done' : state?.needsVerification ? 'verify' : 'register'
   const isRegisterDisabled = isPending || phase !== 'register'
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
@@ -148,8 +140,7 @@ export default function RegisterForm({
         <div className="space-y-2 text-center">
           <h3 className="text-xl font-semibold text-gray-800">Verifica tu email</h3>
           <p className="text-sm text-gray-600">
-            Enviamos un código a <span className="font-medium text-teal-600">{emailForVerification}</span>.
-            Ingresa el código para activar tu cuenta.
+            Enviamos un código a <span className="font-medium text-teal-600">{emailForVerification}</span>. Ingresa el código para activar tu cuenta.
           </p>
           {countdown && (
             <p className="text-xs text-gray-500">

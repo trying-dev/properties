@@ -144,14 +144,7 @@ export type Roleuser = 'admin' | 'tenant'
 
 type SerializableDate = string | null
 
-type DateFields =
-  | 'emailVerified'
-  | 'phoneVerified'
-  | 'birthDate'
-  | 'createdAt'
-  | 'updatedAt'
-  | 'deletedAt'
-  | 'lastLoginAt'
+type DateFields = 'emailVerified' | 'phoneVerified' | 'birthDate' | 'createdAt' | 'updatedAt' | 'deletedAt' | 'lastLoginAt'
 
 type UserSerializableDate = {
   emailVerified?: SerializableDate

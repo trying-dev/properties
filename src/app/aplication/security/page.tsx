@@ -88,10 +88,7 @@ const SecurityStepPage = () => {
   }
 
   const coDebtorConsentId = 'co_debtor_consent'
-  const requiresCoDebtorConsent = useMemo(
-    () => ['double', 'reinforced', 'mixed'].includes(selectedSecurity),
-    [selectedSecurity]
-  )
+  const requiresCoDebtorConsent = useMemo(() => ['double', 'reinforced', 'mixed'].includes(selectedSecurity), [selectedSecurity])
   const coDebtorConsentChecked = Boolean(securityFields[coDebtorConsentId])
 
   const renderField = (field: Field) => {
@@ -116,9 +113,7 @@ const SecurityStepPage = () => {
             >
               <Upload size={20} className="text-gray-500" />
               <span className="text-gray-600">
-                {uploadedDocs[field.id]
-                  ? `${uploadedDocs[field.id]?.length ?? 0} archivo(s) seleccionado(s)`
-                  : 'Haz clic para subir archivo'}
+                {uploadedDocs[field.id] ? `${uploadedDocs[field.id]?.length ?? 0} archivo(s) seleccionado(s)` : 'Haz clic para subir archivo'}
               </span>
             </label>
             {uploadedDocs[field.id] &&
@@ -203,13 +198,7 @@ const SecurityStepPage = () => {
   const validateCoDebtors = () => {
     const coDebtors = getCoDebtors()
     const missing = coDebtors.some(
-      (coDebtor) =>
-        !coDebtor.name ||
-        !coDebtor.lastName ||
-        !coDebtor.birthDate ||
-        !coDebtor.documentNumber ||
-        !coDebtor.email ||
-        !coDebtor.phone
+      (coDebtor) => !coDebtor.name || !coDebtor.lastName || !coDebtor.birthDate || !coDebtor.documentNumber || !coDebtor.email || !coDebtor.phone
     )
     if (missing) {
       return {

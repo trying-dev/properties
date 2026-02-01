@@ -11,19 +11,7 @@ import {
   type ReactNode,
   type SelectHTMLAttributes,
 } from 'react'
-import {
-  User,
-  Mail,
-  Phone,
-  Calendar,
-  MapPin,
-  Lock,
-  Shield,
-  Eye,
-  EyeOff,
-  AlertCircle,
-  CheckCircle2,
-} from 'lucide-react'
+import { User, Mail, Phone, Calendar, MapPin, Lock, Shield, Eye, EyeOff, AlertCircle, CheckCircle2 } from 'lucide-react'
 import { createAdmin } from '+/actions/admin'
 
 type DocumentType = 'CC' | 'CE' | 'TI' | 'PASSPORT' | 'OTHER'
@@ -215,9 +203,7 @@ export default function AdminCreationForm() {
 
   const generatePassword = useCallback(() => {
     const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*'
-    const password = Array.from({ length: 12 }, () =>
-      chars.charAt(Math.floor(Math.random() * chars.length))
-    ).join('')
+    const password = Array.from({ length: 12 }, () => chars.charAt(Math.floor(Math.random() * chars.length))).join('')
 
     setFormData((prev) => ({
       ...prev,
@@ -327,9 +313,7 @@ export default function AdminCreationForm() {
             <h2 className="text-2xl font-bold text-gray-900 mb-2">¡Administrador creado exitosamente!</h2>
             <p className="text-gray-600 mb-6">{submitMessage}</p>
             <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-              <p className="text-sm text-green-700">
-                Se ha enviado un email con las credenciales a {formData.email}
-              </p>
+              <p className="text-sm text-green-700">Se ha enviado un email con las credenciales a {formData.email}</p>
             </div>
           </div>
         </div>
@@ -368,12 +352,7 @@ export default function AdminCreationForm() {
               </FormField>
 
               <FormField label="Nivel de Administrador" required>
-                <Select
-                  name="adminLevel"
-                  value={formData.adminLevel}
-                  onChange={handleInputChange}
-                  options={ADMIN_LEVEL_OPTIONS}
-                />
+                <Select name="adminLevel" value={formData.adminLevel} onChange={handleInputChange} options={ADMIN_LEVEL_OPTIONS} />
               </FormField>
 
               <FormField label="Contraseña Temporal" error={errors.temporaryPassword} required>
@@ -433,62 +412,27 @@ export default function AdminCreationForm() {
             {/* Información Personal */}
             <FormSection title="Información Personal" icon={User}>
               <FormField label="Nombre" error={errors.name} required>
-                <Input
-                  name="name"
-                  value={formData.name}
-                  onChange={handleInputChange}
-                  placeholder="Juan"
-                  error={errors.name}
-                />
+                <Input name="name" value={formData.name} onChange={handleInputChange} placeholder="Juan" error={errors.name} />
               </FormField>
 
               <FormField label="Apellido" error={errors.lastName} required>
-                <Input
-                  name="lastName"
-                  value={formData.lastName}
-                  onChange={handleInputChange}
-                  placeholder="Pérez"
-                  error={errors.lastName}
-                />
+                <Input name="lastName" value={formData.lastName} onChange={handleInputChange} placeholder="Pérez" error={errors.lastName} />
               </FormField>
 
               <FormField label="Teléfono">
-                <Input
-                  type="tel"
-                  name="phone"
-                  value={formData.phone}
-                  onChange={handleInputChange}
-                  icon={Phone}
-                  placeholder="+57 300 123 4567"
-                />
+                <Input type="tel" name="phone" value={formData.phone} onChange={handleInputChange} icon={Phone} placeholder="+57 300 123 4567" />
               </FormField>
 
               <FormField label="Fecha de Nacimiento">
-                <Input
-                  type="date"
-                  name="birthDate"
-                  value={formData.birthDate}
-                  onChange={handleInputChange}
-                  icon={Calendar}
-                />
+                <Input type="date" name="birthDate" value={formData.birthDate} onChange={handleInputChange} icon={Calendar} />
               </FormField>
 
               <FormField label="Lugar de Nacimiento">
-                <Input
-                  name="birthPlace"
-                  value={formData.birthPlace}
-                  onChange={handleInputChange}
-                  placeholder="Bogotá, Colombia"
-                />
+                <Input name="birthPlace" value={formData.birthPlace} onChange={handleInputChange} placeholder="Bogotá, Colombia" />
               </FormField>
 
               <FormField label="Profesión">
-                <Input
-                  name="profession"
-                  value={formData.profession}
-                  onChange={handleInputChange}
-                  placeholder="Administrador de propiedades"
-                />
+                <Input name="profession" value={formData.profession} onChange={handleInputChange} placeholder="Administrador de propiedades" />
               </FormField>
 
               <FormField label="Género" error={errors.gender} required>
@@ -517,12 +461,7 @@ export default function AdminCreationForm() {
             {/* Documento de Identidad */}
             <FormSection title="Documento de Identidad">
               <FormField label="Tipo de Documento" required>
-                <Select
-                  name="documentType"
-                  value={formData.documentType}
-                  onChange={handleInputChange}
-                  options={DOCUMENT_TYPES}
-                />
+                <Select name="documentType" value={formData.documentType} onChange={handleInputChange} options={DOCUMENT_TYPES} />
               </FormField>
 
               <FormField label="Número de Documento" error={errors.documentNumber} required>
@@ -540,12 +479,7 @@ export default function AdminCreationForm() {
             <FormSection title="Dirección" icon={MapPin}>
               <div className="md:col-span-2">
                 <FormField label="Dirección">
-                  <Input
-                    name="address"
-                    value={formData.address}
-                    onChange={handleInputChange}
-                    placeholder="Calle 123 #45-67"
-                  />
+                  <Input name="address" value={formData.address} onChange={handleInputChange} placeholder="Calle 123 #45-67" />
                 </FormField>
               </div>
 
@@ -554,12 +488,7 @@ export default function AdminCreationForm() {
               </FormField>
 
               <FormField label="Departamento/Estado">
-                <Input
-                  name="state"
-                  value={formData.state}
-                  onChange={handleInputChange}
-                  placeholder="Cundinamarca"
-                />
+                <Input name="state" value={formData.state} onChange={handleInputChange} placeholder="Cundinamarca" />
               </FormField>
 
               <FormField label="País">
@@ -567,12 +496,7 @@ export default function AdminCreationForm() {
               </FormField>
 
               <FormField label="Código Postal">
-                <Input
-                  name="postalCode"
-                  value={formData.postalCode}
-                  onChange={handleInputChange}
-                  placeholder="110111"
-                />
+                <Input name="postalCode" value={formData.postalCode} onChange={handleInputChange} placeholder="110111" />
               </FormField>
             </FormSection>
 
@@ -581,21 +505,11 @@ export default function AdminCreationForm() {
               <h3 className="text-lg font-medium text-gray-900 mb-4">Configuraciones</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <FormField label="Zona Horaria">
-                  <Select
-                    name="timezone"
-                    value={formData.timezone}
-                    onChange={handleInputChange}
-                    options={TIMEZONE_OPTIONS}
-                  />
+                  <Select name="timezone" value={formData.timezone} onChange={handleInputChange} options={TIMEZONE_OPTIONS} />
                 </FormField>
 
                 <FormField label="Idioma">
-                  <Select
-                    name="language"
-                    value={formData.language}
-                    onChange={handleInputChange}
-                    options={LANGUAGE_OPTIONS}
-                  />
+                  <Select name="language" value={formData.language} onChange={handleInputChange} options={LANGUAGE_OPTIONS} />
                 </FormField>
               </div>
 

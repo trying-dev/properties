@@ -22,17 +22,13 @@ export default function UnitSummaryAside({ unit, isAuthenticated }: UnitSummaryA
         </div>
         <div className="mt-4">
           <p className="text-sm text-gray-800 font-medium mb-2">Lo que más gustó</p>
-          <p className="text-sm text-gray-600">
-            “Ubicación, limpieza, buen tamaño de habitaciones, excelente edificio.”
-          </p>
+          <p className="text-sm text-gray-600">“Ubicación, limpieza, buen tamaño de habitaciones, excelente edificio.”</p>
         </div>
       </div>
 
       <div className="border border-gray-200 rounded-xl p-4 shadow-sm space-y-3">
         <div className="flex items-center space-x-3">
-          <div className="bg-blue-50 text-blue-700 text-sm font-semibold px-3 py-1 rounded-md">
-            Precio
-          </div>
+          <div className="bg-blue-50 text-blue-700 text-sm font-semibold px-3 py-1 rounded-md">Precio</div>
           <p className="text-2xl font-bold text-gray-900">{formatPrice(unit.baseRent)}</p>
         </div>
         <div className="flex items-center space-x-4 text-sm text-gray-700">

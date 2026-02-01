@@ -1,20 +1,5 @@
 import { useState, type ComponentType, type ReactNode, type SVGProps } from 'react'
-import {
-  User,
-  Plus,
-  Minus,
-  Mail,
-  Phone,
-  MapPin,
-  Calendar,
-  Briefcase,
-  Heart,
-  CreditCard,
-  Shield,
-  Clock,
-  Users,
-  Award,
-} from 'lucide-react'
+import { User, Plus, Minus, Mail, Phone, MapPin, Calendar, Briefcase, Heart, CreditCard, Shield, Clock, Users, Award } from 'lucide-react'
 import { PropertyWithRelations } from '+/actions/property'
 import { AdminLevel, DocumentType, Gender, MaritalStatus } from '@prisma/client'
 import { formatAdminLevel } from '../utils'
@@ -22,11 +7,7 @@ import { formatAdminLevel } from '../utils'
 type IconType = ComponentType<SVGProps<SVGSVGElement>>
 
 const Card = ({ children, className = '' }: { children: ReactNode; className?: string }) => (
-  <div
-    className={`bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-shadow duration-200 ${className}`}
-  >
-    {children}
-  </div>
+  <div className={`bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-shadow duration-200 ${className}`}>{children}</div>
 )
 
 const CardHeader = ({ children, className = '' }: { children: ReactNode; className?: string }) => (
@@ -143,20 +124,14 @@ export const ExpandablePropertyAdmin = ({ property }: { property: NonNullable<Pr
         <div className="flex items-center justify-between">
           <div className="flex items-center">
             <User className="h-5 w-5 text-purple-600 mr-2" />
-            <h3 className="text-lg font-semibold text-gray-900">
-              {isExpanded ? 'Información Completa del Administrador' : 'Administrador'}
-            </h3>
+            <h3 className="text-lg font-semibold text-gray-900">{isExpanded ? 'Información Completa del Administrador' : 'Administrador'}</h3>
           </div>
           <button
             onClick={() => setIsExpanded(!isExpanded)}
             className="flex items-center justify-center w-8 h-8 rounded-full bg-purple-50 hover:bg-purple-100 transition-colors duration-200"
             title={isExpanded ? 'Contraer información' : 'Ver información completa'}
           >
-            {isExpanded ? (
-              <Minus className="h-4 w-4 text-purple-600" />
-            ) : (
-              <Plus className="h-4 w-4 text-purple-600" />
-            )}
+            {isExpanded ? <Minus className="h-4 w-4 text-purple-600" /> : <Plus className="h-4 w-4 text-purple-600" />}
           </button>
         </div>
       </CardHeader>
@@ -192,9 +167,7 @@ export const ExpandablePropertyAdmin = ({ property }: { property: NonNullable<Pr
                   <h4 className="text-xl font-bold text-gray-900">
                     {admin.user.name} {admin.user.lastName}
                   </h4>
-                  <span
-                    className={`px-3 py-1 rounded-full text-xs font-medium ${getAdminLevelColor(admin.adminLevel)}`}
-                  >
+                  <span className={`px-3 py-1 rounded-full text-xs font-medium ${getAdminLevelColor(admin.adminLevel)}`}>
                     <Shield className="h-3 w-3 inline mr-1" />
                     {formatAdminLevel(admin.adminLevel)}
                   </span>
@@ -264,34 +237,15 @@ export const ExpandablePropertyAdmin = ({ property }: { property: NonNullable<Pr
                     value={formatDocumentType(admin.user.documentType)}
                     iconColor="text-orange-600"
                   />
-                  <InfoRow
-                    icon={CreditCard}
-                    label="Documento"
-                    value={admin.user.documentNumber}
-                    iconColor="text-orange-600"
-                  />
+                  <InfoRow icon={CreditCard} label="Documento" value={admin.user.documentNumber} iconColor="text-orange-600" />
                   <InfoRow
                     icon={Calendar}
                     label="Edad"
-                    value={
-                      calculateAge(admin.user.birthDate)
-                        ? `${calculateAge(admin.user.birthDate)} años`
-                        : 'N/A'
-                    }
+                    value={calculateAge(admin.user.birthDate) ? `${calculateAge(admin.user.birthDate)} años` : 'N/A'}
                     iconColor="text-purple-600"
                   />
-                  <InfoRow
-                    icon={User}
-                    label="Género"
-                    value={formatGender(admin.user.gender)}
-                    iconColor="text-pink-600"
-                  />
-                  <InfoRow
-                    icon={Heart}
-                    label="Estado civil"
-                    value={formatMaritalStatus(admin.user.maritalStatus)}
-                    iconColor="text-red-600"
-                  />
+                  <InfoRow icon={User} label="Género" value={formatGender(admin.user.gender)} iconColor="text-pink-600" />
+                  <InfoRow icon={Heart} label="Estado civil" value={formatMaritalStatus(admin.user.maritalStatus)} iconColor="text-red-600" />
                 </div>
               </div>
 
@@ -302,27 +256,12 @@ export const ExpandablePropertyAdmin = ({ property }: { property: NonNullable<Pr
                   Ubicación
                 </h4>
                 <div className="space-y-1">
-                  <InfoRow
-                    icon={MapPin}
-                    label="Dirección"
-                    value={admin.user.address}
-                    iconColor="text-red-600"
-                  />
+                  <InfoRow icon={MapPin} label="Dirección" value={admin.user.address} iconColor="text-red-600" />
                   <InfoRow icon={MapPin} label="Ciudad" value={admin.user.city} iconColor="text-red-500" />
-                  <InfoRow
-                    icon={MapPin}
-                    label="Departamento"
-                    value={admin.user.state}
-                    iconColor="text-red-500"
-                  />
+                  <InfoRow icon={MapPin} label="Departamento" value={admin.user.state} iconColor="text-red-500" />
                   <InfoRow icon={MapPin} label="País" value={admin.user.country} iconColor="text-red-500" />
                   {admin.user.birthPlace && (
-                    <InfoRow
-                      icon={MapPin}
-                      label="Lugar de nacimiento"
-                      value={admin.user.birthPlace}
-                      iconColor="text-red-400"
-                    />
+                    <InfoRow icon={MapPin} label="Lugar de nacimiento" value={admin.user.birthPlace} iconColor="text-red-400" />
                   )}
                 </div>
               </div>
@@ -346,18 +285,8 @@ export const ExpandablePropertyAdmin = ({ property }: { property: NonNullable<Pr
                     value={new Date(admin.createdAt).toLocaleDateString('es-CO')}
                     iconColor="text-gray-600"
                   />
-                  <InfoRow
-                    icon={Clock}
-                    label="Último acceso"
-                    value={getTimeSince(admin.user.lastLoginAt)}
-                    iconColor="text-gray-600"
-                  />
-                  <InfoRow
-                    icon={Shield}
-                    label="ID de administrador"
-                    value={admin.id}
-                    iconColor="text-purple-600"
-                  />
+                  <InfoRow icon={Clock} label="Último acceso" value={getTimeSince(admin.user.lastLoginAt)} iconColor="text-gray-600" />
+                  <InfoRow icon={Shield} label="ID de administrador" value={admin.id} iconColor="text-purple-600" />
                 </div>
               </div>
             </div>
