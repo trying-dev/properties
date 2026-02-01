@@ -30,13 +30,7 @@ export default function AuthModal() {
   }, [authTab, dispatch, isOpen])
 
   return (
-    <Modal
-      isOpen={isOpen}
-      onClose={handleClose}
-      ariaLabel="Autenticación"
-      className="max-w-4xl"
-      disableClose={codeVerificationState === 'loading'}
-    >
+    <Modal isOpen={isOpen} onClose={handleClose} disableClose={codeVerificationState === 'loading'} ariaLabel="Autenticación" className="max-w-4xl">
       <AuthFormsPanel />
     </Modal>
   )
