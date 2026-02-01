@@ -5,7 +5,8 @@ import AuthFormsPanel from '+/components/auth/AuthFormsPanel'
 import Modal from '+/components/Modal'
 import { useDispatch, useSelector } from '+/redux'
 import { setAuthVerificationExpires } from '+/redux/slices/auth'
-import { initProcess } from '+/redux/slices/process'
+import { initProcess, setProcessState } from '+/redux/slices/process'
+import { ProfileId } from '+/app/aplication/_/types'
 import { useAppRouter } from '+/hooks/useAppRouter'
 
 type ReservationActionsProps = {
@@ -18,6 +19,8 @@ type ReservationActionsProps = {
 export default function ReservationActions({ isAuthenticated, unitId, buttonClassName, buttonLabel = 'Reservar' }: ReservationActionsProps) {
   const dispatch = useDispatch()
   const push = useAppRouter()
+  const tenantId = useSelector((state) => state.user?.tenant?.id)
+  const tenantProfile = useSelector((state) => state.user?.tenant?.profile)
   const [isModalOpen, setIsModalOpen] = useState(false)
 
   const baseButtonClass = 'w-full inline-flex justify-center bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg transition'
@@ -25,7 +28,24 @@ export default function ReservationActions({ isAuthenticated, unitId, buttonClas
 
   const handleGoToApplication = () => {
     dispatch(initProcess({ unitId }))
-    push('/aplication')
+    if (!tenantId) {
+      push('/aplication')
+      return
+    }
+    if (tenantProfile) {
+      dispatch(
+        setProcessState({
+          tenantId,
+          unitId,
+          profile: tenantProfile as ProfileId,
+          step: 2,
+        })
+      )
+      push('/aplication/basicInformation')
+      return
+    }
+    dispatch(setProcessState({ tenantId, unitId }))
+    push('/aplication/profile')
   }
 
   if (isAuthenticated) {
@@ -58,19 +78,35 @@ function ReservationModal({ isOpen, onClose, unitId }: ReservationModalProps) {
   const codeVerificationState = useSelector((state) => state.auth.codeVerificationState)
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated)
   const tenantId = useSelector((state) => state.user?.tenant?.id)
+  const tenantProfile = useSelector((state) => state.user?.tenant?.profile)
 
   useEffect(() => {
     if (!isOpen) return
     if (!isAuthenticated) return
     if (!tenantId) return
 
-    console.log({ isOpen, isAuthenticated, tenantId })
-
     onClose()
     dispatch(initProcess({ unitId }))
-    push('/aplication')
+    if (!tenantId) {
+      push('/aplication')
+      return
+    }
+    if (tenantProfile) {
+      dispatch(
+        setProcessState({
+          tenantId,
+          unitId,
+          profile: tenantProfile as ProfileId,
+          step: 2,
+        })
+      )
+      push('/aplication/basicInformation')
+      return
+    }
+    dispatch(setProcessState({ tenantId, unitId }))
+    push('/aplication/profile')
     dispatch(setAuthVerificationExpires(null))
-  }, [dispatch, isAuthenticated, isOpen, onClose, push, tenantId, unitId])
+  }, [dispatch, isAuthenticated, isOpen, onClose, push, tenantId, tenantProfile, unitId])
 
   const handleClose = () => {
     if (codeVerificationState === 'loading') return

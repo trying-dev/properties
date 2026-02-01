@@ -1,12 +1,7 @@
 'use client'
 
-import ApplicationLayout from '../_/ApplicationLayout'
 import Profile from './_/Profile'
 
-const ProfileStepPage = () => (
-  <ApplicationLayout>
-    <Profile />
-  </ApplicationLayout>
-)
+const ProfileStepPage = () => <Profile />
 
 export default ProfileStepPage

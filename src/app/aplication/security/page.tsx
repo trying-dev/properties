@@ -6,7 +6,6 @@ import { useRouter } from 'next/navigation'
 
 import { FileText, Upload } from 'lucide-react'
 
-import ApplicationLayout from '../_/ApplicationLayout'
 import StepSecurity from './_/StepSecurity'
 import { securityOptions } from '../_/profiles'
 import { Field, ProfileId, SecurityFieldValue, UploadedDocsState, profileIds } from '../_/types'
@@ -279,21 +278,19 @@ const SecurityStepPage = () => {
   }
 
   return (
-    <ApplicationLayout>
-      <StepSecurity
-        selectedSecurity={selectedSecurity}
-        setSelectedSecurity={handleSelectSecurity}
-        renderField={renderField}
-        fillMockDataStep3={fillMockDataStep3}
-        onBack={handleBack}
-        onSubmit={handleSubmit}
-        requiresCoDebtorConsent={requiresCoDebtorConsent}
-        coDebtorConsentChecked={coDebtorConsentChecked}
-        onCoDebtorConsentChange={(checked) => handleSecurityFieldChange(coDebtorConsentId, checked)}
-        isSubmitting={isSubmitting}
-        submitError={submitError}
-      />
-    </ApplicationLayout>
+    <StepSecurity
+      selectedSecurity={selectedSecurity}
+      setSelectedSecurity={handleSelectSecurity}
+      renderField={renderField}
+      fillMockDataStep3={fillMockDataStep3}
+      onBack={handleBack}
+      onSubmit={handleSubmit}
+      requiresCoDebtorConsent={requiresCoDebtorConsent}
+      coDebtorConsentChecked={coDebtorConsentChecked}
+      onCoDebtorConsentChange={(checked) => handleSecurityFieldChange(coDebtorConsentId, checked)}
+      isSubmitting={isSubmitting}
+      submitError={submitError}
+    />
   )
 }
 

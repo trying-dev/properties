@@ -1,3 +1,4 @@
+import type { AvailableUnit } from '+/actions/nuevo-proceso'
 import { UserForRedux } from '+/actions/user/types'
 import { DocumentType, Gender, MaritalStatus, ProfileId, SecurityFieldValue } from '+/app/aplication/_/types'
 
@@ -15,7 +16,7 @@ export const initialState = {
   user: null as UserForRedux | null,
   property: {},
   home: {
-    units: [],
+    units: [] as AvailableUnit[],
     showFilters: false,
     searchQuery: '',
     filters: {

@@ -132,8 +132,7 @@ const PriceRangeSlider = ({
   // Calcular la altura máxima para normalizar las barras
   const maxCount = Math.max(...priceDistribution, 1)
 
-  const bucketStartToAtLeast = (min: number, max: number, step: number, start: number) =>
-    Math.min(max, Math.max(start + step, start + step)) // mantiene al menos 1 step
+  const bucketStartToAtLeast = (min: number, max: number, step: number, start: number) => Math.min(max, Math.max(start + step, start + step)) // mantiene al menos 1 step
 
   return (
     <div className={`w-full ${className}`}>
@@ -155,10 +154,7 @@ const PriceRangeSlider = ({
             const handleBarClick = () => {
               // Ajustamos para que no colapse el rango: si el bucket es de un solo paso, mantenemos ese ancho
               const bucketMin = rangeStart
-              const bucketMax = Math.max(
-                rangeStart + distributionStep,
-                bucketStartToAtLeast(min, max, distributionStep, rangeStart)
-              )
+              const bucketMax = Math.max(rangeStart + distributionStep, bucketStartToAtLeast(min, max, distributionStep, rangeStart))
               onChange([Math.max(min, bucketMin), Math.min(max, bucketMax)])
             }
 
@@ -177,18 +173,12 @@ const PriceRangeSlider = ({
             )
           })}
         </div>
-        <div className="text-xs text-gray-500 text-center mt-1">
-          Distribución de unidades por rango de precio
-        </div>
+        <div className="text-xs text-gray-500 text-center mt-1">Distribución de unidades por rango de precio</div>
       </div>
 
       {/* Slider */}
       <div className="relative">
-        <div
-          ref={sliderRef}
-          className="relative h-3 bg-gray-200 rounded-lg cursor-pointer"
-          onClick={handleTrackClick}
-        >
+        <div ref={sliderRef} className="relative h-3 bg-gray-200 rounded-lg cursor-pointer" onClick={handleTrackClick}>
           {/* Track activo entre los dos handles */}
           <div
             className="absolute h-3 bg-blue-600 rounded-lg"
@@ -227,8 +217,6 @@ const PriceRangeSlider = ({
   )
 }
 
-const STORAGE_KEY = 'np:selectedUnitId'
-
 export default function NuevoProceso() {
   const router = useRouter()
 
@@ -240,10 +228,7 @@ export default function NuevoProceso() {
   const [showReserveModal, setShowReserveModal] = useState(false)
 
   const selectAndGo = (unitId: string) => {
-    try {
-      localStorage.setItem(STORAGE_KEY, unitId)
-    } catch {}
-    router.push('/dashboard/admin/seleccion-de-usuario')
+    // router.push('/dashboard/admin/seleccion-de-usuario')
   }
 
   // Calcular rangos dinámicos basados en todas las unidades disponibles
@@ -330,13 +315,7 @@ export default function NuevoProceso() {
           clean[key as string] = parseInt(value, 10)
         } else if (key === 'bathrooms') {
           clean[key as string] = parseFloat(value)
-        } else if (
-          key === 'furnished' ||
-          key === 'petFriendly' ||
-          key === 'smokingAllowed' ||
-          key === 'parking' ||
-          key === 'balcony'
-        ) {
+        } else if (key === 'furnished' || key === 'petFriendly' || key === 'smokingAllowed' || key === 'parking' || key === 'balcony') {
           clean[key as string] = value === 'true'
         } else {
           clean[key as string] = value
@@ -435,17 +414,13 @@ export default function NuevoProceso() {
     }).format(amount)
   }
 
-  const getBooleanIcon = (value: boolean) =>
-    value ? <Check className="w-4 h-4 text-green-600" /> : <X className="w-4 h-4 text-red-600" />
+  const getBooleanIcon = (value: boolean) => (value ? <Check className="w-4 h-4 text-green-600" /> : <X className="w-4 h-4 text-red-600" />)
 
   // Calcular estadísticas del rango seleccionado
   const selectedRangeStats = useMemo(() => {
     const unitsInRange = allUnits.filter(
       (unit) =>
-        unit.baseRent !== null &&
-        unit.baseRent !== undefined &&
-        unit.baseRent >= filters.priceRange[0] &&
-        unit.baseRent <= filters.priceRange[1]
+        unit.baseRent !== null && unit.baseRent !== undefined && unit.baseRent >= filters.priceRange[0] && unit.baseRent <= filters.priceRange[1]
     )
 
     return {
@@ -607,10 +582,7 @@ export default function NuevoProceso() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {units.map((unit) => (
-              <div
-                key={unit.id}
-                className="bg-white rounded-lg shadow-sm border hover:shadow-md transition-shadow"
-              >
+              <div key={unit.id} className="bg-white rounded-lg shadow-sm border hover:shadow-md transition-shadow">
                 <div className="p-6">
                   <div className="flex items-start justify-between mb-4">
                     <div>
@@ -679,9 +651,7 @@ export default function NuevoProceso() {
                     </div>
                   </div>
 
-                  {unit.description && (
-                    <p className="text-sm text-gray-600 mb-4 line-clamp-2">{unit.description}</p>
-                  )}
+                  {unit.description && <p className="text-sm text-gray-600 mb-4 line-clamp-2">{unit.description}</p>}
 
                   <div className="flex space-x-2">
                     <Link
@@ -712,10 +682,7 @@ export default function NuevoProceso() {
             <div className="text-center">
               <p className="text-sm text-gray-500 mb-4">Funcionalidad de reserva en desarrollo</p>
               <div className="flex space-x-2">
-                <button
-                  onClick={() => setShowReserveModal(false)}
-                  className="flex-1 px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50"
-                >
+                <button onClick={() => setShowReserveModal(false)} className="flex-1 px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50">
                   Cancelar
                 </button>
                 <button

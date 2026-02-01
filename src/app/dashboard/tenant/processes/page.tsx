@@ -90,9 +90,7 @@ export default function TenantProcessesPage() {
       CANCELLED: { label: 'Cancelado', className: 'bg-red-100 text-red-800' },
     }
     const data = map[status] ?? { label: status, className: 'bg-gray-100 text-gray-800' }
-    return (
-      <span className={`px-2 py-1 rounded-full text-xs font-semibold ${data.className}`}>{data.label}</span>
-    )
+    return <span className={`px-2 py-1 rounded-full text-xs font-semibold ${data.className}`}>{data.label}</span>
   }
 
   const getStatusIcon = (status: string) => {
@@ -127,7 +125,7 @@ export default function TenantProcessesPage() {
           ...payload.basicInfo,
           ...(tenantBasicInfo ? pickBasicInfoUpdates(payload.basicInfo, tenantBasicInfo) : {}),
         }
-      : tenantBasicInfo ?? undefined
+      : (tenantBasicInfo ?? undefined)
     const nextState = {
       processId: result.data.id,
       tenantId: result.data.tenantId ?? tenantId,
@@ -140,16 +138,8 @@ export default function TenantProcessesPage() {
     }
     dispatch(setProcessState(nextState))
 
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('applicationProcessId', result.data.id)
-      if (result.data.tenantId ?? tenantId) {
-        localStorage.setItem('selectedTenantId', (result.data.tenantId ?? tenantId) as string)
-      }
-      if (result.data.unitId) localStorage.setItem('np:selectedUnitId', result.data.unitId)
-    }
-
-    const nextRoute = resolveNextRoute(result.data.currentStep, resolvedProfile)
-    router.push(nextRoute)
+    // const nextRoute = resolveNextRoute(result.data.currentStep, resolvedProfile)
+    // router.push(nextRoute)
   }
 
   return (
@@ -158,10 +148,7 @@ export default function TenantProcessesPage() {
 
       <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-1 w-full">
         <div className="mb-6 flex items-center justify-between">
-          <button
-            onClick={() => router.push('/dashboard/tenant')}
-            className="inline-flex items-center text-gray-600 hover:text-gray-900"
-          >
+          <button onClick={() => router.push('/dashboard/tenant')} className="inline-flex items-center text-gray-600 hover:text-gray-900">
             <ArrowLeft className="w-4 h-4 mr-2" />
             Volver
           </button>
@@ -192,16 +179,12 @@ export default function TenantProcessesPage() {
                 <div className="flex items-center justify-between mb-2">
                   <div className="flex items-center gap-2">
                     {getStatusIcon(process.status)}
-                    <span className="text-sm text-gray-800 font-medium">
-                      Proceso #{process.id.slice(0, 6)}
-                    </span>
+                    <span className="text-sm text-gray-800 font-medium">Proceso #{process.id.slice(0, 6)}</span>
                   </div>
                   {statusBadge(process.status)}
                 </div>
                 <p className="text-sm text-gray-600">Paso actual: {process.currentStep}</p>
-                <p className="text-xs text-gray-500 mt-1">
-                  Última actualización: {new Date(process.updatedAt).toLocaleDateString('es-CO')}
-                </p>
+                <p className="text-xs text-gray-500 mt-1">Última actualización: {new Date(process.updatedAt).toLocaleDateString('es-CO')}</p>
               </button>
             ))}
           </div>

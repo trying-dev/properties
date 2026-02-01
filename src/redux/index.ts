@@ -1,26 +1,14 @@
-import {
-  TypedUseSelectorHook,
-  useDispatch as useDispatchRedux,
-  useSelector as useSelectorRedux,
-} from 'react-redux'
-
-import { combineReducers, PayloadAction } from '@reduxjs/toolkit'
+import { useDispatch as useDispatchRedux, useSelector as useSelectorRedux } from 'react-redux'
+import { combineReducers, configureStore } from '@reduxjs/toolkit'
 import type { Middleware } from '@reduxjs/toolkit'
 
-import { configureStore } from '@reduxjs/toolkit'
-
-import { State } from './store'
-import auth, {
-  setIsAuthenticated,
-  resetAuthProcess,
-} from './slices/auth'
+import auth, { setIsAuthenticated, resetAuthProcess } from './slices/auth'
 import user from './slices/user'
 import property from './slices/property'
 import processSlice from './slices/process'
 import home from './slices/home'
 
 export const REDUX_KEY_LOCAL_STORAGE = 'state'
-export const HYDRATE_ACTION_TYPE = 'HYDRATE'
 
 const rootReducer = combineReducers({
   auth,
@@ -30,17 +18,21 @@ const rootReducer = combineReducers({
   process: processSlice,
 })
 
-const reducer = (state: State | undefined, action: PayloadAction<State>) => {
-  if (action.type === HYDRATE_ACTION_TYPE) {
-    return {
-      ...state,
-      ...action.payload,
-    }
-  }
-  return rootReducer(state, action)
-}
+export type RootState = ReturnType<typeof rootReducer>
 
-const devTools = process.env.NODE_ENV !== 'production'
+const loadPersistedState = (): RootState | undefined => {
+  if (typeof window === 'undefined') return undefined
+
+  try {
+    const serialized = localStorage.getItem(REDUX_KEY_LOCAL_STORAGE)
+    if (!serialized) return undefined
+    const parsed = JSON.parse(serialized) as Partial<RootState>
+    return parsed as RootState
+  } catch (error) {
+    console.warn('[hydrate] Failed to load persisted state', error)
+    return undefined
+  }
+}
 
 const authResetMiddleware: Middleware = (storeApi) => (next) => (action) => {
   const result = next(action)
@@ -51,8 +43,9 @@ const authResetMiddleware: Middleware = (storeApi) => (next) => (action) => {
 }
 
 export const store = configureStore({
-  reducer,
-  devTools,
+  reducer: rootReducer,
+  preloadedState: loadPersistedState(),
+  devTools: process.env.NODE_ENV !== 'production',
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: {
@@ -62,21 +55,33 @@ export const store = configureStore({
     }).concat(authResetMiddleware),
 })
 
+let lastSavedStateJson = ''
+
 store.subscribe(() => {
+  if (typeof window === 'undefined') return
+
   const state = store.getState()
   const { uploadedDocs, ...restProcess } = state.process
-  const serializableState = {
+  const { units, ...restHome } = state.home
+
+  const serializableState: RootState = {
     ...state,
-    process: {
-      ...restProcess,
-      uploadedDocs: {},
-    },
+    home: { ...restHome, units: [] },
+    process: { ...restProcess, uploadedDocs: {} },
   }
-  localStorage.setItem(REDUX_KEY_LOCAL_STORAGE, JSON.stringify(serializableState))
+
+  try {
+    const json = JSON.stringify(serializableState)
+    if (json === lastSavedStateJson) return
+
+    lastSavedStateJson = json
+    localStorage.setItem(REDUX_KEY_LOCAL_STORAGE, json)
+  } catch {
+    console.warn('[persist] Failed to save state to localStorage.')
+  }
 })
 
-export type RootState = ReturnType<typeof store.getState>
 export type AppDispatch = typeof store.dispatch
 
-export const useDispatch = () => useDispatchRedux<AppDispatch>()
-export const useSelector: TypedUseSelectorHook<RootState> = useSelectorRedux
+export const useDispatch = useDispatchRedux.withTypes<AppDispatch>()
+export const useSelector = useSelectorRedux.withTypes<RootState>()

@@ -103,18 +103,11 @@ export default function SeleccionDeUsuario() {
   }
 
   const goToConfirmationWith = (id: string) => {
-    try {
-      localStorage.setItem('selectedTenantId', id)
-    } catch (e) {
-      console.error('No se pudo guardar en localStorage', e)
-    }
-    router.push('/dashboard/admin/nuevo-proceso/confirmacion-de-inicio-de-proceso')
+    // router.push('/dashboard/admin/nuevo-proceso/confirmacion-de-inicio-de-proceso')
   }
 
   const getStatusBadge = (tenant: TenantListItem) => {
-    const hasActiveContract = tenant.contracts.some(
-      (c: { status: string }) => c.status === ContractStatus.ACTIVE
-    )
+    const hasActiveContract = tenant.contracts.some((c: { status: string }) => c.status === ContractStatus.ACTIVE)
     if (tenant.user.disable) {
       return <span className="px-2 py-1 text-xs rounded-full bg-red-100 text-red-800">Deshabilitado</span>
     }
@@ -129,9 +122,7 @@ export default function SeleccionDeUsuario() {
       <div className="mb-8 flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-gray-900 mb-2">Seleccion de Inquilino</h1>
-          <p className="text-gray-600">
-            Selecciona el inquilino para continuar con el proceso de incio de contrato.
-          </p>
+          <p className="text-gray-600">Selecciona el inquilino para continuar con el proceso de incio de contrato.</p>
         </div>
         <button
           onClick={() => setShowCreateModal(true)}
@@ -182,10 +173,7 @@ export default function SeleccionDeUsuario() {
                     { label: 'Contratos', align: 'left' },
                     { label: 'Acciones', align: 'right' },
                   ].map(({ label, align }) => (
-                    <th
-                      key={label}
-                      className={`px-6 py-3 text-${align} text-xs font-medium text-gray-500 uppercase tracking-wider`}
-                    >
+                    <th key={label} className={`px-6 py-3 text-${align} text-xs font-medium text-gray-500 uppercase tracking-wider`}>
                       {label}
                     </th>
                   ))}
@@ -205,9 +193,7 @@ export default function SeleccionDeUsuario() {
                           <div className="text-sm font-medium text-gray-900">
                             {tenant.user.name} {tenant.user.lastName}
                           </div>
-                          <div className="text-sm text-gray-500">
-                            {tenant.user.profession || 'Sin profesión especificada'}
-                          </div>
+                          <div className="text-sm text-gray-500">{tenant.user.profession || 'Sin profesión especificada'}</div>
                         </div>
                       </div>
                     </td>
@@ -226,9 +212,7 @@ export default function SeleccionDeUsuario() {
                     </td>
 
                     <td className="px-3 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900">
-                        {getDocumentTypeLabel(tenant.user.documentType)}
-                      </div>
+                      <div className="text-sm text-gray-900">{getDocumentTypeLabel(tenant.user.documentType)}</div>
                       <div className="text-sm text-gray-500">{tenant.user.documentNumber}</div>
                     </td>
 
@@ -242,19 +226,13 @@ export default function SeleccionDeUsuario() {
 
                     <td className="px-3 py-4 whitespace-nowrap">
                       {getStatusBadge(tenant)}
-                      {tenant.monthlyIncome && (
-                        <div className="text-xs text-gray-500 mt-1">
-                          {formatCurrency(tenant.monthlyIncome)}
-                        </div>
-                      )}
+                      {tenant.monthlyIncome && <div className="text-xs text-gray-500 mt-1">{formatCurrency(tenant.monthlyIncome)}</div>}
                     </td>
 
                     <td className="px-3 py-4 whitespace-nowrap">
                       <div className="text-sm text-gray-900">{tenant.contracts.length} contrato(s)</div>
                       {tenant.contracts.length > 0 && (
-                        <div className="text-xs text-gray-500">
-                          Último: {tenant.contracts[0]?.unit?.property?.name}
-                        </div>
+                        <div className="text-xs text-gray-500">Último: {tenant.contracts[0]?.unit?.property?.name}</div>
                       )}
                     </td>
 
@@ -280,11 +258,7 @@ export default function SeleccionDeUsuario() {
         )}
       </div>
 
-      <CreateTenantForm
-        isOpen={showCreateModal}
-        onClose={() => setShowCreateModal(false)}
-        onSubmit={handleCreateTenant}
-      />
+      <CreateTenantForm isOpen={showCreateModal} onClose={() => setShowCreateModal(false)} onSubmit={handleCreateTenant} />
     </div>
   )
 }
