@@ -17,6 +17,7 @@ import auth, {
 import user from './slices/user'
 import property from './slices/property'
 import processSlice from './slices/process'
+import home from './slices/home'
 
 export const REDUX_KEY_LOCAL_STORAGE = 'state'
 export const HYDRATE_ACTION_TYPE = 'HYDRATE'
@@ -25,6 +26,7 @@ const rootReducer = combineReducers({
   auth,
   user,
   property,
+  home,
   process: processSlice,
 })
 

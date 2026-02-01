@@ -1,8 +1,11 @@
+import { unstable_cache as cache } from 'next/cache'
+
 import Header from '+/components/Header'
 import Footer from '+/components/Footer'
+
+import HomeClient from './_/HomeClient'
+
 import { getAvailableUnits } from '+/actions/nuevo-proceso'
-import HomeClient from './HomeClient'
-import { unstable_cache as cache } from 'next/cache'
 
 const availableUnitsTag = 'available-units'
 const getCachedUnits = cache(() => getAvailableUnits({}), [availableUnitsTag], {

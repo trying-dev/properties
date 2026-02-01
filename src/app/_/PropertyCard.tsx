@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
+
 import { Heart, MapPin, ChevronLeft, ChevronRight } from 'lucide-react'
 import type { AvailableUnit } from '+/actions/nuevo-proceso'
 
@@ -25,9 +26,31 @@ export default function PropertyCard({ unit, index }: PropertyCardProps) {
   const images = parseImages(unit.images)
   const currentImage = images[activeImage] || '/placeholder-apartment.jpg'
 
-  const priceLabel = unit.baseRent ? `${new Intl.NumberFormat('de-DE').format(unit.baseRent)} €` : 'Consultar'
+  const priceLabel = unit.baseRent ? `${new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP' }).format(unit.baseRent)}` : 'Consultar'
   const areaLabel = unit.area ? `${unit.area} m²` : 'N/D'
   const bedroomsLabel = unit.bedrooms ? `${unit.bedrooms} Zi.` : 'N/D'
+  const hasMultipleImages = images.length > 1
+
+  const handlePrevImage = (event: ButtonMouseEvent) => {
+    event.preventDefault()
+    event.stopPropagation()
+    setActiveImage((prev) => (prev - 1 + images.length) % images.length)
+  }
+
+  const handleNextImage = (event: ButtonMouseEvent) => {
+    event.preventDefault()
+    event.stopPropagation()
+    setActiveImage((prev) => (prev + 1) % images.length)
+  }
+
+  const handleFavoriteClick = (event: ButtonMouseEvent) => {
+    event.preventDefault()
+  }
+
+  const handleSelectImage = (idx: number) => (event: ButtonMouseEvent) => {
+    event.preventDefault()
+    setActiveImage(idx)
+  }
 
   return (
     <Link
@@ -45,24 +68,16 @@ export default function PropertyCard({ unit, index }: PropertyCardProps) {
           priority={index < 3}
         />
 
-        {images.length > 1 && (
+        {hasMultipleImages && (
           <>
             <button
-              onClick={(e) => {
-                e.preventDefault()
-                e.stopPropagation()
-                setActiveImage((prev) => (prev - 1 + images.length) % images.length)
-              }}
+              onClick={handlePrevImage}
               className="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/85 backdrop-blur text-gray-700 shadow hover:bg-white transition cursor-pointer"
             >
               <ChevronLeft className="w-5 h-5 mx-auto" />
             </button>
             <button
-              onClick={(e) => {
-                e.preventDefault()
-                e.stopPropagation()
-                setActiveImage((prev) => (prev + 1) % images.length)
-              }}
+              onClick={handleNextImage}
               className="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/85 backdrop-blur text-gray-700 shadow hover:bg-white transition cursor-pointer"
             >
               <ChevronRight className="w-5 h-5 mx-auto" />
@@ -71,23 +86,18 @@ export default function PropertyCard({ unit, index }: PropertyCardProps) {
         )}
 
         <button
-          onClick={(e) => {
-            e.preventDefault()
-          }}
+          onClick={handleFavoriteClick}
           className="absolute bottom-3 right-3 w-10 h-10 bg-white/90 rounded-full flex items-center justify-center hover:bg-white shadow-sm transition cursor-pointer"
         >
           <Heart className="h-5 w-5 text-gray-600" />
         </button>
 
-        {images.length > 1 && (
+        {hasMultipleImages && (
           <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex items-center space-x-2">
             {images.map((_, idx) => (
               <button
                 key={idx}
-                onClick={(e) => {
-                  e.preventDefault()
-                  setActiveImage(idx)
-                }}
+                onClick={handleSelectImage(idx)}
                 className={`w-2.5 h-2.5 rounded-full transition cursor-pointer ${
                   idx === activeImage ? 'bg-white shadow' : 'bg-white/60 hover:bg-white'
                 }`}

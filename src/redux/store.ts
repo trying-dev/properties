@@ -14,6 +14,16 @@ export const initialState = {
   },
   user: null as UserForRedux | null,
   property: {},
+  home: {
+    units: [],
+    showFilters: false,
+    searchQuery: '',
+    filters: {
+      priceMax: '',
+      bedrooms: '',
+      city: '',
+    },
+  },
   process: {
     processId: null as string | null,
     tenantId: null as string | null,

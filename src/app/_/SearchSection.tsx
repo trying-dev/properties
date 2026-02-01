@@ -1,29 +1,20 @@
 import { Search, SlidersHorizontal } from 'lucide-react'
+import { useDispatch, useSelector } from '+/redux'
+import { setFilters, setSearchQuery, setShowFilters } from '+/redux/slices/home'
 import ExtraFilters from './ExtraFilters'
 
-export type Filters = {
-  priceMax: string
-  bedrooms: string
-  city: string
-}
+export default function SearchSection() {
+  const dispatch = useDispatch()
+  const { searchQuery, filters, showFilters } = useSelector((state) => state.home)
 
-type SearchSectionProps = {
-  searchQuery: string
-  onSearchQueryChange: (value: string) => void
-  filters: Filters
-  onFiltersChange: (filters: Filters) => void
-  showFilters: boolean
-  onToggleFilters: () => void
-}
+  const updateSearchQuery = (value: string) => dispatch(setSearchQuery(value))
+  const updateFilters = (nextFilters: typeof filters) => dispatch(setFilters(nextFilters))
+  const toggleFilters = () => dispatch(setShowFilters(!showFilters))
+  const handleSearchChange = (event: InputChangeEvent) => updateSearchQuery(event.target.value)
+  const handlePriceChange = (event: InputChangeEvent) => updateFilters({ ...filters, priceMax: event.target.value })
+  const handleBedroomsChange = (event: SelectChangeEvent) => updateFilters({ ...filters, bedrooms: event.target.value })
+  const handleCityChange = (event: SelectChangeEvent) => updateFilters({ ...filters, city: event.target.value })
 
-export default function SearchSection({
-  searchQuery,
-  onSearchQueryChange,
-  filters,
-  onFiltersChange,
-  showFilters,
-  onToggleFilters,
-}: SearchSectionProps) {
   return (
     <section className="bg-linear-to-b from-gray-50 to-white border-b border-gray-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -39,7 +30,7 @@ export default function SearchSection({
                 type="text"
                 placeholder="Ciudad, dirección o código postal"
                 value={searchQuery}
-                onChange={(e) => onSearchQueryChange(e.target.value)}
+                onChange={handleSearchChange}
                 className="w-full px-4 py-3 border border-gray-200 rounded-lg text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent"
               />
             </div>
@@ -48,14 +39,14 @@ export default function SearchSection({
                 type="number"
                 placeholder="Precio máximo"
                 value={filters.priceMax}
-                onChange={(e) => onFiltersChange({ ...filters, priceMax: e.target.value })}
+                onChange={handlePriceChange}
                 className="w-full px-4 py-3 border border-gray-200 rounded-lg text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent"
               />
             </div>
             <div className="md:col-span-2">
               <select
                 value={filters.bedrooms}
-                onChange={(e) => onFiltersChange({ ...filters, bedrooms: e.target.value })}
+                onChange={handleBedroomsChange}
                 className="w-full px-4 py-3 border border-gray-200 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent appearance-none bg-white"
               >
                 <option value="">Habitaciones</option>
@@ -68,10 +59,10 @@ export default function SearchSection({
             <div className="md:col-span-2">
               <select
                 value={filters.city}
-                onChange={(e) => onFiltersChange({ ...filters, city: e.target.value })}
+                onChange={handleCityChange}
                 className="w-full px-4 py-3 border border-gray-200 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent appearance-none bg-white"
               >
-                <option value="">Ciudad</option>
+                <option value="">Ciudades</option>
                 <option value="bogotá">Bogotá</option>
                 <option value="medellín">Medellín</option>
                 <option value="cali">Cali</option>
@@ -86,10 +77,7 @@ export default function SearchSection({
             </div>
           </div>
 
-          <button
-            onClick={onToggleFilters}
-            className="mt-4 text-sm text-gray-600 hover:text-gray-900 flex items-center space-x-1"
-          >
+          <button onClick={toggleFilters} className="mt-4 text-sm text-gray-600 hover:text-gray-900 flex items-center space-x-1">
             <SlidersHorizontal className="h-4 w-4" />
             <span>Más filtros</span>
           </button>
