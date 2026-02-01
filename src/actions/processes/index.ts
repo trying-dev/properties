@@ -28,7 +28,7 @@ export const createProcessAction = async (input: CreateProcessInput) => {
 
     const data: Prisma.ProcessUncheckedCreateInput = {
       currentStep: input.currentStep ?? 1,
-      status: ProcessStatus.OPEN,
+      status: ProcessStatus.IN_PROGRESS,
       payload: (input.payload ?? {}) as Prisma.InputJsonValue,
     }
 
@@ -209,11 +209,32 @@ export const getTenantProcessesAction = async (tenantId: string) => {
   }
 }
 
+export const deleteTenantProcessAction = async (processId: string, tenantId: string) => {
+  if (!processId) return { success: false, error: 'Falta processId' }
+  if (!tenantId) return { success: false, error: 'Falta tenantId' }
+  try {
+    const existing = await prisma.process.findFirst({
+      where: { id: processId, tenantId },
+      select: { id: true },
+    })
+    if (!existing) return { success: false, error: 'Proceso no encontrado' }
+
+    await prisma.process.delete({
+      where: { id: processId },
+    })
+
+    return { success: true }
+  } catch (error) {
+    console.error('Error en deleteTenantProcessAction:', error)
+    return { success: false, error: 'No se pudo eliminar el proceso' }
+  }
+}
+
 export const getAdminProcessesAction = async (userId?: string) => {
   try {
     const processes = await prisma.process.findMany({
       where: {
-        status: { in: [ProcessStatus.OPEN, ProcessStatus.IN_PROGRESS] },
+        status: { in: [ProcessStatus.IN_PROGRESS, ProcessStatus.IN_EVALUATION, ProcessStatus.WAITING_FOR_FEEDBACK] },
       },
       select: {
         id: true,

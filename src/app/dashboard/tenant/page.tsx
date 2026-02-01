@@ -100,15 +100,12 @@ export default function TenantDashboard() {
     <div className="min-h-screen bg-white flex flex-col">
       <Header />
 
-      {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 flex-1 w-full">
-        {/* Welcome Section */}
         <div className="mb-12">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">Hola</h1>
           <p className="text-gray-600">Bienvenido a tu área personal</p>
         </div>
 
-        {/* Menu Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {menuOptions.map((option) => (
             <button
@@ -130,7 +127,6 @@ export default function TenantDashboard() {
           ))}
         </div>
 
-        {/* Welcome Message for New Users */}
         {contracts.length === 0 && (
           <div className="mt-12 bg-gray-50 border border-gray-200 rounded-lg p-8 text-center">
             <Home className="h-12 w-12 text-gray-400 mx-auto mb-4" />

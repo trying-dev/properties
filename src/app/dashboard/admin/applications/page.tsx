@@ -17,7 +17,7 @@ interface DashboardStats {
 
 type AdminProcess = {
   id: string
-  status: 'OPEN' | 'IN_PROGRESS'
+  status: 'IN_PROGRESS' | 'IN_EVALUATION' | 'WAITING_FOR_FEEDBACK' | 'APPROVED' | 'DISAPPROVED'
   currentStep: number
   updatedAt: string
   createdAt: string
@@ -183,7 +183,15 @@ export default function AdminApplicationsPage() {
                       </Link>
                       <span className="rounded-full bg-blue-50 px-2.5 py-1 text-xs font-semibold text-blue-700">Paso {process.currentStep}</span>
                       <span className="rounded-full bg-gray-100 px-2.5 py-1 text-xs font-semibold text-gray-700">
-                        {process.status === 'OPEN' ? 'Abierto' : 'En progreso'}
+                        {process.status === 'IN_PROGRESS'
+                          ? 'En progreso'
+                          : process.status === 'IN_EVALUATION'
+                            ? 'En evaluación'
+                            : process.status === 'WAITING_FOR_FEEDBACK'
+                              ? 'Esperando feedback'
+                              : process.status === 'APPROVED'
+                                ? 'Aprobado'
+                                : 'Desaprobado'}
                       </span>
                       <span className="text-xs text-gray-500">{new Date(process.updatedAt).toLocaleDateString('es-MX')}</span>
                     </div>

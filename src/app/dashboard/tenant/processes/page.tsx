@@ -2,16 +2,25 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { FileText, Clock, CheckCircle, XCircle, ArrowLeft } from 'lucide-react'
+import { FileText, ArrowLeft } from 'lucide-react'
+
+import { useDispatch } from '+/redux'
+
 import Header from '+/components/Header'
 import Footer from '+/components/Footer'
-import { getProcessAction, getTenantProcessesAction } from '+/actions/processes'
-import { getUserTenant } from '+/actions/user'
-import { useSession } from '+/hooks/useSession'
-import { useDispatch } from '+/redux'
+
+import { deleteTenantProcessAction, getProcessAction, getTenantProcessesAction } from '+/actions/processes'
+
 import { setProcessState } from '+/redux/slices/process'
+
+import { getUserTenant } from '+/actions/user'
+
+import { useSession } from '+/hooks/useSession'
+
 import { BasicInfo, ProfileId } from '+/app/aplication/_/types'
 import { pickBasicInfoUpdates } from '+/app/aplication/_/basicInfoUtils'
+
+import CardProcess from './_/CardProcess'
 
 type ProcessListItem = {
   id: string
@@ -47,6 +56,13 @@ const buildBasicInfoFromUser = (user: UserTenantResult): BasicInfo | null => {
   }
 }
 
+const resolveNextRoute = (step: number | null, profile?: ProfileId | '') => {
+  if (!profile) return '/aplication/profile'
+  if (step && step >= 4) return '/aplication/security'
+  if (step && step >= 3) return '/aplication/complementInfo'
+  return '/aplication/basicInformation'
+}
+
 export default function TenantProcessesPage() {
   const router = useRouter()
   const dispatch = useDispatch()
@@ -56,6 +72,7 @@ export default function TenantProcessesPage() {
   const [tenantId, setTenantId] = useState<string | null>(null)
   const [tenantProfile, setTenantProfile] = useState<ProfileId | ''>('')
   const [tenantBasicInfo, setTenantBasicInfo] = useState<BasicInfo | null>(null)
+  const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null)
 
   useEffect(() => {
     if (!isAuthenticated) return
@@ -82,31 +99,6 @@ export default function TenantProcessesPage() {
     load()
   }, [isAuthenticated])
 
-  const statusBadge = (status: string) => {
-    const map: Record<string, { label: string; className: string }> = {
-      OPEN: { label: 'Abierto', className: 'bg-blue-100 text-blue-800' },
-      IN_PROGRESS: { label: 'En progreso', className: 'bg-yellow-100 text-yellow-800' },
-      COMPLETED: { label: 'Completado', className: 'bg-green-100 text-green-800' },
-      CANCELLED: { label: 'Cancelado', className: 'bg-red-100 text-red-800' },
-    }
-    const data = map[status] ?? { label: status, className: 'bg-gray-100 text-gray-800' }
-    return <span className={`px-2 py-1 rounded-full text-xs font-semibold ${data.className}`}>{data.label}</span>
-  }
-
-  const getStatusIcon = (status: string) => {
-    if (status === 'COMPLETED') return <CheckCircle className="w-4 h-4 text-green-600" />
-    if (status === 'CANCELLED') return <XCircle className="w-4 h-4 text-red-600" />
-    if (status === 'IN_PROGRESS') return <Clock className="w-4 h-4 text-yellow-600" />
-    return <Clock className="w-4 h-4 text-blue-600" />
-  }
-
-  const resolveNextRoute = (step: number | null, profile?: ProfileId | '') => {
-    if (!profile) return '/aplication/profile'
-    if (step && step >= 4) return '/aplication/security'
-    if (step && step >= 3) return '/aplication/complementInfo'
-    return '/aplication/basicInformation'
-  }
-
   const resumeProcess = async (processId: string) => {
     const result = await getProcessAction(processId)
     if (!result.success || !result.data) {
@@ -126,6 +118,7 @@ export default function TenantProcessesPage() {
           ...(tenantBasicInfo ? pickBasicInfoUpdates(payload.basicInfo, tenantBasicInfo) : {}),
         }
       : (tenantBasicInfo ?? undefined)
+
     const nextState = {
       processId: result.data.id,
       tenantId: result.data.tenantId ?? tenantId,
@@ -133,13 +126,42 @@ export default function TenantProcessesPage() {
       step: result.data.currentStep ?? 1,
       profile: resolvedProfile,
     }
+
     if (resolvedBasicInfo) {
       Object.assign(nextState, { basicInfo: resolvedBasicInfo })
     }
+
     dispatch(setProcessState(nextState))
 
-    // const nextRoute = resolveNextRoute(result.data.currentStep, resolvedProfile)
-    // router.push(nextRoute)
+    const nextRoute = resolveNextRoute(result.data.currentStep, resolvedProfile)
+    router.push(nextRoute)
+  }
+
+  const handleDeleteProcess = async (processId: string) => {
+    if (!tenantId) return
+    const result = await deleteTenantProcessAction(processId, tenantId)
+    if (!result.success) {
+      console.error('No se pudo eliminar el proceso', result.error)
+      return
+    }
+    setProcesses((prev) => prev.filter((process) => process.id !== processId))
+    setDeleteConfirmId((current) => (current === processId ? null : current))
+  }
+
+  const onResumeProcess = (processId: string) => () => {
+    void resumeProcess(processId)
+  }
+
+  const onConfirmDeleteProcess = (processId: string) => () => {
+    void handleDeleteProcess(processId)
+  }
+
+  const onStartDeleteProcess = (processId: string) => () => {
+    setDeleteConfirmId(processId)
+  }
+
+  const onCancelDeleteProcess = () => {
+    setDeleteConfirmId(null)
   }
 
   return (
@@ -169,23 +191,15 @@ export default function TenantProcessesPage() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {processes.map((process) => (
-              <button
+              <CardProcess
                 key={process.id}
-                className="border border-gray-200 rounded-lg p-4 text-left hover:border-gray-300 hover:shadow-sm transition"
-                onClick={() => {
-                  void resumeProcess(process.id)
-                }}
-              >
-                <div className="flex items-center justify-between mb-2">
-                  <div className="flex items-center gap-2">
-                    {getStatusIcon(process.status)}
-                    <span className="text-sm text-gray-800 font-medium">Proceso #{process.id.slice(0, 6)}</span>
-                  </div>
-                  {statusBadge(process.status)}
-                </div>
-                <p className="text-sm text-gray-600">Paso actual: {process.currentStep}</p>
-                <p className="text-xs text-gray-500 mt-1">Última actualización: {new Date(process.updatedAt).toLocaleDateString('es-CO')}</p>
-              </button>
+                process={process}
+                deleteConfirmId={deleteConfirmId}
+                onResume={onResumeProcess(process.id)}
+                onConfirmDelete={onConfirmDeleteProcess(process.id)}
+                onStartDelete={onStartDeleteProcess(process.id)}
+                onCancelDelete={onCancelDeleteProcess}
+              />
             ))}
           </div>
         )}

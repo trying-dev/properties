@@ -8,6 +8,8 @@ import { setProcessState } from '+/redux/slices/process'
 
 import StepProgress from './_/StepProgress'
 import SummarySidebar from './_/SummarySidebar'
+import Header from '+/components/Header'
+import Footer from '+/components/Footer'
 
 type ApplicationLayoutProps = {
   children: ReactNode
@@ -38,7 +40,9 @@ export default function ApplicationLayout({ children }: ApplicationLayoutProps) 
   if (!mounted) return null
 
   return (
-    <div className="max-w-5xl mx-auto py-8 px-4">
+    <div className="max-w-5xl mx-auto py-8 px-4 bg-white">
+      <Header />
+
       <div className="text-center mb-8">
         <h1 className="text-4xl font-bold text-gray-900 mb-2">Solicitud de Arrendamiento</h1>
         <p className="text-gray-600">Completa los siguientes pasos para enviar tu solicitud</p>
@@ -49,6 +53,8 @@ export default function ApplicationLayout({ children }: ApplicationLayoutProps) 
       <SummarySidebar />
 
       <div className="bg-white rounded-xl shadow-lg overflow-hidden">{children}</div>
+
+      <Footer />
     </div>
   )
 }

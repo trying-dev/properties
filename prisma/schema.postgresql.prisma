@@ -245,7 +245,7 @@ model Process {
     adminId    String?
     contractId String?
 
-    status      ProcessStatus @default(OPEN)
+    status      ProcessStatus @default(IN_PROGRESS)
     currentStep Int           @default(1)
     payload     Json?
     notes       String?
@@ -267,10 +267,11 @@ model Process {
 }
 
 enum ProcessStatus {
-    OPEN
     IN_PROGRESS
-    COMPLETED
-    CANCELLED
+    IN_EVALUATION
+    WAITING_FOR_FEEDBACK
+    APPROVED
+    DISAPPROVED
 }
 
 // ========================================
