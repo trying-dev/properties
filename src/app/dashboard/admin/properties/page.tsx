@@ -1,9 +1,10 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Building2 } from 'lucide-react'
+import { Building2, Plus } from 'lucide-react'
+import Link from 'next/link'
 
-import { getProperties } from '+/actions/property'
+import { deletePropertyAction, getProperties } from '+/actions/property'
 import Header from '+/components/Header'
 import CardProperty from '../../fragments/CardProperty'
 import { Property } from '@prisma/client'
@@ -30,6 +31,15 @@ export default function AdminPropertiesPage() {
 
     loadProperties()
   }, [])
+
+  const handleDeleteProperty = async (propertyId: string) => {
+    const result = await deletePropertyAction(propertyId)
+    if (!result.success) {
+      console.error('Error deleting property:', result.error)
+      return
+    }
+    setProperties((prev) => prev.filter((property) => property.id !== propertyId))
+  }
 
   if (isLoading) {
     return (
@@ -78,7 +88,16 @@ export default function AdminPropertiesPage() {
             <h1 className="text-3xl font-bold text-gray-900 mb-2">Propiedades</h1>
             <p className="text-gray-600">Administra tus propiedades y su información.</p>
           </div>
-          <span className="bg-gray-900 text-white text-sm font-semibold px-3 py-1 rounded-full">{properties.length}</span>
+          <div className="flex items-center gap-3">
+            <span className="bg-gray-900 text-white text-sm font-semibold px-3 py-1 rounded-full">{properties.length}</span>
+            <Link
+              href="/dashboard/admin/properties/new"
+              className="inline-flex items-center gap-2 bg-gray-900 text-white text-sm font-semibold px-4 py-2 rounded-lg hover:bg-gray-800 transition-colors"
+            >
+              <Plus className="w-4 h-4" />
+              Nueva propiedad
+            </Link>
+          </div>
         </div>
 
         <div className="bg-white rounded-lg border shadow-sm">
@@ -92,7 +111,7 @@ export default function AdminPropertiesPage() {
             <div className="divide-y divide-gray-200">
               {properties.map((property) => (
                 <div key={property.id} className="p-4 hover:bg-gray-50 transition-colors">
-                  <CardProperty property={property} />
+                  <CardProperty property={property} onDelete={() => void handleDeleteProperty(property.id)} />
                 </div>
               ))}
             </div>

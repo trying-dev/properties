@@ -2,7 +2,7 @@
 
 import { Clock, CheckCircle, XCircle } from 'lucide-react'
 
-import DeleteProcess from './DeleteProcess'
+import ConfirmDeleteButton from '+/components/ConfirmDeleteButton'
 
 type ProcessListItem = {
   id: string
@@ -65,7 +65,7 @@ export default function CardProcess({ process, deleteConfirmId, onResume, onConf
         </div>
         <div className="flex items-center gap-2">
           {statusBadge(process.status)}
-          <DeleteProcess isConfirming={isConfirming} onConfirm={onConfirmDelete} onCancel={onCancelDelete} onStart={onStartDelete} />
+          <ConfirmDeleteButton isConfirming={isConfirming} onConfirm={onConfirmDelete} onCancel={onCancelDelete} onStart={onStartDelete} />
         </div>
       </div>
       <p className="text-sm text-gray-600">Paso actual: {process.currentStep}</p>

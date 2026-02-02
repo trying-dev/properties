@@ -1,13 +1,14 @@
 import Image from 'next/image'
 import { Property } from '@prisma/client'
 import { useRouter } from 'next/navigation'
-import { MapPin, Eye, Edit3, MoreVertical } from 'lucide-react'
+import { MapPin, Eye, Edit3 } from 'lucide-react'
 import { useState, type MouseEvent } from 'react'
+import ConfirmDeleteButton from '+/components/ConfirmDeleteButton'
 
-export default function CardProperty({ property }: { property: Property }) {
+export default function CardProperty({ property, onDelete }: { property: Property; onDelete?: () => void }) {
   const router = useRouter()
   const [isHovered, setIsHovered] = useState(false)
-  const [showMenu, setShowMenu] = useState(false)
+  const [confirmDelete, setConfirmDelete] = useState(false)
 
   const { name = 'Nombre de Propiedad', street = 'Calle', number = '000', neighborhood = 'Colonia' } = property
 
@@ -25,6 +26,12 @@ export default function CardProperty({ property }: { property: Property }) {
 
   const handleCardClick = () => {
     router.push(`/dashboard/property/${property.id}`)
+  }
+
+  const handleDelete = () => {
+    if (!onDelete) return
+    onDelete()
+    setConfirmDelete(false)
   }
 
   return (
@@ -74,34 +81,31 @@ export default function CardProperty({ property }: { property: Property }) {
               </div>
             </div>
 
-            {/* Actions Menu */}
-            <div className="relative ml-2">
+            {/* Actions */}
+            <div className="ml-2 flex items-center gap-3">
               <button
-                onClick={(e) => {
-                  e.stopPropagation()
-                  setShowMenu(!showMenu)
-                }}
-                className={`
-                  p-2 rounded-full transition-all duration-200
-                  ${isHovered ? 'bg-white shadow-sm border border-gray-200 opacity-100' : 'opacity-0 group-hover:opacity-100'}
-                  hover:bg-gray-50
-                `}
+                onClick={handleView}
+                className="p-1 text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-colors transition-transform active:scale-95 cursor-pointer rounded"
+                aria-label="Ver detalles"
+                title="Ver detalles"
               >
-                <MoreVertical className="h-4 w-4 text-gray-600" />
+                <Eye className="h-4 w-4 text-gray-600" />
               </button>
-
-              {/* Dropdown Menu */}
-              {showMenu && (
-                <div className="absolute right-0 top-full mt-1 w-32 bg-white rounded-md shadow-lg border border-gray-200 py-1 z-10">
-                  <button onClick={handleView} className="flex items-center w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-50">
-                    <Eye className="h-4 w-4 mr-2" />
-                    Ver detalles
-                  </button>
-                  <button onClick={handleEdit} className="flex items-center w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-50">
-                    <Edit3 className="h-4 w-4 mr-2" />
-                    Editar
-                  </button>
-                </div>
+              <button
+                onClick={handleEdit}
+                className="p-1 text-blue-600 hover:text-blue-700 hover:bg-blue-50 transition-colors transition-transform active:scale-95 cursor-pointer rounded"
+                aria-label="Editar"
+                title="Editar"
+              >
+                <Edit3 className="h-4 w-4 text-blue-600" />
+              </button>
+              {onDelete && (
+                <ConfirmDeleteButton
+                  isConfirming={confirmDelete}
+                  onConfirm={handleDelete}
+                  onCancel={() => setConfirmDelete(false)}
+                  onStart={() => setConfirmDelete(true)}
+                />
               )}
             </div>
           </div>
@@ -121,17 +125,6 @@ export default function CardProperty({ property }: { property: Property }) {
           </div>
         </div>
       </div>
-
-      {/* Click outside to close menu */}
-      {showMenu && (
-        <div
-          className="fixed inset-0 z-0"
-          onClick={(e) => {
-            e.stopPropagation()
-            setShowMenu(false)
-          }}
-        />
-      )}
     </div>
   )
 }

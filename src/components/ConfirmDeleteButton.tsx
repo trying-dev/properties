@@ -2,16 +2,17 @@
 
 import { Check, Trash2, X } from 'lucide-react'
 
-type DeleteProcessProps = {
+type ConfirmDeleteButtonProps = {
   isConfirming: boolean
   onConfirm: () => void
   onCancel: () => void
   onStart: () => void
+  stopPropagation?: boolean
 }
 
-export default function DeleteProcess({ isConfirming, onConfirm, onCancel, onStart }: DeleteProcessProps) {
+export default function ConfirmDeleteButton({ isConfirming, onConfirm, onCancel, onStart, stopPropagation = true }: ConfirmDeleteButtonProps) {
   const withStop = (handler: () => void) => (event: React.MouseEvent<HTMLButtonElement>) => {
-    event.stopPropagation()
+    if (stopPropagation) event.stopPropagation()
     handler()
   }
 
@@ -19,7 +20,7 @@ export default function DeleteProcess({ isConfirming, onConfirm, onCancel, onSta
     <div className="flex items-center gap-1">
       <button
         type="button"
-        className="p-1 rounded-full text-green-600 hover:text-green-700 hover:bg-green-50"
+        className="p-1 rounded-full text-green-600 hover:text-green-700 hover:bg-green-50 transition-transform active:scale-95 cursor-pointer"
         onClick={withStop(onConfirm)}
         aria-label="Confirmar eliminación"
         title="Confirmar"
@@ -28,7 +29,7 @@ export default function DeleteProcess({ isConfirming, onConfirm, onCancel, onSta
       </button>
       <button
         type="button"
-        className="p-1 rounded-full text-gray-500 hover:text-gray-700 hover:bg-gray-100"
+        className="p-1 rounded-full text-gray-500 hover:text-gray-700 hover:bg-gray-100 transition-transform active:scale-95 cursor-pointer"
         onClick={withStop(onCancel)}
         aria-label="Cancelar eliminación"
         title="Cancelar"
@@ -39,9 +40,9 @@ export default function DeleteProcess({ isConfirming, onConfirm, onCancel, onSta
   ) : (
     <button
       type="button"
-      className="p-1 rounded-full text-red-600 hover:text-red-700 hover:bg-red-50"
+      className="p-1 rounded-full text-red-600 hover:text-red-700 hover:bg-red-50 transition-transform active:scale-95 cursor-pointer"
       onClick={withStop(onStart)}
-      aria-label="Eliminar proceso"
+      aria-label="Eliminar"
       title="Eliminar"
     >
       <Trash2 className="w-4 h-4" />
