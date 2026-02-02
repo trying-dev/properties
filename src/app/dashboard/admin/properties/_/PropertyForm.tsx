@@ -5,31 +5,17 @@ import { useRouter } from 'next/navigation'
 import { PropertyType } from '@prisma/client'
 
 import { createPropertyAction, updatePropertyAction } from '+/actions/property'
-
-export type PropertyFormState = {
-  name: string
-  description: string
-  street: string
-  number: string
-  city: string
-  neighborhood: string
-  state: string
-  postalCode: string
-  country: string
-  propertyType: PropertyType
-  builtArea: string
-  totalLandArea: string
-  floors: string
-  age: string
-}
+import type { PropertyFormState } from './propertyFormTypes'
 
 type PropertyFormProps = {
   mode: 'create' | 'edit'
   initialForm: PropertyFormState
   submitLabel: string
-  successHref: string
+  successHref?: string
   propertyId?: string
   showMock?: boolean
+  onSuccess?: () => void
+  onCancel?: () => void
 }
 
 const mockForm: PropertyFormState = {
@@ -49,7 +35,16 @@ const mockForm: PropertyFormState = {
   age: '8',
 }
 
-export default function PropertyForm({ mode, initialForm, submitLabel, successHref, propertyId, showMock = false }: PropertyFormProps) {
+export default function PropertyForm({
+  mode,
+  initialForm,
+  submitLabel,
+  successHref,
+  propertyId,
+  showMock = false,
+  onSuccess,
+  onCancel,
+}: PropertyFormProps) {
   const router = useRouter()
   const [form, setForm] = useState<PropertyFormState>(initialForm)
   const [submitting, setSubmitting] = useState(false)
@@ -108,7 +103,11 @@ export default function PropertyForm({ mode, initialForm, submitLabel, successHr
         return
       }
 
-      router.push(successHref)
+      if (onSuccess) {
+        onSuccess()
+      } else if (successHref) {
+        router.push(successHref)
+      }
     } catch (err) {
       console.error('Error saving property:', err)
       setError('No se pudo guardar la propiedad')
@@ -208,7 +207,15 @@ export default function PropertyForm({ mode, initialForm, submitLabel, successHr
         <button
           type="button"
           className="px-4 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50"
-          onClick={() => router.push(successHref)}
+          onClick={() => {
+            if (onCancel) {
+              onCancel()
+              return
+            }
+            if (successHref) {
+              router.push(successHref)
+            }
+          }}
         >
           Cancelar
         </button>

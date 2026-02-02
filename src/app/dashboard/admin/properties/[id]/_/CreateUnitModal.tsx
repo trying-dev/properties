@@ -64,6 +64,31 @@ const initialForm: UnitFormState = {
   lastInspectionDate: '',
 }
 
+const mockForm: UnitFormState = {
+  unitNumber: '302',
+  floor: '3',
+  area: '68',
+  bedrooms: '2',
+  bathrooms: '1.5',
+  furnished: true,
+  balcony: true,
+  parking: true,
+  storage: false,
+  petFriendly: true,
+  smokingAllowed: false,
+  internet: true,
+  cableTV: false,
+  waterIncluded: true,
+  gasIncluded: true,
+  status: UnitStatusEnum.VACANT,
+  baseRent: '1800000',
+  deposit: '1800000',
+  description: 'Unidad con buena iluminación, vista abierta y cocina integral.',
+  images: 'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688\nhttps://images.unsplash.com/photo-1505691938895-1758d7feb511',
+  highlights: '{"petFriendly": true, "nearby": ["Parque", "Transporte"], "notes": "Recientemente renovada"}',
+  lastInspectionDate: '2025-12-10',
+}
+
 const parseImagesInput = (value: string) => {
   const items = value
     .split(/[\n,]/)
@@ -160,6 +185,16 @@ export default function CreateUnitModal({ isOpen, onClose, propertyId }: CreateU
         <div>
           <h3 className="text-xl font-semibold text-gray-900">Nueva unidad</h3>
           <p className="text-sm text-gray-600">Completa los datos de la unidad.</p>
+        </div>
+
+        <div className="flex items-center justify-end">
+          <button
+            type="button"
+            className="text-sm font-medium text-gray-600 hover:text-gray-900"
+            onClick={() => setForm(mockForm)}
+          >
+            Autollenar con mock
+          </button>
         </div>
 
         {error && <div className="text-sm text-red-600">{error}</div>}

@@ -2,33 +2,36 @@
 
 import { useEffect, useState } from 'react'
 import { Building2, Plus } from 'lucide-react'
-import Link from 'next/link'
 
 import { getProperties } from '+/actions/property'
 import Header from '+/components/Header'
 import CardProperty from '../../fragments/CardProperty'
 import { Property } from '@prisma/client'
+import Modal from '+/components/Modal'
+import PropertyForm from './_/PropertyForm'
+import type { PropertyFormState } from './_/propertyFormTypes'
 
 export default function AdminPropertiesPage() {
   const [properties, setProperties] = useState<Property[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [isCreateOpen, setIsCreateOpen] = useState(false)
+
+  const loadProperties = async () => {
+    try {
+      setIsLoading(true)
+      setError(null)
+      const propertiesData = await getProperties()
+      setProperties(propertiesData)
+    } catch (err) {
+      console.error('Error loading properties:', err)
+      setError('Error al cargar las propiedades')
+    } finally {
+      setIsLoading(false)
+    }
+  }
 
   useEffect(() => {
-    const loadProperties = async () => {
-      try {
-        setIsLoading(true)
-        setError(null)
-        const propertiesData = await getProperties()
-        setProperties(propertiesData)
-      } catch (err) {
-        console.error('Error loading properties:', err)
-        setError('Error al cargar las propiedades')
-      } finally {
-        setIsLoading(false)
-      }
-    }
-
     loadProperties()
   }, [])
 
@@ -82,13 +85,14 @@ export default function AdminPropertiesPage() {
           </div>
           <div className="flex items-center gap-3">
             <span className="bg-gray-900 text-white text-sm font-semibold px-3 py-1 rounded-full">{properties.length}</span>
-            <Link
-              href="/dashboard/admin/properties/new"
+            <button
+              type="button"
+              onClick={() => setIsCreateOpen(true)}
               className="inline-flex items-center gap-2 bg-gray-900 text-white text-sm font-semibold px-4 py-2 rounded-lg hover:bg-gray-800 transition-colors"
             >
               <Plus className="w-4 h-4" />
               Nueva propiedad
-            </Link>
+            </button>
           </div>
         </div>
 
@@ -110,6 +114,43 @@ export default function AdminPropertiesPage() {
           )}
         </div>
       </main>
+
+      <Modal isOpen={isCreateOpen} onClose={() => setIsCreateOpen(false)} ariaLabel="Nueva propiedad" className="max-w-3xl max-h-[90vh] overflow-y-auto">
+        <div className="p-6 space-y-6">
+          <div>
+            <h2 className="text-2xl font-semibold text-gray-900">Nueva propiedad</h2>
+            <p className="text-sm text-gray-600">Completa los datos básicos para crear la propiedad.</p>
+          </div>
+          <PropertyForm
+            mode="create"
+            initialForm={initialCreateForm}
+            submitLabel="Crear propiedad"
+            showMock
+            onCancel={() => setIsCreateOpen(false)}
+            onSuccess={() => {
+              setIsCreateOpen(false)
+              loadProperties()
+            }}
+          />
+        </div>
+      </Modal>
     </div>
   )
+}
+
+const initialCreateForm: PropertyFormState = {
+  name: '',
+  description: '',
+  street: '',
+  number: '',
+  city: '',
+  neighborhood: '',
+  state: '',
+  postalCode: '',
+  country: 'Colombia',
+  propertyType: 'APARTMENT',
+  builtArea: '',
+  totalLandArea: '',
+  floors: '1',
+  age: '',
 }

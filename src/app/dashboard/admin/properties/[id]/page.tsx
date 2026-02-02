@@ -7,6 +7,7 @@ import { getPropertyWithUnits } from '+/actions/property'
 import PropertyActions from './_/PropertyActions'
 import PropertyUnits from './_/PropertyUnits'
 import type { PropertyStatus, PropertyType } from '@prisma/client'
+import { toPropertyFormState } from '../_/propertyFormUtils'
 
 const statusLabel: Record<PropertyStatus, string> = {
   ACTIVE: 'Activa',
@@ -43,6 +44,7 @@ export default async function AdminPropertyPage({ params }: { params: Promise<{ 
   const { id } = await params
   const property = await getPropertyWithUnits({ id })
   if (!property) return notFound()
+  const initialForm = toPropertyFormState(property)
 
   const commonZones = parseCommonZones(property.commonZones)
 
@@ -67,7 +69,7 @@ export default async function AdminPropertyPage({ params }: { params: Promise<{ 
             <span className="text-xs font-semibold px-2 py-1 rounded-full bg-green-100 text-green-700">
               {statusLabel[property.status]}
             </span>
-            <PropertyActions propertyId={property.id} />
+            <PropertyActions propertyId={property.id} initialForm={initialForm} />
           </div>
         </div>
 
