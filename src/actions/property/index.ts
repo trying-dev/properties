@@ -41,7 +41,20 @@ export const getProperty = async ({ id }: { id: string }) => {
 
 export type PropertyWithRelations = Prisma.PromiseReturnType<typeof getProperty>
 
-type CreatePropertyInput = {
+export const getPropertyLite = async ({ id }: { id: string }) => {
+  try {
+    return prisma.property.findUnique({
+      where: { id },
+    })
+  } catch (error) {
+    console.error('Error fetching property by ID:', error)
+    throw error
+  }
+}
+
+export type PropertyLite = Prisma.PromiseReturnType<typeof getPropertyLite>
+
+export type CreatePropertyInput = {
   name: string
   description?: string | null
   street: string
@@ -111,6 +124,60 @@ export const createPropertyAction = async (input: CreatePropertyInput) => {
   } catch (error) {
     console.error('Error creating property:', error)
     return { success: false, error: 'No se pudo crear la propiedad' }
+  }
+}
+
+export const updatePropertyAction = async (propertyId: string, input: CreatePropertyInput) => {
+  const session = await auth()
+  const userId = session?.user?.id
+  if (!userId) return { success: false, error: 'No autenticado' }
+
+  try {
+    const admin = await prisma.admin.findFirst({
+      where: { userId },
+      select: { id: true },
+    })
+    if (!admin?.id) return { success: false, error: 'No se encontró administrador' }
+
+    const property = await prisma.property.findFirst({
+      where: { id: propertyId, adminId: admin.id },
+      select: { id: true },
+    })
+    if (!property) return { success: false, error: 'Propiedad no encontrada' }
+
+    const data: Prisma.PropertyUncheckedUpdateInput = {
+      name: input.name.trim(),
+      description: input.description?.trim() || null,
+      street: input.street.trim(),
+      number: input.number.trim(),
+      city: input.city.trim(),
+      neighborhood: input.neighborhood.trim(),
+      state: input.state.trim(),
+      postalCode: input.postalCode.trim(),
+      country: input.country?.trim() || 'Colombia',
+      propertyType: input.propertyType,
+      builtArea: input.builtArea,
+      age: input.age,
+      floors: input.floors ?? 1,
+      totalLandArea: input.totalLandArea ?? null,
+      gpsCoordinates: input.gpsCoordinates?.trim() || null,
+      yardOrGarden: input.yardOrGarden?.trim() || null,
+      parking: input.parking ?? 0,
+      parkingLocation: input.parkingLocation?.trim() || null,
+      balconiesAndTerraces: input.balconiesAndTerraces?.trim() || null,
+      recreationalAreas: input.recreationalAreas?.trim() || null,
+      commonZones: input.commonZones?.trim() || null,
+    }
+
+    await prisma.property.update({
+      where: { id: propertyId },
+      data,
+    })
+
+    return { success: true }
+  } catch (error) {
+    console.error('Error updating property:', error)
+    return { success: false, error: 'No se pudo actualizar la propiedad' }
   }
 }
 

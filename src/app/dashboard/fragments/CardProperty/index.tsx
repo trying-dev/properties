@@ -1,38 +1,23 @@
 import Image from 'next/image'
 import { Property } from '@prisma/client'
 import { useRouter } from 'next/navigation'
-import { MapPin, Eye, Edit3 } from 'lucide-react'
-import { useState, type MouseEvent } from 'react'
-import ConfirmDeleteButton from '+/components/ConfirmDeleteButton'
+import { MapPin } from 'lucide-react'
+import { useState } from 'react'
 
-export default function CardProperty({ property, onDelete }: { property: Property; onDelete?: () => void }) {
+export default function CardProperty({ property }: { property: Property }) {
   const router = useRouter()
   const [isHovered, setIsHovered] = useState(false)
-  const [confirmDelete, setConfirmDelete] = useState(false)
 
   const { name = 'Nombre de Propiedad', street = 'Calle', number = '000', neighborhood = 'Colonia' } = property
 
   const fullAddress = `${street} ${number}, ${neighborhood}`
 
-  const handleView = (e: MouseEvent) => {
-    e.stopPropagation()
-    router.push(`/dashboard/property/${property.id}`)
-  }
 
-  const handleEdit = (e: MouseEvent) => {
-    e.stopPropagation()
-    router.push(`/dashboard/property/${property.id}/edit`)
-  }
 
   const handleCardClick = () => {
-    router.push(`/dashboard/property/${property.id}`)
+    router.push(`/dashboard/admin/properties/${property.id}`)
   }
 
-  const handleDelete = () => {
-    if (!onDelete) return
-    onDelete()
-    setConfirmDelete(false)
-  }
 
   return (
     <div
@@ -81,33 +66,6 @@ export default function CardProperty({ property, onDelete }: { property: Propert
               </div>
             </div>
 
-            {/* Actions */}
-            <div className="ml-2 flex items-center gap-3">
-              <button
-                onClick={handleView}
-                className="p-1 text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-colors transition-transform active:scale-95 cursor-pointer rounded"
-                aria-label="Ver detalles"
-                title="Ver detalles"
-              >
-                <Eye className="h-4 w-4 text-gray-600" />
-              </button>
-              <button
-                onClick={handleEdit}
-                className="p-1 text-blue-600 hover:text-blue-700 hover:bg-blue-50 transition-colors transition-transform active:scale-95 cursor-pointer rounded"
-                aria-label="Editar"
-                title="Editar"
-              >
-                <Edit3 className="h-4 w-4 text-blue-600" />
-              </button>
-              {onDelete && (
-                <ConfirmDeleteButton
-                  isConfirming={confirmDelete}
-                  onConfirm={handleDelete}
-                  onCancel={() => setConfirmDelete(false)}
-                  onStart={() => setConfirmDelete(true)}
-                />
-              )}
-            </div>
           </div>
         </div>
 

@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import { Building2, Plus } from 'lucide-react'
 import Link from 'next/link'
 
-import { deletePropertyAction, getProperties } from '+/actions/property'
+import { getProperties } from '+/actions/property'
 import Header from '+/components/Header'
 import CardProperty from '../../fragments/CardProperty'
 import { Property } from '@prisma/client'
@@ -32,14 +32,6 @@ export default function AdminPropertiesPage() {
     loadProperties()
   }, [])
 
-  const handleDeleteProperty = async (propertyId: string) => {
-    const result = await deletePropertyAction(propertyId)
-    if (!result.success) {
-      console.error('Error deleting property:', result.error)
-      return
-    }
-    setProperties((prev) => prev.filter((property) => property.id !== propertyId))
-  }
 
   if (isLoading) {
     return (
@@ -111,7 +103,7 @@ export default function AdminPropertiesPage() {
             <div className="divide-y divide-gray-200">
               {properties.map((property) => (
                 <div key={property.id} className="p-4 hover:bg-gray-50 transition-colors">
-                  <CardProperty property={property} onDelete={() => void handleDeleteProperty(property.id)} />
+                  <CardProperty property={property} />
                 </div>
               ))}
             </div>
