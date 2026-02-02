@@ -1,6 +1,6 @@
 'use server'
 
-import { Prisma, PropertyType } from '@prisma/client'
+import { Prisma, PropertyType, UnitStatus } from '@prisma/client'
 import { auth } from '+/lib/auth'
 import { prisma } from '+/lib/prisma'
 
@@ -54,6 +54,22 @@ export const getPropertyLite = async ({ id }: { id: string }) => {
 
 export type PropertyLite = Prisma.PromiseReturnType<typeof getPropertyLite>
 
+export const getPropertyWithUnits = async ({ id }: { id: string }) => {
+  try {
+    return prisma.property.findUnique({
+      where: { id },
+      include: {
+        units: true,
+      },
+    })
+  } catch (error) {
+    console.error('Error fetching property with units:', error)
+    throw error
+  }
+}
+
+export type PropertyWithUnits = Prisma.PromiseReturnType<typeof getPropertyWithUnits>
+
 export type CreatePropertyInput = {
   name: string
   description?: string | null
@@ -76,6 +92,32 @@ export type CreatePropertyInput = {
   balconiesAndTerraces?: string | null
   recreationalAreas?: string | null
   commonZones?: string | null
+}
+
+export type CreateUnitInput = {
+  propertyId: string
+  unitNumber: string
+  floor?: number | null
+  area?: number | null
+  bedrooms?: number | null
+  bathrooms?: number | null
+  furnished?: boolean | null
+  balcony?: boolean | null
+  parking?: boolean | null
+  storage?: boolean | null
+  petFriendly?: boolean | null
+  smokingAllowed?: boolean | null
+  internet?: boolean | null
+  cableTV?: boolean | null
+  waterIncluded?: boolean | null
+  gasIncluded?: boolean | null
+  status?: UnitStatus | null
+  baseRent?: number | null
+  deposit?: number | null
+  description?: string | null
+  images?: string | null
+  highlights?: Prisma.InputJsonValue | null
+  lastInspectionDate?: Date | null
 }
 
 export const createPropertyAction = async (input: CreatePropertyInput) => {
@@ -124,6 +166,59 @@ export const createPropertyAction = async (input: CreatePropertyInput) => {
   } catch (error) {
     console.error('Error creating property:', error)
     return { success: false, error: 'No se pudo crear la propiedad' }
+  }
+}
+
+export const createUnitAction = async (input: CreateUnitInput) => {
+  const session = await auth()
+  const userId = session?.user?.id
+  if (!userId) return { success: false, error: 'No autenticado' }
+
+  try {
+    const admin = await prisma.admin.findFirst({
+      where: { userId },
+      select: { id: true },
+    })
+    if (!admin?.id) return { success: false, error: 'No se encontró administrador' }
+
+    const property = await prisma.property.findFirst({
+      where: { id: input.propertyId, adminId: admin.id },
+      select: { id: true },
+    })
+    if (!property) return { success: false, error: 'Propiedad no encontrada' }
+
+    await prisma.unit.create({
+      data: {
+        propertyId: input.propertyId,
+        unitNumber: input.unitNumber.trim(),
+        floor: input.floor ?? null,
+        area: input.area ?? null,
+        bedrooms: input.bedrooms ?? 0,
+        bathrooms: input.bathrooms ?? 0,
+        furnished: input.furnished ?? false,
+        balcony: input.balcony ?? false,
+        parking: input.parking ?? false,
+        storage: input.storage ?? false,
+        petFriendly: input.petFriendly ?? false,
+        smokingAllowed: input.smokingAllowed ?? false,
+        internet: input.internet ?? false,
+        cableTV: input.cableTV ?? false,
+        waterIncluded: input.waterIncluded ?? false,
+        gasIncluded: input.gasIncluded ?? false,
+        status: input.status ?? UnitStatus.VACANT,
+        baseRent: input.baseRent ?? null,
+        deposit: input.deposit ?? null,
+        description: input.description?.trim() || null,
+        images: input.images ?? '[]',
+        highlights: input.highlights ?? null,
+        lastInspectionDate: input.lastInspectionDate ?? null,
+      },
+    })
+
+    return { success: true }
+  } catch (error) {
+    console.error('Error creating unit:', error)
+    return { success: false, error: 'No se pudo crear la unidad' }
   }
 }
 

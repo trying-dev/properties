@@ -90,12 +90,12 @@ export default async function proxy(request: NextRequest) {
     if (userRole === 'admin') {
       const adminLevel = session.user.adminLevel as AdminLevel
       allowedRoutes = roleRouteAccess.admin[adminLevel] || []
-      console.log(`👑 Admin ${adminLevel} verificando acceso a ${pathname}`)
+      // console.log(`👑 Admin ${adminLevel} verificando acceso a ${pathname}`)
     } else if (userRole === 'tenant') {
       allowedRoutes = roleRouteAccess.tenant
-      console.log(`🏠 Tenant verificando acceso a ${pathname}`)
+      // console.log(`🏠 Tenant verificando acceso a ${pathname}`)
     } else {
-      console.log(`❌ Rol no reconocido: ${userRole}`)
+      // console.log(`❌ Rol no reconocido: ${userRole}`)
       return NextResponse.redirect(new URL('/', request.url))
     }
 

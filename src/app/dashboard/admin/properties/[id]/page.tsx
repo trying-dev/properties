@@ -3,8 +3,9 @@ import { ArrowLeft, Building2, MapPin } from 'lucide-react'
 import Link from 'next/link'
 
 import Header from '+/components/Header'
-import { getPropertyLite } from '+/actions/property'
+import { getPropertyWithUnits } from '+/actions/property'
 import PropertyActions from './_/PropertyActions'
+import PropertyUnits from './_/PropertyUnits'
 import type { PropertyStatus, PropertyType } from '@prisma/client'
 
 const statusLabel: Record<PropertyStatus, string> = {
@@ -40,7 +41,7 @@ const parseCommonZones = (value?: string | null) => {
 
 export default async function AdminPropertyPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
-  const property = await getPropertyLite({ id })
+  const property = await getPropertyWithUnits({ id })
   if (!property) return notFound()
 
   const commonZones = parseCommonZones(property.commonZones)
@@ -146,6 +147,8 @@ export default async function AdminPropertyPage({ params }: { params: Promise<{ 
                 </div>
               </div>
             </div>
+
+            <PropertyUnits propertyId={property.id} units={property.units} />
           </section>
 
           <aside className="space-y-6">
