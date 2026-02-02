@@ -222,6 +222,89 @@ export const createUnitAction = async (input: CreateUnitInput) => {
   }
 }
 
+export const updateUnitAction = async (unitId: string, input: Omit<CreateUnitInput, 'propertyId'> & { propertyId: string }) => {
+  const session = await auth()
+  const userId = session?.user?.id
+  if (!userId) return { success: false, error: 'No autenticado' }
+
+  try {
+    const admin = await prisma.admin.findFirst({
+      where: { userId },
+      select: { id: true },
+    })
+    if (!admin?.id) return { success: false, error: 'No se encontró administrador' }
+
+    const unit = await prisma.unit.findFirst({
+      where: { id: unitId, property: { adminId: admin.id } },
+      select: { id: true },
+    })
+    if (!unit) return { success: false, error: 'Unidad no encontrada' }
+
+    await prisma.unit.update({
+      where: { id: unitId },
+      data: {
+        propertyId: input.propertyId,
+        unitNumber: input.unitNumber.trim(),
+        floor: input.floor ?? null,
+        area: input.area ?? null,
+        bedrooms: input.bedrooms ?? 0,
+        bathrooms: input.bathrooms ?? 0,
+        furnished: input.furnished ?? false,
+        balcony: input.balcony ?? false,
+        parking: input.parking ?? false,
+        storage: input.storage ?? false,
+        petFriendly: input.petFriendly ?? false,
+        smokingAllowed: input.smokingAllowed ?? false,
+        internet: input.internet ?? false,
+        cableTV: input.cableTV ?? false,
+        waterIncluded: input.waterIncluded ?? false,
+        gasIncluded: input.gasIncluded ?? false,
+        status: input.status ?? UnitStatus.VACANT,
+        baseRent: input.baseRent ?? null,
+        deposit: input.deposit ?? null,
+        description: input.description?.trim() || null,
+        images: input.images ?? '[]',
+        highlights: input.highlights ?? null,
+        lastInspectionDate: input.lastInspectionDate ?? null,
+      },
+    })
+
+    return { success: true }
+  } catch (error) {
+    console.error('Error updating unit:', error)
+    return { success: false, error: 'No se pudo actualizar la unidad' }
+  }
+}
+
+export const deleteUnitAction = async (unitId: string) => {
+  const session = await auth()
+  const userId = session?.user?.id
+  if (!userId) return { success: false, error: 'No autenticado' }
+
+  try {
+    const admin = await prisma.admin.findFirst({
+      where: { userId },
+      select: { id: true },
+    })
+    if (!admin?.id) return { success: false, error: 'No se encontró administrador' }
+
+    const unit = await prisma.unit.findFirst({
+      where: { id: unitId, property: { adminId: admin.id } },
+      select: { id: true },
+    })
+    if (!unit) return { success: false, error: 'Unidad no encontrada' }
+
+    await prisma.unit.delete({
+      where: { id: unitId },
+    })
+
+    return { success: true }
+  } catch (error) {
+    console.error('Error deleting unit:', error)
+    return { success: false, error: 'No se pudo eliminar la unidad' }
+  }
+}
+
 export const updatePropertyAction = async (propertyId: string, input: CreatePropertyInput) => {
   const session = await auth()
   const userId = session?.user?.id

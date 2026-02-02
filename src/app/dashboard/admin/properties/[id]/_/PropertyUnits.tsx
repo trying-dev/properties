@@ -1,7 +1,8 @@
- 'use client'
+'use client'
 
 import { useState } from 'react'
 import { Plus } from 'lucide-react'
+import Link from 'next/link'
 import type { Unit, UnitStatus } from '@prisma/client'
 import CreateUnitModal from './CreateUnitModal'
 
@@ -44,12 +45,14 @@ export default function PropertyUnits({ propertyId, units }: PropertyUnitsProps)
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {units.map((unit) => (
-            <div key={unit.id} className="rounded-lg border border-gray-100 p-4">
+            <Link
+              key={unit.id}
+              href={`/dashboard/admin/units/${unit.id}`}
+              className="rounded-lg border border-gray-100 p-4 hover:border-gray-200 hover:shadow-sm transition cursor-pointer"
+            >
               <div className="flex items-center justify-between">
                 <p className="font-semibold text-gray-900">Unidad {unit.unitNumber}</p>
-                <span className="text-xs font-semibold px-2 py-1 rounded-full bg-gray-100 text-gray-700">
-                  {unitStatusLabel[unit.status]}
-                </span>
+                <span className="text-xs font-semibold px-2 py-1 rounded-full bg-gray-100 text-gray-700">{unitStatusLabel[unit.status]}</span>
               </div>
               <div className="mt-3 grid grid-cols-2 gap-2 text-xs text-gray-600">
                 <div>
@@ -74,12 +77,10 @@ export default function PropertyUnits({ propertyId, units }: PropertyUnitsProps)
                 </div>
                 <div>
                   <span className="text-gray-500">Canon</span>
-                  <p className="font-medium text-gray-900">
-                    {unit.baseRent != null ? `$${unit.baseRent.toLocaleString('es-CO')}` : '-'}
-                  </p>
+                  <p className="font-medium text-gray-900">{unit.baseRent != null ? `$${unit.baseRent.toLocaleString('es-CO')}` : '-'}</p>
                 </div>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
       )}

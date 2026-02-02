@@ -1,7 +1,8 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Building2, Plus } from 'lucide-react'
+import { ArrowLeft, Building2, Plus } from 'lucide-react'
+import Link from 'next/link'
 
 import { getProperties } from '+/actions/property'
 import Header from '+/components/Header'
@@ -78,6 +79,13 @@ export default function AdminPropertiesPage() {
       <Header />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 flex-1 w-full">
+        <div className="mb-6">
+          <Link href="/dashboard/admin" className="inline-flex items-center text-gray-600 hover:text-gray-900">
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Volver al dashboard
+          </Link>
+        </div>
+
         <div className="flex items-center justify-between mb-8">
           <div>
             <h1 className="text-3xl font-bold text-gray-900 mb-2">Propiedades</h1>
