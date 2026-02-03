@@ -6,7 +6,9 @@ import { prisma } from '+/lib/prisma'
 
 export const getProperties = async () => {
   try {
-    return await prisma.property.findMany()
+    return await prisma.property.findMany({
+      orderBy: [{ city: 'asc' }, { neighborhood: 'asc' }, { name: 'asc' }],
+    })
   } catch (error) {
     console.error('Error fetching properties:', error)
     throw error
@@ -18,7 +20,7 @@ export const getProperty = async ({ id }: { id: string }) => {
     return prisma.property.findUnique({
       where: { id },
       include: {
-        admin: { include: { user: true } },
+        admins: { include: { user: true } },
         units: {
           include: {
             contracts: {
@@ -132,8 +134,7 @@ export const createPropertyAction = async (input: CreatePropertyInput) => {
     })
     if (!admin?.id) return { success: false, error: 'No se encontró administrador' }
 
-    const data: Prisma.PropertyUncheckedCreateInput = {
-      adminId: admin.id,
+    const data: Prisma.PropertyCreateInput = {
       name: input.name.trim(),
       description: input.description?.trim() || null,
       street: input.street.trim(),
@@ -155,6 +156,7 @@ export const createPropertyAction = async (input: CreatePropertyInput) => {
       balconiesAndTerraces: input.balconiesAndTerraces?.trim() || null,
       recreationalAreas: input.recreationalAreas?.trim() || null,
       commonZones: input.commonZones?.trim() || null,
+      admins: { connect: { id: admin.id } },
     }
 
     const property = await prisma.property.create({
@@ -182,7 +184,7 @@ export const createUnitAction = async (input: CreateUnitInput) => {
     if (!admin?.id) return { success: false, error: 'No se encontró administrador' }
 
     const property = await prisma.property.findFirst({
-      where: { id: input.propertyId, adminId: admin.id },
+      where: { id: input.propertyId, admins: { some: { id: admin.id } } },
       select: { id: true },
     })
     if (!property) return { success: false, error: 'Propiedad no encontrada' }
@@ -235,7 +237,7 @@ export const updateUnitAction = async (unitId: string, input: Omit<CreateUnitInp
     if (!admin?.id) return { success: false, error: 'No se encontró administrador' }
 
     const unit = await prisma.unit.findFirst({
-      where: { id: unitId, property: { adminId: admin.id } },
+      where: { id: unitId, property: { admins: { some: { id: admin.id } } } },
       select: { id: true },
     })
     if (!unit) return { success: false, error: 'Unidad no encontrada' }
@@ -289,7 +291,7 @@ export const deleteUnitAction = async (unitId: string) => {
     if (!admin?.id) return { success: false, error: 'No se encontró administrador' }
 
     const unit = await prisma.unit.findFirst({
-      where: { id: unitId, property: { adminId: admin.id } },
+      where: { id: unitId, property: { admins: { some: { id: admin.id } } } },
       select: { id: true },
     })
     if (!unit) return { success: false, error: 'Unidad no encontrada' }
@@ -318,7 +320,7 @@ export const updatePropertyAction = async (propertyId: string, input: CreateProp
     if (!admin?.id) return { success: false, error: 'No se encontró administrador' }
 
     const property = await prisma.property.findFirst({
-      where: { id: propertyId, adminId: admin.id },
+      where: { id: propertyId, admins: { some: { id: admin.id } } },
       select: { id: true },
     })
     if (!property) return { success: false, error: 'Propiedad no encontrada' }
@@ -372,7 +374,7 @@ export const deletePropertyAction = async (propertyId: string) => {
     if (!admin?.id) return { success: false, error: 'No se encontró administrador' }
 
     const property = await prisma.property.findFirst({
-      where: { id: propertyId, adminId: admin.id },
+      where: { id: propertyId, admins: { some: { id: admin.id } } },
       select: { id: true },
     })
     if (!property) return { success: false, error: 'Propiedad no encontrada' }

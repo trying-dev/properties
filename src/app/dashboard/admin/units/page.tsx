@@ -29,6 +29,8 @@ export default function AdminUnitsPage() {
   const [city, setCity] = useState('')
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [page, setPage] = useState(1)
+  const pageSize = 50
 
   const cities = useMemo(() => {
     const values = new Set<string>()
@@ -77,6 +79,16 @@ export default function AdminUnitsPage() {
     }
     void loadUnits(filters)
   }, [status, propertyId, city])
+
+  useEffect(() => {
+    setPage(1)
+  }, [status, propertyId, city, units.length])
+
+  const totalPages = Math.max(1, Math.ceil(units.length / pageSize))
+  const clampedPage = Math.min(page, totalPages)
+  const startIndex = (clampedPage - 1) * pageSize
+  const endIndex = startIndex + pageSize
+  const pagedUnits = units.slice(startIndex, endIndex)
 
   return (
     <div className="min-h-screen bg-white flex flex-col">
@@ -147,7 +159,7 @@ export default function AdminUnitsPage() {
           <div className="text-center py-12 text-gray-600">No hay unidades para los filtros seleccionados.</div>
         ) : (
           <div className="bg-white rounded-lg border border-gray-200 divide-y">
-            {units.map((unit) => {
+            {pagedUnits.map((unit) => {
               const latestContract = unit.contracts[0]
               const tenantName = latestContract?.tenant?.user
                 ? `${latestContract.tenant.user.name} ${latestContract.tenant.user.lastName}`
@@ -179,6 +191,35 @@ export default function AdminUnitsPage() {
                 </div>
               )
             })}
+          </div>
+        )}
+
+        {!isLoading && !error && units.length > pageSize && (
+          <div className="flex items-center justify-between mt-4 text-sm text-gray-600">
+            <span>
+              Mostrando {startIndex + 1}-{Math.min(endIndex, units.length)} de {units.length}
+            </span>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                className="px-3 py-1 rounded-lg border border-gray-200 hover:bg-gray-50 disabled:opacity-50"
+                onClick={() => setPage((prev) => Math.max(1, prev - 1))}
+                disabled={clampedPage === 1}
+              >
+                Anterior
+              </button>
+              <span className="px-2">
+                {clampedPage} / {totalPages}
+              </span>
+              <button
+                type="button"
+                className="px-3 py-1 rounded-lg border border-gray-200 hover:bg-gray-50 disabled:opacity-50"
+                onClick={() => setPage((prev) => Math.min(totalPages, prev + 1))}
+                disabled={clampedPage === totalPages}
+              >
+                Siguiente
+              </button>
+            </div>
           </div>
         )}
       </main>

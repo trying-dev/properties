@@ -36,7 +36,6 @@ export default function AdminPropertiesPage() {
     loadProperties()
   }, [])
 
-
   if (isLoading) {
     return (
       <div className="min-h-screen bg-white">
@@ -104,7 +103,7 @@ export default function AdminPropertiesPage() {
           </div>
         </div>
 
-        <div className="bg-white rounded-lg border shadow-sm">
+        <div className="bg-white rounded-lg shadow-sm">
           {properties.length === 0 ? (
             <div className="text-center py-12">
               <Building2 className="h-12 w-12 text-gray-400 mx-auto mb-4" />
@@ -113,8 +112,14 @@ export default function AdminPropertiesPage() {
             </div>
           ) : (
             <div className="divide-y divide-gray-200">
+              <div className="hidden md:grid grid-cols-[2fr_2fr_1fr_160px] gap-4 px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide bg-gray-50">
+                <span>Propiedad</span>
+                <span>Dirección</span>
+                <span>Estado</span>
+                <span>ID</span>
+              </div>
               {properties.map((property) => (
-                <div key={property.id} className="p-4 hover:bg-gray-50 transition-colors">
+                <div key={property.id} className="px-4 py-3 hover:bg-gray-50 transition-colors">
                   <CardProperty property={property} />
                 </div>
               ))}
@@ -123,7 +128,12 @@ export default function AdminPropertiesPage() {
         </div>
       </main>
 
-      <Modal isOpen={isCreateOpen} onClose={() => setIsCreateOpen(false)} ariaLabel="Nueva propiedad" className="max-w-3xl max-h-[90vh] overflow-y-auto">
+      <Modal
+        isOpen={isCreateOpen}
+        onClose={() => setIsCreateOpen(false)}
+        ariaLabel="Nueva propiedad"
+        className="max-w-3xl max-h-[90vh] overflow-y-auto"
+      >
         <div className="p-6 space-y-6">
           <div>
             <h2 className="text-2xl font-semibold text-gray-900">Nueva propiedad</h2>

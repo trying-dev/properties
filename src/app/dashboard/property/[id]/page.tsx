@@ -291,9 +291,15 @@ export default function PropertyPage() {
                     {/* Capacidad si está disponible */}
                     {zone.capacity && <div className="text-xs text-gray-500 mb-1">Capacidad: {zone.capacity} personas</div>}
 
-                    {/* Información del administrador responsable */}
+                    {/* Información de administradores responsables */}
                     <div className="text-xs text-gray-500">
-                      Responsable: {property.admin.user.name} {property.admin.user.lastName}
+                      Responsables:{' '}
+                      {property.admins.length
+                        ? property.admins
+                            .map((admin) => `${admin.user?.name ?? ''} ${admin.user?.lastName ?? ''}`.trim())
+                            .filter(Boolean)
+                            .join(', ')
+                        : 'Sin asignar'}
                     </div>
                   </div>
                 ))

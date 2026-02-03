@@ -5,19 +5,7 @@ import { auth } from '+/lib/auth'
 import { prisma } from '+/lib/prisma'
 
 export const getAdminUnits = async (filters?: { status?: UnitStatus; propertyId?: string; city?: string }) => {
-  const session = await auth()
-  const userId = session?.user?.id
-  if (!userId) throw new Error('No autenticado')
-
-  const admin = await prisma.admin.findFirst({
-    where: { userId },
-    select: { id: true },
-  })
-  if (!admin?.id) throw new Error('No se encontró administrador')
-
-  const where: Prisma.UnitWhereInput = {
-    property: { adminId: admin.id },
-  }
+  const where: Prisma.UnitWhereInput = {}
 
   if (filters?.status) where.status = filters.status
   if (filters?.propertyId) where.propertyId = filters.propertyId

@@ -57,7 +57,7 @@ export default function ResetPasswordModal() {
   }
 
   return (
-    <Modal isOpen={isOpen} onClose={closeModal} ariaLabel="Reset password" disableClose={isSubmitting}>
+    <Modal isOpen={isOpen} onClose={closeModal} ariaLabel="Reset password" disableClose={isSubmitting} className="max-w-lg">
       {/* Header */}
       <div className="relative p-6 border-b border-gray-100">
         <button

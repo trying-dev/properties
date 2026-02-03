@@ -8,7 +8,7 @@ import { prisma } from '+/lib/prisma'
 export const getProcessDetails = async ({ unitId, tenantId }: { unitId: string; tenantId: string }) => {
   const unit = await prisma.unit.findUnique({
     where: { id: unitId },
-    include: { property: { include: { admin: { include: { user: true } } } } },
+    include: { property: { include: { admins: { include: { user: true } } } } },
   })
 
   const tenant = await prisma.tenant.findUnique({

@@ -372,7 +372,7 @@ const createPropertyAndUnits = async (adminId: string) => {
 
   const property = await prisma.property.create({
     data: {
-      admin: { connect: { id: adminId } },
+      admins: { connect: [{ id: adminId }] },
       name: 'Edificio Plaza Central',
       description: 'Edificio mixto de 2 pisos con locales comerciales y apartamentos',
       street: 'Carrera 92',
@@ -707,7 +707,7 @@ const createExtraProperties = async (adminId: string) => {
       },
       create: {
         id: extra.id,
-        adminId,
+        admins: { connect: [{ id: adminId }] },
         name: extra.name,
         description: 'Propiedad demo para unidades disponibles',
         street: 'Demo St',

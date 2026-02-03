@@ -28,60 +28,38 @@ export default function CardProperty({ property }: { property: Property }) {
     >
       <div
         className={`
-        flex items-center gap-4 p-4 rounded-lg border transition-all duration-200
-        ${isHovered ? 'border-blue-300 shadow-md bg-blue-50/50' : 'border-gray-200 hover:border-gray-300'}
+        grid grid-cols-1 md:grid-cols-[2fr_2fr_1fr_160px] items-center gap-3 rounded-lg border px-4 py-3 transition-all duration-200
+        ${isHovered ? 'border-blue-300 shadow-sm bg-blue-50/50' : 'border-gray-200 hover:border-gray-300'}
       `}
       >
-        {/* Property Image */}
-        <div className="relative shrink-0">
-          <div className="w-16 h-16 rounded-lg overflow-hidden bg-gray-100">
-            <Image
-              src="/images/img1.png"
-              alt={`Imagen de ${name}`}
-              width={64}
-              height={64}
-              className="w-full h-full object-cover transition-transform duration-200 group-hover:scale-105"
-            />
-          </div>
-          {/* Status Badge */}
-          <div className="absolute -top-1 -right-1">
-            <div className="w-4 h-4 bg-green-500 rounded-full border-2 border-white"></div>
-          </div>
-        </div>
-
-        {/* Property Info */}
-        <div className="flex-1 min-w-0">
-          <div className="flex items-start justify-between">
-            <div className="flex-1 min-w-0">
-              <h3 className="font-semibold text-gray-900 truncate group-hover:text-blue-700 transition-colors">{name}</h3>
-              <div className="flex items-center text-sm text-gray-600 mt-1">
-                <MapPin className="h-4 w-4 mr-1 text-gray-400" />
-                <span className="truncate">{fullAddress}</span>
-              </div>
-
-              {/* Property Details */}
-              <div className="flex items-center space-x-3 mt-2 text-xs text-gray-500">
-                <span className="bg-gray-100 px-2 py-1 rounded-full">ID: {property.id.slice(0, 8)}...</span>
-                <span className="bg-green-100 text-green-700 px-2 py-1 rounded-full">Activa</span>
-              </div>
+        <div className="flex items-center gap-3 min-w-0">
+          <div className="relative shrink-0">
+            <div className="w-12 h-12 rounded-lg overflow-hidden bg-gray-100">
+              <Image
+                src="/images/img1.png"
+                alt={`Imagen de ${name}`}
+                width={48}
+                height={48}
+                className="w-full h-full object-cover transition-transform duration-200 group-hover:scale-105"
+              />
             </div>
-
+          </div>
+          <div className="min-w-0">
+            <h3 className="font-semibold text-gray-900 truncate group-hover:text-blue-700 transition-colors">{name}</h3>
+            <p className="text-xs text-gray-500 truncate">ID: {property.id.slice(0, 8)}...</p>
           </div>
         </div>
 
-        {/* Hover Arrow */}
-        <div
-          className={`
-          shrink-0 transition-all duration-200
-          ${isHovered ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-2'}
-        `}
-        >
-          <div className="w-6 h-6 rounded-full bg-blue-600 flex items-center justify-center">
-            <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-            </svg>
-          </div>
+        <div className="flex items-center text-sm text-gray-600 min-w-0">
+          <MapPin className="h-4 w-4 mr-1 text-gray-400 shrink-0" />
+          <span className="truncate">{fullAddress}</span>
         </div>
+
+        <div>
+          <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-700">Activa</span>
+        </div>
+
+        <div className="text-xs text-gray-500">Ver detalle</div>
       </div>
     </div>
   )

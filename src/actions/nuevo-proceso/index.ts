@@ -49,7 +49,7 @@ export const getAvailableUnits = async (filters?: {
     include: {
       property: {
         include: {
-          admin: { include: { user: true } },
+          admins: { include: { user: true } },
         },
       },
     },
@@ -63,7 +63,7 @@ export const getUnitById = async ({ id }: { id: string }) =>
     include: {
       property: {
         include: {
-          admin: { include: { user: true } },
+          admins: { include: { user: true } },
         },
       },
       contracts: {

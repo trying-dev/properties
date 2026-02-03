@@ -279,8 +279,7 @@ enum ProcessStatus {
 // ========================================
 
 model Property {
-    id      String @id @default(cuid())
-    adminId String
+    id String @id @default(cuid())
 
     // Basic info
     name        String
@@ -317,14 +316,12 @@ model Property {
     // Estado y disponibilidad
     status PropertyStatus @default(ACTIVE)
 
-    // Relaciones
-    admin Admin  @relation(fields: [adminId], references: [id], onDelete: Restrict)
-    units Unit[]
+    admins Admin[] @relation("PropertyAdmins")
+    units  Unit[]
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 
-    @@index([adminId])
     @@index([city, neighborhood])
     @@index([propertyType])
     @@map("properties")
@@ -535,9 +532,9 @@ model Admin {
     created     Admin[] @relation("AdminCreatedBy")
 
     // Relaciones
-    properties Property[]
-    contracts  Contract[] @relation("ContractAdmins")
-    processes  Process[]  @relation("ProcessAdmin")
+    propertiesAssigned Property[] @relation("PropertyAdmins")
+    contracts          Contract[] @relation("ContractAdmins")
+    processes          Process[]  @relation("ProcessAdmin")
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
