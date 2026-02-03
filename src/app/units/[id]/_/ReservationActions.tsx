@@ -118,7 +118,7 @@ function ReservationModal({ isOpen, onClose, unitId }: ReservationModalProps) {
       isOpen={isOpen}
       onClose={handleClose}
       ariaLabel="Reserva sin iniciar sesión"
-      className="max-w-2xl"
+      className="max-w-lg"
       disableClose={codeVerificationState === 'loading'}
     >
       <AuthFormsPanel />
