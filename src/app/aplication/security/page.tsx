@@ -29,9 +29,6 @@ const SecurityStepPage = () => {
     if (!resolvedProfile) router.replace('/aplication/profile')
   }, [router, resolvedProfile])
 
-  useEffect(() => {
-    setSubmitError(null)
-  }, [selectedSecurity])
 
   const handleFileChange = (fieldId: string, files: FileList | null) => {
     if (!files) return
@@ -47,8 +44,25 @@ const SecurityStepPage = () => {
     const securityOption = securityOptions.find((opt) => opt.id === selectedSecurity)
     if (!securityOption) return
 
+    const resolveSuffix = (fieldId: string) => {
+      const match = fieldId.match(/_([12])\b/)
+      return match ? Number(match[1]) : null
+    }
+
     securityOption.fields.forEach((field) => {
       if (field.type === 'file') {
+        if (field.id.includes('extractos')) {
+          mockDocs[field.id] = [
+            createMockFile(`${field.id}_mes_1.pdf`),
+            createMockFile(`${field.id}_mes_2.pdf`),
+            createMockFile(`${field.id}_mes_3.pdf`),
+          ]
+          return
+        }
+        if (field.id.includes('cedula')) {
+          mockDocs[field.id] = [createMockFile(`${field.id}_frente.pdf`), createMockFile(`${field.id}_reverso.pdf`)]
+          return
+        }
         if (field.multiple) {
           mockDocs[field.id] = [createMockFile(`${field.id}_1.pdf`), createMockFile(`${field.id}_2.pdf`)]
         } else {
@@ -63,17 +77,30 @@ const SecurityStepPage = () => {
       }
 
       if (field.type === 'date') {
-        mockFields[field.id] = '1990-01-01'
+        const suffix = resolveSuffix(field.id)
+        mockFields[field.id] = suffix === 2 ? '1992-02-02' : '1990-01-01'
         return
       }
 
       if (field.type === 'email') {
-        mockFields[field.id] = 'codeudor@example.com'
+        const suffix = resolveSuffix(field.id)
+        mockFields[field.id] = suffix === 2 ? 'codeudor2@example.com' : 'codeudor1@example.com'
         return
       }
 
       if (field.type === 'tel') {
-        mockFields[field.id] = '+57 300 000 0000'
+        const suffix = resolveSuffix(field.id)
+        mockFields[field.id] = suffix === 2 ? '+57 300 000 0002' : '+57 300 000 0001'
+        return
+      }
+
+      const suffix = resolveSuffix(field.id)
+      if (field.id.includes('full_name')) {
+        mockFields[field.id] = suffix === 2 ? 'Codeudor Dos' : 'Codeudor Uno'
+        return
+      }
+      if (field.id.includes('_id')) {
+        mockFields[field.id] = suffix === 2 ? '9876543210' : '1234567890'
         return
       }
 
@@ -172,18 +199,23 @@ const SecurityStepPage = () => {
   const handleBack = () => router.push('/aplication/complementInfo')
 
   const handleSelectSecurity = (securityId: string) => {
+    setSubmitError(null)
     dispatch(setProcessState({ selectedSecurity: securityId, step: 4 }))
   }
 
   const buildCoDebtor = (prefix: string) => {
     const pickValue = (id: string) => String(securityFields[id] ?? '').trim()
+    const fullName = pickValue(`${prefix}full_name`)
+    const [firstName, ...rest] = fullName.split(' ').filter(Boolean)
+    const lastName = rest.join(' ')
     return {
-      name: pickValue(`${prefix}name`),
-      lastName: pickValue(`${prefix}last_name`),
+      name: firstName || fullName,
+      lastName: lastName || '',
       birthDate: pickValue(`${prefix}birthdate`),
       documentNumber: pickValue(`${prefix}id`),
       email: pickValue(`${prefix}email`),
       phone: pickValue(`${prefix}phone`),
+      fullName,
     }
   }
 
@@ -198,7 +230,12 @@ const SecurityStepPage = () => {
   const validateCoDebtors = () => {
     const coDebtors = getCoDebtors()
     const missing = coDebtors.some(
-      (coDebtor) => !coDebtor.name || !coDebtor.lastName || !coDebtor.birthDate || !coDebtor.documentNumber || !coDebtor.email || !coDebtor.phone
+      (coDebtor) =>
+        !coDebtor.fullName ||
+        !coDebtor.birthDate ||
+        !coDebtor.documentNumber ||
+        !coDebtor.email ||
+        !coDebtor.phone
     )
     if (missing) {
       return {
@@ -206,7 +243,12 @@ const SecurityStepPage = () => {
         error: 'Completa todos los datos de los codeudores antes de continuar.',
       }
     }
-    return { coDebtors, error: null }
+    const normalized = coDebtors.map(({ fullName, ...rest }) => ({
+      ...rest,
+      name: rest.name || fullName,
+      lastName: rest.lastName || '',
+    }))
+    return { coDebtors: normalized, error: null }
   }
 
   const handleSubmit = async () => {

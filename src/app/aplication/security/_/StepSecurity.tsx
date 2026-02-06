@@ -52,34 +52,32 @@ const StepSecurity = ({
     </div>
 
     <div className="space-y-4 mb-8">
-      {securityOptions.map((option) => (
-        <div
-          key={option.id}
-          className={`border-2 rounded-xl transition-all ${
-            selectedSecurity === option.id ? 'border-blue-600 bg-blue-50 shadow-lg' : 'border-gray-200 hover:border-blue-300 hover:shadow-md'
-          }`}
-        >
-          <button onClick={() => setSelectedSecurity(selectedSecurity === option.id ? '' : option.id)} className="w-full p-6 text-left">
-            <div className="flex items-start justify-between">
-              <div className="flex-1">
-                <h4 className="font-bold text-gray-900 text-xl mb-1">{option.name}</h4>
-                <p className="text-gray-600 text-sm mb-2">{option.description}</p>
-                <p className="text-blue-700 text-sm font-medium flex items-center gap-1">
-                  <span>📊</span>
-                  {option.requirements}
-                </p>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {securityOptions.map((option) => (
+          <button
+            key={option.id}
+            type="button"
+            onClick={() => setSelectedSecurity(selectedSecurity === option.id ? '' : option.id)}
+            className={`w-full text-left rounded-xl border px-5 py-4 transition-all ${
+              selectedSecurity === option.id ? 'border-blue-600 bg-blue-50/40' : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
+            }`}
+          >
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <h4 className="font-semibold text-gray-900 text-base mb-1">{option.name}</h4>
+                <p className="text-xs text-gray-600">{option.requirements}</p>
               </div>
               <div
-                className={`w-7 h-7 rounded-full border-2 flex items-center justify-center shrink-0 ml-4 transition-all ${
+                className={`h-5 w-5 rounded-full border flex items-center justify-center ${
                   selectedSecurity === option.id ? 'border-blue-600 bg-blue-600' : 'border-gray-300'
                 }`}
               >
-                {selectedSecurity === option.id && <Check size={18} className="text-white" />}
+                {selectedSecurity === option.id && <Check size={14} className="text-white" />}
               </div>
             </div>
           </button>
-        </div>
-      ))}
+        ))}
+      </div>
     </div>
 
     {selectedSecurity && (

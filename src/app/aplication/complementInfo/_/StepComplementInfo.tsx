@@ -11,7 +11,7 @@ import { mockDataByProfile } from '../../_/mockData'
 import { profiles } from '../../_/profiles'
 import { pickBasicInfoUpdates } from '../../_/basicInfoUtils'
 import { UploadedDocsState } from '../../_/types'
-import { DepositConfirmation, DocumentsSection } from '../../_/ApplicantInfoSections'
+import { DocumentsSection } from '../../_/ApplicantInfoSections'
 
 const createMockFile = (fileName: string) => new File([''], fileName, { type: 'application/pdf' })
 
@@ -38,10 +38,6 @@ const StepComplementInfo = () => {
   const handleFileChange = (fieldId: string, files: FileList | null) => {
     if (!files) return
     dispatch(setUploadedDocs({ [fieldId]: files }))
-  }
-
-  const handleAcceptDepositChange = (accepted: boolean) => {
-    dispatch(setProcessState({ acceptedDeposit: accepted }))
   }
 
   const handleBack = () => {
@@ -111,8 +107,6 @@ const StepComplementInfo = () => {
       </div>
 
       <DocumentsSection profile={profile} uploadedDocs={uploadedDocs} onFileChange={handleFileChange} />
-
-      <DepositConfirmation deposit={profiles[profile].deposit} acceptedDeposit={acceptedDeposit} onAcceptChange={handleAcceptDepositChange} />
 
       <div className="flex justify-between">
         <button

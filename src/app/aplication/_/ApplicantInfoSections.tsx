@@ -223,35 +223,3 @@ export const DocumentsSection = ({ profile, uploadedDocs, onFileChange }: Docume
     </div>
   )
 }
-
-/**
- * Sección 3: Confirmación de Depósito
- */
-interface DepositConfirmationProps {
-  deposit: string
-  acceptedDeposit: boolean
-  onAcceptChange: (accepted: boolean) => void
-}
-
-export const DepositConfirmation = ({ deposit, acceptedDeposit, onAcceptChange }: DepositConfirmationProps) => {
-  return (
-    <div className="bg-yellow-50 border-2 border-yellow-300 rounded-xl p-6 mb-8">
-      <h4 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
-        <span className="text-2xl">⚠️</span>
-        Confirmación de Depósito
-      </h4>
-      <p className="text-gray-700 mb-4">
-        El depósito mínimo requerido es de <strong className="text-yellow-800 text-lg">{deposit}</strong>
-      </p>
-      <label className="flex items-start gap-3 cursor-pointer group">
-        <input
-          type="checkbox"
-          checked={acceptedDeposit}
-          onChange={(e) => onAcceptChange(e.target.checked)}
-          className="mt-1 w-5 h-5 text-blue-600 rounded cursor-pointer"
-        />
-        <span className="text-gray-700 group-hover:text-gray-900 transition-colors">Acepto y estoy de acuerdo con el depósito mínimo requerido</span>
-      </label>
-    </div>
-  )
-}

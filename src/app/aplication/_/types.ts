@@ -22,7 +22,6 @@ export type SecurityFieldValue = string | boolean
 export type SecurityOption = {
   id: string
   name: string
-  description: string
   requirements: string
   fields: Field[]
 }
