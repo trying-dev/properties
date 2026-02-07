@@ -76,11 +76,11 @@ export default function TenantDashboard() {
       badge: null,
     },
     {
-      id: 'properties',
+      id: 'units',
       icon: Building2,
-      title: 'Propiedades Alquiladas',
-      description: `${contracts.length} ${contracts.length === 1 ? 'propiedad' : 'propiedades'}`,
-      onClick: () => router.push('/dashboard/tenant/mis-propiedades'),
+      title: 'Unidades en arriendo',
+      description: `${contracts.length} ${contracts.length === 1 ? 'unidad' : 'unidades'}`,
+      onClick: () => router.push('/dashboard/tenant/units'),
       badge: contracts.length > 0 ? contracts.length : null,
     },
   ]

@@ -55,7 +55,11 @@ export const getUserTenant = async () => {
           include: {
             contracts: {
               include: {
-                unit: true,
+                unit: {
+                  include: {
+                    property: true,
+                  },
+                },
                 payments: true,
                 admins: { select: { id: true, userId: true, user: { select: userSafeSelect } } },
                 additionalResidents: true,
