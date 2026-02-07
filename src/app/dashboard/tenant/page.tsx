@@ -52,14 +52,6 @@ export default function TenantDashboard() {
       badge: processesCount > 0 ? processesCount : null,
     },
     {
-      id: 'search',
-      icon: Search,
-      title: 'Buscar Propiedades',
-      description: 'Explora propiedades disponibles',
-      onClick: () => router.push('/propiedades'),
-      badge: null,
-    },
-    {
       id: 'favorites',
       icon: Heart,
       title: 'Favoritos',
