@@ -25,12 +25,12 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/" className={styles.link}>
+                <Link href="/sobre-nosotros" className={styles.link}>
                   Sobre nosotros
                 </Link>
               </li>
               <li>
-                <Link href="/" className={styles.link}>
+                <Link href="/contacto" className={styles.link}>
                   Contacto
                 </Link>
               </li>
@@ -40,12 +40,12 @@ export default function Footer() {
             <h4 className={styles.sectionTitle}>Legal</h4>
             <ul className={styles.linkList}>
               <li>
-                <Link href="/" className={styles.link}>
+                <Link href="/terminos" className={styles.link}>
                   Términos y condiciones
                 </Link>
               </li>
               <li>
-                <Link href="/" className={styles.link}>
+                <Link href="/privacidad" className={styles.link}>
                   Política de privacidad
                 </Link>
               </li>

@@ -122,10 +122,10 @@ export default function Header() {
           </Link>
 
           <nav className={styles.nav}>
-            <Link href="/propiedades" className={styles.navLinkPrimary}>
+            <Link href="/" className={styles.navLinkPrimary}>
               Buscar
             </Link>
-            <Link href="/" className={styles.navLinkSecondary}>
+            <Link href="/sobre-nosotros" className={styles.navLinkSecondary}>
               Sobre Nosotros
             </Link>
           </nav>
