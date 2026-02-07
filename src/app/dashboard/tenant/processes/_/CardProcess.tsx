@@ -1,76 +1,100 @@
 'use client'
 
-import { Clock, CheckCircle, XCircle } from 'lucide-react'
-
 import ConfirmDeleteButton from '+/components/ConfirmDeleteButton'
 import type { TenantProcessItem } from '+/actions/processes'
 
 type CardProcessProps = {
   process: TenantProcessItem
+  canResume: boolean
   deleteConfirmId: string | null
   onResume: () => void
+  onView: () => void
+  canDelete: boolean
   onConfirmDelete: () => void
   onStartDelete: () => void
   onCancelDelete: () => void
 }
 
-const getStatusIcon = (status: string) => {
-  if (status === 'APPROVED') return <CheckCircle className="w-4 h-4 text-green-600" />
-  if (status === 'DISAPPROVED') return <XCircle className="w-4 h-4 text-red-600" />
-  if (status === 'IN_PROGRESS') return <Clock className="w-4 h-4 text-yellow-600" />
-  if (status === 'WAITING_FOR_FEEDBACK') return <Clock className="w-4 h-4 text-orange-600" />
-  if (status === 'IN_EVALUATION') return <Clock className="w-4 h-4 text-blue-600" />
-  return <Clock className="w-4 h-4 text-gray-500" />
-}
-
 const statusBadge = (status: string) => {
   const map: Record<string, { label: string; className: string }> = {
-    IN_PROGRESS: { label: 'En progreso', className: 'bg-yellow-100 text-yellow-800' },
-    IN_EVALUATION: { label: 'En evaluación', className: 'bg-blue-100 text-blue-800' },
-    WAITING_FOR_FEEDBACK: { label: 'Esperando feedback', className: 'bg-orange-100 text-orange-800' },
-    APPROVED: { label: 'Aprobado', className: 'bg-green-100 text-green-800' },
-    DISAPPROVED: { label: 'Desaprobado', className: 'bg-red-100 text-red-800' },
+    IN_PROGRESS: { label: 'En progreso', className: 'bg-amber-100 text-amber-800 border border-amber-200' },
+    IN_EVALUATION: { label: 'En evaluación', className: 'bg-blue-100 text-blue-800 border border-blue-200' },
+    WAITING_FOR_FEEDBACK: { label: 'Esperando feedback', className: 'bg-orange-100 text-orange-800 border border-orange-200' },
+    APPROVED: { label: 'Aprobado', className: 'bg-emerald-100 text-emerald-800 border border-emerald-200' },
+    DISAPPROVED: { label: 'Desaprobado', className: 'bg-rose-100 text-rose-800 border border-rose-200' },
   }
-  const data = map[status] ?? { label: status, className: 'bg-gray-100 text-gray-800' }
-  return <span className={`px-2 py-1 rounded-full text-xs font-semibold ${data.className}`}>{data.label}</span>
+  const data = map[status] ?? { label: status, className: 'bg-gray-100 text-gray-800 border border-gray-200' }
+  return <span className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold ${data.className}`}>{data.label}</span>
 }
 
-export default function CardProcess({ process, deleteConfirmId, onResume, onConfirmDelete, onStartDelete, onCancelDelete }: CardProcessProps) {
+export default function CardProcess({
+  process,
+  canResume,
+  deleteConfirmId,
+  onResume,
+  onView,
+  canDelete,
+  onConfirmDelete,
+  onStartDelete,
+  onCancelDelete,
+}: CardProcessProps) {
   const isConfirming = deleteConfirmId === process.id
   const property = process.unit?.property
   const address = property
     ? `${property.street ?? ''} ${property.number ?? ''}, ${property.neighborhood ?? ''}, ${property.city ?? ''}`.trim()
     : 'Dirección no disponible'
+  const metaItemClass = 'inline-flex items-center gap-1 rounded-full bg-gray-100 px-2.5 py-1 text-xs font-medium text-gray-700'
 
   return (
     <div
-      role="button"
-      tabIndex={0}
-      className="border border-gray-200 rounded-lg p-4 text-left hover:border-gray-300 hover:shadow-sm transition cursor-pointer"
-      onClick={onResume}
+      role={canResume ? 'button' : undefined}
+      tabIndex={canResume ? 0 : -1}
+      className={`rounded-2xl border border-gray-200 p-5 text-left transition ${
+        canResume ? 'bg-white hover:border-gray-300 hover:shadow-md cursor-pointer' : 'bg-gray-50 cursor-default'
+      }`}
+      onClick={canResume ? onResume : undefined}
       onKeyDown={(event) => {
+        if (!canResume) return
         if (event.key === 'Enter' || event.key === ' ') {
           event.preventDefault()
           onResume()
         }
       }}
     >
-      <div className="flex items-center justify-between mb-2">
-        <div className="flex items-center gap-2">
-          {getStatusIcon(process.status)}
-          <div className="flex flex-col">
-            <span className="text-sm text-gray-900 font-semibold">{property?.name ?? 'Proceso sin propiedad'}</span>
-            <span className="text-xs text-gray-500">{address}</span>
-          </div>
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <div className="mb-2">{statusBadge(process.status)}</div>
+          <h3 className="text-lg font-semibold text-gray-900">{property?.name ?? 'Proceso sin propiedad'}</h3>
+          <p className="text-sm text-gray-500">{address}</p>
         </div>
         <div className="flex items-center gap-2">
-          {statusBadge(process.status)}
-          <ConfirmDeleteButton isConfirming={isConfirming} onConfirm={onConfirmDelete} onCancel={onCancelDelete} onStart={onStartDelete} />
+          {canDelete ? (
+            <ConfirmDeleteButton isConfirming={isConfirming} onConfirm={onConfirmDelete} onCancel={onCancelDelete} onStart={onStartDelete} />
+          ) : (
+            <button
+              type="button"
+              onClick={(event) => {
+                event.stopPropagation()
+                onView()
+              }}
+              className="inline-flex items-center text-blue-600 text-xs font-semibold hover:text-blue-700"
+            >
+              Ver solicitud
+            </button>
+          )}
         </div>
       </div>
-      <p className="text-xs text-gray-500">Proceso #{process.id.slice(0, 6)} · Unidad {process.unit?.unitNumber ?? '-'}</p>
-      <p className="text-sm text-gray-600">Paso actual: {process.currentStep}</p>
-      <p className="text-xs text-gray-500 mt-1">Última actualización: {new Date(process.updatedAt).toLocaleDateString('es-CO')}</p>
+
+      <div className="mt-4 flex flex-wrap items-center gap-2">
+        <span className={metaItemClass}>Proceso #{process.id.slice(0, 6)}</span>
+        <span className={metaItemClass}>Unidad {process.unit?.unitNumber ?? '-'}</span>
+        <span className={metaItemClass}>Paso {process.currentStep}</span>
+      </div>
+
+      <div className="mt-4 flex items-center justify-between text-xs text-gray-500">
+        <span>Última actualización: {new Date(process.updatedAt).toLocaleDateString('es-CO')}</span>
+        {canResume && <span className="inline-flex items-center text-blue-600 font-semibold">Continuar</span>}
+      </div>
     </div>
   )
 }

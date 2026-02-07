@@ -308,6 +308,7 @@ export const getProcessByTenantUnitAction = async (tenantId: string, unitId: str
       where: { tenantId, unitId },
       select: {
         id: true,
+        status: true,
         currentStep: true,
         payload: true,
         tenantId: true,

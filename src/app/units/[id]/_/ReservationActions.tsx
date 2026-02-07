@@ -24,6 +24,8 @@ const resolveNextRoute = (step: number | null, profile?: ProfileId | '') => {
   return '/aplication/basicInformation'
 }
 
+const canResumeFromStatus = (status?: string | null) => status === 'IN_PROGRESS' || status === 'WAITING_FOR_FEEDBACK'
+
 export default function ReservationActions({ isAuthenticated, unitId, buttonClassName, buttonLabel = 'Reservar' }: ReservationActionsProps) {
   const dispatch = useDispatch()
   const push = useAppRouter()
@@ -31,12 +33,16 @@ export default function ReservationActions({ isAuthenticated, unitId, buttonClas
   const tenantProfile = useSelector((state) => state.user?.tenant?.profile)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [reservationError, setReservationError] = useState<string | null>(null)
+  const [reservationNotice, setReservationNotice] = useState<string | null>(null)
   const [isReserving, setIsReserving] = useState(false)
   const [hasExistingProcess, setHasExistingProcess] = useState(false)
   const [isCheckingProcess, setIsCheckingProcess] = useState(false)
+  const [existingProcessStatus, setExistingProcessStatus] = useState<string | null>(null)
 
   useEffect(() => {
     if (!isAuthenticated || !tenantId) {
+      setHasExistingProcess(false)
+      setExistingProcessStatus(null)
       return
     }
 
@@ -45,7 +51,9 @@ export default function ReservationActions({ isAuthenticated, unitId, buttonClas
       setIsCheckingProcess(true)
       const result = await getProcessByTenantUnitAction(tenantId, unitId)
       if (isMounted) {
-        setHasExistingProcess(Boolean(result.success && result.data))
+        const hasProcess = Boolean(result.success && result.data)
+        setHasExistingProcess(hasProcess)
+        setExistingProcessStatus(hasProcess ? result.data?.status ?? null : null)
         setIsCheckingProcess(false)
       }
     }
@@ -56,7 +64,8 @@ export default function ReservationActions({ isAuthenticated, unitId, buttonClas
     }
   }, [isAuthenticated, tenantId, unitId])
 
-  const shouldShowExisting = isAuthenticated && Boolean(tenantId) && hasExistingProcess
+  const canResumeExisting = canResumeFromStatus(existingProcessStatus)
+  const shouldShowExisting = isAuthenticated && Boolean(tenantId) && hasExistingProcess && canResumeExisting
 
   const baseButtonClass = 'w-full inline-flex justify-center bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg transition'
   const buttonClass = buttonClassName || baseButtonClass
@@ -64,6 +73,7 @@ export default function ReservationActions({ isAuthenticated, unitId, buttonClas
   const handleReservationFlow = async () => {
     setIsReserving(true)
     setReservationError(null)
+    setReservationNotice(null)
 
     if (!tenantId) {
       push('/aplication')
@@ -73,6 +83,11 @@ export default function ReservationActions({ isAuthenticated, unitId, buttonClas
 
     const existing = await getProcessByTenantUnitAction(tenantId, unitId)
     if (existing.success && existing.data) {
+      if (!canResumeFromStatus(existing.data.status)) {
+        setReservationNotice('Tu solicitud ya fue enviada y está en evaluación. Puedes ver el estado en tu dashboard.')
+        setIsReserving(false)
+        return true
+      }
       const payload = (existing.data.payload ?? {}) as { profile?: ProfileId }
       const profile = payload.profile ?? (tenantProfile as ProfileId | undefined)
       const step = existing.data.currentStep ?? 1
@@ -119,10 +134,16 @@ export default function ReservationActions({ isAuthenticated, unitId, buttonClas
   if (isAuthenticated) {
     return (
       <div className="space-y-2">
-        <button type="button" onClick={handleReservationFlow} className={buttonClass} disabled={isReserving}>
-          {isReserving ? 'Procesando...' : shouldShowExisting ? 'Continuar proceso' : buttonLabel}
+        <button
+          type="button"
+          onClick={handleReservationFlow}
+          className={buttonClass}
+          disabled={isReserving || (hasExistingProcess && !canResumeExisting)}
+        >
+          {isReserving ? 'Procesando...' : hasExistingProcess && !canResumeExisting ? 'Solicitud enviada' : shouldShowExisting ? 'Continuar proceso' : buttonLabel}
         </button>
         {isCheckingProcess && <p className="text-xs text-gray-500">Validando proceso...</p>}
+        {reservationNotice && <p className="text-xs text-blue-600">{reservationNotice}</p>}
         {reservationError && <p className="text-xs text-red-600">{reservationError}</p>}
       </div>
     )
@@ -134,6 +155,7 @@ export default function ReservationActions({ isAuthenticated, unitId, buttonClas
         <button type="button" onClick={() => setIsModalOpen(true)} className={buttonClass} disabled={isReserving}>
           {isReserving ? 'Procesando...' : buttonLabel}
         </button>
+        {reservationNotice && <p className="text-xs text-blue-600">{reservationNotice}</p>}
         {reservationError && <p className="text-xs text-red-600">{reservationError}</p>}
       </div>
       <ReservationModal

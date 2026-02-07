@@ -22,6 +22,7 @@ import { BasicInfo, ProfileId } from '+/app/aplication/_/types'
 import { pickBasicInfoUpdates } from '+/app/aplication/_/basicInfoUtils'
 
 import CardProcess from './_/CardProcess'
+import ProcessReviewModal, { type ProcessPayload } from './_/ProcessReviewModal'
 
 type UserTenantResult = Awaited<ReturnType<typeof getUserTenant>>
 
@@ -56,6 +57,9 @@ const resolveNextRoute = (step: number | null, profile?: ProfileId | '') => {
   return '/aplication/basicInformation'
 }
 
+const canResumeFromStatus = (status: string) => status === 'IN_PROGRESS' || status === 'WAITING_FOR_FEEDBACK'
+const canDeleteFromStatus = (status: string) => status === 'IN_PROGRESS'
+
 export default function TenantProcessesPage() {
   const router = useRouter()
   const dispatch = useDispatch()
@@ -66,6 +70,10 @@ export default function TenantProcessesPage() {
   const [tenantProfile, setTenantProfile] = useState<ProfileId | ''>('')
   const [tenantBasicInfo, setTenantBasicInfo] = useState<BasicInfo | null>(null)
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null)
+  const [reviewProcess, setReviewProcess] = useState<TenantProcessItem | null>(null)
+  const [reviewPayload, setReviewPayload] = useState<ProcessPayload | null>(null)
+  const [isReviewOpen, setIsReviewOpen] = useState(false)
+  const [isReviewLoading, setIsReviewLoading] = useState(false)
 
   useEffect(() => {
     if (!isAuthenticated) return
@@ -157,6 +165,23 @@ export default function TenantProcessesPage() {
     setDeleteConfirmId(null)
   }
 
+  const openReview = async (process: TenantProcessItem) => {
+    setReviewProcess(process)
+    setReviewPayload(null)
+    setIsReviewOpen(true)
+    setIsReviewLoading(true)
+    const result = await getProcessAction(process.id)
+    if (result.success && result.data) {
+      setReviewPayload((result.data.payload ?? {}) as ProcessPayload)
+    }
+    setIsReviewLoading(false)
+  }
+
+  const closeReview = () => {
+    setIsReviewOpen(false)
+    setReviewProcess(null)
+  }
+
   return (
     <div className="min-h-screen bg-white flex flex-col">
       <Header />
@@ -187,8 +212,11 @@ export default function TenantProcessesPage() {
               <CardProcess
                 key={process.id}
                 process={process}
+                canResume={canResumeFromStatus(process.status)}
                 deleteConfirmId={deleteConfirmId}
                 onResume={onResumeProcess(process.id)}
+                onView={() => openReview(process)}
+                canDelete={canDeleteFromStatus(process.status)}
                 onConfirmDelete={onConfirmDeleteProcess(process.id)}
                 onStartDelete={onStartDeleteProcess(process.id)}
                 onCancelDelete={onCancelDeleteProcess}
@@ -197,6 +225,14 @@ export default function TenantProcessesPage() {
           </div>
         )}
       </main>
+
+      <ProcessReviewModal
+        isOpen={isReviewOpen}
+        onClose={closeReview}
+        process={reviewProcess}
+        payload={reviewPayload}
+        isLoading={isReviewLoading}
+      />
 
       <Footer />
     </div>

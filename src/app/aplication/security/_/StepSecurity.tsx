@@ -14,9 +14,6 @@ type StepSecurityProps = {
   fillMockDataStep3: () => void
   onBack: () => void
   onSubmit: () => void
-  requiresCoDebtorConsent: boolean
-  coDebtorConsentChecked: boolean
-  onCoDebtorConsentChange: (checked: boolean) => void
   isSubmitting: boolean
   submitError: string | null
 }
@@ -28,9 +25,6 @@ const StepSecurity = ({
   fillMockDataStep3,
   onBack,
   onSubmit,
-  requiresCoDebtorConsent,
-  coDebtorConsentChecked,
-  onCoDebtorConsentChange,
   isSubmitting,
   submitError,
 }: StepSecurityProps) => (
@@ -91,23 +85,6 @@ const StepSecurity = ({
       </div>
     )}
 
-    {selectedSecurity && requiresCoDebtorConsent && (
-      <div className="bg-white border border-gray-200 rounded-xl p-4 mb-6">
-        <label className="flex items-start gap-3 text-sm text-gray-700">
-          <input
-            type="checkbox"
-            checked={coDebtorConsentChecked}
-            onChange={(e) => onCoDebtorConsentChange(e.target.checked)}
-            className="mt-1 h-4 w-4 text-blue-600 border-gray-300 rounded"
-          />
-          <span>
-            Se enviara un email a los codeudores para que confirmen que estan de acuerdo con ser codeudores de esta solicitud y del contrato. Al
-            continuar, confirmas que ya los informaste y que deben aprobar haciendo click en el enlace del correo.
-          </span>
-        </label>
-      </div>
-    )}
-
     {submitError && <div className="mb-6 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{submitError}</div>}
 
     <div className="flex justify-between">
@@ -120,9 +97,9 @@ const StepSecurity = ({
       </button>
       <button
         onClick={onSubmit}
-        disabled={!selectedSecurity || isSubmitting || (requiresCoDebtorConsent && !coDebtorConsentChecked)}
+        disabled={!selectedSecurity || isSubmitting}
         className={`flex items-center gap-2 px-8 py-4 rounded-lg font-semibold text-lg transition-all ${
-          selectedSecurity && !isSubmitting && (!requiresCoDebtorConsent || coDebtorConsentChecked)
+          selectedSecurity && !isSubmitting
             ? 'bg-green-600 text-white hover:bg-green-700 shadow-lg hover:shadow-xl'
             : 'bg-gray-300 text-gray-500 cursor-not-allowed'
         }`}

@@ -13,7 +13,6 @@ import { Field, ProfileId, SecurityFieldValue, UploadedDocsState, profileIds } f
 import { useDispatch, useSelector } from '+/redux'
 import { setProcessState, setSecurityFields, setUploadedDocs } from '+/redux/slices/process'
 import { updateProcessAction } from '+/actions/processes'
-import { sendCoDebtorConfirmationEmailsAction } from '+/actions/codeudor'
 
 const SecurityStepPage = () => {
   const router = useRouter()
@@ -22,6 +21,7 @@ const SecurityStepPage = () => {
   const { selectedSecurity, profile, uploadedDocs, securityFields, processId } = processState
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitError, setSubmitError] = useState<string | null>(null)
+  const [isSuccess, setIsSuccess] = useState(false)
   const isProfileId = (value: string): value is ProfileId => profileIds.includes(value as ProfileId)
   const resolvedProfile = isProfileId(profile) ? profile : ''
 
@@ -29,6 +29,13 @@ const SecurityStepPage = () => {
     if (!resolvedProfile) router.replace('/aplication/profile')
   }, [router, resolvedProfile])
 
+  useEffect(() => {
+    if (!isSuccess) return
+    const timeout = setTimeout(() => {
+      router.push('/dashboard/tenant')
+    }, 5000)
+    return () => clearTimeout(timeout)
+  }, [isSuccess, router])
 
   const handleFileChange = (fieldId: string, files: FileList | null) => {
     if (!files) return
@@ -114,9 +121,7 @@ const SecurityStepPage = () => {
     dispatch(setSecurityFields({ [fieldId]: value }))
   }
 
-  const coDebtorConsentId = 'co_debtor_consent'
   const requiresCoDebtorConsent = useMemo(() => ['double', 'reinforced', 'mixed'].includes(selectedSecurity), [selectedSecurity])
-  const coDebtorConsentChecked = Boolean(securityFields[coDebtorConsentId])
 
   const renderField = (field: Field) => {
     if (field.type === 'file') {
@@ -230,12 +235,7 @@ const SecurityStepPage = () => {
   const validateCoDebtors = () => {
     const coDebtors = getCoDebtors()
     const missing = coDebtors.some(
-      (coDebtor) =>
-        !coDebtor.fullName ||
-        !coDebtor.birthDate ||
-        !coDebtor.documentNumber ||
-        !coDebtor.email ||
-        !coDebtor.phone
+      (coDebtor) => !coDebtor.fullName || !coDebtor.birthDate || !coDebtor.documentNumber || !coDebtor.email || !coDebtor.phone
     )
     if (missing) {
       return {
@@ -252,11 +252,7 @@ const SecurityStepPage = () => {
   }
 
   const handleSubmit = async () => {
-    if (isSubmitting || !selectedSecurity) return
-    if (requiresCoDebtorConsent && !coDebtorConsentChecked) {
-      setSubmitError('Debes aceptar el envio de emails a los codeudores.')
-      return
-    }
+    if (isSubmitting || isSuccess || !selectedSecurity) return
     if (!processId) {
       setSubmitError('No se encontro el proceso activo para enviar la solicitud.')
       return
@@ -276,6 +272,7 @@ const SecurityStepPage = () => {
       processId,
       currentStep: 4,
       payloadPatch,
+      status: 'IN_EVALUATION',
     })
 
     if (!updateResult.success) {
@@ -291,21 +288,41 @@ const SecurityStepPage = () => {
         setIsSubmitting(false)
         return
       }
-
-      const emailResult = await sendCoDebtorConfirmationEmailsAction({
-        processId,
-        selectedSecurity,
-        coDebtors,
-      })
-
-      if (!emailResult.success) {
-        setSubmitError(emailResult.error ?? 'No se pudieron enviar los correos a los codeudores.')
-        setIsSubmitting(false)
-        return
-      }
     }
 
     setIsSubmitting(false)
+    setIsSuccess(true)
+  }
+
+  if (isSuccess) {
+    return (
+      <div className="p-8 animate-fadeIn">
+        <div className="rounded-xl border border-green-200 bg-green-50 px-6 py-5 text-green-800">
+          <h2 className="text-2xl font-bold text-green-900 mb-2">Solicitud enviada</h2>
+          <p className="text-sm">
+            Tu solicitud fue enviada correctamente y ahora está en validación. Te avisaremos por correo y también podrás seguir el estado desde tu
+            dashboard.
+          </p>
+        </div>
+        <div className="mt-6 flex flex-col items-start gap-3">
+          <div className="flex flex-wrap items-center gap-3">
+            <button
+              onClick={() => router.push('/dashboard/tenant')}
+              className="inline-flex items-center justify-center rounded-lg bg-green-600 px-5 py-2.5 text-white font-semibold hover:bg-green-700 transition"
+            >
+              Ir a mi dashboard
+            </button>
+            <button
+              onClick={() => router.push('/')}
+              className="inline-flex items-center justify-center rounded-lg border border-green-200 bg-white px-5 py-2.5 text-green-700 font-semibold hover:border-green-300 hover:bg-green-50 transition"
+            >
+              Seguir explorando unidades
+            </button>
+          </div>
+          <span className="text-xs text-gray-500">Redirigiendo automáticamente en unos segundos...</span>
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -316,9 +333,6 @@ const SecurityStepPage = () => {
       fillMockDataStep3={fillMockDataStep3}
       onBack={handleBack}
       onSubmit={handleSubmit}
-      requiresCoDebtorConsent={requiresCoDebtorConsent}
-      coDebtorConsentChecked={coDebtorConsentChecked}
-      onCoDebtorConsentChange={(checked) => handleSecurityFieldChange(coDebtorConsentId, checked)}
       isSubmitting={isSubmitting}
       submitError={submitError}
     />
