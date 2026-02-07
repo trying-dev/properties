@@ -212,7 +212,7 @@ export const createUnitAction = async (input: CreateUnitInput) => {
         deposit: input.deposit ?? null,
         description: input.description?.trim() || null,
         images: input.images ?? '[]',
-        highlights: input.highlights ?? null,
+        highlights: input.highlights ?? {},
         lastInspectionDate: input.lastInspectionDate ?? null,
       },
     })
@@ -266,7 +266,7 @@ export const updateUnitAction = async (unitId: string, input: Omit<CreateUnitInp
         deposit: input.deposit ?? null,
         description: input.description?.trim() || null,
         images: input.images ?? '[]',
-        highlights: input.highlights ?? null,
+        highlights: input.highlights ?? {},
         lastInspectionDate: input.lastInspectionDate ?? null,
       },
     })

@@ -6,28 +6,13 @@ import { ArrowLeft, FileText } from 'lucide-react'
 
 import Header from '+/components/Header'
 import { getProcessDetailsAction } from '+/actions/processes'
+import type { ProcessDetail as ProcessDetailPayload } from '+/actions/processes'
 
-type ProcessDetail = {
-  id: string
-  status: string
-  currentStep: number
-  createdAt: string
-  updatedAt: string
-  payload: unknown
-  tenant: {
-    id: string
-    user: { name: string | null; lastName: string | null; email: string | null; phone: string | null }
-  } | null
-  unit: {
-    id: string
-    unitNumber: string
-    property: { id: string; name: string; city: string }
-  } | null
-}
+type ProcessDetail = NonNullable<ProcessDetailPayload>
 
-const formatDate = (value?: string) => {
+const formatDate = (value?: string | Date | null) => {
   if (!value) return '-'
-  const parsed = new Date(value)
+  const parsed = value instanceof Date ? value : new Date(value)
   if (Number.isNaN(parsed.getTime())) return '-'
   return parsed.toLocaleString('es-MX')
 }

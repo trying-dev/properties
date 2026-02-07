@@ -41,7 +41,7 @@ const InfoRow = ({
 export const ExpandablePropertyAdmin = ({ property }: { property: NonNullable<PropertyWithRelations> }) => {
   const [isExpanded, setIsExpanded] = useState(false)
 
-  const admin = property?.admin
+  const admin = property?.admins?.[0] ?? null
 
   if (!admin) return null
 

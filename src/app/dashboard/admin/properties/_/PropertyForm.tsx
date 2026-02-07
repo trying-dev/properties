@@ -96,7 +96,10 @@ export default function PropertyForm({
         age,
       }
 
-      const result = mode === 'create' ? await createPropertyAction(input) : await updatePropertyAction(propertyId, input)
+      const result =
+        mode === 'create'
+          ? await createPropertyAction(input)
+          : await updatePropertyAction(propertyId as string, input)
 
       if (!result.success) {
         setError(result.error ?? 'No se pudo guardar la propiedad')

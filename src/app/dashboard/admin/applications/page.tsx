@@ -6,6 +6,7 @@ import Link from 'next/link'
 
 import { getProperties } from '+/actions/property'
 import { getAdminProcessesAction } from '+/actions/processes'
+import type { AdminProcess } from '+/actions/processes'
 import Header from '+/components/Header'
 
 interface DashboardStats {
@@ -15,21 +16,11 @@ interface DashboardStats {
   monthlyRevenue: number
 }
 
-type AdminProcess = {
-  id: string
-  status: 'IN_PROGRESS' | 'IN_EVALUATION' | 'WAITING_FOR_FEEDBACK' | 'APPROVED' | 'DISAPPROVED'
-  currentStep: number
-  updatedAt: string
-  createdAt: string
-  tenant: {
-    id: string
-    user: { name: string | null; lastName: string | null; email: string | null }
-  } | null
-  unit: {
-    id: string
-    unitNumber: string
-    property: { name: string }
-  } | null
+const formatDate = (value?: string | Date | null) => {
+  if (!value) return '-'
+  const parsed = value instanceof Date ? value : new Date(value)
+  if (Number.isNaN(parsed.getTime())) return '-'
+  return parsed.toLocaleDateString('es-MX')
 }
 
 export default function AdminApplicationsPage() {
@@ -79,7 +70,7 @@ export default function AdminApplicationsPage() {
         setProcessesLoading(false)
         return
       }
-      setProcesses(result.data as AdminProcess[])
+      setProcesses(result.data)
       setProcessesLoading(false)
     }
 
@@ -193,7 +184,7 @@ export default function AdminApplicationsPage() {
                                 ? 'Aprobado'
                                 : 'Desaprobado'}
                       </span>
-                      <span className="text-xs text-gray-500">{new Date(process.updatedAt).toLocaleDateString('es-MX')}</span>
+                      <span className="text-xs text-gray-500">{formatDate(process.updatedAt)}</span>
                     </div>
                   </div>
                 )

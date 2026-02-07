@@ -188,6 +188,8 @@ export const getProcessDetailsAction = async (processId: string) => {
   }
 }
 
+export type ProcessDetail = NonNullable<Awaited<ReturnType<typeof getProcessDetailsAction>>['data']>
+
 export const getTenantProcessesAction = async (tenantId: string) => {
   if (!tenantId) return { success: false, error: 'Falta tenantId' }
   try {
@@ -265,3 +267,6 @@ export const getAdminProcessesAction = async (userId?: string) => {
     return { success: false, error: 'No se pudieron obtener las aplicaciones' }
   }
 }
+
+export type AdminProcessList = NonNullable<Awaited<ReturnType<typeof getAdminProcessesAction>>['data']>
+export type AdminProcess = AdminProcessList[number]

@@ -37,6 +37,8 @@ const paymentStatusStyle: Record<PaymentStatus, { badge: string; icon: typeof Cl
   CANCELLED: { badge: 'bg-gray-100 text-gray-600', icon: Clock },
 }
 
+const pendingStatuses = new Set<PaymentStatus>([PaymentStatus.PENDING, PaymentStatus.OVERDUE, PaymentStatus.PARTIAL])
+
 export default function TenantUnitsPage() {
   const [contracts, setContracts] = useState<ContractRow[]>([])
   const [isLoading, setIsLoading] = useState(true)
@@ -74,9 +76,7 @@ export default function TenantUnitsPage() {
         (a, b) => new Date(b.dueDate).getTime() - new Date(a.dueDate).getTime()
       )
       const latestPayment = payments[0]
-      const pendingCount = payments.filter((payment) =>
-        [PaymentStatus.PENDING, PaymentStatus.OVERDUE, PaymentStatus.PARTIAL].includes(payment.status)
-      ).length
+      const pendingCount = payments.filter((payment) => pendingStatuses.has(payment.status)).length
 
       return {
         contract,

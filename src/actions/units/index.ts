@@ -1,7 +1,6 @@
 'use server'
 
 import { Prisma, UnitStatus } from '@prisma/client'
-import { auth } from '+/lib/auth'
 import { prisma } from '+/lib/prisma'
 
 export const getAdminUnits = async (filters?: { status?: UnitStatus; propertyId?: string; city?: string }) => {
@@ -9,7 +8,7 @@ export const getAdminUnits = async (filters?: { status?: UnitStatus; propertyId?
 
   if (filters?.status) where.status = filters.status
   if (filters?.propertyId) where.propertyId = filters.propertyId
-  if (filters?.city) where.property = { ...where.property, city: filters.city }
+  if (filters?.city) where.property = { is: { city: filters.city } }
 
   return prisma.unit.findMany({
     where,
