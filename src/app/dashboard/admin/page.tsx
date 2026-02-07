@@ -2,9 +2,10 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Building2, FileText, Layers, Users } from 'lucide-react'
+import { Building2, CreditCard, FileText, Layers, Users } from 'lucide-react'
 
 import { getProperties } from '+/actions/property'
+import { getPendingPaymentsCount } from '+/actions/payments'
 import Header from '+/components/Header'
 
 type MenuOption = {
@@ -19,6 +20,7 @@ type MenuOption = {
 export default function AdminDashboard() {
   const router = useRouter()
   const [propertiesCount, setPropertiesCount] = useState<number | null>(null)
+  const [pendingPaymentsCount, setPendingPaymentsCount] = useState<number | null>(null)
 
   useEffect(() => {
     const loadPropertiesCount = async () => {
@@ -31,6 +33,19 @@ export default function AdminDashboard() {
     }
 
     loadPropertiesCount()
+  }, [])
+
+  useEffect(() => {
+    const loadPendingPaymentsCount = async () => {
+      try {
+        const count = await getPendingPaymentsCount()
+        setPendingPaymentsCount(count)
+      } catch (error) {
+        console.error('Error loading pending payments count:', error)
+      }
+    }
+
+    loadPendingPaymentsCount()
   }, [])
 
   const menuOptions: MenuOption[] = [
@@ -65,6 +80,14 @@ export default function AdminDashboard() {
       description: 'Procesos y solicitudes activas',
       onClick: () => router.push('/dashboard/admin/applications'),
       badge: null,
+    },
+    {
+      id: 'payments',
+      icon: CreditCard,
+      title: 'Pagos',
+      description: 'Confirma pagos manuales y revisa el historial',
+      onClick: () => router.push('/dashboard/admin/payments'),
+      badge: pendingPaymentsCount,
     },
   ]
 
