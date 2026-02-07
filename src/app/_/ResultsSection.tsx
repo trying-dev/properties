@@ -1,12 +1,19 @@
-import { useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Search } from 'lucide-react'
 import { useDispatch, useSelector } from '+/redux'
 import { resetFilters } from '+/redux/slices/home'
 import PropertyCard from './PropertyCard'
+import { getTenantFavoriteUnitIdsAction, toggleTenantFavoriteUnitAction } from '+/actions/favorites'
 
 export default function ResultsSection() {
   const dispatch = useDispatch()
   const { units, searchQuery, filters } = useSelector((state) => state.home)
+  const reduxIsAuthenticated = useSelector((state) => state.auth.isAuthenticated)
+  const reduxUser = useSelector((state) => state.user)
+  const isAuthenticated = reduxIsAuthenticated
+  const role = reduxUser?.role ?? null
+  const [favoriteUnitIds, setFavoriteUnitIds] = useState<string[]>([])
+  const [isLoadingFavorites, setIsLoadingFavorites] = useState(false)
 
   const filteredUnits = useMemo(() => {
     return units.filter((unit) => {
@@ -20,6 +27,38 @@ export default function ResultsSection() {
       return matchesSearch && matchesPrice && matchesBedrooms && matchesCity
     })
   }, [units, searchQuery, filters])
+
+  useEffect(() => {
+    let isMounted = true
+
+    const loadFavorites = async () => {
+      if (!isAuthenticated || role !== 'tenant') {
+        setFavoriteUnitIds([])
+        return
+      }
+      setIsLoadingFavorites(true)
+      const result = await getTenantFavoriteUnitIdsAction()
+      if (isMounted && result.success) {
+        setFavoriteUnitIds(result.data ?? [])
+      }
+      if (isMounted) {
+        setIsLoadingFavorites(false)
+      }
+    }
+
+    void loadFavorites()
+    return () => {
+      isMounted = false
+    }
+  }, [isAuthenticated, role])
+
+  const handleToggleFavorite = async (unitId: string) => {
+    if (!isAuthenticated || role !== 'tenant') return
+    const result = await toggleTenantFavoriteUnitAction(unitId)
+    if (result.success && result.data) {
+      setFavoriteUnitIds(result.data.favoriteUnitIds)
+    }
+  }
 
   return (
     <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -37,7 +76,16 @@ export default function ResultsSection() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {filteredUnits.map((unit, index) => (
-          <PropertyCard key={unit.id} unit={unit} index={index} />
+          <PropertyCard
+            key={unit.id}
+            unit={unit}
+            index={index}
+            isAuthenticated={isAuthenticated}
+            role={role}
+            isFavorite={favoriteUnitIds.includes(unit.id)}
+            isFavoritesLoading={isLoadingFavorites}
+            onToggleFavorite={handleToggleFavorite}
+          />
         ))}
       </div>
 

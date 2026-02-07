@@ -558,6 +558,7 @@ model Tenant {
 
     // process
     profile Profile?
+    favoriteUnitIds Json?
 
     // Información específica del inquilino
     emergencyContact      String?

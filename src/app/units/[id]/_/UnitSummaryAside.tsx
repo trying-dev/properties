@@ -1,7 +1,8 @@
-import { Bath, Bed, Heart, Maximize, Share2 } from 'lucide-react'
+import { Bath, Bed, Maximize, Share2 } from 'lucide-react'
 import type { UnitWithRelations } from '+/actions/nuevo-proceso'
 import ReservationActions from './ReservationActions'
 import { formatArea, formatPrice } from './utils'
+import UnitFavoriteButton from './UnitFavoriteButton'
 
 type UnitSummaryAsideProps = {
   unit: NonNullable<UnitWithRelations>
@@ -46,9 +47,7 @@ export default function UnitSummaryAside({ unit, isAuthenticated }: UnitSummaryA
           </span>
         </div>
         <div className="flex gap-3">
-          <button className="w-10 h-10 rounded-full border border-gray-200 flex items-center justify-center hover:bg-gray-50 cursor-pointer">
-            <Heart className="w-5 h-5 text-gray-700" />
-          </button>
+          <UnitFavoriteButton unitId={unit.id} />
           <button className="w-10 h-10 rounded-full border border-gray-200 flex items-center justify-center hover:bg-gray-50 cursor-pointer">
             <Share2 className="w-5 h-5 text-gray-700" />
           </button>
