@@ -8,6 +8,7 @@ import { setAuthVerificationExpires } from '+/redux/slices/auth'
 import { initProcess, setProcessState } from '+/redux/slices/process'
 import { ProfileId } from '+/app/aplication/_/types'
 import { useAppRouter } from '+/hooks/useAppRouter'
+import { getProcessByTenantUnitAction } from '+/actions/processes'
 
 type ReservationActionsProps = {
   isAuthenticated: boolean
@@ -16,22 +17,86 @@ type ReservationActionsProps = {
   buttonLabel?: string
 }
 
+const resolveNextRoute = (step: number | null, profile?: ProfileId | '') => {
+  if (!profile) return '/aplication/profile'
+  if (step && step >= 4) return '/aplication/security'
+  if (step && step >= 3) return '/aplication/complementInfo'
+  return '/aplication/basicInformation'
+}
+
 export default function ReservationActions({ isAuthenticated, unitId, buttonClassName, buttonLabel = 'Reservar' }: ReservationActionsProps) {
   const dispatch = useDispatch()
   const push = useAppRouter()
   const tenantId = useSelector((state) => state.user?.tenant?.id)
   const tenantProfile = useSelector((state) => state.user?.tenant?.profile)
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const [reservationError, setReservationError] = useState<string | null>(null)
+  const [isReserving, setIsReserving] = useState(false)
+  const [hasExistingProcess, setHasExistingProcess] = useState(false)
+  const [isCheckingProcess, setIsCheckingProcess] = useState(false)
+
+  useEffect(() => {
+    if (!isAuthenticated || !tenantId) {
+      return
+    }
+
+    let isMounted = true
+    const checkExisting = async () => {
+      setIsCheckingProcess(true)
+      const result = await getProcessByTenantUnitAction(tenantId, unitId)
+      if (isMounted) {
+        setHasExistingProcess(Boolean(result.success && result.data))
+        setIsCheckingProcess(false)
+      }
+    }
+
+    void checkExisting()
+    return () => {
+      isMounted = false
+    }
+  }, [isAuthenticated, tenantId, unitId])
+
+  const shouldShowExisting = isAuthenticated && Boolean(tenantId) && hasExistingProcess
 
   const baseButtonClass = 'w-full inline-flex justify-center bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg transition'
   const buttonClass = buttonClassName || baseButtonClass
 
-  const handleGoToApplication = () => {
-    dispatch(initProcess({ unitId }))
+  const handleReservationFlow = async () => {
+    setIsReserving(true)
+    setReservationError(null)
+
     if (!tenantId) {
       push('/aplication')
-      return
+      setIsReserving(false)
+      return true
     }
+
+    const existing = await getProcessByTenantUnitAction(tenantId, unitId)
+    if (existing.success && existing.data) {
+      const payload = (existing.data.payload ?? {}) as { profile?: ProfileId }
+      const profile = payload.profile ?? (tenantProfile as ProfileId | undefined)
+      const step = existing.data.currentStep ?? 1
+      dispatch(
+        setProcessState({
+          processId: existing.data.id,
+          tenantId: existing.data.tenantId ?? tenantId,
+          unitId: existing.data.unitId ?? unitId,
+          profile,
+          step,
+        })
+      )
+      push(resolveNextRoute(step, profile))
+      setIsReserving(false)
+      return true
+    }
+
+    if (!existing.success) {
+      setReservationError(existing.error ?? 'No se pudo validar el proceso')
+      setIsReserving(false)
+      return false
+    }
+
+    dispatch(initProcess({ unitId }))
     if (tenantProfile) {
       dispatch(
         setProcessState({
@@ -42,26 +107,41 @@ export default function ReservationActions({ isAuthenticated, unitId, buttonClas
         })
       )
       push('/aplication/basicInformation')
-      return
+      setIsReserving(false)
+      return true
     }
     dispatch(setProcessState({ tenantId, unitId }))
     push('/aplication/profile')
+    setIsReserving(false)
+    return true
   }
 
   if (isAuthenticated) {
     return (
-      <button type="button" onClick={handleGoToApplication} className={buttonClass}>
-        {buttonLabel}
-      </button>
+      <div className="space-y-2">
+        <button type="button" onClick={handleReservationFlow} className={buttonClass} disabled={isReserving}>
+          {isReserving ? 'Procesando...' : shouldShowExisting ? 'Continuar proceso' : buttonLabel}
+        </button>
+        {isCheckingProcess && <p className="text-xs text-gray-500">Validando proceso...</p>}
+        {reservationError && <p className="text-xs text-red-600">{reservationError}</p>}
+      </div>
     )
   }
 
   return (
     <>
-      <button type="button" onClick={() => setIsModalOpen(true)} className={buttonClass}>
-        {buttonLabel}
-      </button>
-      <ReservationModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} unitId={unitId} />
+      <div className="space-y-2">
+        <button type="button" onClick={() => setIsModalOpen(true)} className={buttonClass} disabled={isReserving}>
+          {isReserving ? 'Procesando...' : buttonLabel}
+        </button>
+        {reservationError && <p className="text-xs text-red-600">{reservationError}</p>}
+      </div>
+      <ReservationModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        unitId={unitId}
+        onAuthenticated={handleReservationFlow}
+      />
     </>
   )
 }
@@ -70,43 +150,25 @@ type ReservationModalProps = {
   isOpen: boolean
   onClose: () => void
   unitId: string
+  onAuthenticated: () => Promise<boolean>
 }
 
-function ReservationModal({ isOpen, onClose, unitId }: ReservationModalProps) {
+function ReservationModal({ isOpen, onClose, onAuthenticated }: ReservationModalProps) {
   const dispatch = useDispatch()
-  const push = useAppRouter()
   const codeVerificationState = useSelector((state) => state.auth.codeVerificationState)
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated)
   const tenantId = useSelector((state) => state.user?.tenant?.id)
-  const tenantProfile = useSelector((state) => state.user?.tenant?.profile)
 
   useEffect(() => {
     if (!isOpen) return
     if (!isAuthenticated) return
     if (!tenantId) return
 
-    onClose()
-    dispatch(initProcess({ unitId }))
-    if (!tenantId) {
-      push('/aplication')
-      return
-    }
-    if (tenantProfile) {
-      dispatch(
-        setProcessState({
-          tenantId,
-          unitId,
-          profile: tenantProfile as ProfileId,
-          step: 2,
-        })
-      )
-      push('/aplication/basicInformation')
-      return
-    }
-    dispatch(setProcessState({ tenantId, unitId }))
-    push('/aplication/profile')
+    void onAuthenticated().then((success) => {
+      if (success) onClose()
+    })
     dispatch(setAuthVerificationExpires(null))
-  }, [dispatch, isAuthenticated, isOpen, onClose, push, tenantId, tenantProfile, unitId])
+  }, [dispatch, isAuthenticated, isOpen, onClose, onAuthenticated, tenantId])
 
   const handleClose = () => {
     if (codeVerificationState === 'loading') return

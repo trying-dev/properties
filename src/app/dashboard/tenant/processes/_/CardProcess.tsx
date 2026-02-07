@@ -3,17 +3,10 @@
 import { Clock, CheckCircle, XCircle } from 'lucide-react'
 
 import ConfirmDeleteButton from '+/components/ConfirmDeleteButton'
-
-type ProcessListItem = {
-  id: string
-  status: string
-  currentStep: number | null
-  updatedAt: string | Date
-  unitId: string | null
-}
+import type { TenantProcessItem } from '+/actions/processes'
 
 type CardProcessProps = {
-  process: ProcessListItem
+  process: TenantProcessItem
   deleteConfirmId: string | null
   onResume: () => void
   onConfirmDelete: () => void
@@ -44,6 +37,10 @@ const statusBadge = (status: string) => {
 
 export default function CardProcess({ process, deleteConfirmId, onResume, onConfirmDelete, onStartDelete, onCancelDelete }: CardProcessProps) {
   const isConfirming = deleteConfirmId === process.id
+  const property = process.unit?.property
+  const address = property
+    ? `${property.street ?? ''} ${property.number ?? ''}, ${property.neighborhood ?? ''}, ${property.city ?? ''}`.trim()
+    : 'Dirección no disponible'
 
   return (
     <div
@@ -61,13 +58,17 @@ export default function CardProcess({ process, deleteConfirmId, onResume, onConf
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center gap-2">
           {getStatusIcon(process.status)}
-          <span className="text-sm text-gray-800 font-medium">Proceso #{process.id.slice(0, 6)}</span>
+          <div className="flex flex-col">
+            <span className="text-sm text-gray-900 font-semibold">{property?.name ?? 'Proceso sin propiedad'}</span>
+            <span className="text-xs text-gray-500">{address}</span>
+          </div>
         </div>
         <div className="flex items-center gap-2">
           {statusBadge(process.status)}
           <ConfirmDeleteButton isConfirming={isConfirming} onConfirm={onConfirmDelete} onCancel={onCancelDelete} onStart={onStartDelete} />
         </div>
       </div>
+      <p className="text-xs text-gray-500">Proceso #{process.id.slice(0, 6)} · Unidad {process.unit?.unitNumber ?? '-'}</p>
       <p className="text-sm text-gray-600">Paso actual: {process.currentStep}</p>
       <p className="text-xs text-gray-500 mt-1">Última actualización: {new Date(process.updatedAt).toLocaleDateString('es-CO')}</p>
     </div>

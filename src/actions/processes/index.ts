@@ -26,6 +26,16 @@ export const createProcessAction = async (input: CreateProcessInput) => {
       contractId ? prisma.contract.findUnique({ where: { id: contractId }, select: { id: true } }) : Promise.resolve(null),
     ])
 
+    if (tenantId && unitId) {
+      const existingProcess = await prisma.process.findFirst({
+        where: { tenantId, unitId },
+        select: { id: true },
+      })
+      if (existingProcess) {
+        return { success: true, data: existingProcess }
+      }
+    }
+
     const data: Prisma.ProcessUncheckedCreateInput = {
       currentStep: input.currentStep ?? 1,
       status: ProcessStatus.IN_PROGRESS,
@@ -201,6 +211,23 @@ export const getTenantProcessesAction = async (tenantId: string) => {
         currentStep: true,
         updatedAt: true,
         unitId: true,
+        unit: {
+          select: {
+            id: true,
+            unitNumber: true,
+            property: {
+              select: {
+                id: true,
+                name: true,
+                street: true,
+                number: true,
+                neighborhood: true,
+                city: true,
+                state: true,
+              },
+            },
+          },
+        },
       },
       orderBy: { updatedAt: 'desc' },
     })
@@ -210,6 +237,9 @@ export const getTenantProcessesAction = async (tenantId: string) => {
     return { success: false, error: 'No se pudieron obtener los procesos' }
   }
 }
+
+export type TenantProcessList = NonNullable<Awaited<ReturnType<typeof getTenantProcessesAction>>['data']>
+export type TenantProcessItem = TenantProcessList[number]
 
 export const deleteTenantProcessAction = async (processId: string, tenantId: string) => {
   if (!processId) return { success: false, error: 'Falta processId' }
@@ -270,3 +300,27 @@ export const getAdminProcessesAction = async (userId?: string) => {
 
 export type AdminProcessList = NonNullable<Awaited<ReturnType<typeof getAdminProcessesAction>>['data']>
 export type AdminProcess = AdminProcessList[number]
+
+export const getProcessByTenantUnitAction = async (tenantId: string, unitId: string) => {
+  if (!tenantId || !unitId) return { success: false, error: 'Falta tenantId o unitId' }
+  try {
+    const process = await prisma.process.findFirst({
+      where: { tenantId, unitId },
+      select: {
+        id: true,
+        currentStep: true,
+        payload: true,
+        tenantId: true,
+        unitId: true,
+      },
+      orderBy: { updatedAt: 'desc' },
+    })
+
+    return { success: true, data: process }
+  } catch (error) {
+    console.error('Error en getProcessByTenantUnitAction:', error)
+    return { success: false, error: 'No se pudo obtener el proceso' }
+  }
+}
+
+export type TenantUnitProcess = NonNullable<Awaited<ReturnType<typeof getProcessByTenantUnitAction>>['data']>

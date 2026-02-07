@@ -10,6 +10,7 @@ import Header from '+/components/Header'
 import Footer from '+/components/Footer'
 
 import { deleteTenantProcessAction, getProcessAction, getTenantProcessesAction } from '+/actions/processes'
+import type { TenantProcessItem } from '+/actions/processes'
 
 import { setProcessState } from '+/redux/slices/process'
 
@@ -21,14 +22,6 @@ import { BasicInfo, ProfileId } from '+/app/aplication/_/types'
 import { pickBasicInfoUpdates } from '+/app/aplication/_/basicInfoUtils'
 
 import CardProcess from './_/CardProcess'
-
-type ProcessListItem = {
-  id: string
-  status: string
-  currentStep: number | null
-  updatedAt: string | Date
-  unitId: string | null
-}
 
 type UserTenantResult = Awaited<ReturnType<typeof getUserTenant>>
 
@@ -67,7 +60,7 @@ export default function TenantProcessesPage() {
   const router = useRouter()
   const dispatch = useDispatch()
   const { isAuthenticated, isLoading } = useSession()
-  const [processes, setProcesses] = useState<ProcessListItem[]>([])
+  const [processes, setProcesses] = useState<TenantProcessItem[]>([])
   const [loading, setLoading] = useState(true)
   const [tenantId, setTenantId] = useState<string | null>(null)
   const [tenantProfile, setTenantProfile] = useState<ProfileId | ''>('')
