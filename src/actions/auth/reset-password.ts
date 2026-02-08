@@ -2,6 +2,7 @@
 
 import { z } from 'zod'
 import { prisma } from '+/lib/prisma'
+import { resolveEmailTargets } from '+/lib/email'
 import type { Prisma } from '@prisma/client'
 import crypto from 'crypto'
 import { Resend } from 'resend'
@@ -12,9 +13,6 @@ const resend = new Resend(process.env.RESEND_API_KEY)
 const resetPasswordSchema = z.object({
   email: z.string().email('Email inválido'),
 })
-
-const isTestMode = process.env.NODE_ENV !== 'production'
-const testEmail = process.env.RESEND_EMAIL_TEST
 
 export async function sendResetPasswordEmail(email: string) {
   try {
@@ -51,22 +49,23 @@ export async function sendResetPasswordEmail(email: string) {
 
     // 6. Enviar email
     // En modo de prueba, siempre enviamos al email de testing
-    const emailToSend = isTestMode ? testEmail : validated.email
-
-    if (!emailToSend) {
-      console.log('🔐 El email no esta definido')
+    const emailTarget = resolveEmailTargets(validated.email)
+    if (!emailTarget.ok) {
+      console.log(`🔐 No se envió email: ${emailTarget.error}`)
       return { success: true }
     }
 
+    const isTestMode = emailTarget.isTestMode
+
     console.log('🔐 Reset password info:')
     console.log('   Usuario solicitante:', validated.email)
-    console.log('   Email enviado a:', emailToSend)
+    console.log('   Email enviado a:', emailTarget.to)
     console.log('   Link de reset:', resetUrl)
     console.log('   Modo:', isTestMode ? 'PRUEBA' : 'PRODUCCIÓN')
 
     await resend.emails.send({
-      from: process.env.FROM_EMAIL as string,
-      to: emailToSend,
+      from: emailTarget.from,
+      to: emailTarget.to,
       subject: 'Resetea tu Contraseña - PropertyHub',
       html: `
         <!DOCTYPE html>

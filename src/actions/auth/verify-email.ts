@@ -4,10 +4,9 @@ import { z } from 'zod'
 import { Resend } from 'resend'
 
 import { prisma } from '+/lib/prisma'
+import { resolveEmailTargets } from '+/lib/email'
 
 const resend = new Resend(process.env.RESEND_API_KEY)
-const isTestMode = process.env.NODE_ENV !== 'production'
-const testEmail = process.env.RESEND_EMAIL_TEST
 
 const emailSchema = z.object({ email: z.string().email() })
 const codeSchema = z.object({ code: z.string().length(6).regex(/^\d+$/) })
@@ -31,12 +30,12 @@ export async function resendVerificationCode(email: string) {
     data: { verificationCode: code, verificationCodeExpiresAt: expiresAt },
   })
 
-  const emailToSend = isTestMode ? testEmail : parsed.data.email
-  if (!emailToSend) return { success: true }
+  const emailTarget = resolveEmailTargets(parsed.data.email)
+  if (!emailTarget.ok) return { success: true }
 
   await resend.emails.send({
-    from: process.env.FROM_EMAIL as string,
-    to: emailToSend,
+    from: emailTarget.from,
+    to: emailTarget.to,
     subject: 'Tu código de verificación',
     html: `<p>Tu código de verificación es: <strong>${code}</strong></p><p>Caduca en 15 minutos.</p>`,
   })

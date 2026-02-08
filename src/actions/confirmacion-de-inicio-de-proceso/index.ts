@@ -163,8 +163,7 @@ export const initializeContractAction = async ({
       await updateUserRegistrationToken(tenantId, registrationToken)
 
       emailResult = await emailService.sendNewUserRegistrationEmail({
-        // tenantEmail: email,
-        tenantEmail: 'revi-pruebas@outlook.com',
+        tenantEmail: email,
         tenantName: `${name} ${lastName}`,
         registrationToken,
       })
@@ -172,8 +171,7 @@ export const initializeContractAction = async ({
       console.log('📧 Enviando email de continuación para usuario existente:', email)
 
       emailResult = await emailService.sendExistingUserContinueEmail({
-        // tenantEmail: email,
-        tenantEmail: 'revi-pruebas@outlook.com',
+        tenantEmail: email,
         tenantName: `${name} ${lastName}`,
       })
     }

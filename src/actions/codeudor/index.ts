@@ -5,9 +5,7 @@ import { Resend } from 'resend'
 
 import { Prisma } from '@prisma/client'
 import { prisma } from '+/lib/prisma'
-
-const isTestMode = process.env.NODE_ENV !== 'production'
-const testEmail = process.env.RESEND_EMAIL_TEST
+import { resolveEmailTargets } from '+/lib/email'
 
 type CoDebtorInput = {
   name: string
@@ -102,27 +100,21 @@ export const sendCoDebtorConfirmationEmailsAction = async ({
 
     const resend = new Resend(process.env.RESEND_API_KEY)
     const appUrl = process.env.NEXT_PUBLIC_APP_URL
-    const fromEmail = process.env.FROM_EMAIL
-
-    if (!appUrl || !fromEmail) {
+    if (!appUrl) {
       return { success: false, error: 'Faltan variables de entorno para enviar correos' }
-    }
-
-    if (isTestMode && !testEmail) {
-      return { success: false, error: 'Falta RESEND_EMAIL_TEST para el modo de pruebas' }
     }
 
     const results = await Promise.allSettled(
       coDebtorsWithTokens.map((coDebtor) => {
-        const emailToSend = isTestMode ? testEmail : coDebtor.email
-        if (!emailToSend) {
-          return Promise.reject(new Error('Email destino no definido'))
+        const emailTarget = resolveEmailTargets(coDebtor.email)
+        if (!emailTarget.ok) {
+          return Promise.reject(new Error(emailTarget.error))
         }
         const confirmUrl = `${appUrl}/codeudor/confirmar?processId=${encodeURIComponent(processId)}&token=${encodeURIComponent(coDebtor.token)}`
 
         return resend.emails.send({
-          from: fromEmail,
-          to: [emailToSend],
+          from: emailTarget.from,
+          to: [emailTarget.to],
           subject: 'Confirma tu participacion como codeudor',
           html: buildConfirmationEmail({
             name: `${coDebtor.name} ${coDebtor.lastName}`,

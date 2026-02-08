@@ -1,4 +1,5 @@
 import { Resend } from 'resend'
+import { resolveEmailTargets } from '+/lib/email'
 
 export class EmailService {
   private resend: Resend
@@ -18,10 +19,20 @@ export class EmailService {
   }) {
     try {
       const registrationUrl = `${process.env.NEXT_PUBLIC_APP_URL}/registro-con-token?token=${registrationToken}`
+      const emailTarget = resolveEmailTargets(tenantEmail)
+      if (!emailTarget.ok) {
+        return {
+          success: false,
+          error: emailTarget.error,
+          emailId: `failed_registration_${Date.now()}`,
+          sentAt: new Date(),
+          mode: 'error',
+        }
+      }
 
       const emailResult = await this.resend.emails.send({
-        from: process.env.FROM_EMAIL as string,
-        to: [tenantEmail],
+        from: emailTarget.from,
+        to: [emailTarget.to],
         subject: '¡Bienvenido! Completa tu registro para continuar',
         html: this.getNewUserRegistrationTemplate(tenantName, registrationUrl),
       })
@@ -30,7 +41,7 @@ export class EmailService {
         success: true,
         emailId: emailResult.data?.id || `registration_${Date.now()}`,
         sentAt: new Date(),
-        mode: 'production',
+        mode: emailTarget.isTestMode ? 'test' : 'production',
         registrationUrl,
       }
     } catch (error) {
@@ -48,9 +59,20 @@ export class EmailService {
 
   async sendExistingUserContinueEmail({ tenantEmail, tenantName }: { tenantEmail: string; tenantName: string }) {
     try {
+      const emailTarget = resolveEmailTargets(tenantEmail)
+      if (!emailTarget.ok) {
+        return {
+          success: false,
+          error: emailTarget.error,
+          emailId: `failed_continue_${Date.now()}`,
+          sentAt: new Date(),
+          mode: 'error',
+        }
+      }
+
       const emailResult = await this.resend.emails.send({
-        from: process.env.FROM_EMAIL as string,
-        to: [tenantEmail],
+        from: emailTarget.from,
+        to: [emailTarget.to],
         subject: 'Continúa con tu proceso de alquiler',
         html: this.getExistingUserContinueTemplate(tenantName),
       })
@@ -59,7 +81,7 @@ export class EmailService {
         success: true,
         emailId: emailResult.data?.id || `continue_${Date.now()}`,
         sentAt: new Date(),
-        mode: 'production',
+        mode: emailTarget.isTestMode ? 'test' : 'production',
       }
     } catch (error) {
       console.error('Error enviando email de continuación:', error)

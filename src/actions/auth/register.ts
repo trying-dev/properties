@@ -4,11 +4,10 @@ import { hash } from 'bcryptjs'
 import { Resend } from 'resend'
 
 import { prisma } from '+/lib/prisma'
+import { resolveEmailTargets } from '+/lib/email'
 import { randomInt } from 'crypto'
 
 const resend = new Resend(process.env.RESEND_API_KEY)
-const isTestMode = process.env.NODE_ENV !== 'production'
-const testEmail = process.env.RESEND_EMAIL_TEST
 
 export type RegisterActionState = {
   success: boolean
@@ -72,17 +71,18 @@ export const registerUser = async (_prevState: RegisterActionState | undefined, 
       },
     })
 
-    const emailToSend = isTestMode ? testEmail : email
-    if (emailToSend) {
-      await resend.emails.send({
-        from: process.env.FROM_EMAIL as string,
-        to: emailToSend,
-        subject: 'Código de verificación',
-        html: `<p>Tu código de verificación es: <strong>${verificationCode}</strong></p><p>Caduca en 15 minutos.</p>`,
-      })
-    } else {
-      console.warn('⚠️ No se envió código porque no hay email destino (FROM/RESEND_EMAIL_TEST?)')
+    const emailTarget = resolveEmailTargets(email)
+    if (!emailTarget.ok) {
+      console.warn(`⚠️ No se envió código: ${emailTarget.error}`)
+      return { success: false, needsVerification: true }
     }
+
+    await resend.emails.send({
+      from: emailTarget.from,
+      to: emailTarget.to,
+      subject: 'Código de verificación',
+      html: `<p>Tu código de verificación es: <strong>${verificationCode}</strong></p><p>Caduca en 15 minutos.</p>`,
+    })
 
     return { success: false, needsVerification: true }
   } catch (error) {
