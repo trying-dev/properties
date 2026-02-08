@@ -296,7 +296,7 @@ export const deleteTenantProcessAction = async (processId: string, tenantId: str
   }
 }
 
-export const getAdminProcessesAction = async (userId?: string) => {
+export const getAdminProcessesAction = async () => {
   try {
     const processes = await prisma.process.findMany({
       where: {

@@ -61,13 +61,10 @@ store.subscribe(() => {
   if (typeof window === 'undefined') return
 
   const state = store.getState()
-  const { uploadedDocs, ...restProcess } = state.process
-  const { units, ...restHome } = state.home
-
   const serializableState: RootState = {
     ...state,
-    home: { ...restHome, units: [] },
-    process: { ...restProcess, uploadedDocs: {} },
+    home: { ...state.home, units: [] },
+    process: { ...state.process, uploadedDocs: {} },
   }
 
   try {

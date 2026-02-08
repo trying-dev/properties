@@ -73,7 +73,7 @@ function ResetPasswordContent() {
           setTokenValid(false)
           setValidationMessage(result.message || 'Token inválido')
         }
-      } catch (error) {
+      } catch {
         setTokenValid(false)
         setValidationMessage('Error al validar el token')
       } finally {
@@ -127,7 +127,7 @@ function ResetPasswordContent() {
         } else {
           setError(result.message || 'Error al resetear la contraseña')
         }
-      } catch (err) {
+      } catch {
         setError('Error al procesar la solicitud. Por favor intenta nuevamente.')
       }
     })

@@ -3,7 +3,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { Plus, Edit, User, Mail, Phone, MapPin, CheckCircle } from 'lucide-react'
 import { DocumentType, ContractStatus } from '@prisma/client'
-import { useRouter } from 'next/navigation'
 
 import { CreateTenantForm } from './CreateTenantForm'
 import type { CreateTenantSubmit } from './CreateTenantForm'
@@ -21,8 +20,6 @@ const useDebouncedValue = <T,>(value: T, delay = 300): T => {
 }
 
 export default function SeleccionDeUsuario() {
-  const router = useRouter()
-
   const [tenants, setTenants] = useState<TenantListItem[]>([])
   const [loading, setLoading] = useState(false)
   const [showCreateModal, setShowCreateModal] = useState(false)
@@ -100,10 +97,6 @@ export default function SeleccionDeUsuario() {
       OTHER: 'Otro',
     }
     return types[type] ?? 'No especificado'
-  }
-
-  const goToConfirmationWith = (id: string) => {
-    // router.push('/dashboard/admin/nuevo-proceso/confirmacion-de-inicio-de-proceso')
   }
 
   const getStatusBadge = (tenant: TenantListItem) => {

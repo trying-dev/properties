@@ -38,13 +38,10 @@ export default function ReservationActions({ isAuthenticated, unitId, buttonClas
   const [hasExistingProcess, setHasExistingProcess] = useState(false)
   const [isCheckingProcess, setIsCheckingProcess] = useState(false)
   const [existingProcessStatus, setExistingProcessStatus] = useState<string | null>(null)
+  const canCheckExisting = isAuthenticated && Boolean(tenantId)
 
   useEffect(() => {
-    if (!isAuthenticated || !tenantId) {
-      setHasExistingProcess(false)
-      setExistingProcessStatus(null)
-      return
-    }
+    if (!canCheckExisting || !tenantId) return
 
     let isMounted = true
     const checkExisting = async () => {
@@ -62,10 +59,12 @@ export default function ReservationActions({ isAuthenticated, unitId, buttonClas
     return () => {
       isMounted = false
     }
-  }, [isAuthenticated, tenantId, unitId])
+  }, [canCheckExisting, tenantId, unitId])
 
-  const canResumeExisting = canResumeFromStatus(existingProcessStatus)
-  const shouldShowExisting = isAuthenticated && Boolean(tenantId) && hasExistingProcess && canResumeExisting
+  const effectiveStatus = canCheckExisting ? existingProcessStatus : null
+  const effectiveHasExisting = canCheckExisting ? hasExistingProcess : false
+  const canResumeExisting = canResumeFromStatus(effectiveStatus)
+  const shouldShowExisting = canCheckExisting && effectiveHasExisting && canResumeExisting
 
   const baseButtonClass = 'w-full inline-flex justify-center bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg transition'
   const buttonClass = buttonClassName || baseButtonClass
@@ -138,9 +137,15 @@ export default function ReservationActions({ isAuthenticated, unitId, buttonClas
           type="button"
           onClick={handleReservationFlow}
           className={buttonClass}
-          disabled={isReserving || (hasExistingProcess && !canResumeExisting)}
+          disabled={isReserving || (effectiveHasExisting && !canResumeExisting)}
         >
-          {isReserving ? 'Procesando...' : hasExistingProcess && !canResumeExisting ? 'Solicitud enviada' : shouldShowExisting ? 'Continuar proceso' : buttonLabel}
+          {isReserving
+            ? 'Procesando...'
+            : effectiveHasExisting && !canResumeExisting
+              ? 'Solicitud enviada'
+              : shouldShowExisting
+                ? 'Continuar proceso'
+                : buttonLabel}
         </button>
         {isCheckingProcess && <p className="text-xs text-gray-500">Validando proceso...</p>}
         {reservationNotice && <p className="text-xs text-blue-600">{reservationNotice}</p>}

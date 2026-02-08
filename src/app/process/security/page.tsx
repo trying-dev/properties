@@ -282,7 +282,7 @@ const SecurityStepPage = () => {
     }
 
     if (requiresCoDebtorConsent) {
-      const { coDebtors, error } = validateCoDebtors()
+      const { error } = validateCoDebtors()
       if (error) {
         setSubmitError(error)
         setIsSubmitting(false)

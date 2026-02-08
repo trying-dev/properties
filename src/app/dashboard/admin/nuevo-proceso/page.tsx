@@ -7,7 +7,6 @@ import { AvailableUnit, PropertyWithAvailableUnits } from '+/actions/nuevo-proce
 import { getAvailableUnitsAction, getPropertiesWithAvailableUnitsAction } from '+/actions/nuevo-proceso'
 
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
 
 interface PriceRangeSliderProps {
   min: number
@@ -218,18 +217,12 @@ const PriceRangeSlider = ({
 }
 
 export default function NuevoProceso() {
-  const router = useRouter()
-
   const [units, setUnits] = useState<AvailableUnit[]>([])
   const [allUnits, setAllUnits] = useState<AvailableUnit[]>([]) // Para calcular rangos dinámicos
   const [loading, setLoading] = useState(false)
   const [properties, setProperties] = useState<PropertyWithAvailableUnits[]>([])
   const [selectedUnit, setSelectedUnit] = useState<AvailableUnit | null>(null)
   const [showReserveModal, setShowReserveModal] = useState(false)
-
-  const selectAndGo = (unitId: string) => {
-    // router.push('/dashboard/admin/seleccion-de-usuario')
-  }
 
   // Calcular rangos dinámicos basados en todas las unidades disponibles
   const priceRange = useMemo(() => {

@@ -17,7 +17,6 @@ declare module 'next-auth' {
     }
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
   interface User {
     role?: UserRoleForAuth
     adminLevel?: string
@@ -27,7 +26,6 @@ declare module 'next-auth' {
 }
 
 declare module 'next-auth/jwt' {
-  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
   interface JWT {
     role?: UserRoleForAuth
     adminLevel?: string

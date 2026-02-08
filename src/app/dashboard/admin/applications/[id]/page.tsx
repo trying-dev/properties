@@ -20,17 +20,13 @@ const formatDate = (value?: string | Date | null) => {
 export default function AdminApplicationDetailPage() {
   const params = useParams<{ id: string }>()
   const router = useRouter()
+  const processId = params?.id
   const [processDetail, setProcessDetail] = useState<ProcessDetail | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    const processId = params?.id
-    if (!processId) {
-      setError('No se encontro el proceso.')
-      setIsLoading(false)
-      return
-    }
+    if (!processId) return
 
     const loadDetail = async () => {
       setIsLoading(true)
@@ -46,7 +42,7 @@ export default function AdminApplicationDetailPage() {
     }
 
     void loadDetail()
-  }, [params])
+  }, [processId])
 
   return (
     <div className="min-h-screen bg-white flex flex-col">
@@ -61,7 +57,9 @@ export default function AdminApplicationDetailPage() {
           Volver a aplicaciones
         </button>
 
-        {isLoading ? (
+        {!processId ? (
+          <div className="rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700">No se encontro el proceso.</div>
+        ) : isLoading ? (
           <div className="flex items-center justify-center py-16">
             <div className="text-center">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto mb-4"></div>
