@@ -6,6 +6,7 @@ import { ArrowLeft, ArrowRight, Zap } from 'lucide-react'
 
 import { useDispatch, useSelector } from '+/redux'
 import { setProcessState, setUploadedDocs, updateBasicInfo } from '+/redux/slices/process'
+import { updateProcessAction } from '+/actions/processes'
 
 import { mockDataByProfile } from '../../_/mockData'
 import { profiles } from '../../_/profiles'
@@ -19,7 +20,7 @@ const StepComplementInfo = () => {
   const router = useRouter()
   const dispatch = useDispatch()
   const processState = useSelector((state) => state.process)
-  const { basicInfo, acceptedDeposit, profile, selectedSecurity, uploadedDocs } = processState
+  const { basicInfo, acceptedDeposit, profile, selectedSecurity, uploadedDocs, processId } = processState
 
   const hasBasicInfo = useMemo(() => {
     return Boolean(basicInfo.name.trim() && basicInfo.lastName.trim() && basicInfo.monthlyIncome.trim())
@@ -45,6 +46,13 @@ const StepComplementInfo = () => {
   }
 
   const handleNext = () => {
+    if (processId) {
+      void updateProcessAction({
+        processId,
+        currentStep: 4,
+        payloadPatch: { acceptedDeposit, profile },
+      })
+    }
     dispatch(
       setProcessState({
         basicInfo,

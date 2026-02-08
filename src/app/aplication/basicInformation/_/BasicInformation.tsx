@@ -215,6 +215,13 @@ const BasicInformation = () => {
   }
 
   const handleNext = () => {
+    if (processState.processId) {
+      void updateProcessAction({
+        processId: processState.processId,
+        currentStep: 3,
+        payloadPatch: { basicInfo, profile },
+      })
+    }
     dispatch(setProcessState({ step: 3 }))
     router.push('/aplication/complementInfo')
   }
