@@ -78,7 +78,7 @@ export default function ContactPage() {
                 <div>
                   <h2 className="text-xl font-bold text-gray-900 mb-2">¿Ya tienes cuenta?</h2>
                   <p className="text-gray-600 leading-relaxed">
-                    Si eres inquilino o estás en proceso de aplicación, usa el sistema de mensajes desde tu dashboard para recibir soporte directo de
+                    Si eres inquilino o estás en proceso de aplicación, usa el sistema de notificaciones desde tu dashboard para recibir soporte directo de
                     tu administrador.
                   </p>
                 </div>
@@ -86,10 +86,10 @@ export default function ContactPage() {
 
               <div className="flex flex-wrap gap-3">
                 <Link
-                  href="/"
+                  href="/dashboard/tenant/notifications"
                   className="inline-flex items-center gap-2 bg-gray-900 text-white px-5 py-2.5 rounded-lg font-medium hover:bg-gray-800 transition-colors"
                 >
-                  Ir a mensajes
+                  Ir a notificaciones
                   <ArrowRight className="h-4 w-4" />
                 </Link>
                 <Link

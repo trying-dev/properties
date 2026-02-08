@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Building2, CreditCard, FileText, Layers, Users } from 'lucide-react'
+import { Building2, CreditCard, FileText, Layers, MessageCircle, Users } from 'lucide-react'
 
 import { getProperties } from '+/actions/property'
 import { getPendingPaymentsCount } from '+/actions/payments'
@@ -88,6 +88,14 @@ export default function AdminDashboard() {
       description: 'Confirma pagos manuales y revisa el historial',
       onClick: () => router.push('/dashboard/admin/payments'),
       badge: pendingPaymentsCount,
+    },
+    {
+      id: 'notifications',
+      icon: MessageCircle,
+      title: 'Notificaciones',
+      description: 'Alertas y comunicaciones del sistema',
+      onClick: () => router.push('/dashboard/admin/notifications'),
+      badge: null,
     },
   ]
 

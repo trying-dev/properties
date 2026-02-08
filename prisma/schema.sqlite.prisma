@@ -539,6 +539,8 @@ model Admin {
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 
+    notifications Notification[]
+
     @@index([adminLevel])
     @@index([userId]) // Buscar admin por usuario
     @@index([createdById]) // Jerarquías: admins creados por otros
@@ -571,6 +573,7 @@ model Tenant {
     user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
     contracts Contract[] // Contratos donde es el inquilino
     processes Process[]  @relation("ProcessTenant")
+    notifications Notification[]
 
     registrationToken        String?
     registrationTokenExpires DateTime?
@@ -581,6 +584,51 @@ model Tenant {
     @@index([userId]) // Relación directa
     @@index([monthlyIncome]) // Para filtros económicos
     @@map("tenants")
+}
+
+model Notification {
+    id String @id @default(cuid())
+
+    tenantId String?
+    adminId  String?
+
+    senderRole NotificationSenderRole @default(SYSTEM)
+    senderUserId String?
+
+    type NotificationType @default(GENERAL)
+    title String?
+    body  String
+    link  String?
+    metadata Json?
+
+    readAt DateTime?
+
+    tenant Tenant? @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+    admin  Admin?  @relation(fields: [adminId], references: [id], onDelete: SetNull)
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    @@index([tenantId])
+    @@index([adminId])
+    @@index([type])
+    @@index([readAt])
+    @@index([createdAt])
+    @@map("notifications")
+}
+
+enum NotificationType {
+    GENERAL
+    APPROVAL
+    REJECTION
+    PAYMENT_OVERDUE
+    REMINDER
+}
+
+enum NotificationSenderRole {
+    TENANT
+    ADMIN
+    SYSTEM
 }
 
 model Reference {

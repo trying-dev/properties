@@ -96,7 +96,7 @@ const sections = [
     id: '10',
     title: '10. Notificaciones y comunicaciones',
     content: [
-      'Le enviamos notificaciones por correo electrónico y SMS sobre: Actividad importante en su cuenta (creación, cambios de contraseña), Estado de su solicitud de arrendamiento, Confirmación de contratos firmados, Pagos pendientes, próximos vencimientos y cargos por mora, Mensajes de administradores o inquilinos, Actualizaciones importantes de la plataforma.',
+      'Le enviamos notificaciones por correo electrónico y SMS sobre: Actividad importante en su cuenta (creación, cambios de contraseña), Estado de su solicitud de arrendamiento, Confirmación de contratos firmados, Pagos pendientes, próximos vencimientos y cargos por mora, Notificaciones de administradores o inquilinos, Actualizaciones importantes de la plataforma.',
       'Puede configurar sus preferencias de notificaciones en la configuración de su cuenta. Sin embargo, algunas comunicaciones esenciales (relacionadas con seguridad, cambios en contratos activos, obligaciones de pago) no pueden desactivarse mientras mantenga una cuenta activa.',
     ],
   },

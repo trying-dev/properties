@@ -6,6 +6,8 @@ import {
   Profile,
   Gender,
   MaritalStatus,
+  NotificationSenderRole,
+  NotificationType,
   PaymentMethod,
   PaymentStatus,
   PaymentType,
@@ -33,6 +35,7 @@ const resetDatabase = async (): Promise<void> => {
   console.log('🧹 Limpiando base de datos...')
 
   await prisma.payment.deleteMany({})
+  await prisma.notification.deleteMany({})
   await prisma.contractDocument.deleteMany({})
   await prisma.contract.deleteMany({})
   await prisma.reference.deleteMany({})
@@ -1047,6 +1050,116 @@ const createPayments = async (contracts: {
 }
 
 /**
+ * Crea notificaciones de ejemplo.
+ */
+const createNotifications = async (params: {
+  admins: ReturnType<typeof createAdmins> extends Promise<infer R> ? R : never
+  tenants: ReturnType<typeof createTenants> extends Promise<infer R> ? R : never
+}) => {
+  console.log('🔔 Creando notificaciones...')
+
+  const { admin1 } = params.admins
+  const { tenant1, tenant2, tenant3 } = params.tenants
+
+  const payments = await prisma.payment.findMany({
+    include: {
+      contract: {
+        include: {
+          admins: { select: { id: true } },
+          unit: { include: { property: { select: { name: true } } } },
+          tenant: { select: { id: true, user: { select: { name: true, lastName: true } } } },
+        },
+      },
+    },
+    orderBy: [{ dueDate: 'desc' }, { createdAt: 'desc' }],
+  })
+
+  const overduePayment = payments.find((payment) => payment.status === PaymentStatus.OVERDUE)
+  const pendingPayment = payments.find((payment) => payment.status === PaymentStatus.PENDING)
+
+  const formatDate = (value?: Date | null) =>
+    value ? value.toLocaleDateString('es-CO', { dateStyle: 'long' }) : 'pronto'
+
+  await prisma.notification.createMany({
+    data: [
+      {
+        tenantId: tenant1.id,
+        senderRole: NotificationSenderRole.SYSTEM,
+        type: NotificationType.APPROVAL,
+        title: 'Solicitud aprobada',
+        body: 'Tu solicitud fue aprobada. El equipo de administración se pondrá en contacto contigo para los siguientes pasos.',
+        link: '/dashboard/tenant/processes',
+      },
+      {
+        tenantId: tenant2.id,
+        senderRole: NotificationSenderRole.SYSTEM,
+        type: NotificationType.REJECTION,
+        title: 'Solicitud denegada',
+        body: 'Tu solicitud fue denegada. Si necesitas más información, comunícate con la administración.',
+        link: '/dashboard/tenant/processes',
+      },
+      {
+        tenantId: tenant3.id,
+        senderRole: NotificationSenderRole.SYSTEM,
+        type: NotificationType.GENERAL,
+        title: 'Actualización de mantenimiento',
+        body: 'Programaremos una revisión de mantenimiento esta semana. Te avisaremos el día exacto.',
+        link: '/dashboard/tenant/notifications',
+      },
+    ],
+  })
+
+  if (overduePayment?.contract?.tenantId) {
+    await prisma.notification.create({
+      data: {
+        tenantId: overduePayment.contract.tenantId,
+        senderRole: NotificationSenderRole.SYSTEM,
+        type: NotificationType.PAYMENT_OVERDUE,
+        title: 'Pago vencido',
+        body: `Tu pago de arriendo venció el ${formatDate(overduePayment.dueDate)}. Por favor realiza el pago lo antes posible.`,
+        link: `/dashboard/tenant/units?paymentId=${overduePayment.id}`,
+        metadata: { paymentId: overduePayment.id },
+      },
+    })
+
+    const adminTargets =
+      overduePayment.contract.admins.length > 0 ? overduePayment.contract.admins.map((admin) => admin.id) : [admin1.id]
+
+    for (const adminId of adminTargets) {
+      await prisma.notification.create({
+        data: {
+          adminId,
+          senderRole: NotificationSenderRole.SYSTEM,
+          type: NotificationType.PAYMENT_OVERDUE,
+          title: 'Pago vencido sin registrar',
+          body: `Pago vencido del ${formatDate(overduePayment.dueDate)} en ${
+            overduePayment.contract.unit?.property?.name ?? 'la propiedad'
+          }.`,
+          link: `/dashboard/admin/payments`,
+          metadata: { paymentId: overduePayment.id },
+        },
+      })
+    }
+  }
+
+  if (pendingPayment?.contract?.tenantId) {
+    await prisma.notification.create({
+      data: {
+        tenantId: pendingPayment.contract.tenantId,
+        senderRole: NotificationSenderRole.SYSTEM,
+        type: NotificationType.REMINDER,
+        title: 'Recordatorio de pago',
+        body: `Recuerda que tu pago vence el ${formatDate(pendingPayment.dueDate)}.`,
+        link: `/dashboard/tenant/units?paymentId=${pendingPayment.id}`,
+        metadata: { paymentId: pendingPayment.id },
+      },
+    })
+  }
+
+  console.log('✅ Notificaciones creadas')
+}
+
+/**
  * Muestra un resumen bonito del sistema.
  */
 const printSummary = async (params: {
@@ -1132,6 +1245,7 @@ const main = async (): Promise<void> => {
   const contracts = await createContracts({ admins, tenants, units, hashedPassword })
   await assignAdminsToContracts({ admins, contracts })
   await createPayments(contracts)
+  await createNotifications({ admins, tenants })
   await printSummary({ property: units.property, contracts })
 }
 

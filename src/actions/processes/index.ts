@@ -1,7 +1,8 @@
 'use server'
 
-import { Prisma, ProcessStatus } from '@prisma/client'
+import { NotificationType, Prisma, ProcessStatus } from '@prisma/client'
 import { prisma } from '+/lib/prisma'
+import { sendSystemNotificationAction } from '+/actions/notifications'
 
 type CreateProcessInput = {
   tenantId?: string | null
@@ -75,7 +76,17 @@ export const updateProcessAction = async (input: UpdateProcessInput) => {
   try {
     const existing = await prisma.process.findUnique({
       where: { id: processId },
-      select: { payload: true },
+      select: {
+        payload: true,
+        status: true,
+        tenantId: true,
+        unit: {
+          select: {
+            unitNumber: true,
+            property: { select: { name: true } },
+          },
+        },
+      },
     })
 
     if (!existing) {
@@ -132,6 +143,29 @@ export const updateProcessAction = async (input: UpdateProcessInput) => {
       where: { id: processId },
       data,
     })
+
+    if (
+      status &&
+      status !== existing.status &&
+      existing.tenantId &&
+      (status === ProcessStatus.APPROVED || status === ProcessStatus.DISAPPROVED)
+    ) {
+      const propertyName = existing.unit?.property?.name ?? 'la propiedad'
+      const unitLabel = existing.unit?.unitNumber ? `Unidad ${existing.unit.unitNumber}` : 'la unidad'
+      const isApproved = status === ProcessStatus.APPROVED
+      const title = isApproved ? 'Solicitud aprobada' : 'Solicitud denegada'
+      const body = isApproved
+        ? `Tu solicitud para ${propertyName} (${unitLabel}) fue aprobada. Nos pondremos en contacto contigo para los siguientes pasos.`
+        : `Tu solicitud para ${propertyName} (${unitLabel}) fue denegada. Si necesitas más información, comunícate con el equipo de administración.`
+
+      await sendSystemNotificationAction({
+        tenantId: existing.tenantId,
+        type: isApproved ? NotificationType.APPROVAL : NotificationType.REJECTION,
+        title,
+        body,
+        link: '/dashboard/tenant/processes',
+      })
+    }
 
     return { success: true }
   } catch (error) {

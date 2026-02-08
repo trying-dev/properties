@@ -36,11 +36,11 @@ export default function TenantDashboard() {
 
   const menuOptions = [
     {
-      id: 'messages',
+      id: 'notifications',
       icon: MessageSquare,
-      title: 'Mensajes',
-      description: 'Comunicación con administración',
-      onClick: () => router.push('/dashboard/tenant/mensajes'),
+      title: 'Notificaciones',
+      description: 'Alertas y comunicaciones del sistema',
+      onClick: () => router.push('/dashboard/tenant/notifications'),
       badge: null,
     },
     {
