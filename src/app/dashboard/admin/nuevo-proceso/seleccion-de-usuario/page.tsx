@@ -63,9 +63,7 @@ export default function SeleccionDeUsuario() {
 
         loadTenants()
 
-        if (createdId) {
-          goToConfirmationWith(createdId)
-        } else {
+        if (!createdId) {
           console.error('Inquilino creado, pero no recibí el ID. Revisa la respuesta del servidor.')
         }
       } else {
@@ -234,7 +232,6 @@ export default function SeleccionDeUsuario() {
                         <button
                           className="text-blue-600 hover:text-blue-900 cursor-pointer"
                           title="Elegir"
-                          onClick={() => goToConfirmationWith(tenant.id)}
                         >
                           <CheckCircle className="w-4 h-4" />
                         </button>

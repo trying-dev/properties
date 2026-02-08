@@ -583,7 +583,6 @@ export default function NuevoProceso() {
                         <Link
                           href="/dashboard/admin/nuevo-proceso/seleccion-de-usuario"
                           prefetch={false}
-                          onClick={() => selectAndGo(unit.id)}
                           className="hover:underline cursor-pointer"
                         >
                           Unidad {unit.unitNumber}
@@ -650,7 +649,6 @@ export default function NuevoProceso() {
                     <Link
                       href="/dashboard/admin/nuevo-proceso/seleccion-de-usuario"
                       prefetch={false}
-                      onClick={() => selectAndGo(unit.id)}
                       className="flex-1 bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-colors text-sm font-medium"
                     >
                       Seleccionar Unidad

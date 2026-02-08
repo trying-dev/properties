@@ -19,7 +19,24 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: 'Properties',
   description: 'Properties manager.',
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000'),
   icons: { icon: '/favicon.ico' },
+  openGraph: {
+    title: 'Properties',
+    description: 'Properties manager.',
+    type: 'website',
+    images: [
+      {
+        url: '/home.png',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Properties',
+    description: 'Properties manager.',
+    images: ['/home.png'],
+  },
 }
 
 export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
