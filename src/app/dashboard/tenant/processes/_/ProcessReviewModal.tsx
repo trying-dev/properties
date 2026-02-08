@@ -2,8 +2,8 @@
 
 import Modal from '+/components/Modal'
 import type { TenantProcessItem } from '+/actions/processes'
-import type { BasicInfo, ProfileId, SecurityFieldValue } from '+/app/aplication/_/types'
-import { profiles, securityOptions } from '+/app/aplication/_/profiles'
+import type { BasicInfo, ProfileId, SecurityFieldValue } from '+/app/process/_/types'
+import { profiles, securityOptions } from '+/app/process/_/profiles'
 
 export type ProcessPayload = {
   basicInfo?: BasicInfo

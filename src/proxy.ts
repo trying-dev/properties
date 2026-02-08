@@ -78,7 +78,7 @@ export default async function proxy(request: NextRequest) {
   // )
 
   // 🚫 Proteger rutas de dashboard y aplicación
-  if (!session && (pathname.startsWith('/dashboard') || pathname.startsWith('/aplication'))) {
+  if (!session && (pathname.startsWith('/dashboard') || pathname.startsWith('/process'))) {
     // console.log(`❌ No autenticado, redirigiendo a login`)
     return NextResponse.redirect(new URL('/', request.url))
   }

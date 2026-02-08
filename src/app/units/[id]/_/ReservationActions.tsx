@@ -6,7 +6,7 @@ import Modal from '+/components/Modal'
 import { useDispatch, useSelector } from '+/redux'
 import { setAuthVerificationExpires } from '+/redux/slices/auth'
 import { initProcess, setProcessState } from '+/redux/slices/process'
-import { ProfileId } from '+/app/aplication/_/types'
+import { ProfileId } from '+/app/process/_/types'
 import { useAppRouter } from '+/hooks/useAppRouter'
 import { getProcessByTenantUnitAction } from '+/actions/processes'
 
@@ -18,10 +18,10 @@ type ReservationActionsProps = {
 }
 
 const resolveNextRoute = (step: number | null, profile?: ProfileId | '') => {
-  if (!profile) return '/aplication/profile'
-  if (step && step >= 4) return '/aplication/security'
-  if (step && step >= 3) return '/aplication/complementInfo'
-  return '/aplication/basicInformation'
+  if (!profile) return '/process/profile'
+  if (step && step >= 4) return '/process/security'
+  if (step && step >= 3) return '/process/complementInfo'
+  return '/process/basicInformation'
 }
 
 const canResumeFromStatus = (status?: string | null) => status === 'IN_PROGRESS' || status === 'WAITING_FOR_FEEDBACK'
@@ -76,7 +76,7 @@ export default function ReservationActions({ isAuthenticated, unitId, buttonClas
     setReservationNotice(null)
 
     if (!tenantId) {
-      push('/aplication')
+      push('/process')
       setIsReserving(false)
       return true
     }
@@ -121,12 +121,12 @@ export default function ReservationActions({ isAuthenticated, unitId, buttonClas
           step: 2,
         })
       )
-      push('/aplication/basicInformation')
+      push('/process/basicInformation')
       setIsReserving(false)
       return true
     }
     dispatch(setProcessState({ tenantId, unitId }))
-    push('/aplication/profile')
+    push('/process/profile')
     setIsReserving(false)
     return true
   }

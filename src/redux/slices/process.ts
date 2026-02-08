@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { BasicInfo, SecurityFieldValue } from '+/app/aplication/_/types'
+import { BasicInfo, SecurityFieldValue } from '+/app/process/_/types'
 import { initialState } from '../store'
 
 type ProcessState = typeof initialState.process

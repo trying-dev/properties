@@ -9,8 +9,8 @@ import { updateTenantProfile } from '+/redux/slices/user'
 import type { Profile as PrismaProfile } from '@prisma/client'
 
 import { updateTenantProfile as updateTenantProfileAction } from '+/actions/user'
-import { profiles } from '+/app/aplication/_/profiles'
-import { ProfileId } from '+/app/aplication/_/types'
+import { profiles } from '+/app/process/_/profiles'
+import { ProfileId } from '+/app/process/_/types'
 
 const Profile = () => {
   const dispatch = useDispatch()
@@ -28,7 +28,7 @@ const Profile = () => {
     void updateTenantProfileAction({ tenantId, data: { profile: profile as PrismaProfile } }).catch((error) => {
       console.error('Error actualizando el perfil del tenant:', error)
     })
-    router.push('/aplication/basicInformation')
+    router.push('/process/basicInformation')
   }
 
   return (

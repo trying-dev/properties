@@ -17,10 +17,10 @@ type ApplicationLayoutProps = {
 }
 
 const routeStepMap: Record<string, number> = {
-  '/aplication/profile': 1,
-  '/aplication/basicInformation': 2,
-  '/aplication/complementInfo': 3,
-  '/aplication/security': 4,
+  '/process/profile': 1,
+  '/process/basicInformation': 2,
+  '/process/complementInfo': 3,
+  '/process/security': 4,
 }
 
 export default function ApplicationLayout({ children }: ApplicationLayoutProps) {

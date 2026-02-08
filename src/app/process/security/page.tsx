@@ -26,7 +26,7 @@ const SecurityStepPage = () => {
   const resolvedProfile = isProfileId(profile) ? profile : ''
 
   useEffect(() => {
-    if (!resolvedProfile) router.replace('/aplication/profile')
+    if (!resolvedProfile) router.replace('/process/profile')
   }, [router, resolvedProfile])
 
   useEffect(() => {
@@ -201,7 +201,7 @@ const SecurityStepPage = () => {
     )
   }
 
-  const handleBack = () => router.push('/aplication/complementInfo')
+  const handleBack = () => router.push('/process/complementInfo')
 
   const handleSelectSecurity = (securityId: string) => {
     setSubmitError(null)

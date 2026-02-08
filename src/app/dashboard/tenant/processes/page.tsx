@@ -18,8 +18,8 @@ import { getUserTenant } from '+/actions/user'
 
 import { useSession } from '+/hooks/useSession'
 
-import { BasicInfo, ProfileId } from '+/app/aplication/_/types'
-import { pickBasicInfoUpdates } from '+/app/aplication/_/basicInfoUtils'
+import { BasicInfo, ProfileId } from '+/app/process/_/types'
+import { pickBasicInfoUpdates } from '+/app/process/_/basicInfoUtils'
 
 import CardProcess from './_/CardProcess'
 import ProcessReviewModal, { type ProcessPayload } from './_/ProcessReviewModal'
@@ -51,10 +51,10 @@ const buildBasicInfoFromUser = (user: UserTenantResult): BasicInfo | null => {
 }
 
 const resolveNextRoute = (step: number | null, profile?: ProfileId | '') => {
-  if (!profile) return '/aplication/profile'
-  if (step && step >= 4) return '/aplication/security'
-  if (step && step >= 3) return '/aplication/complementInfo'
-  return '/aplication/basicInformation'
+  if (!profile) return '/process/profile'
+  if (step && step >= 4) return '/process/security'
+  if (step && step >= 3) return '/process/complementInfo'
+  return '/process/basicInformation'
 }
 
 const canResumeFromStatus = (status: string) => status === 'IN_PROGRESS' || status === 'WAITING_FOR_FEEDBACK'

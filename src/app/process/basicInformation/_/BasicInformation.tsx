@@ -87,7 +87,7 @@ const BasicInformation = () => {
 
   useEffect(() => {
     if (!profile) {
-      router.replace('/aplication')
+      router.replace('/process')
     }
   }, [router, profile])
 
@@ -211,7 +211,7 @@ const BasicInformation = () => {
   }
 
   const handleBack = () => {
-    router.push('/aplication/profile')
+    router.push('/process/profile')
   }
 
   const handleNext = () => {
@@ -223,7 +223,7 @@ const BasicInformation = () => {
       })
     }
     dispatch(setProcessState({ step: 3 }))
-    router.push('/aplication/complementInfo')
+    router.push('/process/complementInfo')
   }
 
   const fillMockData = () => {

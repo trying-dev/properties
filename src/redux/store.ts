@@ -1,6 +1,6 @@
 import type { AvailableUnit } from '+/actions/nuevo-proceso'
 import { UserForRedux } from '+/actions/user/types'
-import { DocumentType, Gender, MaritalStatus, ProfileId, SecurityFieldValue } from '+/app/aplication/_/types'
+import { DocumentType, Gender, MaritalStatus, ProfileId, SecurityFieldValue } from '+/app/process/_/types'
 
 export const initialState = {
   auth: {

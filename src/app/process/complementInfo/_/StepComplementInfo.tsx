@@ -28,11 +28,11 @@ const StepComplementInfo = () => {
 
   useEffect(() => {
     if (!profile) {
-      router.replace('/aplication/profile')
+      router.replace('/process/profile')
       return
     }
     if (!hasBasicInfo) {
-      router.replace('/aplication/basicInformation')
+      router.replace('/process/basicInformation')
     }
   }, [hasBasicInfo, router, profile])
 
@@ -42,7 +42,7 @@ const StepComplementInfo = () => {
   }
 
   const handleBack = () => {
-    router.push('/aplication/basicInformation')
+    router.push('/process/basicInformation')
   }
 
   const handleNext = () => {
@@ -62,7 +62,7 @@ const StepComplementInfo = () => {
         step: 4,
       })
     )
-    router.push('/aplication/security')
+    router.push('/process/security')
   }
 
   const fillMockData = () => {
