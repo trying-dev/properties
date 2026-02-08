@@ -3,6 +3,7 @@
 import { FormEvent, startTransition, useEffect, useMemo, useState, useActionState, useTransition } from 'react'
 import { ArrowRight, CheckCircle, Eye, EyeOff, Lock, Mail, User } from 'lucide-react'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 import { registerUser, type RegisterActionState } from '+/actions/auth/register'
 import { authenticate } from '+/actions/auth/login'
 import { resendVerificationCode, verifyEmailCode } from '+/actions/auth/verify-email'
@@ -340,18 +341,25 @@ export default function RegisterForm({ className = 'transition-opacity duration-
           className="mt-1 w-4 h-4 text-teal-600 border-gray-300 rounded focus:ring-teal-500 cursor-pointer"
           disabled={isRegisterDisabled}
         />
-        <label htmlFor="terms" className="text-sm text-gray-600 cursor-pointer">
-          I agree to the{' '}
-          <a href="#" className="text-teal-600 hover:text-teal-700 font-medium">
-            Terms & Conditions
-          </a>
-        </label>
-        {state?.errors?.agreeTerms && (
-          <p className="text-red-500 text-sm flex items-center space-x-1">
-            <span>⚠</span>
-            <span>{state.errors.agreeTerms[0]}</span>
-          </p>
-        )}
+        <div className="text-sm text-gray-600">
+          <label htmlFor="terms" className="cursor-pointer">
+            Acepto los{' '}
+            <Link href="/terminos" className="text-teal-600 hover:text-teal-700 font-medium">
+              términos y condiciones
+            </Link>{' '}
+            y la{' '}
+            <Link href="/privacidad" className="text-teal-600 hover:text-teal-700 font-medium">
+              política de privacidad
+            </Link>
+            .
+          </label>
+          {state?.errors?.agreeTerms && (
+            <p className="text-red-500 text-sm flex items-center space-x-1 mt-2">
+              <span>⚠</span>
+              <span>{state.errors.agreeTerms[0]}</span>
+            </p>
+          )}
+        </div>
       </div>
 
       <button

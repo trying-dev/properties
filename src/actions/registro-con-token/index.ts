@@ -48,13 +48,28 @@ export const validateRegistrationToken = async (token: string) => {
   }
 }
 
-export const completeUserRegistration = async ({ token, password }: { token: string; password: string }) => {
+export const completeUserRegistration = async ({
+  token,
+  password,
+  agreeTerms,
+}: {
+  token: string
+  password: string
+  agreeTerms: boolean
+}) => {
   try {
     // Validaciones básicas
     if (!token || typeof token !== 'string') {
       return {
         success: false,
         error: 'Token no proporcionado o inválido',
+      }
+    }
+
+    if (!agreeTerms) {
+      return {
+        success: false,
+        error: 'Debes aceptar los términos y condiciones',
       }
     }
 

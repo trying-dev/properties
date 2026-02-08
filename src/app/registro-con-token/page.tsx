@@ -10,7 +10,7 @@ function RegisterWithTokenContent() {
   const searchParams = useSearchParams()
   const token = searchParams.get('token')
 
-  const [formData, setFormData] = useState({ password: '', confirmPassword: '' })
+  const [formData, setFormData] = useState({ password: '', confirmPassword: '', agreeTerms: false })
 
   const [validationState, setValidationState] = useState({
     tokenValid: undefined as boolean | undefined,
@@ -89,6 +89,11 @@ function RegisterWithTokenContent() {
   }
 
   const validateForm = (): boolean => {
+    if (!formData.agreeTerms) {
+      setUiState((prev) => ({ ...prev, error: 'Debes aceptar los términos y condiciones' }))
+      return false
+    }
+
     if (formData.password.length < 8) {
       setUiState((prev) => ({ ...prev, error: 'La contraseña debe tener al menos 8 caracteres' }))
       return false
@@ -119,6 +124,7 @@ function RegisterWithTokenContent() {
       const result = await completeUserRegistration({
         token: token!,
         password: formData.password,
+        agreeTerms: formData.agreeTerms,
       })
 
       if (result.success) {
@@ -313,10 +319,39 @@ function RegisterWithTokenContent() {
             </ul>
           </div>
 
+          {/* Terms */}
+          <div className="flex items-start gap-3">
+            <input
+              type="checkbox"
+              id="terms"
+              checked={formData.agreeTerms}
+              onChange={(e) => setFormData((prev) => ({ ...prev, agreeTerms: e.target.checked }))}
+              className="mt-1 w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500 cursor-pointer"
+              disabled={uiState.isSubmitting}
+            />
+            <label htmlFor="terms" className="text-sm text-gray-600 cursor-pointer">
+              Acepto los{' '}
+              <a href="/terminos" className="text-green-700 font-semibold hover:underline">
+                términos y condiciones
+              </a>{' '}
+              y la{' '}
+              <a href="/privacidad" className="text-green-700 font-semibold hover:underline">
+                política de privacidad
+              </a>
+              .
+            </label>
+          </div>
+
           {/* Submit button */}
           <button
             onClick={handleSubmit}
-            disabled={uiState.isSubmitting || !formData.password || !formData.confirmPassword || formData.password !== formData.confirmPassword}
+            disabled={
+              uiState.isSubmitting ||
+              !formData.password ||
+              !formData.confirmPassword ||
+              formData.password !== formData.confirmPassword ||
+              !formData.agreeTerms
+            }
             className="w-full bg-green-600 text-white py-3 px-4 rounded-lg font-medium hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition duration-200 flex items-center justify-center"
           >
             {uiState.isSubmitting ? (
@@ -330,10 +365,6 @@ function RegisterWithTokenContent() {
           </button>
         </div>
 
-        {/* Footer */}
-        <div className="mt-6 text-center">
-          <p className="text-xs text-gray-500">Al completar el registro, aceptas nuestros términos y condiciones</p>
-        </div>
       </div>
     </div>
   )
