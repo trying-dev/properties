@@ -219,7 +219,7 @@ export const DocumentsSection = ({ profile, uploadedDocs, onFileChange }: Docume
         Documentos Requeridos
       </h3>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pl-10">{fields.map(renderDynamicField)}</div>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pl-0 sm:pl-10">{fields.map(renderDynamicField)}</div>
     </div>
   )
 }

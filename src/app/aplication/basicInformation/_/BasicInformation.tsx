@@ -265,7 +265,7 @@ const BasicInformation = () => {
           Información Básica
         </h3>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pl-10">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pl-0 sm:pl-10">
           <TextInput label="Nombre(s)" value={basicInfo.name} onChange={(value) => handleInfoChange('name', value)} placeholder="Juan Pérez" />
 
           <TextInput
