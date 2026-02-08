@@ -10,6 +10,7 @@ import StepProgress from './_/StepProgress'
 import SummarySidebar from './_/SummarySidebar'
 import Header from '+/components/Header'
 import Footer from '+/components/Footer'
+import RequireAuth from '+/components/auth/RequireAuth'
 
 type ApplicationLayoutProps = {
   children: ReactNode
@@ -40,23 +41,25 @@ export default function ApplicationLayout({ children }: ApplicationLayoutProps) 
   if (!mounted) return null
 
   return (
-    <div className="bg-white">
-      <Header />
+    <RequireAuth>
+      <div className="bg-white">
+        <Header />
 
-      <div className="max-w-5xl mx-auto py-8 px-5 sm:px-6 lg:px-8">
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">Solicitud de Arrendamiento</h1>
-          <p className="text-gray-600">Completa los siguientes pasos para enviar tu solicitud</p>
+        <div className="max-w-5xl mx-auto py-8 px-5 sm:px-6 lg:px-8">
+          <div className="text-center mb-8">
+            <h1 className="text-4xl font-bold text-gray-900 mb-2">Solicitud de Arrendamiento</h1>
+            <p className="text-gray-600">Completa los siguientes pasos para enviar tu solicitud</p>
+          </div>
+
+          <StepProgress />
+
+          <SummarySidebar />
+
+          <div className="bg-white rounded-xl shadow-lg overflow-hidden">{children}</div>
         </div>
 
-        <StepProgress />
-
-        <SummarySidebar />
-
-        <div className="bg-white rounded-xl shadow-lg overflow-hidden">{children}</div>
+        <Footer />
       </div>
-
-      <Footer />
-    </div>
+    </RequireAuth>
   )
 }
