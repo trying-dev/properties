@@ -4,9 +4,10 @@ import { ArrowLeft, Building2, FileText } from 'lucide-react'
 
 import Header from '+/components/Header'
 import { getUnitById } from '+/actions/nuevo-proceso'
-import type { ContractStatus, ContractPriority, PaymentStatus, PaymentType, UnitStatus } from '@prisma/client'
+import type { ContractStatus, ContractPriority, UnitStatus } from '@prisma/client'
 import UnitActions from './_/UnitActions'
 import { toUnitFormState } from '../_/unitFormUtils'
+import ContractPayments from './_/ContractPayments'
 
 const formatDate = (value?: Date | null) => {
   if (!value) return '-'
@@ -51,23 +52,6 @@ const contractPriorityLabel: Record<ContractPriority, string> = {
   NORMAL: 'Normal',
   HIGH: 'Alta',
   URGENT: 'Urgente',
-}
-
-const paymentStatusLabel: Record<PaymentStatus, string> = {
-  PENDING: 'Pendiente',
-  PAID: 'Pagado',
-  OVERDUE: 'Vencido',
-  PARTIAL: 'Parcial',
-  CANCELLED: 'Cancelado',
-}
-
-const paymentTypeLabel: Record<PaymentType, string> = {
-  RENT: 'Canon',
-  DEPOSIT: 'Depósito',
-  UTILITIES: 'Servicios',
-  MAINTENANCE: 'Mantenimiento',
-  LATE_FEE: 'Mora',
-  OTHER: 'Otro',
 }
 
 const parseImages = (value?: string | null) => {
@@ -270,59 +254,61 @@ export default async function AdminUnitPage({ params }: { params: Promise<{ id: 
                           <p className="text-gray-500">Términos</p>
                           <p className="font-medium text-gray-900">{contract.terms || '-'}</p>
                         </div>
-                        <div>
-                          <p className="text-gray-500">Motivo rechazo</p>
-                          <p className="font-medium text-gray-900">{contract.rejectionReason || '-'}</p>
-                        </div>
-                        <div>
-                          <p className="text-gray-500">Motivo cancelación</p>
-                          <p className="font-medium text-gray-900">{contract.cancellationReason || '-'}</p>
-                        </div>
+                        {contract.status === 'REJECTED' && contract.rejectionReason && (
+                          <div>
+                            <p className="text-gray-500">Motivo rechazo</p>
+                            <p className="font-medium text-gray-900">{contract.rejectionReason}</p>
+                          </div>
+                        )}
+                        {contract.status === 'CANCELLED' && contract.cancellationReason && (
+                          <div>
+                            <p className="text-gray-500">Motivo cancelación</p>
+                            <p className="font-medium text-gray-900">{contract.cancellationReason}</p>
+                          </div>
+                        )}
+                        {contract.status === 'TERMINATED' && contract.terminationReason && (
+                          <div>
+                            <p className="text-gray-500">Motivo terminación</p>
+                            <p className="font-medium text-gray-900">{contract.terminationReason}</p>
+                          </div>
+                        )}
                         <div>
                           <p className="text-gray-500">Iniciado</p>
                           <p className="font-medium text-gray-900">{formatDate(contract.initiatedAt)}</p>
                         </div>
-                        <div>
-                          <p className="text-gray-500">Revisado</p>
-                          <p className="font-medium text-gray-900">{formatDate(contract.reviewedAt)}</p>
-                        </div>
-                        <div>
-                          <p className="text-gray-500">Aprobado</p>
-                          <p className="font-medium text-gray-900">{formatDate(contract.approvedAt)}</p>
-                        </div>
-                        <div>
-                          <p className="text-gray-500">Firmado</p>
-                          <p className="font-medium text-gray-900">{formatDate(contract.signedAt)}</p>
-                        </div>
-                        <div>
-                          <p className="text-gray-500">Activado</p>
-                          <p className="font-medium text-gray-900">{formatDate(contract.activatedAt)}</p>
-                        </div>
-                        <div>
-                          <p className="text-gray-500">Terminado</p>
-                          <p className="font-medium text-gray-900">{formatDate(contract.terminatedAt)}</p>
-                        </div>
+                        {contract.reviewedAt && (
+                          <div>
+                            <p className="text-gray-500">Revisado</p>
+                            <p className="font-medium text-gray-900">{formatDate(contract.reviewedAt)}</p>
+                          </div>
+                        )}
+                        {contract.approvedAt && (
+                          <div>
+                            <p className="text-gray-500">Aprobado</p>
+                            <p className="font-medium text-gray-900">{formatDate(contract.approvedAt)}</p>
+                          </div>
+                        )}
+                        {contract.signedAt && (
+                          <div>
+                            <p className="text-gray-500">Firmado</p>
+                            <p className="font-medium text-gray-900">{formatDate(contract.signedAt)}</p>
+                          </div>
+                        )}
+                        {contract.activatedAt && (
+                          <div>
+                            <p className="text-gray-500">Activado</p>
+                            <p className="font-medium text-gray-900">{formatDate(contract.activatedAt)}</p>
+                          </div>
+                        )}
+                        {contract.terminatedAt && (
+                          <div>
+                            <p className="text-gray-500">Terminado</p>
+                            <p className="font-medium text-gray-900">{formatDate(contract.terminatedAt)}</p>
+                          </div>
+                        )}
                       </div>
 
-                      {contract.payments.length > 0 && (
-                        <div className="mt-4">
-                          <p className="text-sm font-semibold text-gray-900 mb-2">Pagos</p>
-                          <div className="space-y-2">
-                            {contract.payments.map((payment) => (
-                              <div key={payment.id} className="flex flex-wrap items-center gap-3 text-xs text-gray-600">
-                                <span className="font-medium text-gray-900">{paymentTypeLabel[payment.paymentType]}</span>
-                                <span>{formatMoney(payment.amount)}</span>
-                                <span>Vence: {formatDate(payment.dueDate)}</span>
-                                <span className="px-2 py-1 rounded-full bg-gray-100 text-gray-700">
-                                  {paymentStatusLabel[payment.status]}
-                                </span>
-                                {payment.paidDate && <span>Pagado: {formatDate(payment.paidDate)}</span>}
-                                {payment.reference && <span>Ref: {payment.reference}</span>}
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-                      )}
+                      {contract.payments.length > 0 && <ContractPayments payments={contract.payments} />}
                     </div>
                   ))}
                 </div>

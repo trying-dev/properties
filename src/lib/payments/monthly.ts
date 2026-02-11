@@ -36,13 +36,22 @@ export const generateMonthlyPaymentsForActiveContracts = async (date = new Date(
   })
 
   const existingMap = new Set(existingPayments.map((payment) => payment.contractId))
+  const rentHistory = await prisma.payment.findMany({
+    where: {
+      contractId: { in: contractIds },
+      paymentType: { in: [PaymentType.CANON, PaymentType.RENT] },
+    },
+    select: { contractId: true },
+    distinct: ['contractId'],
+  })
+  const rentHistoryMap = new Set(rentHistory.map((payment) => payment.contractId))
   const paymentsToCreate = contracts
     .filter((contract) => !existingMap.has(contract.id))
     .map((contract) => ({
       contractId: contract.id,
       amount: contract.rent,
       dueDate,
-      paymentType: PaymentType.RENT,
+      paymentType: rentHistoryMap.has(contract.id) ? PaymentType.RENT : PaymentType.CANON,
       status: PaymentStatus.PENDING,
       notes: `Pago mensual ${dueDate.toLocaleDateString('es-CO', { month: 'long', year: 'numeric' })}`,
     }))

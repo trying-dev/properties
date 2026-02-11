@@ -36,10 +36,12 @@ const paymentMethodLabel: Record<PaymentMethod, string> = {
 }
 
 const paymentTypeLabel: Record<PaymentType, string> = {
-  RENT: 'Arriendo',
+  CANON: 'Canon',
+  RENT: 'Alquiler',
   DEPOSIT: 'Depósito',
   UTILITIES: 'Servicios',
   MAINTENANCE: 'Mantenimiento',
+  REPAIR: 'Reparación',
   LATE_FEE: 'Recargo',
   OTHER: 'Otro',
 }

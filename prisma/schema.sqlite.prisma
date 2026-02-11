@@ -210,10 +210,12 @@ enum PaymentMethod {
 }
 
 enum PaymentType {
+    CANON
     RENT
     DEPOSIT
     UTILITIES
     MAINTENANCE
+    REPAIR
     LATE_FEE
     OTHER
 }
@@ -371,6 +373,18 @@ model Unit {
     cableTV       Boolean @default(false)
     waterIncluded Boolean @default(false)
     gasIncluded   Boolean @default(false)
+
+    // Espacios interiores (privados y compartidos)
+    kitchen     Boolean @default(false)
+    sharedKitchen  Boolean @default(false)
+    bathroom    Boolean @default(false)
+    sharedBathroom Boolean @default(false)
+    laundry     Boolean @default(false)
+    sharedLaundry  Boolean @default(false)
+    livingRoom  Boolean @default(false)
+    diningRoom  Boolean @default(false)
+    livingDiningRoom Boolean @default(false)
+    sharedLivingDiningRoom Boolean @default(false)
 
     status UnitStatus @default(VACANT)
 

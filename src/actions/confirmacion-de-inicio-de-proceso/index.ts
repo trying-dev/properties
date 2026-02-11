@@ -69,6 +69,7 @@ export const initializeContract = async ({
       unitId,
       tenantId,
       adminId: userAdmin.admin?.id,
+      admins: { connect: [{ id: userAdmin.admin?.id }] },
       status: 'INITIATED',
       notes,
       rent: unit.baseRent,

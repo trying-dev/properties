@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
 import { ArrowLeft, Building2, Home, Search, AlertTriangle, CheckCircle, Clock } from 'lucide-react'
-import { PaymentStatus } from '@prisma/client'
+import { PaymentStatus, PaymentType } from '@prisma/client'
 
 import Header from '+/components/Header'
 import Footer from '+/components/Footer'
@@ -35,6 +35,17 @@ const paymentStatusStyle: Record<PaymentStatus, { badge: string; icon: typeof Cl
   OVERDUE: { badge: 'bg-red-100 text-red-700', icon: AlertTriangle },
   PARTIAL: { badge: 'bg-orange-100 text-orange-700', icon: Clock },
   CANCELLED: { badge: 'bg-gray-100 text-gray-600', icon: Clock },
+}
+
+const paymentTypeLabel: Record<PaymentType, string> = {
+  CANON: 'Canon',
+  RENT: 'Alquiler',
+  DEPOSIT: 'Depósito',
+  UTILITIES: 'Servicios',
+  MAINTENANCE: 'Mantenimiento',
+  REPAIR: 'Reparación',
+  LATE_FEE: 'Mora',
+  OTHER: 'Otro',
 }
 
 const pendingStatuses = new Set<PaymentStatus>([PaymentStatus.PENDING, PaymentStatus.OVERDUE, PaymentStatus.PARTIAL])
@@ -238,6 +249,7 @@ export default function TenantUnitsPage() {
                           <table className="min-w-full text-sm">
                             <thead>
                               <tr className="text-left text-xs uppercase tracking-wide text-gray-500">
+                                <th className="py-2 pr-4">Concepto</th>
                                 <th className="py-2 pr-4">Vence</th>
                                 <th className="py-2 pr-4">Monto</th>
                                 <th className="py-2 pr-4">Estado</th>
@@ -249,8 +261,10 @@ export default function TenantUnitsPage() {
                               {payments.slice(0, visiblePaymentsByContract[contract.id] ?? 10).map((payment) => {
                                 const meta = paymentStatusStyle[payment.status]
                                 const PaymentIcon = meta.icon
+                                const rentLabel = paymentTypeLabel[payment.paymentType]
                                 return (
                                   <tr key={payment.id} className="text-gray-700">
+                                    <td className="py-2 pr-4 whitespace-nowrap font-medium text-gray-900">{rentLabel}</td>
                                     <td className="py-2 pr-4 whitespace-nowrap">{formatDate(payment.dueDate)}</td>
                                     <td className="py-2 pr-4 whitespace-nowrap">{formatMoney(payment.amount)}</td>
                                     <td className="py-2 pr-4 whitespace-nowrap">

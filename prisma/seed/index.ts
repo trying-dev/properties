@@ -568,6 +568,8 @@ const createExtraProperties = async (adminId: string) => {
       name: 'Residencial Norte',
       city: 'Bogotá',
       neighborhood: 'Cedritos',
+      floors: 2,
+      propertyType: PropertyType.BUILDING,
       units: [
         {
           unitNumber: 'E1-101',
@@ -635,6 +637,8 @@ const createExtraProperties = async (adminId: string) => {
       name: 'Conjunto Sur',
       city: 'Medellín',
       neighborhood: 'El Poblado',
+      floors: 2,
+      propertyType: PropertyType.BUILDING,
       units: [
         {
           unitNumber: 'E2-101',
@@ -707,6 +711,7 @@ const createExtraProperties = async (adminId: string) => {
         city: extra.city,
         neighborhood: extra.neighborhood,
         age: 1,
+        floors: extra.floors,
       },
       create: {
         id: extra.id,
@@ -721,11 +726,11 @@ const createExtraProperties = async (adminId: string) => {
         postalCode: '00000',
         country: 'Colombia',
         gpsCoordinates: '0,0',
-        propertyType: PropertyType.BUILDING,
+        propertyType: extra.propertyType,
         status: PropertyStatus.ACTIVE,
         builtArea: 120,
         totalLandArea: 200,
-        floors: 2,
+        floors: extra.floors,
         age: 1,
         units: { create: extra.units },
       },
@@ -960,7 +965,7 @@ const createPayments = async (contracts: {
       amount: 2_500_000,
       dueDate: new Date('2024-05-01'),
       paidDate: new Date('2024-05-01'),
-      paymentType: PaymentType.RENT,
+      paymentType: PaymentType.CANON,
       status: PaymentStatus.PAID,
       paymentMethod: PaymentMethod.BANK_TRANSFER,
       transactionId: 'TRX-001-2024',
@@ -1001,7 +1006,7 @@ const createPayments = async (contracts: {
       amount: 3_000_000,
       dueDate: new Date('2024-06-01'),
       paidDate: new Date('2024-05-30'),
-      paymentType: PaymentType.RENT,
+      paymentType: PaymentType.CANON,
       status: PaymentStatus.PAID,
       paymentMethod: PaymentMethod.CHECK,
       receiptNumber: 'REC-003',
@@ -1024,7 +1029,7 @@ const createPayments = async (contracts: {
       amount: 1_800_000,
       dueDate: new Date('2024-06-01'),
       paidDate: new Date('2024-06-01'),
-      paymentType: PaymentType.RENT,
+      paymentType: PaymentType.CANON,
       status: PaymentStatus.PAID,
       paymentMethod: PaymentMethod.DIGITAL_WALLET,
       transactionId: 'PSE-123456',
@@ -1038,7 +1043,7 @@ const createPayments = async (contracts: {
       amount: 2_200_000,
       dueDate: new Date('2024-06-01'),
       paidDate: new Date('2024-06-02'),
-      paymentType: PaymentType.RENT,
+      paymentType: PaymentType.CANON,
       status: PaymentStatus.PAID,
       paymentMethod: PaymentMethod.BANK_TRANSFER,
       transactionId: 'TRX-005-2024',
@@ -1242,6 +1247,17 @@ const main = async (): Promise<void> => {
   const tenants = await createTenants(hashedPassword)
   const units = await createPropertyAndUnits(admins.admin1.id)
   await createExtraProperties(admins.admin1.id)
+  try {
+    const siModule = await import('./si')
+    if (typeof siModule.runSiSeeds === 'function') {
+      await siModule.runSiSeeds()
+    }
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error)
+    if (!/Cannot find module|Cannot resolve module|MODULE_NOT_FOUND/.test(message)) {
+      throw error
+    }
+  }
   const contracts = await createContracts({ admins, tenants, units, hashedPassword })
   await assignAdminsToContracts({ admins, contracts })
   await createPayments(contracts)
