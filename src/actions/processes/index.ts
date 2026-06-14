@@ -335,6 +335,13 @@ export const getAdminProcessesAction = async () => {
 export type AdminProcessList = NonNullable<Awaited<ReturnType<typeof getAdminProcessesAction>>['data']>
 export type AdminProcess = AdminProcessList[number]
 
+export const getPendingApplicationsCount = async () =>
+  prisma.process.count({
+    where: {
+      status: { in: [ProcessStatus.IN_PROGRESS, ProcessStatus.IN_EVALUATION, ProcessStatus.WAITING_FOR_FEEDBACK] },
+    },
+  })
+
 export const getProcessByTenantUnitAction = async (tenantId: string, unitId: string) => {
   if (!tenantId || !unitId) return { success: false, error: 'Falta tenantId o unitId' }
   try {

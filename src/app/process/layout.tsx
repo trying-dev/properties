@@ -11,6 +11,7 @@ import SummarySidebar from './_/SummarySidebar'
 import Header from '+/components/Header'
 import Footer from '+/components/Footer'
 import RequireAuth from '+/components/auth/RequireAuth'
+import ErrorBoundary from '+/components/ErrorBoundary'
 
 type ApplicationLayoutProps = {
   children: ReactNode
@@ -55,7 +56,9 @@ export default function ApplicationLayout({ children }: ApplicationLayoutProps) 
 
           <SummarySidebar />
 
-          <div className="bg-white rounded-xl shadow-lg overflow-hidden">{children}</div>
+          <div className="bg-white rounded-xl shadow-lg overflow-hidden">
+            <ErrorBoundary>{children}</ErrorBoundary>
+          </div>
         </div>
 
         <Footer />

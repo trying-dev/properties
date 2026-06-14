@@ -1,12 +1,13 @@
 'use client'
 
 import { FormEvent, startTransition, useEffect, useState, useActionState } from 'react'
+import { useRouter } from 'next/navigation'
 import { ArrowRight, CheckCircle, Eye, EyeOff, Lock, Mail, User } from 'lucide-react'
 import { authenticate } from '+/actions/auth/login'
 import { authInitialState, type AuthActionState } from './types'
 import { demoUsers as defaultDemoUsers } from './users'
 import { useDispatch } from '+/redux'
-import { setAuthVerificationExpires, setIsAuthenticated, setLoginState, setResetPasswordModalOpen } from '+/redux/slices/auth'
+import { setAuthModalOpen, setAuthVerificationExpires, setIsAuthenticated, setLoginState, setResetPasswordModalOpen } from '+/redux/slices/auth'
 import { setUser } from '+/redux/slices/user'
 import { getUserAfterLogin } from '+/actions/user'
 
@@ -16,6 +17,7 @@ type LoginFormProps = {
 
 export default function LoginForm({ className = 'transition-opacity duration-500 opacity-100' }: LoginFormProps) {
   const dispatch = useDispatch()
+  const router = useRouter()
   const [state, formAction, isPending] = useActionState<AuthActionState, FormData>(authenticate, authInitialState)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -34,10 +36,14 @@ export default function LoginForm({ className = 'transition-opacity duration-500
       const user = await getUserAfterLogin({ email })
       dispatch(setUser(user))
       dispatch(setLoginState('idle'))
+      dispatch(setAuthModalOpen({ open: false }))
+
+      const dashboardPath = user?.role === 'admin' ? '/dashboard/admin' : user?.role === 'tenant' ? '/dashboard/tenant' : '/dashboard'
+      router.push(dashboardPath)
     }
 
     void syncUser()
-  }, [state?.success, dispatch, email])
+  }, [state?.success, dispatch, email, router])
 
   useEffect(() => {
     if (!state?.errors) return

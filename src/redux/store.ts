@@ -1,4 +1,5 @@
-import type { AvailableUnit } from '+/actions/nuevo-proceso'
+import type { HomeUnit } from '+/actions/nuevo-proceso'
+import type { PropertyWithOccupancy } from '+/actions/occupancy'
 import { UserForRedux } from '+/actions/user/types'
 import { DocumentType, Gender, MaritalStatus, ProfileId, SecurityFieldValue } from '+/app/process/_/types'
 
@@ -16,9 +17,11 @@ export const initialState = {
   user: null as UserForRedux | null,
   property: {},
   home: {
-    units: [] as AvailableUnit[],
+    units: [] as HomeUnit[],
+    properties: [] as PropertyWithOccupancy[],
     showFilters: false,
     searchQuery: '',
+    viewMode: 'units' as 'units' | 'properties',
     filters: {
       priceMax: '',
       bedrooms: '',

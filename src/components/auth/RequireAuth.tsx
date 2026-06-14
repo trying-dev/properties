@@ -21,9 +21,15 @@ export default function RequireAuth({ children }: RequireAuthProps) {
     }
   }, [isAuthenticated, router, status])
 
-  if (isLoading || status === 'unauthenticated' || !isAuthenticated) {
+  if (isLoading || status === 'loading') {
+    return (
+      <div className="flex min-h-[60vh] items-center justify-center">
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-gray-300 border-t-red-600" />
+      </div>
+    )
+  }
+  if (status === 'unauthenticated' || !isAuthenticated) {
     return null
   }
-
   return <>{children}</>
 }

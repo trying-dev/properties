@@ -2,20 +2,14 @@
 
 import { useEffect, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
-import { ArrowLeft, FileText } from 'lucide-react'
+import { ArrowLeft } from 'lucide-react'
 
 import Header from '+/components/Header'
 import { getProcessDetailsAction } from '+/actions/processes'
 import type { ProcessDetail as ProcessDetailPayload } from '+/actions/processes'
+import ApplicationDetail from './_/ApplicationDetail'
 
 type ProcessDetail = NonNullable<ProcessDetailPayload>
-
-const formatDate = (value?: string | Date | null) => {
-  if (!value) return '-'
-  const parsed = value instanceof Date ? value : new Date(value)
-  if (Number.isNaN(parsed.getTime())) return '-'
-  return parsed.toLocaleString('es-MX')
-}
 
 export default function AdminApplicationDetailPage() {
   const params = useParams<{ id: string }>()
@@ -69,90 +63,7 @@ export default function AdminApplicationDetailPage() {
         ) : error ? (
           <div className="rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700">{error}</div>
         ) : processDetail ? (
-          <div className="space-y-8">
-            <div className="flex flex-col gap-4 rounded-lg border border-gray-200 p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h1 className="text-2xl font-bold text-gray-900">Detalle de aplicacion</h1>
-                  <p className="text-sm text-gray-500">ID: {processDetail.id}</p>
-                </div>
-                <span className="rounded-full bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-700">Paso {processDetail.currentStep}</span>
-              </div>
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                <div>
-                  <p className="text-xs text-gray-500">Estado</p>
-                  <p className="text-sm font-semibold text-gray-900">{processDetail.status}</p>
-                </div>
-                <div>
-                  <p className="text-xs text-gray-500">Ultima actualizacion</p>
-                  <p className="text-sm font-semibold text-gray-900">{formatDate(processDetail.updatedAt)}</p>
-                </div>
-                <div>
-                  <p className="text-xs text-gray-500">Creado</p>
-                  <p className="text-sm font-semibold text-gray-900">{formatDate(processDetail.createdAt)}</p>
-                </div>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-              <div className="rounded-lg border border-gray-200 p-6">
-                <h2 className="text-lg font-semibold text-gray-900 mb-4">Inquilino</h2>
-                {processDetail.tenant ? (
-                  <div className="space-y-2 text-sm text-gray-700">
-                    <p>
-                      <span className="font-semibold">Nombre:</span>{' '}
-                      {[processDetail.tenant.user.name, processDetail.tenant.user.lastName].filter(Boolean).join(' ') ||
-                        processDetail.tenant.user.email ||
-                        '-'}
-                    </p>
-                    <p>
-                      <span className="font-semibold">Email:</span> {processDetail.tenant.user.email || '-'}
-                    </p>
-                    <p>
-                      <span className="font-semibold">Telefono:</span> {processDetail.tenant.user.phone || '-'}
-                    </p>
-                    <p>
-                      <span className="font-semibold">Tenant ID:</span> {processDetail.tenant.id}
-                    </p>
-                  </div>
-                ) : (
-                  <p className="text-sm text-gray-500">Sin inquilino asociado.</p>
-                )}
-              </div>
-
-              <div className="rounded-lg border border-gray-200 p-6">
-                <h2 className="text-lg font-semibold text-gray-900 mb-4">Unidad</h2>
-                {processDetail.unit ? (
-                  <div className="space-y-2 text-sm text-gray-700">
-                    <p>
-                      <span className="font-semibold">Propiedad:</span> {processDetail.unit.property.name}
-                    </p>
-                    <p>
-                      <span className="font-semibold">Ciudad:</span> {processDetail.unit.property.city}
-                    </p>
-                    <p>
-                      <span className="font-semibold">Unidad:</span> {processDetail.unit.unitNumber}
-                    </p>
-                    <p>
-                      <span className="font-semibold">Unit ID:</span> {processDetail.unit.id}
-                    </p>
-                  </div>
-                ) : (
-                  <p className="text-sm text-gray-500">Sin unidad asociada.</p>
-                )}
-              </div>
-            </div>
-
-            <div className="rounded-lg border border-gray-200 p-6">
-              <div className="flex items-center gap-2 mb-4">
-                <FileText className="h-5 w-5 text-gray-500" />
-                <h2 className="text-lg font-semibold text-gray-900">Payload completo</h2>
-              </div>
-              <pre className="overflow-auto rounded-lg bg-gray-50 p-4 text-xs text-gray-700">
-                {JSON.stringify(processDetail.payload ?? {}, null, 2)}
-              </pre>
-            </div>
-          </div>
+          <ApplicationDetail detail={processDetail} />
         ) : null}
       </main>
     </div>

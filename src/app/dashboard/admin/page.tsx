@@ -2,50 +2,49 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Building2, CreditCard, FileText, Layers, MessageCircle, Users } from 'lucide-react'
+import { Building2, CreditCard, FilePlus, FileText, Layers, MessageCircle, UserCog, Users } from 'lucide-react'
 
 import { getProperties } from '+/actions/property'
 import { getPendingPaymentsCount } from '+/actions/payments'
+import { getPendingApplicationsCount } from '+/actions/processes'
 import Header from '+/components/Header'
+import OccupancyOverview from './_/OccupancyOverview'
 
 type MenuOption = {
   id: string
   title: string
   description: string
   icon: typeof Building2
-  onClick: () => void
+  href: string
   badge: number | null
+  hasBadge: boolean
 }
 
 export default function AdminDashboard() {
   const router = useRouter()
   const [propertiesCount, setPropertiesCount] = useState<number | null>(null)
   const [pendingPaymentsCount, setPendingPaymentsCount] = useState<number | null>(null)
+  const [pendingApplicationsCount, setPendingApplicationsCount] = useState<number | null>(null)
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    const loadPropertiesCount = async () => {
-      try {
-        const properties = await getProperties()
-        setPropertiesCount(properties.length)
-      } catch (error) {
-        console.error('Error loading properties:', error)
-      }
+    let mounted = true
+    const load = async () => {
+      const [properties, payments, applications] = await Promise.allSettled([
+        getProperties(),
+        getPendingPaymentsCount(),
+        getPendingApplicationsCount(),
+      ])
+      if (!mounted) return
+      if (properties.status === 'fulfilled') setPropertiesCount(properties.value.length)
+      if (payments.status === 'fulfilled') setPendingPaymentsCount(payments.value)
+      if (applications.status === 'fulfilled') setPendingApplicationsCount(applications.value)
+      setLoading(false)
     }
-
-    loadPropertiesCount()
-  }, [])
-
-  useEffect(() => {
-    const loadPendingPaymentsCount = async () => {
-      try {
-        const count = await getPendingPaymentsCount()
-        setPendingPaymentsCount(count)
-      } catch (error) {
-        console.error('Error loading pending payments count:', error)
-      }
+    void load()
+    return () => {
+      mounted = false
     }
-
-    loadPendingPaymentsCount()
   }, [])
 
   const menuOptions: MenuOption[] = [
@@ -54,48 +53,72 @@ export default function AdminDashboard() {
       icon: Building2,
       title: 'Propiedades',
       description: 'Gestiona el portafolio de inmuebles',
-      onClick: () => router.push('/dashboard/admin/properties'),
+      href: '/dashboard/admin/properties',
       badge: propertiesCount,
+      hasBadge: true,
     },
     {
       id: 'units',
       icon: Layers,
       title: 'Unidades',
       description: 'Revisa la disponibilidad de unidades',
-      onClick: () => router.push('/dashboard/admin/units'),
+      href: '/dashboard/admin/units',
       badge: null,
-    },
-    {
-      id: 'administrators',
-      icon: Users,
-      title: 'Administradores',
-      description: 'Gestiona tu equipo de administración',
-      onClick: () => router.push('/dashboard/admin/administrators'),
-      badge: null,
+      hasBadge: false,
     },
     {
       id: 'applications',
       icon: FileText,
       title: 'Aplicaciones',
       description: 'Procesos y solicitudes activas',
-      onClick: () => router.push('/dashboard/admin/applications'),
+      href: '/dashboard/admin/applications',
+      badge: pendingApplicationsCount,
+      hasBadge: true,
+    },
+    {
+      id: 'new-process',
+      icon: FilePlus,
+      title: 'Nuevo proceso',
+      description: 'Inicia una solicitud para un inquilino',
+      href: '/dashboard/admin/nuevo-proceso',
       badge: null,
+      hasBadge: false,
+    },
+    {
+      id: 'tenants',
+      icon: Users,
+      title: 'Inquilinos',
+      description: 'Gestiona y consulta los inquilinos',
+      href: '/dashboard/admin/gestion-de-inquilinos',
+      badge: null,
+      hasBadge: false,
     },
     {
       id: 'payments',
       icon: CreditCard,
       title: 'Pagos',
       description: 'Confirma pagos manuales y revisa el historial',
-      onClick: () => router.push('/dashboard/admin/payments'),
+      href: '/dashboard/admin/payments',
       badge: pendingPaymentsCount,
+      hasBadge: true,
+    },
+    {
+      id: 'administrators',
+      icon: UserCog,
+      title: 'Administradores',
+      description: 'Gestiona tu equipo de administración',
+      href: '/dashboard/admin/administrators',
+      badge: null,
+      hasBadge: false,
     },
     {
       id: 'notifications',
       icon: MessageCircle,
       title: 'Notificaciones',
       description: 'Alertas y comunicaciones del sistema',
-      onClick: () => router.push('/dashboard/admin/notifications'),
+      href: '/dashboard/admin/notifications',
       badge: null,
+      hasBadge: false,
     },
   ]
 
@@ -109,20 +132,25 @@ export default function AdminDashboard() {
           <p className="text-gray-600">Accede rápido a las áreas principales del dashboard.</p>
         </div>
 
+        <OccupancyOverview />
+
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {menuOptions.map((option) => (
             <button
               key={option.id}
-              onClick={option.onClick}
+              onClick={() => router.push(option.href)}
               className="bg-white border border-gray-200 rounded-lg p-6 hover:border-gray-400 hover:shadow-md transition-all text-left group"
             >
               <div className="flex items-start justify-between mb-4">
                 <div className="w-12 h-12 flex items-center justify-center">
                   <option.icon className="h-8 w-8 text-gray-900" strokeWidth={1.5} />
                 </div>
-                {option.badge !== null && (
-                  <span className="bg-gray-900 text-white text-xs font-semibold px-2.5 py-1 rounded-full">{option.badge}</span>
-                )}
+                {option.hasBadge &&
+                  (option.badge !== null ? (
+                    <span className="bg-gray-900 text-white text-xs font-semibold px-2.5 py-1 rounded-full">{option.badge}</span>
+                  ) : loading ? (
+                    <span className="h-6 w-8 rounded-full bg-gray-100 animate-pulse" />
+                  ) : null)}
               </div>
               <h3 className="text-lg font-semibold text-gray-900 mb-1 group-hover:text-gray-700">{option.title}</h3>
               <p className="text-sm text-gray-600">{option.description}</p>

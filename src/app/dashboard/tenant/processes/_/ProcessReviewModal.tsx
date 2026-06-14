@@ -41,10 +41,10 @@ const formatValue = (value: SecurityFieldValue | undefined) => {
   return String(value)
 }
 
-const detailItem = (label: string, value?: string | null) => {
+const detailItem = (label: string, value?: string | null, key?: string) => {
   if (!value) return null
   return (
-    <div className="rounded-lg border border-gray-200 bg-white px-3 py-2">
+    <div key={key} className="rounded-lg border border-gray-200 bg-white px-3 py-2">
       <p className="text-xs uppercase tracking-wide text-gray-400">{label}</p>
       <p className="text-sm text-gray-800">{value}</p>
     </div>
@@ -129,7 +129,7 @@ export default function ProcessReviewModal({ isOpen, onClose, process, payload, 
               <section className="space-y-3">
                 <h3 className="text-sm font-semibold text-gray-900">Datos adicionales</h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  {securityDetails.map((item) => detailItem(item.label, item.value))}
+                  {securityDetails.map((item) => detailItem(item.label, item.value, item.label))}
                 </div>
               </section>
             )}

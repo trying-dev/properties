@@ -1,10 +1,10 @@
 generator client {
-    provider   = "prisma-client-js"
-    engineType = "binary"
+  provider   = "prisma-client-js"
+  engineType = "binary"
 }
 
 datasource db {
-    provider = "sqlite"
+  provider = "sqlite"
 }
 
 // ========================================
@@ -12,151 +12,151 @@ datasource db {
 // ========================================
 
 model Contract {
-    id String @id @default(cuid())
+  id String @id @default(cuid())
 
-    unitId   String
-    tenantId String
-    adminId  String
+  unitId   String
+  tenantId String
+  adminId  String
 
-    // Información financiera con validaciones
-    rent              Float // postgres @db.Decimal(10, 2) // Precisión monetaria
-    deposit           Float // postgres @db.Decimal(10, 2)
-    utilitiesIncluded Boolean @default(false)
+  // Información financiera con validaciones
+  rent              Float // postgres @db.Decimal(10, 2) // Precisión monetaria
+  deposit           Float // postgres @db.Decimal(10, 2)
+  utilitiesIncluded Boolean @default(false)
 
-    // Campos adicionales importantes
-    securityDeposit Float? // postgres @db.Decimal(10, 2)
-    lateFeePenalty  Float? // postgres @db.Decimal(5, 2) // Porcentaje
-    gracePeriodDays Int    @default(5)
+  // Campos adicionales importantes
+  securityDeposit Float? // postgres @db.Decimal(10, 2)
+  lateFeePenalty  Float? // postgres @db.Decimal(5, 2) // Porcentaje
+  gracePeriodDays Int    @default(5)
 
-    // Fechas con validación
-    startDate DateTime
-    endDate   DateTime
+  // Fechas con validación
+  startDate DateTime
+  endDate   DateTime
 
-    // ESTADO EXPANDIDO - Incluye proceso de alquiler
-    status ContractStatus @default(INITIATED) // Cambiado de DRAFT a INITIATED
+  // ESTADO EXPANDIDO - Incluye proceso de alquiler
+  status ContractStatus @default(INITIATED) // Cambiado de DRAFT a INITIATED
 
-    notes String?
-    terms String? // postgres @db.Text // Usar Text para contenido largo
+  notes String?
+  terms String? // postgres @db.Text // Usar Text para contenido largo
 
-    autoRenewal   Boolean @default(false)
-    renewalPeriod Int?
+  autoRenewal   Boolean @default(false)
+  renewalPeriod Int?
 
-    // Prioridad del proceso
-    priority ContractPriority @default(NORMAL)
+  // Prioridad del proceso
+  priority ContractPriority @default(NORMAL)
 
-    // Fecha estimada de finalización del proceso
-    estimatedCompletionDate DateTime?
+  // Fecha estimada de finalización del proceso
+  estimatedCompletionDate DateTime?
 
-    // Información financiera propuesta (puede diferir de la final)
-    proposedRent            Float? // postgres @db.Decimal(10, 2)
-    proposedDeposit         Float? // postgres @db.Decimal(10, 2)
-    proposedSecurityDeposit Float? // postgres @db.Decimal(10, 2)
+  // Información financiera propuesta (puede diferir de la final)
+  proposedRent            Float? // postgres @db.Decimal(10, 2)
+  proposedDeposit         Float? // postgres @db.Decimal(10, 2)
+  proposedSecurityDeposit Float? // postgres @db.Decimal(10, 2)
 
-    // Documentos del proceso almacenados como JSON
-    processDocuments String? // postgres @db.Text
-    // Ejemplo: [{"id": "doc1", "fileName": "income.pdf", "fileType": "application/pdf", "filePath": "...", "fileSize": 1024, "documentType": "INCOME_VERIFICATION", "uploadedAt": "2024-01-01", "uploadedBy": "admin123"}]
+  // Documentos del proceso almacenados como JSON
+  processDocuments String? // postgres @db.Text
+  // Ejemplo: [{"id": "doc1", "fileName": "income.pdf", "fileType": "application/pdf", "filePath": "...", "fileSize": 1024, "documentType": "INCOME_VERIFICATION", "uploadedAt": "2024-01-01", "uploadedBy": "admin123"}]
 
-    // Motivos de rechazo/cancelación
-    rejectionReason    String?
-    cancellationReason String?
+  // Motivos de rechazo/cancelación
+  rejectionReason    String?
+  cancellationReason String?
 
-    // Fechas del proceso expandido
-    initiatedAt DateTime  @default(now()) // Cuándo se inició el proceso
-    reviewedAt  DateTime? // Cuándo se revisó la aplicación
-    approvedAt  DateTime? // Cuándo se aprobó para contrato
-    signedAt    DateTime? // Cuándo se firmó el contrato
-    activatedAt DateTime? // Cuándo se activó el contrato
+  // Fechas del proceso expandido
+  initiatedAt DateTime  @default(now()) // Cuándo se inició el proceso
+  reviewedAt  DateTime? // Cuándo se revisó la aplicación
+  approvedAt  DateTime? // Cuándo se aprobó para contrato
+  signedAt    DateTime? // Cuándo se firmó el contrato
+  activatedAt DateTime? // Cuándo se activó el contrato
 
-    // Campos de auditoría existentes
-    terminatedAt      DateTime?
-    terminationReason String?
+  // Campos de auditoría existentes
+  terminatedAt      DateTime?
+  terminationReason String?
 
-    unit   Unit   @relation(fields: [unitId], references: [id], onDelete: Restrict)
-    tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  unit   Unit   @relation(fields: [unitId], references: [id], onDelete: Restrict)
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Restrict)
 
-    admins    Admin[]   @relation("ContractAdmins")
-    processes Process[] @relation("ProcessContract")
+  admins    Admin[]   @relation("ContractAdmins")
+  processes Process[] @relation("ProcessContract")
 
-    payments  Payment[]
-    documents ContractDocument[] // Documentos del contrato firmado
+  payments  Payment[]
+  documents ContractDocument[] // Documentos del contrato firmado
 
-    additionalResidents User[] @relation("AdditionalResidents")
+  additionalResidents User[] @relation("AdditionalResidents")
 
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-    @@unique([unitId, startDate])
-    @@index([adminId]) // Buscar contratos por admin (quién los gestiona)
-    @@index([endDate]) // Útil para contratos próximos a vencer
-    @@index([autoRenewal]) // Consultar contratos con renovación automática
-    @@index([tenantId, status]) // Filtrar contratos activos por inquilino
-    @@index([status])
-    @@index([tenantId])
-    @@index([startDate, endDate])
-    @@index([signedAt]) // Nuevo índice
-    @@index([priority]) // Para filtrar por prioridad
-    @@index([initiatedAt]) // Para ordenar por fecha de inicio del proceso
-    @@index([status, initiatedAt]) // Consultas de procesos activos
-    @@map("contracts")
+  @@unique([unitId, startDate])
+  @@index([adminId]) // Buscar contratos por admin (quién los gestiona)
+  @@index([endDate]) // Útil para contratos próximos a vencer
+  @@index([autoRenewal]) // Consultar contratos con renovación automática
+  @@index([tenantId, status]) // Filtrar contratos activos por inquilino
+  @@index([status])
+  @@index([tenantId])
+  @@index([startDate, endDate])
+  @@index([signedAt]) // Nuevo índice
+  @@index([priority]) // Para filtrar por prioridad
+  @@index([initiatedAt]) // Para ordenar por fecha de inicio del proceso
+  @@index([status, initiatedAt]) // Consultas de procesos activos
+  @@map("contracts")
 }
 
 enum ContractStatus {
-    // === FASE DE PROCESO ===
-    INITIATED // Proceso iniciado - unidad reservada
-    UNDER_REVIEW // Aplicación en revisión
-    DOCUMENTATION // Recopilando documentación
-    APPROVED // Aprobado para contrato
+  // === FASE DE PROCESO ===
+  INITIATED // Proceso iniciado - unidad reservada
+  UNDER_REVIEW // Aplicación en revisión
+  DOCUMENTATION // Recopilando documentación
+  APPROVED // Aprobado para contrato
 
-    // === FASE DE CONTRATO ===
-    DRAFT // Borrador de contrato
-    PENDING // Pendiente de firma
-    ACTIVE // Contrato activo
+  // === FASE DE CONTRATO ===
+  DRAFT // Borrador de contrato
+  PENDING // Pendiente de firma
+  ACTIVE // Contrato activo
 
-    // === ESTADOS FINALES ===
-    EXPIRED // Vencido
-    RENEWED // Renovado
-    TERMINATED // Terminado
-    CANCELLED // Cancelado
-    REJECTED // Rechazado en proceso
+  // === ESTADOS FINALES ===
+  EXPIRED // Vencido
+  RENEWED // Renovado
+  TERMINATED // Terminado
+  CANCELLED // Cancelado
+  REJECTED // Rechazado en proceso
 }
 
 model ContractDocument {
-    id         String @id @default(cuid())
-    contractId String
+  id         String @id @default(cuid())
+  contractId String
 
-    fileName     String
-    fileType     String
-    filePath     String
-    fileSize     Int
-    documentType DocumentContractType
+  fileName     String
+  fileType     String
+  filePath     String
+  fileSize     Int
+  documentType DocumentContractType
 
-    uploadedAt DateTime @default(now())
+  uploadedAt DateTime @default(now())
 
-    contract Contract @relation(fields: [contractId], references: [id], onDelete: Cascade)
+  contract Contract @relation(fields: [contractId], references: [id], onDelete: Cascade)
 
-    @@map("contract_documents")
+  @@map("contract_documents")
 }
 
 enum DocumentContractType {
-    // Documentos del proceso
-    TENANT_APPLICATION // Solicitud del inquilino
-    INCOME_VERIFICATION // Verificación de ingresos
-    EMPLOYMENT_LETTER // Carta laboral
-    BANK_STATEMENTS // Extractos bancarios
-    REFERENCES_CHECK // Verificación de referencias
-    CREDIT_REPORT // Reporte crediticio
-    IDENTITY_DOCUMENTS // Documentos de identidad
-    PROPERTY_INSPECTION // Inspección de la propiedad
-    INSURANCE_PROOF // Prueba de seguro
+  // Documentos del proceso
+  TENANT_APPLICATION // Solicitud del inquilino
+  INCOME_VERIFICATION // Verificación de ingresos
+  EMPLOYMENT_LETTER // Carta laboral
+  BANK_STATEMENTS // Extractos bancarios
+  REFERENCES_CHECK // Verificación de referencias
+  CREDIT_REPORT // Reporte crediticio
+  IDENTITY_DOCUMENTS // Documentos de identidad
+  PROPERTY_INSPECTION // Inspección de la propiedad
+  INSURANCE_PROOF // Prueba de seguro
 
-    // Documentos del contrato firmado
-    CONTRACT_SIGNED // Contrato firmado
-    TENANT_ID // ID del inquilino
-    INCOME_PROOF // Comprobante de ingresos
-    REFERENCES // Referencias
-    INVENTORY // Inventario
-    PHOTOS // Fotos
-    OTHER // Otros documentos
+  // Documentos del contrato firmado
+  CONTRACT_SIGNED // Contrato firmado
+  TENANT_ID // ID del inquilino
+  INCOME_PROOF // Comprobante de ingresos
+  REFERENCES // Referencias
+  INVENTORY // Inventario
+  PHOTOS // Fotos
+  OTHER // Otros documentos
 }
 
 // ========================================
@@ -164,75 +164,75 @@ enum DocumentContractType {
 // ========================================
 
 model Payment {
-    id         String @id @default(cuid())
-    contractId String
+  id         String @id @default(cuid())
+  contractId String
 
-    amount      Float // postgres @db.Decimal(10, 2)
-    dueDate     DateTime
-    paidDate    DateTime?
-    paymentType PaymentType
-    status      PaymentStatus @default(PENDING)
+  amount      Float // postgres @db.Decimal(10, 2)
+  dueDate     DateTime
+  paidDate    DateTime?
+  paymentType PaymentType
+  status      PaymentStatus @default(PENDING)
 
-    // Campos adicionales
-    paymentMethod PaymentMethod?
-    transactionId String? // ID de transacción bancaria
-    receiptNumber String? // Número de recibo
+  // Campos adicionales
+  paymentMethod PaymentMethod?
+  transactionId String? // ID de transacción bancaria
+  receiptNumber String? // Número de recibo
 
-    // Penalizaciones
-    lateFeeAmount  Float? // postgres @db.Decimal(8, 2)
-    lateFeeApplied Boolean @default(false)
+  // Penalizaciones
+  lateFeeAmount  Float? // postgres @db.Decimal(8, 2)
+  lateFeeApplied Boolean @default(false)
 
-    reference String?
-    notes     String?
+  reference String?
+  notes     String?
 
-    contract Contract @relation(fields: [contractId], references: [id], onDelete: Cascade)
+  contract Contract @relation(fields: [contractId], references: [id], onDelete: Cascade)
 
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-    @@index([contractId])
-    @@index([dueDate])
-    @@index([status])
-    @@index([paymentMethod])
-    @@index([contractId, dueDate]) // Filtrar pagos vencidos por contrato
-    @@index([status, paidDate]) // Consultar pagos pagados/pendientes con fechas
-    @@map("payments")
+  @@index([contractId])
+  @@index([dueDate])
+  @@index([status])
+  @@index([paymentMethod])
+  @@index([contractId, dueDate]) // Filtrar pagos vencidos por contrato
+  @@index([status, paidDate]) // Consultar pagos pagados/pendientes con fechas
+  @@map("payments")
 }
 
 enum PaymentMethod {
-    CASH
-    BANK_TRANSFER
-    CHECK
-    CREDIT_CARD
-    DEBIT_CARD
-    DIGITAL_WALLET
-    OTHER
+  CASH
+  BANK_TRANSFER
+  CHECK
+  CREDIT_CARD
+  DEBIT_CARD
+  DIGITAL_WALLET
+  OTHER
 }
 
 enum PaymentType {
-    CANON
-    RENT
-    DEPOSIT
-    UTILITIES
-    MAINTENANCE
-    REPAIR
-    LATE_FEE
-    OTHER
+  CANON
+  RENT
+  DEPOSIT
+  UTILITIES
+  MAINTENANCE
+  REPAIR
+  LATE_FEE
+  OTHER
 }
 
 enum PaymentStatus {
-    PENDING // Pendiente
-    PAID // Pagado
-    OVERDUE // Vencido
-    PARTIAL // Parcial
-    CANCELLED // Cancelado
+  PENDING // Pendiente
+  PAID // Pagado
+  OVERDUE // Vencido
+  PARTIAL // Parcial
+  CANCELLED // Cancelado
 }
 
 enum ContractPriority {
-    LOW
-    NORMAL
-    HIGH
-    URGENT
+  LOW
+  NORMAL
+  HIGH
+  URGENT
 }
 
 // ========================================
@@ -240,40 +240,123 @@ enum ContractPriority {
 // ========================================
 
 model Process {
-    id String @id @default(cuid())
+  id String @id @default(cuid())
 
-    tenantId   String?
-    unitId     String?
-    adminId    String?
-    contractId String?
+  tenantId   String?
+  unitId     String?
+  adminId    String?
+  contractId String?
 
-    status      ProcessStatus @default(IN_PROGRESS)
-    currentStep Int           @default(1)
-    payload     Json?
-    notes       String?
+  status             ProcessStatus @default(IN_PROGRESS)
+  currentStep        Int           @default(1)
+  payload            Json?
+  notes              String?
+  approvalConditions String?
 
-    tenant   Tenant?   @relation("ProcessTenant", fields: [tenantId], references: [id], onDelete: SetNull)
-    unit     Unit?     @relation("ProcessUnit", fields: [unitId], references: [id], onDelete: SetNull)
-    admin    Admin?    @relation("ProcessAdmin", fields: [adminId], references: [id], onDelete: SetNull)
-    contract Contract? @relation("ProcessContract", fields: [contractId], references: [id], onDelete: SetNull)
+  tenant      Tenant?             @relation("ProcessTenant", fields: [tenantId], references: [id], onDelete: SetNull)
+  unit        Unit?               @relation("ProcessUnit", fields: [unitId], references: [id], onDelete: SetNull)
+  admin       Admin?              @relation("ProcessAdmin", fields: [adminId], references: [id], onDelete: SetNull)
+  contract    Contract?           @relation("ProcessContract", fields: [contractId], references: [id], onDelete: SetNull)
+  documents   ProcessDocument[]   @relation("ProcessDocuments")
+  reviewItems ProcessReviewItem[] @relation("ProcessReviewItems")
 
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-    @@index([status, updatedAt])
-    @@index([tenantId, status])
-    @@index([unitId])
-    @@index([adminId])
-    @@index([contractId])
-    @@map("processes")
+  @@index([status, updatedAt])
+  @@index([tenantId, status])
+  @@index([unitId])
+  @@index([adminId])
+  @@index([contractId])
+  @@map("processes")
 }
 
 enum ProcessStatus {
-    IN_PROGRESS
-    IN_EVALUATION
-    WAITING_FOR_FEEDBACK
-    APPROVED
-    DISAPPROVED
+  IN_PROGRESS
+  IN_EVALUATION
+  WAITING_FOR_FEEDBACK
+  APPROVED
+  DISAPPROVED
+}
+
+model ProcessDocument {
+  id String @id @default(cuid())
+
+  processId    String
+  // Stable requirement id from profiles/securityOptions, e.g. "rut" or "extractos".
+  documentType String
+  label        String
+
+  fileName String
+  filePath String
+  fileType String?
+  fileSize Int?
+
+  version  Int     @default(1)
+  isLatest Boolean @default(true)
+
+  uploadedByRole   ProcessDocumentUploaderRole @default(TENANT)
+  uploadedByUserId String?
+
+  process     Process             @relation("ProcessDocuments", fields: [processId], references: [id], onDelete: Cascade)
+  uploadedBy  User?               @relation("ProcessDocumentUploader", fields: [uploadedByUserId], references: [id], onDelete: SetNull)
+  reviewItems ProcessReviewItem[] @relation("ProcessDocumentReviewItems")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([processId, documentType])
+  @@index([processId, documentType, isLatest])
+  @@index([uploadedByUserId])
+  @@map("process_documents")
+}
+
+enum ProcessDocumentUploaderRole {
+  TENANT
+  ADMIN
+}
+
+model ProcessReviewItem {
+  id String @id @default(cuid())
+
+  processId  String
+  documentId String?
+
+  targetType ProcessReviewTargetType
+  targetId   String
+  status     ProcessReviewStatus     @default(PENDING)
+
+  adminComment   String?
+  tenantResponse String?
+
+  reviewedByAdminId String?
+  reviewedAt        DateTime?
+
+  process         Process          @relation("ProcessReviewItems", fields: [processId], references: [id], onDelete: Cascade)
+  document        ProcessDocument? @relation("ProcessDocumentReviewItems", fields: [documentId], references: [id], onDelete: SetNull)
+  reviewedByAdmin Admin?           @relation("ProcessReviewAdmin", fields: [reviewedByAdminId], references: [id], onDelete: SetNull)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([processId, targetType, targetId])
+  @@index([processId, status])
+  @@index([documentId])
+  @@index([reviewedByAdminId])
+  @@map("process_review_items")
+}
+
+enum ProcessReviewTargetType {
+  SECTION
+  DOCUMENT
+  FIELD
+}
+
+enum ProcessReviewStatus {
+  PENDING
+  APPROVED
+  NEEDS_FEEDBACK
+  REJECTED
 }
 
 // ========================================
@@ -281,68 +364,68 @@ enum ProcessStatus {
 // ========================================
 
 model Property {
-    id String @id @default(cuid())
+  id String @id @default(cuid())
 
-    // Basic info
-    name        String
-    description String?
+  // Basic info
+  name        String
+  description String?
 
-    // Address
-    street         String
-    number         String
-    city           String
-    neighborhood   String
-    state          String
-    postalCode     String
-    gpsCoordinates String? // Format: "lat,lng"
-    country        String  @default("Colombia")
+  // Address
+  street         String
+  number         String
+  city           String
+  neighborhood   String
+  state          String
+  postalCode     String
+  gpsCoordinates String? // Format: "lat,lng"
+  country        String  @default("Colombia")
 
-    // Features
-    propertyType  PropertyType
-    totalLandArea Float? // En m²
-    builtArea     Float // En m²
-    floors        Int          @default(1)
-    age           Int
+  // Features
+  propertyType  PropertyType
+  totalLandArea Float? // En m²
+  builtArea     Float // En m²
+  floors        Int          @default(1)
+  age           Int
 
-    // Exterior
-    yardOrGarden         String?
-    parking              Int     @default(0)
-    parkingLocation      String?
-    balconiesAndTerraces String?
-    recreationalAreas    String?
+  // Exterior
+  yardOrGarden         String?
+  parking              Int     @default(0)
+  parkingLocation      String?
+  balconiesAndTerraces String?
+  recreationalAreas    String?
 
-    // Zonas comunes (optimizado como JSON)
-    commonZones String? // JSON string con array de zonas comunes
-    // Ejemplo: [{"name": "Piscina", "description": "...", "capacity": 20, "available": true, "openingTime": "06:00", "closingTime": "22:00", "adminId": "admin123"}]
+  // Zonas comunes (optimizado como JSON)
+  commonZones String? // JSON string con array de zonas comunes
+  // Ejemplo: [{"name": "Piscina", "description": "...", "capacity": 20, "available": true, "openingTime": "06:00", "closingTime": "22:00", "adminId": "admin123"}]
 
-    // Estado y disponibilidad
-    status PropertyStatus @default(ACTIVE)
+  // Estado y disponibilidad
+  status PropertyStatus @default(ACTIVE)
 
-    admins Admin[] @relation("PropertyAdmins")
-    units  Unit[]
+  admins Admin[] @relation("PropertyAdmins")
+  units  Unit[]
 
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-    @@index([city, neighborhood])
-    @@index([propertyType])
-    @@map("properties")
+  @@index([city, neighborhood])
+  @@index([propertyType])
+  @@map("properties")
 }
 
 enum PropertyType {
-    HOUSE
-    BUILDING
-    APARTMENT
-    COMMERCIAL_SPACE
-    OFFICE
-    LAND
+  HOUSE
+  BUILDING
+  APARTMENT
+  COMMERCIAL_SPACE
+  OFFICE
+  LAND
 }
 
 enum PropertyStatus {
-    ACTIVE
-    INACTIVE
-    MAINTENANCE
-    SOLD
+  ACTIVE
+  INACTIVE
+  MAINTENANCE
+  SOLD
 }
 
 // ========================================
@@ -350,79 +433,79 @@ enum PropertyStatus {
 // ========================================
 
 model Unit {
-    id String @id @default(cuid())
+  id String @id @default(cuid())
 
-    propertyId String
+  propertyId String
 
-    unitNumber String
-    floor      Int?
-    area       Float? // postgres @db.Decimal(8, 2)
-    bedrooms   Int     @default(0)
-    bathrooms  Float   @default(0) // postgres @db.Decimal(3, 1)
-    furnished  Boolean @default(false)
+  unitNumber String
+  floor      Int?
+  area       Float? // postgres @db.Decimal(8, 2)
+  bedrooms   Int     @default(0)
+  bathrooms  Float   @default(0) // postgres @db.Decimal(3, 1)
+  furnished  Boolean @default(false)
 
-    // Características detalladas
-    balcony        Boolean @default(false)
-    parking        Boolean @default(false)
-    storage        Boolean @default(false)
-    petFriendly    Boolean @default(false)
-    smokingAllowed Boolean @default(false)
+  // Características detalladas
+  balcony        Boolean @default(false)
+  parking        Boolean @default(false)
+  storage        Boolean @default(false)
+  petFriendly    Boolean @default(false)
+  smokingAllowed Boolean @default(false)
 
-    // Servicios incluidos
-    internet      Boolean @default(false)
-    cableTV       Boolean @default(false)
-    waterIncluded Boolean @default(false)
-    gasIncluded   Boolean @default(false)
+  // Servicios incluidos
+  internet      Boolean @default(false)
+  cableTV       Boolean @default(false)
+  waterIncluded Boolean @default(false)
+  gasIncluded   Boolean @default(false)
 
-    // Espacios interiores (privados y compartidos)
-    kitchen     Boolean @default(false)
-    sharedKitchen  Boolean @default(false)
-    bathroom    Boolean @default(false)
-    sharedBathroom Boolean @default(false)
-    laundry     Boolean @default(false)
-    sharedLaundry  Boolean @default(false)
-    livingRoom  Boolean @default(false)
-    diningRoom  Boolean @default(false)
-    livingDiningRoom Boolean @default(false)
-    sharedLivingDiningRoom Boolean @default(false)
+  // Espacios interiores (privados y compartidos)
+  kitchen                Boolean @default(false)
+  sharedKitchen          Boolean @default(false)
+  bathroom               Boolean @default(false)
+  sharedBathroom         Boolean @default(false)
+  laundry                Boolean @default(false)
+  sharedLaundry          Boolean @default(false)
+  livingRoom             Boolean @default(false)
+  diningRoom             Boolean @default(false)
+  livingDiningRoom       Boolean @default(false)
+  sharedLivingDiningRoom Boolean @default(false)
 
-    status UnitStatus @default(VACANT)
+  status UnitStatus @default(VACANT)
 
-    baseRent Float? // postgres @db.Decimal(10, 2)
-    deposit  Float? // postgres @db.Decimal(10, 2)
+  baseRent Float? // postgres @db.Decimal(10, 2)
+  deposit  Float? // postgres @db.Decimal(10, 2)
 
-    // Información adicional
-    description String? // postgres @db.Text
-    images      String // String[] // URLs de imágenes
-    highlights  Json?
+  // Información adicional
+  description String? // postgres @db.Text
+  images      String // String[] // URLs de imágenes
+  highlights  Json?
 
-    // Última inspección
-    lastInspectionDate DateTime?
+  // Última inspección
+  lastInspectionDate DateTime?
 
-    property  Property   @relation(fields: [propertyId], references: [id], onDelete: Cascade)
-    contracts Contract[]
-    processes Process[]  @relation("ProcessUnit")
+  property  Property   @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  contracts Contract[]
+  processes Process[]  @relation("ProcessUnit")
 
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-    @@unique([propertyId, unitNumber])
-    @@index([status])
-    @@index([bedrooms, bathrooms]) // Para búsquedas
-    @@index([baseRent]) // Para filtros de precio
-    @@index([propertyId]) // Consultar unidades por propiedad
-    @@index([floor]) // Consultas por nivel/piso
-    @@index([furnished]) // Buscar amoblados
-    @@index([petFriendly, smokingAllowed]) // Filtros para preferencias
-    @@map("units")
+  @@unique([propertyId, unitNumber])
+  @@index([status])
+  @@index([bedrooms, bathrooms]) // Para búsquedas
+  @@index([baseRent]) // Para filtros de precio
+  @@index([propertyId]) // Consultar unidades por propiedad
+  @@index([floor]) // Consultas por nivel/piso
+  @@index([furnished]) // Buscar amoblados
+  @@index([petFriendly, smokingAllowed]) // Filtros para preferencias
+  @@map("units")
 }
 
 enum UnitStatus {
-    VACANT // Vacante
-    OCCUPIED // Ocupada
-    RESERVED // Reservada
-    MAINTENANCE // En mantenimiento
-    UNAVAILABLE // No disponible
+  VACANT // Vacante
+  OCCUPIED // Ocupada
+  RESERVED // Reservada
+  MAINTENANCE // En mantenimiento
+  UNAVAILABLE // No disponible
 }
 
 // ========================================
@@ -430,230 +513,232 @@ enum UnitStatus {
 // ========================================
 
 model User {
-    id String @id @default(cuid())
+  id String @id @default(cuid())
 
-    // Autenticación
-    email         String    @unique
-    emailVerified DateTime?
-    phone         String?
-    phoneVerified DateTime?
-    password      String? // Hash de la contraseña (bcrypt)
+  // Autenticación
+  email         String    @unique
+  emailVerified DateTime?
+  phone         String?
+  phoneVerified DateTime?
+  password      String? // Hash de la contraseña (bcrypt)
 
-    resetPasswordToken        String?
-    resetPasswordExpiresAt    DateTime?
-    resetPasswordUsed         Boolean   @default(false)
-    verificationCode          String?
-    verificationCodeExpiresAt DateTime?
+  resetPasswordToken        String?
+  resetPasswordExpiresAt    DateTime?
+  resetPasswordUsed         Boolean   @default(false)
+  verificationCode          String?
+  verificationCodeExpiresAt DateTime?
 
-    // Información personal  
-    name       String
-    lastName   String
-    birthDate  DateTime?
-    birthPlace String?
+  // Información personal  
+  name       String
+  lastName   String
+  birthDate  DateTime?
+  birthPlace String?
 
-    // Dirección 
-    address    String?
-    city       String?
-    state      String?
-    country    String?
-    postalCode String?
+  // Dirección 
+  address    String?
+  city       String?
+  state      String?
+  country    String?
+  postalCode String?
 
-    documentType   DocumentType?
-    documentNumber String?       @unique
+  documentType   DocumentType?
+  documentNumber String?       @unique
 
-    gender        Gender?
-    maritalStatus MaritalStatus?
-    profession    String?
-    monthlyIncome Float?
+  gender        Gender?
+  maritalStatus MaritalStatus?
+  profession    String?
+  monthlyIncome Float?
 
-    // Avatar/foto
-    profileImage String?
+  // Avatar/foto
+  profileImage String?
 
-    // Estado de la cuenta
-    disable  Boolean @default(false)
-    timezone String  @default("America/Bogota")
-    language String  @default("es") // Idioma preferido
+  // Estado de la cuenta
+  disable  Boolean @default(false)
+  timezone String  @default("America/Bogota")
+  language String  @default("es") // Idioma preferido
 
-    // Configuraciones de notificaciones
-    emailNotifications Boolean @default(true)
-    smsNotifications   Boolean @default(false)
+  // Configuraciones de notificaciones
+  emailNotifications Boolean @default(true)
+  smsNotifications   Boolean @default(false)
 
-    // Campos de auditoría
-    createdAt   DateTime  @default(now())
-    updatedAt   DateTime  @updatedAt
-    deletedAt   DateTime?
-    lastLoginAt DateTime?
+  // Campos de auditoría
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime?
+  lastLoginAt DateTime?
 
-    admin  Admin?
-    tenant Tenant?
+  admin  Admin?
+  tenant Tenant?
 
-    additionalContracts Contract[] @relation("AdditionalResidents") // Contratos donde es residente adicional
+  additionalContracts      Contract[]        @relation("AdditionalResidents") // Contratos donde es residente adicional
+  uploadedProcessDocuments ProcessDocument[] @relation("ProcessDocumentUploader")
 
-    @@index([email])
-    @@index([documentNumber])
-    @@index([deletedAt])
-    @@index([createdAt])
-    @@index([lastLoginAt])
-    @@map("users")
+  @@index([email])
+  @@index([documentNumber])
+  @@index([deletedAt])
+  @@index([createdAt])
+  @@index([lastLoginAt])
+  @@map("users")
 }
 
 enum DocumentType {
-    CC // Cédula de Ciudadanía
-    CE // Cédula de Extranjería
-    TI // Tarjeta de Identidad
-    PASSPORT // Pasaporte
-    NIT // NIT para personas jurídicas
-    OTHER // Otros documentos
+  CC // Cédula de Ciudadanía
+  CE // Cédula de Extranjería
+  TI // Tarjeta de Identidad
+  PASSPORT // Pasaporte
+  NIT // NIT para personas jurídicas
+  OTHER // Otros documentos
 }
 
 enum Gender {
-    MALE
-    FEMALE
-    OTHER
-    PREFER_NOT_TO_SAY
+  MALE
+  FEMALE
+  OTHER
+  PREFER_NOT_TO_SAY
 }
 
 enum MaritalStatus {
-    SINGLE
-    MARRIED
-    DIVORCED
-    WIDOWED // Viudo
-    SEPARATED
-    COMMON_LAW // Unión libre
+  SINGLE
+  MARRIED
+  DIVORCED
+  WIDOWED // Viudo
+  SEPARATED
+  COMMON_LAW // Unión libre
 }
 
 enum Profile {
-    EMPLOYED
-    INDEPENDENT
-    RETIRED
-    ENTREPRENEUR
-    INVESTOR
-    STUDENT
-    FOREIGN
-    NOMAD
-    UNEMPLOYED
+  EMPLOYED
+  INDEPENDENT
+  RETIRED
+  ENTREPRENEUR
+  INVESTOR
+  STUDENT
+  FOREIGN
+  NOMAD
+  UNEMPLOYED
 }
 
 model Admin {
-    id         String     @id @default(cuid())
-    userId     String     @unique
-    adminLevel AdminLevel @default(STANDARD)
+  id         String     @id @default(cuid())
+  userId     String     @unique
+  adminLevel AdminLevel @default(STANDARD)
 
-    user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-    createdById String?
-    createdBy   Admin?  @relation("AdminCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
-    created     Admin[] @relation("AdminCreatedBy")
+  createdById String?
+  createdBy   Admin?  @relation("AdminCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+  created     Admin[] @relation("AdminCreatedBy")
 
-    // Relaciones
-    propertiesAssigned Property[] @relation("PropertyAdmins")
-    contracts          Contract[] @relation("ContractAdmins")
-    processes          Process[]  @relation("ProcessAdmin")
+  // Relaciones
+  propertiesAssigned   Property[]          @relation("PropertyAdmins")
+  contracts            Contract[]          @relation("ContractAdmins")
+  processes            Process[]           @relation("ProcessAdmin")
+  reviewedProcessItems ProcessReviewItem[] @relation("ProcessReviewAdmin")
 
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-    notifications Notification[]
+  notifications Notification[]
 
-    @@index([adminLevel])
-    @@index([userId]) // Buscar admin por usuario
-    @@index([createdById]) // Jerarquías: admins creados por otros
-    @@map("admins")
+  @@index([adminLevel])
+  @@index([userId]) // Buscar admin por usuario
+  @@index([createdById]) // Jerarquías: admins creados por otros
+  @@map("admins")
 }
 
 enum AdminLevel {
-    SUPER_ADMIN
-    MANAGER
-    STANDARD
-    LIMITED
+  SUPER_ADMIN
+  MANAGER
+  STANDARD
+  LIMITED
 }
 
 model Tenant {
-    id     String @id @default(cuid())
-    userId String @unique
+  id     String @id @default(cuid())
+  userId String @unique
 
-    // process
-    profile Profile?
-    favoriteUnitIds Json?
+  // process
+  profile         Profile?
+  favoriteUnitIds Json?
 
-    // Información específica del inquilino
-    emergencyContact      String?
-    emergencyContactPhone String?
-    monthlyIncome         Float?
+  // Información específica del inquilino
+  emergencyContact      String?
+  emergencyContactPhone String?
+  monthlyIncome         Float?
 
-    // Referencias
-    references Reference[]
+  // Referencias
+  references Reference[]
 
-    user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
-    contracts Contract[] // Contratos donde es el inquilino
-    processes Process[]  @relation("ProcessTenant")
-    notifications Notification[]
+  user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  contracts     Contract[] // Contratos donde es el inquilino
+  processes     Process[]      @relation("ProcessTenant")
+  notifications Notification[]
 
-    registrationToken        String?
-    registrationTokenExpires DateTime?
+  registrationToken        String?
+  registrationTokenExpires DateTime?
 
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-    @@index([userId]) // Relación directa
-    @@index([monthlyIncome]) // Para filtros económicos
-    @@map("tenants")
+  @@index([userId]) // Relación directa
+  @@index([monthlyIncome]) // Para filtros económicos
+  @@map("tenants")
 }
 
 model Notification {
-    id String @id @default(cuid())
+  id String @id @default(cuid())
 
-    tenantId String?
-    adminId  String?
+  tenantId String?
+  adminId  String?
 
-    senderRole NotificationSenderRole @default(SYSTEM)
-    senderUserId String?
+  senderRole   NotificationSenderRole @default(SYSTEM)
+  senderUserId String?
 
-    type NotificationType @default(GENERAL)
-    title String?
-    body  String
-    link  String?
-    metadata Json?
+  type     NotificationType @default(GENERAL)
+  title    String?
+  body     String
+  link     String?
+  metadata Json?
 
-    readAt DateTime?
+  readAt DateTime?
 
-    tenant Tenant? @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-    admin  Admin?  @relation(fields: [adminId], references: [id], onDelete: SetNull)
+  tenant Tenant? @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  admin  Admin?  @relation(fields: [adminId], references: [id], onDelete: SetNull)
 
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-    @@index([tenantId])
-    @@index([adminId])
-    @@index([type])
-    @@index([readAt])
-    @@index([createdAt])
-    @@map("notifications")
+  @@index([tenantId])
+  @@index([adminId])
+  @@index([type])
+  @@index([readAt])
+  @@index([createdAt])
+  @@map("notifications")
 }
 
 enum NotificationType {
-    GENERAL
-    APPROVAL
-    REJECTION
-    PAYMENT_OVERDUE
-    REMINDER
+  GENERAL
+  APPROVAL
+  REJECTION
+  PAYMENT_OVERDUE
+  REMINDER
 }
 
 enum NotificationSenderRole {
-    TENANT
-    ADMIN
-    SYSTEM
+  TENANT
+  ADMIN
+  SYSTEM
 }
 
 model Reference {
-    id       String @id @default(cuid())
-    tenantId String
+  id       String @id @default(cuid())
+  tenantId String
 
-    name         String
-    phone        String
-    relationship String
+  name         String
+  phone        String
+  relationship String
 
-    tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
 
-    @@map("references")
+  @@map("references")
 }

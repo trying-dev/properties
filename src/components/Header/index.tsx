@@ -128,6 +128,11 @@ export default function Header() {
             <Link href="/sobre-nosotros" className={styles.navLinkSecondary}>
               Sobre Nosotros
             </Link>
+            {isAuthenticatedSession && (
+              <Link href={dashboardHref} className={styles.navLinkSecondary}>
+                Dashboard
+              </Link>
+            )}
           </nav>
 
           {isLoadingSession ? <div className={styles.skeleton} /> : isAuthenticatedSession ? Authorized : Unauthorized}

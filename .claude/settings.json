@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx eslint *)",
+      "Bash(sed -n '/model Process/,/^}/p' prisma/schema.postgresql.prisma)",
+      "Bash(sed -n '/enum ProcessStatus/,/^}/p' prisma/schema.postgresql.prisma)",
+      "Bash(sed -n '1,40p' src/app/dashboard/admin/applications/page.tsx)",
+      "Bash(sed -n '1,40p' src/app/dashboard/admin/applications/[id]/page.tsx)",
+      "Bash(awk '/securityOptions/{p=1} p' src/app/process/_/profiles.ts)"
+    ]
+  }
+}

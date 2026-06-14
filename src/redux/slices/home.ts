@@ -1,5 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import type { AvailableUnit } from '+/actions/nuevo-proceso'
+import type { HomeUnit } from '+/actions/nuevo-proceso'
+import type { PropertyWithOccupancy } from '+/actions/occupancy'
 import { initialState } from '../store'
 
 export type HomeFilters = {
@@ -8,10 +9,14 @@ export type HomeFilters = {
   city: string
 }
 
+export type HomeViewMode = 'units' | 'properties'
+
 type HomeState = {
-  units: AvailableUnit[]
+  units: HomeUnit[]
+  properties: PropertyWithOccupancy[]
   showFilters: boolean
   searchQuery: string
+  viewMode: HomeViewMode
   filters: HomeFilters
 }
 
@@ -19,8 +24,14 @@ const homeSlice = createSlice({
   name: 'home',
   initialState: initialState.home as HomeState,
   reducers: {
-    setUnits: (state, action: PayloadAction<AvailableUnit[]>) => {
+    setUnits: (state, action: PayloadAction<HomeUnit[]>) => {
       state.units = action.payload
+    },
+    setProperties: (state, action: PayloadAction<PropertyWithOccupancy[]>) => {
+      state.properties = action.payload
+    },
+    setViewMode: (state, action: PayloadAction<HomeViewMode>) => {
+      state.viewMode = action.payload
     },
     setShowFilters: (state, action: PayloadAction<boolean>) => {
       state.showFilters = action.payload
@@ -39,6 +50,6 @@ const homeSlice = createSlice({
   },
 })
 
-export const { setUnits, setShowFilters, setSearchQuery, setFilters, resetFilters } = homeSlice.actions
+export const { setUnits, setProperties, setViewMode, setShowFilters, setSearchQuery, setFilters, resetFilters } = homeSlice.actions
 
 export default homeSlice.reducer

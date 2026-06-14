@@ -1,267 +1,199 @@
 'use client'
 
-import { useEffect, useState, useTransition } from 'react'
-import { Building2, Calendar, TrendingUp, Users, FileText } from 'lucide-react'
+import { useEffect, useMemo, useState } from 'react'
+import { FileText, Search, ChevronRight, Plus } from 'lucide-react'
 import Link from 'next/link'
+import type { ProcessStatus } from '@prisma/client'
 
-import { getProperties } from '+/actions/property'
 import { getAdminProcessesAction } from '+/actions/processes'
 import type { AdminProcess } from '+/actions/processes'
+import { processStatusConfig } from '+/lib/processStatus'
 import Header from '+/components/Header'
-
-interface DashboardStats {
-  totalProperties: number
-  activeAdmins: number
-  pendingTasks: number
-  monthlyRevenue: number
-}
 
 const formatDate = (value?: string | Date | null) => {
   if (!value) return '-'
   const parsed = value instanceof Date ? value : new Date(value)
   if (Number.isNaN(parsed.getTime())) return '-'
-  return parsed.toLocaleDateString('es-MX')
+  return parsed.toLocaleDateString('es-CO')
 }
 
+// Estados que devuelve getAdminProcessesAction (activos).
+const filterStatuses: ProcessStatus[] = ['IN_PROGRESS', 'IN_EVALUATION', 'WAITING_FOR_FEEDBACK']
+
+const tenantName = (p: AdminProcess) =>
+  [p.tenant?.user?.name, p.tenant?.user?.lastName].filter(Boolean).join(' ') || p.tenant?.user?.email || 'Solicitud sin nombre'
+
 export default function AdminApplicationsPage() {
-  const [stats, setStats] = useState<DashboardStats>({
-    totalProperties: 0,
-    activeAdmins: 0,
-    pendingTasks: 0,
-    monthlyRevenue: 0,
-  })
   const [processes, setProcesses] = useState<AdminProcess[]>([])
-  const [processesError, setProcessesError] = useState<string | null>(null)
-  const [processesLoading, setProcessesLoading] = useState(true)
-  const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [, startTransition] = useTransition()
+  const [loading, setLoading] = useState(true)
+  const [query, setQuery] = useState('')
+  const [statusFilter, setStatusFilter] = useState<ProcessStatus | 'ALL'>('ALL')
 
   useEffect(() => {
-    startTransition(async () => {
-      try {
-        setIsLoading(true)
-        setError(null)
-
-        const [propertiesData] = await Promise.all([getProperties(), new Promise((resolve) => setTimeout(resolve, 450))])
-
-        setStats({
-          totalProperties: propertiesData.length,
-          activeAdmins: 5,
-          pendingTasks: Math.floor(Math.random() * 10) + 1,
-          monthlyRevenue: Math.floor(Math.random() * 50000) + 10000,
-        })
-      } catch (err) {
-        console.error('Error loading applications stats:', err)
-        setError('Error al cargar el resumen de aplicaciones')
-      } finally {
-        setIsLoading(false)
-      }
-    })
-  }, [])
-
-  useEffect(() => {
-    const loadProcesses = async () => {
-      setProcessesLoading(true)
-      setProcessesError(null)
+    const load = async () => {
+      setLoading(true)
+      setError(null)
       const result = await getAdminProcessesAction()
       if (!result.success || !result.data) {
-        setProcessesError(result.error ?? 'No se pudieron cargar las aplicaciones.')
-        setProcessesLoading(false)
+        setError(result.error ?? 'No se pudieron cargar las aplicaciones.')
+        setLoading(false)
         return
       }
       setProcesses(result.data)
-      setProcessesLoading(false)
+      setLoading(false)
     }
-
-    void loadProcesses()
+    void load()
   }, [])
 
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('es-MX', {
-      style: 'currency',
-      currency: 'MXN',
-    }).format(amount)
-  }
+  const counts = useMemo(() => {
+    const base: Record<ProcessStatus, number> = {
+      IN_PROGRESS: 0,
+      IN_EVALUATION: 0,
+      WAITING_FOR_FEEDBACK: 0,
+      APPROVED: 0,
+      DISAPPROVED: 0,
+    }
+    for (const p of processes) base[p.status] += 1
+    return base
+  }, [processes])
 
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-white">
-        <Header />
-        <div className="flex items-center justify-center p-12">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto mb-4"></div>
-            <p className="text-gray-600">Cargando aplicaciones...</p>
-          </div>
-        </div>
-      </div>
-    )
-  }
-
-  if (error) {
-    return (
-      <div className="min-h-screen bg-white">
-        <Header />
-        <div className="flex items-center justify-center p-12">
-          <div className="text-center max-w-md">
-            <div className="w-16 h-16 mx-auto mb-4 text-red-500">
-              <FileText className="w-full h-full" />
-            </div>
-            <h2 className="text-xl font-semibold text-gray-900 mb-2">Error al cargar aplicaciones</h2>
-            <p className="text-gray-600 mb-4">{error}</p>
-            <button
-              onClick={() => window.location.reload()}
-              className="bg-gray-900 text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition-colors"
-            >
-              Reintentar
-            </button>
-          </div>
-        </div>
-      </div>
-    )
-  }
+  const filtered = useMemo(() => {
+    const q = query.trim().toLowerCase()
+    return processes.filter((p) => {
+      if (statusFilter !== 'ALL' && p.status !== statusFilter) return false
+      if (!q) return true
+      const haystack = [
+        tenantName(p),
+        p.tenant?.user?.email ?? '',
+        p.unit?.property?.name ?? '',
+        p.unit?.unitNumber ?? '',
+      ]
+        .join(' ')
+        .toLowerCase()
+      return haystack.includes(q)
+    })
+  }, [processes, query, statusFilter])
 
   return (
     <div className="min-h-screen bg-white flex flex-col">
       <Header />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 flex-1 w-full">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Aplicaciones</h1>
-          <p className="text-gray-600">Gestiona procesos y revisa el estado general.</p>
+        <div className="mb-8 flex flex-wrap items-start justify-between gap-4">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">Aplicaciones</h1>
+            <p className="text-gray-600">Gestiona los procesos de solicitud activos.</p>
+          </div>
+          <Link
+            href="/dashboard/admin/nuevo-proceso"
+            className="inline-flex items-center gap-2 rounded-lg bg-gray-900 px-4 py-2 text-sm font-semibold text-white hover:bg-gray-800 transition-colors"
+          >
+            <Plus className="h-4 w-4" />
+            Nuevo proceso
+          </Link>
         </div>
 
-        <div className="bg-white rounded-lg border shadow-sm p-6 mb-10">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-lg font-semibold text-gray-900">Aplicaciones en progreso</h2>
-            <span className="text-sm text-gray-500">{processesLoading ? 'Cargando...' : `${processes.length} activas`}</span>
+        {/* Resumen por estado */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+          {filterStatuses.map((status) => {
+            const cfg = processStatusConfig[status]
+            const active = statusFilter === status
+            return (
+              <button
+                key={status}
+                onClick={() => setStatusFilter(active ? 'ALL' : status)}
+                className={`rounded-lg border p-5 text-left transition-all ${
+                  active ? 'border-gray-900 ring-1 ring-gray-900' : 'border-gray-200 hover:border-gray-300'
+                }`}
+              >
+                <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold ring-1 ring-inset ${cfg.box}`}>
+                  {cfg.label}
+                </span>
+                <p className="mt-3 text-3xl font-bold text-gray-900">{loading ? '—' : counts[status]}</p>
+              </button>
+            )
+          })}
+        </div>
+
+        {/* Búsqueda + filtro */}
+        <div className="mb-6 flex flex-wrap items-center gap-3">
+          <div className="relative flex-1 min-w-[240px]">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+            <input
+              type="text"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Buscar por inquilino, email, propiedad o unidad..."
+              className="w-full rounded-lg border border-gray-200 py-2.5 pl-10 pr-4 text-sm focus:border-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-900"
+            />
           </div>
-
-          {processesLoading ? (
-            <div className="space-y-3">
-              {[1, 2, 3].map((item) => (
-                <div key={item} className="h-16 bg-gray-100 rounded-lg animate-pulse" />
-              ))}
-            </div>
-          ) : processesError ? (
-            <div className="text-sm text-red-600">{processesError}</div>
-          ) : processes.length === 0 ? (
-            <div className="text-sm text-gray-600">No hay aplicaciones en progreso por ahora.</div>
-          ) : (
-            <div className="space-y-3">
-              {processes.map((process) => {
-                const tenantName = [process.tenant?.user?.name, process.tenant?.user?.lastName].filter(Boolean).join(' ')
-                const unitLabel = process.unit?.unitNumber ? `Unidad ${process.unit.unitNumber}` : 'Unidad'
-                const propertyName = process.unit?.property?.name ?? 'Propiedad'
-
-                return (
-                  <div
-                    key={process.id}
-                    className="flex flex-col gap-2 rounded-lg border border-gray-200 px-4 py-3 sm:flex-row sm:items-center sm:justify-between"
-                  >
-                    <div>
-                      <p className="text-sm font-semibold text-gray-900">{tenantName || process.tenant?.user?.email || 'Solicitud sin nombre'}</p>
-                      <p className="text-xs text-gray-500">
-                        {propertyName} · {unitLabel}
-                      </p>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <Link
-                        href={`/dashboard/admin/applications/${process.id}`}
-                        className="text-xs font-semibold text-gray-700 hover:text-gray-900 underline"
-                      >
-                        Ver detalle
-                      </Link>
-                      <span className="rounded-full bg-blue-50 px-2.5 py-1 text-xs font-semibold text-blue-700">Paso {process.currentStep}</span>
-                      <span className="rounded-full bg-gray-100 px-2.5 py-1 text-xs font-semibold text-gray-700">
-                        {process.status === 'IN_PROGRESS'
-                          ? 'En progreso'
-                          : process.status === 'IN_EVALUATION'
-                            ? 'En evaluación'
-                            : process.status === 'WAITING_FOR_FEEDBACK'
-                              ? 'Esperando feedback'
-                              : process.status === 'APPROVED'
-                                ? 'Aprobado'
-                                : 'Desaprobado'}
-                      </span>
-                      <span className="text-xs text-gray-500">{formatDate(process.updatedAt)}</span>
-                    </div>
-                  </div>
-                )
-              })}
-            </div>
+          {statusFilter !== 'ALL' && (
+            <button
+              onClick={() => setStatusFilter('ALL')}
+              className="rounded-lg border border-gray-200 px-3 py-2 text-sm font-medium text-gray-600 hover:bg-gray-50"
+            >
+              Quitar filtro
+            </button>
           )}
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
-          <div className="bg-white p-6 rounded-lg shadow-sm border">
-            <div className="flex items-center">
-              <Building2 className="h-8 w-8 text-blue-600" />
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Propiedades</p>
-                <p className="text-2xl font-bold text-gray-900">{stats.totalProperties}</p>
-                <p className="text-xs text-green-600">+2 este mes</p>
-              </div>
-            </div>
+        {/* Lista */}
+        <div className="rounded-lg border border-gray-200">
+          <div className="flex items-center justify-between border-b border-gray-200 px-5 py-3">
+            <h2 className="text-sm font-semibold text-gray-900">Aplicaciones</h2>
+            <span className="text-sm text-gray-500">{loading ? 'Cargando...' : `${filtered.length} resultado(s)`}</span>
           </div>
 
-          <div className="bg-white p-6 rounded-lg shadow-sm border">
-            <div className="flex items-center">
-              <Users className="h-8 w-8 text-green-600" />
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Administradores</p>
-                <p className="text-2xl font-bold text-gray-900">{stats.activeAdmins}</p>
-                <p className="text-xs text-blue-600">Activos</p>
-              </div>
+          {loading ? (
+            <div className="space-y-3 p-5">
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="h-16 bg-gray-100 rounded-lg animate-pulse" />
+              ))}
             </div>
-          </div>
-
-          <div className="bg-white p-6 rounded-lg shadow-sm border">
-            <div className="flex items-center">
-              <Calendar className="h-8 w-8 text-yellow-600" />
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Tareas Pendientes</p>
-                <p className="text-2xl font-bold text-gray-900">{stats.pendingTasks}</p>
-                <p className="text-xs text-yellow-600">Requieren atención</p>
-              </div>
+          ) : error ? (
+            <div className="p-5 text-sm text-red-600">{error}</div>
+          ) : filtered.length === 0 ? (
+            <div className="flex flex-col items-center gap-2 py-16 text-center">
+              <FileText className="h-10 w-10 text-gray-300" />
+              <p className="text-sm text-gray-600">
+                {processes.length === 0 ? 'No hay aplicaciones activas por ahora.' : 'Ninguna aplicación coincide con la búsqueda.'}
+              </p>
             </div>
-          </div>
-
-          <div className="bg-white p-6 rounded-lg shadow-sm border">
-            <div className="flex items-center">
-              <TrendingUp className="h-8 w-8 text-purple-600" />
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Ingresos Mes</p>
-                <p className="text-2xl font-bold text-gray-900">{formatCurrency(stats.monthlyRevenue)}</p>
-                <p className="text-xs text-green-600">+15% vs mes anterior</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white rounded-lg border shadow-sm p-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Acciones rápidas</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <button className="flex flex-col items-center p-4 rounded-lg border border-gray-200 hover:border-gray-300 hover:bg-gray-50 transition-colors">
-              <Building2 className="h-8 w-8 text-blue-600 mb-2" />
-              <span className="text-sm font-medium text-gray-700">Nueva Propiedad</span>
-            </button>
-            <Link
-              href="/dashboard/admin/nuevo-proceso"
-              className="flex flex-col items-center p-4 rounded-lg border border-gray-200 hover:border-gray-300 hover:bg-gray-50 transition-colors"
-            >
-              <FileText className="h-8 w-8 text-green-600 mb-2" />
-              <span className="text-sm font-medium text-gray-700">Nuevo Proceso</span>
-            </Link>
-            <button className="flex flex-col items-center p-4 rounded-lg border border-gray-200 hover:border-gray-300 hover:bg-gray-50 transition-colors">
-              <Calendar className="h-8 w-8 text-yellow-600 mb-2" />
-              <span className="text-sm font-medium text-gray-700">Programar Visita</span>
-            </button>
-            <button className="flex flex-col items-center p-4 rounded-lg border border-gray-200 hover:border-gray-300 hover:bg-gray-50 transition-colors">
-              <TrendingUp className="h-8 w-8 text-purple-600 mb-2" />
-              <span className="text-sm font-medium text-gray-700">Ver Reportes</span>
-            </button>
-          </div>
+          ) : (
+            <ul className="divide-y divide-gray-100">
+              {filtered.map((p) => {
+                const cfg = processStatusConfig[p.status]
+                const unitLabel = p.unit?.unitNumber ? `Unidad ${p.unit.unitNumber}` : 'Unidad'
+                const propertyName = p.unit?.property?.name ?? 'Propiedad'
+                return (
+                  <li key={p.id}>
+                    <Link
+                      href={`/dashboard/admin/applications/${p.id}`}
+                      className="flex items-center justify-between gap-4 px-5 py-4 hover:bg-gray-50 transition-colors"
+                    >
+                      <div className="min-w-0">
+                        <p className="truncate text-sm font-semibold text-gray-900">{tenantName(p)}</p>
+                        <p className="truncate text-xs text-gray-500">
+                          {propertyName} · {unitLabel}
+                        </p>
+                      </div>
+                      <div className="flex shrink-0 items-center gap-3">
+                        <span className="hidden sm:inline rounded-full bg-gray-100 px-2.5 py-1 text-xs font-semibold text-gray-700">
+                          Paso {p.currentStep}
+                        </span>
+                        <span className={`inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold ring-1 ring-inset ${cfg.box}`}>
+                          {cfg.label}
+                        </span>
+                        <span className="hidden md:inline text-xs text-gray-500">{formatDate(p.updatedAt)}</span>
+                        <ChevronRight className="h-4 w-4 text-gray-400" />
+                      </div>
+                    </Link>
+                  </li>
+                )
+              })}
+            </ul>
+          )}
         </div>
       </main>
     </div>

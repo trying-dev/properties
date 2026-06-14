@@ -3,6 +3,7 @@
 import { revalidatePath } from 'next/cache'
 import { Prisma, PropertyStatus, PropertyType, UnitStatus } from '@prisma/client'
 import { prisma } from '+/lib/prisma'
+import { setUnitStatus } from '+/actions/occupancy'
 
 export const getAvailableUnits = async (filters?: {
   propertyId?: string
@@ -56,6 +57,31 @@ export const getAvailableUnits = async (filters?: {
     orderBy: [{ property: { city: 'asc' } }, { property: { neighborhood: 'asc' } }, { property: { name: 'asc' } }, { unitNumber: 'asc' }],
   })
 }
+
+// Solo los campos que la home realmente pinta. Sin relaciones pesadas ni Dates → payload mínimo y serializable.
+export const getAvailableUnitsForHome = async () =>
+  prisma.unit.findMany({
+    where: { status: UnitStatus.VACANT },
+    select: {
+      id: true,
+      images: true,
+      baseRent: true,
+      area: true,
+      bedrooms: true,
+      property: {
+        select: {
+          id: true,
+          name: true,
+          neighborhood: true,
+          street: true,
+          number: true,
+          city: true,
+          propertyType: true,
+        },
+      },
+    },
+    orderBy: [{ property: { city: 'asc' } }, { property: { neighborhood: 'asc' } }, { property: { name: 'asc' } }, { unitNumber: 'asc' }],
+  })
 
 export const getUnitById = async ({ id }: { id: string }) =>
   prisma.unit.findUnique({
@@ -114,15 +140,7 @@ export const reserveUnit = async ({ unitId }: { unitId: string }) => {
   if (!unit) throw new Error('Unidad no encontrada')
   if (unit.status !== UnitStatus.VACANT) throw new Error('La unidad no está disponible para reservar')
 
-  const updatedUnit = await prisma.unit.update({
-    where: { id: unitId },
-    data: { status: UnitStatus.RESERVED },
-    include: {
-      property: { select: { name: true, city: true, neighborhood: true } },
-    },
-  })
-
-  return updatedUnit
+  return setUnitStatus({ unitId, status: UnitStatus.RESERVED })
 }
 
 export const getUnitsByProperty = async ({ propertyId }: { propertyId: string }) =>
@@ -144,6 +162,7 @@ export const getUnitsByProperty = async ({ propertyId }: { propertyId: string })
 
 export type UnitWithRelations = Prisma.PromiseReturnType<typeof getUnitById>
 export type AvailableUnit = Prisma.PromiseReturnType<typeof getAvailableUnits>[0]
+export type HomeUnit = Prisma.PromiseReturnType<typeof getAvailableUnitsForHome>[0]
 export type PropertyWithAvailableUnits = Prisma.PromiseReturnType<typeof getPropertiesWithAvailableUnits>[0]
 
 export const getAvailableUnitsAction = async (filters?: {
