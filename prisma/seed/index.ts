@@ -1248,7 +1248,8 @@ const main = async (): Promise<void> => {
   const units = await createPropertyAndUnits(admins.admin1.id)
   await createExtraProperties(admins.admin1.id)
   try {
-    const siModule = await import('./si')
+    const siPath = './si'
+    const siModule = await import(siPath)
     if (typeof siModule.runSiSeeds === 'function') {
       await siModule.runSiSeeds()
     }
