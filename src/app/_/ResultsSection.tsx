@@ -20,7 +20,7 @@ export default function ResultsSection() {
   const [availability, setAvailability] = useState<AvailabilityFilter>('all')
 
   const filteredUnits = useMemo(() => {
-    return units.filter((unit) => {
+    return (units || []).filter((unit) => {
       const matchesSearch =
         !searchQuery ||
         unit.property.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -40,7 +40,7 @@ export default function ResultsSection() {
       list.push(unit)
       unitsByProperty.set(unit.property.id, list)
     }
-    return properties
+    return (properties || [])
       .filter((property) => unitsByProperty.has(property.id))
       .filter((property) => availability === 'all' || property.occupancyStatus === availability)
       .map((property) => ({ property, units: unitsByProperty.get(property.id) ?? [] }))

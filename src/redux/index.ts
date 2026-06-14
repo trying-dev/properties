@@ -27,6 +27,10 @@ const loadPersistedState = (): RootState | undefined => {
     const serialized = localStorage.getItem(REDUX_KEY_LOCAL_STORAGE)
     if (!serialized) return undefined
     const parsed = JSON.parse(serialized) as Partial<RootState>
+    if (parsed.home) {
+      if (!Array.isArray(parsed.home.units)) parsed.home.units = []
+      if (!Array.isArray(parsed.home.properties)) parsed.home.properties = []
+    }
     return parsed as RootState
   } catch (error) {
     console.warn('[hydrate] Failed to load persisted state', error)
