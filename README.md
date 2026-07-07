@@ -104,8 +104,10 @@ Inquilinos:
 ### Desarrollo
 
 ```bash
-pnpm dev              # Servidor de desarrollo
+pnpm dev              # Servidor local (regenera cliente sqlite y arranca)
+pnpm dev:prod         # Servidor local apuntando a la BD de PRODUCCIÓN
 pnpm build            # Compilar para producción
+pnpm build:seed       # Compilar sembrando la BD antes (usado en el deploy)
 pnpm start            # Servidor de producción
 pnpm lint             # Ejecutar linter
 ```
@@ -113,20 +115,22 @@ pnpm lint             # Ejecutar linter
 ### Base de datos
 
 ```bash
-pnpm db:generate      # Generar cliente Prisma
+pnpm db:generate      # Generar cliente Prisma (según DATABASE_URL)
 pnpm db:push          # Aplicar schema sin migraciones
 pnpm db:migrate       # Crear y aplicar migración
 pnpm db:studio        # Abrir Prisma Studio (GUI)
-pnpm db:seed          # Poblar con datos demo
+pnpm db:seed          # Poblar la BD LOCAL con datos demo
 pnpm db:reset         # Resetear base de datos
 ```
 
-### Utilidades
+### Tocar producción desde local
+
+Todos apuntan a `PROD_DATABASE_URL` (ver [Base de datos: local vs producción](#base-de-datos-local-vs-producción)):
 
 ```bash
-pnpm initPrisma       # Generar cliente y aplicar schema
-pnpm prepareDB        # Setup completo de BD
-pnpm buildWithSetupDB # Preparar BD y compilar
+pnpm db:studio:prod   # Inspeccionar la BD de prod
+pnpm db:push:prod     # Sincronizar schema hacia prod
+pnpm db:seed:prod     # Sembrar prod (⚠️ BORRA todo; regenera + push + seed)
 ```
 
 ## Estructura del proyecto
@@ -231,23 +235,33 @@ Los pagos se generan automáticamente según términos del contrato:
 - Tracking de estado (PENDING, PAID, OVERDUE, PARTIAL)
 - Soporte para múltiples métodos de pago
 
+## Base de datos: local vs producción
+
+El proyecto usa **un solo `.env`** y elige la base según la URL, sin código de detección:
+
+| Entorno | Cómo se elige la BD | Qué haces |
+|---|---|---|
+| **Local** (`pnpm dev`) | `DATABASE_URL` = SQLite (`file:...`) | nada, `localhost:3000` usa SQLite |
+| **Producción** (Vercel) | Vercel inyecta su `DATABASE_URL` + `PRISMA_DATABASE_URL` | nada, se resuelve solo |
+| **Prod desde local** | los scripts `*:prod` intercambian `PROD_DATABASE_URL` → `DATABASE_URL` | usar `pnpm *:prod` |
+
+### Cómo funciona
+
+- **Selección de schema/adapter automática** por el prefijo de `DATABASE_URL`:
+  - `file:` → SQLite · `libsql://` → Turso · `postgres://` → PostgreSQL.
+  - Lógica en [`prisma.config.ts`](prisma.config.ts) (elige `schema.sqlite.prisma` o `schema.postgresql.prisma`) y [`src/lib/prisma.ts`](src/lib/prisma.ts) (adapter/Accelerate).
+- **El cliente Prisma se compila para UN provider** en cada `prisma generate`. Por eso `pnpm dev` y `pnpm dev:prod` regeneran el cliente al arrancar (SQLite vs PostgreSQL). Alternar es transparente, cuesta ~100 ms.
+- **Un solo `.env`.** La BD de prod vive en `PROD_DATABASE_URL` (y `PROD_PRISMA_DATABASE_URL` para Accelerate). Los scripts `*:prod` usan [`scripts/prod-db.mjs`](scripts/prod-db.mjs), que carga `.env`, pone `DATABASE_URL = PROD_DATABASE_URL` y ejecuta el comando. Vercel **no** auto-carga estas vars → cero riesgo de tocar prod por accidente.
+
+### Sembrar / desplegar
+
+- El seed hace `resetDatabase()` (**borra toda la base**). Guarda en [`prisma/seed/index.ts`](prisma/seed/index.ts): rechaza cualquier BD que no sea SQLite local salvo `ALLOW_PROD_SEED=yes` (lo setean `db:seed:prod` y `build:seed`).
+- En Vercel, el **Build Command** es `pnpm build:seed` → `generate → db push → seed → build`. Repuebla prod en cada deploy (útil mientras no haya datos reales; quitar al entrar en testeo/producción real).
+- Si prefieres NO reseedear en cada deploy: deja el Build Command en `pnpm build` y siembra a mano con `pnpm db:seed:prod` cuando haga falta.
+
+> Nota: cada seed regenera los `id` (cuid). Enlaces `/units/<id>` viejos dejan de existir tras reseedear.
+
 ## Migrando a producción
-
-### PostgreSQL
-
-1. Actualizar `DATABASE_URL` en `.env`:
-
-```env
-   DATABASE_URL="postgresql://user:password@host:5432/dbname"
-```
-
-2. Ajustar tipos de datos en los modelos Prisma (descomentar anotaciones `@db.Decimal`, etc.)
-
-3. Ejecutar migraciones:
-
-```bash
-   pnpm db:migrate
-```
 
 ### Variables de entorno críticas
 
@@ -284,6 +298,28 @@ Verifica que `RESEND_API_KEY` sea válida y que `FROM_EMAIL` esté verificado en
 ### Errores de Prisma
 
 Regenera el cliente: `pnpm db:generate`
+
+### Error: `unknown variant 'postgres', expected 'sqlite'` (o al revés)
+
+El cliente Prisma quedó compilado para otro provider que la `DATABASE_URL` activa.
+Regenera para el entorno correcto: `pnpm dev` (SQLite) o `pnpm dev:prod` (PostgreSQL);
+ambos regeneran el cliente al arrancar.
+
+### Error: `The column X does not exist` / `P2022`
+
+Drift de schema: la BD está atrás del `.prisma`. Sincroniza el schema:
+`pnpm db:push` (local) o `pnpm db:push:prod` (prod). `db:seed:prod` y `build:seed`
+ya hacen `db push` antes de sembrar.
+
+### Error: `⛔ Seed BLOQUEADO`
+
+Protección anti-borrado: el seed borra toda la base y solo corre en SQLite local.
+Para sembrar prod a propósito: `pnpm db:seed:prod` (setea `ALLOW_PROD_SEED=yes`).
+
+### Página `/units/<id>` da 404 pero aparece en la home
+
+La BD del entorno no tiene ese registro (BD de prod vacía, o `id` cambió tras un
+reseed). Verifica con `pnpm db:studio:prod` y siembra si hace falta.
 
 ## Contribución
 

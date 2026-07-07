@@ -1240,7 +1240,17 @@ const printSummary = async (params: {
  * Punto de entrada principal del seed.
  */
 const main = async (): Promise<void> => {
+  const dbUrl = process.env.DATABASE_URL ?? ''
+  const isLocalSqlite = dbUrl.startsWith('file:')
+  if (!isLocalSqlite && process.env.ALLOW_PROD_SEED !== 'yes') {
+    throw new Error(
+      `⛔ Seed BLOQUEADO: DATABASE_URL no es sqlite local (${dbUrl.split('://')[0] || 'desconocido'}). ` +
+        'El seed BORRA toda la base (resetDatabase). Para forzar contra prod: ALLOW_PROD_SEED=yes pnpm db:seed:prod',
+    )
+  }
+
   console.log('🌱 Iniciando seed coherente...')
+  if (!isLocalSqlite) console.warn('⚠️  Sembrando base NO local — se borrarán datos existentes.')
 
   const seedPassword = process.env.SEED_PASSWORD ?? 'password123'
   const hashedPassword = await bcrypt.hash(seedPassword, 10)

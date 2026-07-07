@@ -3,17 +3,22 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "prisma generate && next dev",
+    "dev:prod": "node scripts/prod-db.mjs sh -c 'prisma generate && next dev'",
     "build": "next build",
+    "build:seed": "prisma generate && prisma db push && ALLOW_PROD_SEED=yes tsx prisma/seed/index.ts && next build",
     "initPrisma": "prisma generate && prisma db push --accept-data-loss",
     "start": "next start",
     "lint": "eslint",
     "db:generate": "prisma generate",
     "db:push": "prisma db push",
+    "db:push:prod": "node scripts/prod-db.mjs prisma db push",
     "db:migrate": "prisma migrate dev",
     "db:studio": "prisma studio",
+    "db:studio:prod": "node scripts/prod-db.mjs prisma studio",
     "db:reset": "prisma migrate reset",
-    "db:seed": "tsx prisma/seed/index.ts"
+    "db:seed": "tsx prisma/seed/index.ts",
+    "db:seed:prod": "ALLOW_PROD_SEED=yes node scripts/prod-db.mjs sh -c 'prisma generate && prisma db push && tsx prisma/seed/index.ts'"
   },
   "dependencies": {
     "@ariakit/react": "^0.4.21",
@@ -53,6 +58,8 @@
     "typescript": "^5.9.3"
   },
   "pnpm": {
-    "ignoredBuiltDependencies": ["@parcel/watcher"]
+    "ignoredBuiltDependencies": [
+      "@parcel/watcher"
+    ]
   }
 }
