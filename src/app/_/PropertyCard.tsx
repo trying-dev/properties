@@ -7,7 +7,6 @@ import Link from 'next/link'
 import { Heart, MapPin, ChevronLeft, ChevronRight } from 'lucide-react'
 import type { HomeUnit } from '+/actions/nuevo-proceso'
 import Modal from '+/components/Modal'
-import OccupancyBadge from '+/components/OccupancyBadge'
 import AuthFormsPanel from '+/components/auth/AuthFormsPanel'
 
 function parseImages(images?: string | null): string[] {
@@ -111,10 +110,6 @@ export default function PropertyCard({
             className="object-cover"
             priority={index < 3}
           />
-
-          <div className="absolute top-3 left-3 z-10">
-            <OccupancyBadge status="VACANT" className="bg-white/90 shadow-sm backdrop-blur" />
-          </div>
 
           {hasMultipleImages && (
             <>

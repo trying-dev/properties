@@ -46,3 +46,5 @@ next-env.d.ts
 /prisma/*.db-journal
 /prisma/migrations
 prisma/seed/si/
+
+.claude/

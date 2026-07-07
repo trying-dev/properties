@@ -122,12 +122,6 @@ export default function Header() {
           </Link>
 
           <nav className={styles.nav}>
-            <Link href="/" className={styles.navLinkPrimary}>
-              Buscar
-            </Link>
-            <Link href="/sobre-nosotros" className={styles.navLinkSecondary}>
-              Sobre Nosotros
-            </Link>
             {isAuthenticatedSession && (
               <Link href={dashboardHref} className={styles.navLinkSecondary}>
                 Dashboard

@@ -1,3 +1,6 @@
+import { existsSync } from 'node:fs'
+import { join } from 'node:path'
+
 import bcrypt from 'bcryptjs'
 import {
   AdminLevel,
@@ -1247,16 +1250,11 @@ const main = async (): Promise<void> => {
   const tenants = await createTenants(hashedPassword)
   const units = await createPropertyAndUnits(admins.admin1.id)
   await createExtraProperties(admins.admin1.id)
-  try {
+  if (existsSync(join(__dirname, 'si', 'index.ts'))) {
     const siPath = './si'
     const siModule = await import(siPath)
     if (typeof siModule.runSiSeeds === 'function') {
       await siModule.runSiSeeds()
-    }
-  } catch (error) {
-    const message = error instanceof Error ? error.message : String(error)
-    if (!/Cannot find module|Cannot resolve module|MODULE_NOT_FOUND/.test(message)) {
-      throw error
     }
   }
   const contracts = await createContracts({ admins, tenants, units, hashedPassword })
