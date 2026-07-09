@@ -1,11 +1,16 @@
 'use client'
 
-import { FileText, User, Building2, ShieldCheck, ClipboardList } from 'lucide-react'
+import { FileText, User, Building2, ShieldCheck, ClipboardList, ClipboardCheck } from 'lucide-react'
+import { ProcessReviewStatus, ProcessReviewTargetType } from '@prisma/client'
 
 import { processStatusConfig } from '+/lib/processStatus'
 import { profiles, securityOptions } from '+/app/process/_/profiles'
 import type { BasicInfo, Field, ProfileId, SecurityFieldValue } from '+/app/process/_/types'
 import type { ProcessDetail } from '+/actions/processes'
+import type { ProcessReviewBundle } from '+/actions/application-review'
+
+import DecisionPanel from './DecisionPanel'
+import ReviewItemCard, { type ReviewItem, type ReviewTarget } from './ReviewItemCard'
 
 type ProcessPayload = {
   basicInfo?: BasicInfo
@@ -29,6 +34,12 @@ const formatValue = (value: SecurityFieldValue | undefined) => {
   return String(value)
 }
 
+const formatFileSize = (bytes?: number | null) => {
+  if (!bytes) return null
+  if (bytes < 1024 * 1024) return `${Math.round(bytes / 1024)} KB`
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`
+}
+
 const Item = ({ label, value }: { label: string; value?: string | null }) => {
   if (!value) return null
   return (
@@ -49,7 +60,13 @@ const Section = ({ icon: Icon, title, children }: { icon: typeof User; title: st
   </div>
 )
 
-export default function ApplicationDetail({ detail }: { detail: NonNullable<ProcessDetail> }) {
+type ApplicationDetailProps = {
+  detail: NonNullable<ProcessDetail>
+  bundle: ProcessReviewBundle | null
+  onChanged: () => void
+}
+
+export default function ApplicationDetail({ detail, bundle, onChanged }: ApplicationDetailProps) {
   const payload = (detail.payload ?? {}) as ProcessPayload
   const basicInfo = payload.basicInfo
   const profileConfig = payload.profile ? profiles[payload.profile] : null
@@ -58,8 +75,9 @@ export default function ApplicationDetail({ detail }: { detail: NonNullable<Proc
   const securityFields = payload.security?.securityFields ?? {}
 
   const status = processStatusConfig[detail.status]
+  const isFinalStatus = detail.status === 'APPROVED' || detail.status === 'DISAPPROVED'
 
-  // Campos de archivo declarados por perfil + garantía (aún no se almacenan: pendiente storage).
+  // Campos de archivo declarados por perfil + garantía.
   const documentFields: Field[] = [
     ...(profileConfig?.fields ?? []),
     ...(securityOption?.fields ?? []),
@@ -71,6 +89,52 @@ export default function ApplicationDetail({ detail }: { detail: NonNullable<Proc
         .map((f) => ({ label: f.label, value: formatValue(securityFields[f.id]) }))
         .filter((i) => i.value)
     : []
+
+  // Última versión de cada documento subido, agrupada por documentType.
+  const latestDocumentsByType = new Map<string, ProcessReviewBundle['documents']>()
+  for (const document of bundle?.documents ?? []) {
+    if (!document.isLatest) continue
+    const existing = latestDocumentsByType.get(document.documentType)
+    if (existing) existing.push(document)
+    else latestDocumentsByType.set(document.documentType, [document])
+  }
+
+  const reviewItemsByKey = new Map<string, ReviewItem>()
+  for (const item of bundle?.reviewItems ?? []) {
+    reviewItemsByKey.set(`${item.targetType}:${item.targetId}`, item)
+  }
+
+  const sectionTargets: ReviewTarget[] = [
+    ...(basicInfo ? [{ targetType: ProcessReviewTargetType.SECTION, targetId: 'basicInfo', label: 'Datos personales' }] : []),
+    ...(profileConfig || securityOption
+      ? [{ targetType: ProcessReviewTargetType.SECTION, targetId: 'security', label: 'Perfil y garantía' }]
+      : []),
+  ]
+
+  const documentTargets: (ReviewTarget & { subtitle: string })[] = documentFields.map((field) => {
+    const latestDocuments = latestDocumentsByType.get(field.id) ?? []
+    const fileNames = latestDocuments.map((d) => d.fileName).join(', ')
+    const size = formatFileSize(latestDocuments[0]?.fileSize)
+    return {
+      targetType: ProcessReviewTargetType.DOCUMENT,
+      targetId: field.id,
+      label: field.label,
+      documentId: latestDocuments[0]?.id ?? null,
+      subtitle: latestDocuments.length
+        ? `v${latestDocuments[0].version} · ${fileNames}${size ? ` · ${size}` : ''}`
+        : 'Sin archivo subido',
+    }
+  })
+
+  const allTargets = [...sectionTargets, ...documentTargets]
+  const counts = { approved: 0, pending: 0, feedback: 0, rejected: 0 }
+  for (const target of allTargets) {
+    const itemStatus = reviewItemsByKey.get(`${target.targetType}:${target.targetId}`)?.status ?? ProcessReviewStatus.PENDING
+    if (itemStatus === ProcessReviewStatus.APPROVED) counts.approved += 1
+    else if (itemStatus === ProcessReviewStatus.NEEDS_FEEDBACK) counts.feedback += 1
+    else if (itemStatus === ProcessReviewStatus.REJECTED) counts.rejected += 1
+    else counts.pending += 1
+  }
 
   return (
     <div className="space-y-8">
@@ -92,6 +156,15 @@ export default function ApplicationDetail({ detail }: { detail: NonNullable<Proc
           <Item label="Creado" value={formatDate(detail.createdAt)} />
         </div>
       </div>
+
+      <DecisionPanel
+        processId={detail.id}
+        status={detail.status}
+        counts={counts}
+        approvalConditions={bundle?.approvalConditions}
+        notes={detail.notes}
+        onChanged={onChanged}
+      />
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         <Section icon={User} title="Inquilino">
@@ -155,26 +228,55 @@ export default function ApplicationDetail({ detail }: { detail: NonNullable<Proc
         </Section>
       )}
 
-      <Section icon={FileText} title="Documentos">
-        {documentFields.length === 0 ? (
-          <p className="text-sm text-gray-500">No hay documentos requeridos para este perfil.</p>
+      <Section icon={ClipboardCheck} title="Revisión">
+        {!bundle ? (
+          <p className="text-sm text-gray-500">No se pudo cargar la información de revisión.</p>
+        ) : allTargets.length === 0 ? (
+          <p className="text-sm text-gray-500">El inquilino aún no ha enviado información para revisar.</p>
         ) : (
-          <>
-            <p className="mb-3 text-xs text-amber-700">
-              Almacenamiento de archivos pendiente. Por ahora se listan los documentos requeridos para esta solicitud.
-            </p>
-            <ul className="space-y-2">
-              {documentFields.map((f) => (
-                <li key={f.id} className="flex items-center justify-between rounded-lg border border-gray-200 px-3 py-2">
-                  <div className="flex items-center gap-2">
-                    <FileText className="h-4 w-4 text-gray-400" />
-                    <span className="text-sm text-gray-700">{f.label}</span>
-                  </div>
-                  <span className="rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-500">Pendiente</span>
-                </li>
-              ))}
-            </ul>
-          </>
+          <div className="space-y-6">
+            {sectionTargets.length > 0 && (
+              <div>
+                <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-gray-400">Secciones</h3>
+                <div className="space-y-2">
+                  {sectionTargets.map((target) => (
+                    <ReviewItemCard
+                      key={`${target.targetType}:${target.targetId}`}
+                      processId={detail.id}
+                      target={target}
+                      item={reviewItemsByKey.get(`${target.targetType}:${target.targetId}`)}
+                      disabled={isFinalStatus}
+                      onChanged={onChanged}
+                    />
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {documentTargets.length > 0 && (
+              <div>
+                <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-gray-400">
+                  <span className="inline-flex items-center gap-1">
+                    <FileText className="h-3.5 w-3.5" />
+                    Documentos
+                  </span>
+                </h3>
+                <div className="space-y-2">
+                  {documentTargets.map((target) => (
+                    <ReviewItemCard
+                      key={`${target.targetType}:${target.targetId}`}
+                      processId={detail.id}
+                      target={target}
+                      item={reviewItemsByKey.get(`${target.targetType}:${target.targetId}`)}
+                      subtitle={target.subtitle}
+                      disabled={isFinalStatus}
+                      onChanged={onChanged}
+                    />
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
         )}
       </Section>
     </div>

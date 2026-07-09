@@ -1,12 +1,14 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { ArrowLeft } from 'lucide-react'
 
 import Header from '+/components/Header'
 import { getProcessDetailsAction } from '+/actions/processes'
 import type { ProcessDetail as ProcessDetailPayload } from '+/actions/processes'
+import { getProcessReviewBundleAction } from '+/actions/application-review'
+import type { ProcessReviewBundle } from '+/actions/application-review'
 import ApplicationDetail from './_/ApplicationDetail'
 
 type ProcessDetail = NonNullable<ProcessDetailPayload>
@@ -16,27 +18,38 @@ export default function AdminApplicationDetailPage() {
   const router = useRouter()
   const processId = params?.id
   const [processDetail, setProcessDetail] = useState<ProcessDetail | null>(null)
+  const [reviewBundle, setReviewBundle] = useState<ProcessReviewBundle | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
-  useEffect(() => {
-    if (!processId) return
-
-    const loadDetail = async () => {
-      setIsLoading(true)
+  const loadDetail = useCallback(
+    async ({ showLoader = true }: { showLoader?: boolean } = {}) => {
+      if (!processId) return
+      if (showLoader) setIsLoading(true)
       setError(null)
-      const result = await getProcessDetailsAction(processId)
-      if (!result.success || !result.data) {
-        setError(result.error ?? 'No se pudo cargar el detalle.')
+
+      const [detailResult, bundleResult] = await Promise.all([
+        getProcessDetailsAction(processId),
+        getProcessReviewBundleAction(processId),
+      ])
+
+      if (!detailResult.success || !detailResult.data) {
+        setError(detailResult.error ?? 'No se pudo cargar el detalle.')
         setIsLoading(false)
         return
       }
-      setProcessDetail(result.data as ProcessDetail)
-      setIsLoading(false)
-    }
 
+      setProcessDetail(detailResult.data as ProcessDetail)
+      setReviewBundle(bundleResult.success && bundleResult.data ? (bundleResult.data as ProcessReviewBundle) : null)
+      setIsLoading(false)
+    },
+    [processId]
+  )
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- carga inicial de datos, mismo patrón que Modal.tsx
     void loadDetail()
-  }, [processId])
+  }, [loadDetail])
 
   return (
     <div className="min-h-screen bg-white flex flex-col">
@@ -63,7 +76,7 @@ export default function AdminApplicationDetailPage() {
         ) : error ? (
           <div className="rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700">{error}</div>
         ) : processDetail ? (
-          <ApplicationDetail detail={processDetail} />
+          <ApplicationDetail detail={processDetail} bundle={reviewBundle} onChanged={() => void loadDetail({ showLoader: false })} />
         ) : null}
       </main>
     </div>

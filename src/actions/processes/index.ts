@@ -208,6 +208,7 @@ export const getProcessDetailsAction = async (processId: string) => {
         createdAt: true,
         updatedAt: true,
         payload: true,
+        notes: true,
         tenant: {
           select: {
             id: true,
