@@ -321,6 +321,49 @@ Para sembrar prod a propósito: `pnpm db:seed:prod` (setea `ALLOW_PROD_SEED=yes`
 La BD del entorno no tiene ese registro (BD de prod vacía, o `id` cambió tras un
 reseed). Verifica con `pnpm db:studio:prod` y siembra si hace falta.
 
+## Graphify (opcional — grafo de conocimiento para agentes AI)
+
+Herramienta opcional que convierte el código en un grafo consultable, para que un
+agente AI (Claude Code, Cursor, etc.) ubique archivos y relaciones sin re-leer todo
+el repo en cada sesión. Reduce consumo de tokens en codebases grandes. Parseo 100%
+local (tree-sitter AST) → **0 tokens** en modo `--code-only`.
+
+No es requisito del proyecto: si no lo usas, nada cambia.
+
+### Instalación
+
+```bash
+brew install uv                # gestor de paquetes Python (macOS)
+uv tool install graphifyy      # paquete PyPI = graphifyy (doble y); CLI = graphify
+graphify claude install        # registra skill + config para Claude Code (opcional)
+```
+
+### Uso
+
+```bash
+graphify . --code-only         # construir grafo (solo código, sin API key)
+graphify query "cómo funciona el login"   # consultar el grafo
+graphify update .              # actualizar tras cambios (incremental, 0 tokens)
+```
+
+Salida en `graphify-out/` (ignorado por git):
+
+- `graph.html` — visualización interactiva
+- `GRAPH_REPORT.md` — comunidades y conceptos clave
+- `graph.json` — grafo completo consultable
+
+> Indexar docs/imágenes (no solo código) requiere API key de un LLM
+> (`ANTHROPIC_API_KEY`, `GEMINI_API_KEY`, etc.) y omitir `--code-only`.
+> Sin key, las comunidades quedan sin nombre (cosmético).
+
+### Desinstalar
+
+```bash
+uv tool uninstall graphifyy
+rm -rf graphify-out/
+# borrar la sección "graphify" de CLAUDE.md si se agregó
+```
+
 ## Contribución
 
 Las contribuciones son bienvenidas. Por favor:

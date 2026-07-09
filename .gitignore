@@ -47,4 +47,5 @@ next-env.d.ts
 /prisma/migrations
 prisma/seed/si/
 
-.claude/
+# graphify knowledge graph output
+graphify-out/

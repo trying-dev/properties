@@ -1,0 +1,31 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx eslint *)",
+      "Bash(sed -n '/model Process/,/^}/p' prisma/schema.postgresql.prisma)",
+      "Bash(sed -n '/enum ProcessStatus/,/^}/p' prisma/schema.postgresql.prisma)",
+      "Bash(sed -n '1,40p' src/app/dashboard/admin/applications/page.tsx)",
+      "Bash(sed -n '1,40p' src/app/dashboard/admin/applications/[id]/page.tsx)",
+      "Bash(awk '/securityOptions/{p=1} p' src/app/process/_/profiles.ts)",
+      "Bash(git check-ignore *)",
+      "Bash(pnpm why *)",
+      "Bash(pnpm --version)",
+      "WebFetch(domain:properties.didyou.fyi)",
+      "Bash(pnpm add *)",
+      "Bash(pnpm exec *)",
+      "Bash(DATABASE_URL=\"postgres://fake:fake@localhost:5432/none\" npx tsx prisma/seed/index.ts)",
+      "Bash(DATABASE_URL=\"libsql://fake.turso.io?authToken=x\" npx tsx prisma/seed/index.ts)",
+      "Bash(DATABASE_URL=\"libsql://fake.turso.io?authToken=x\" ALLOW_PROD_SEED=yes npx tsx prisma/seed/index.ts)",
+      "Bash(node -e \"require.resolve\\('dotenv'\\); console.log\\('dotenv resolvable'\\)\")",
+      "Bash(pnpm remove *)",
+      "Bash(node scripts/prod-db.mjs node -e \"console.log\\('DB=', \\(process.env.DATABASE_URL||''\\).split\\('://'\\)[0]\\); console.log\\('ACCEL=', \\(process.env.PRISMA_DATABASE_URL||''\\).split\\('://'\\)[0]\\)\")",
+      "Bash(node scripts/prod-db.mjs prisma generate)",
+      "Bash(node -e \"const s=require\\('./package.json'\\).scripts; console.log\\('dev:', s.dev\\); console.log\\('dev:prod:', s['dev:prod']\\); console.log\\('db:seed:prod:', s['db:seed:prod']\\); console.log\\('JSON OK'\\)\")",
+      "Bash(ALLOW_PROD_SEED=yes node scripts/prod-db.mjs sh -c 'prisma db push && tsx prisma/seed/index.ts')",
+      "Bash(node scripts/prod-db.mjs npx tsx -e ' *)",
+      "Bash(node scripts/prod-db.mjs tsx /private/tmp/claude-501/-Users-rev-dev-properties/fc4f2416-d12c-41e3-ac0f-304cb299feba/scratchpad/count.mts)",
+      "Bash(node scripts/prod-db.mjs tsx _count_tmp.mts)",
+      "Bash(grep -nE \"^#{1,3} \" README.md)"
+    ]
+  }
+}
