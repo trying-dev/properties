@@ -1,4 +1,4 @@
-import { Property, PropertyType } from '@prisma/client'
+import { Property, PropertyType } from '+/generated/prisma/client'
 import type { PropertyFormState } from './propertyFormTypes'
 
 export const toPropertyFormState = (property: Property): PropertyFormState => ({

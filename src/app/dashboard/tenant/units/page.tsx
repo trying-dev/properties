@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
 import { ArrowLeft, Building2, Home, Search, AlertTriangle, CheckCircle, Clock } from 'lucide-react'
-import { PaymentStatus, PaymentType } from '@prisma/client'
+import { PaymentStatus, PaymentType } from '+/generated/prisma/enums'
 
 import Header from '+/components/Header'
 import Footer from '+/components/Footer'

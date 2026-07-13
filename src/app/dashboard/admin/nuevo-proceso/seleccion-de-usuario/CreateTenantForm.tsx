@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState, type FormEvent } from 'react'
 import { X } from 'lucide-react'
-import { DocumentType, Gender, MaritalStatus } from '@prisma/client'
+import { DocumentType, Gender, MaritalStatus } from '+/generated/prisma/enums'
 
 export interface ReferenceForm {
   name: string
@@ -186,6 +186,7 @@ export const CreateTenantForm = ({ isOpen, onClose, onSubmit }: Props) => {
   }
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- resetea el form al cerrar el modal
     if (!isOpen) resetForm()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen])

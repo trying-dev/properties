@@ -28,6 +28,7 @@ function RegisterWithTokenContent() {
 
   useEffect(() => {
     if (!token) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- validación de token al montar; marca inválido si falta
       setValidationState((prev) => ({ ...prev, tokenValid: false, tokenChecking: false }))
       return
     }

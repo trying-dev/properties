@@ -1,6 +1,6 @@
 'use server'
 
-import { Prisma, UnitStatus } from '@prisma/client'
+import { Prisma, UnitStatus } from '+/generated/prisma/client'
 import { prisma } from '+/lib/prisma'
 
 export const getAdminUnits = async (filters?: { status?: UnitStatus; propertyId?: string; city?: string }) => {
@@ -27,7 +27,7 @@ export const getAdminUnits = async (filters?: { status?: UnitStatus; propertyId?
   })
 }
 
-export type AdminUnitRow = Prisma.PromiseReturnType<typeof getAdminUnits>[0]
+export type AdminUnitRow = Awaited<ReturnType<typeof getAdminUnits>>[0]
 
 export const getAdminUnitsAction = async (filters?: { status?: UnitStatus; propertyId?: string; city?: string }) => {
   try {

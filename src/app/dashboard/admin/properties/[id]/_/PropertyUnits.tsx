@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { ArrowRight, FileText, Plus } from 'lucide-react'
 import Link from 'next/link'
-import type { UnitStatus } from '@prisma/client'
+import type { UnitStatus } from '+/generated/prisma/client'
 import type { PropertyUnitWithProcesses } from '+/actions/property'
 import { processStatusConfig } from '+/lib/processStatus'
 import CreateUnitModal from './CreateUnitModal'

@@ -2,7 +2,7 @@
 
 import { prisma } from '+/lib/prisma'
 import { auth } from '+/lib/auth'
-import { NotificationSenderRole, NotificationType } from '@prisma/client'
+import { NotificationSenderRole, NotificationType } from '+/generated/prisma/client'
 
 const getSessionUserId = async () => {
   const session = await auth()

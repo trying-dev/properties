@@ -1,4 +1,4 @@
-import { DocumentType, Gender, MaritalStatus, AdminLevel } from '@prisma/client'
+import { DocumentType, Gender, MaritalStatus, AdminLevel } from '+/generated/prisma/client'
 
 export interface userSelected {
   id: string

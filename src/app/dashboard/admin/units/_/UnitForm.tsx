@@ -1,8 +1,8 @@
 'use client'
 
 import { useMemo, useState } from 'react'
-import { UnitStatus as UnitStatusEnum } from '@prisma/client'
-import type { UnitStatus } from '@prisma/client'
+import { UnitStatus as UnitStatusEnum } from '+/generated/prisma/enums'
+import type { UnitStatus } from '+/generated/prisma/client'
 
 import { createUnitAction, updateUnitAction } from '+/actions/property'
 import type { UnitFormState } from './unitFormTypes'

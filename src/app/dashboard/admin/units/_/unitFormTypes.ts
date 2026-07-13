@@ -1,4 +1,4 @@
-import type { UnitStatus } from '@prisma/client'
+import type { UnitStatus } from '+/generated/prisma/client'
 
 export type UnitFormState = {
   unitNumber: string

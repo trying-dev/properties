@@ -1,7 +1,7 @@
 'use server'
 
 import { revalidatePath } from 'next/cache'
-import { Prisma } from '@prisma/client'
+import { Prisma } from '+/generated/prisma/client'
 import bcrypt from 'bcryptjs'
 import { prisma } from '+/lib/prisma'
 

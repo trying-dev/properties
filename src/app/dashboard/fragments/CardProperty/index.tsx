@@ -1,5 +1,5 @@
 import Image from 'next/image'
-import { Property } from '@prisma/client'
+import { Property } from '+/generated/prisma/client'
 import { useRouter } from 'next/navigation'
 import { MapPin } from 'lucide-react'
 import { useState } from 'react'

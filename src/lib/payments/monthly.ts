@@ -1,4 +1,4 @@
-import { PaymentStatus, PaymentType } from '@prisma/client'
+import { PaymentStatus, PaymentType } from '+/generated/prisma/client'
 import { prisma } from '+/lib/prisma'
 
 export const getMonthWindow = (date = new Date()) => {

@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { UnitStatus as UnitStatusEnum } from '@prisma/client'
+import { UnitStatus as UnitStatusEnum } from '+/generated/prisma/enums'
 import { useRouter } from 'next/navigation'
 
 import Modal from '+/components/Modal'

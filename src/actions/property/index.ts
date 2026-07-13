@@ -1,6 +1,6 @@
 'use server'
 
-import { Prisma, ProcessStatus, PropertyType, UnitStatus } from '@prisma/client'
+import { Prisma, ProcessStatus, PropertyType, UnitStatus } from '+/generated/prisma/client'
 import { auth } from '+/lib/auth'
 import { prisma } from '+/lib/prisma'
 
@@ -41,7 +41,7 @@ export const getProperty = async ({ id }: { id: string }) => {
   }
 }
 
-export type PropertyWithRelations = Prisma.PromiseReturnType<typeof getProperty>
+export type PropertyWithRelations = Awaited<ReturnType<typeof getProperty>>
 
 export const getPropertyLite = async ({ id }: { id: string }) => {
   try {
@@ -54,7 +54,7 @@ export const getPropertyLite = async ({ id }: { id: string }) => {
   }
 }
 
-export type PropertyLite = Prisma.PromiseReturnType<typeof getPropertyLite>
+export type PropertyLite = Awaited<ReturnType<typeof getPropertyLite>>
 
 // Procesos de alquiler abiertos (sin aprobar/rechazar) que se muestran junto a la unidad.
 const OPEN_PROCESS_STATUSES = [ProcessStatus.IN_PROGRESS, ProcessStatus.IN_EVALUATION, ProcessStatus.WAITING_FOR_FEEDBACK]
@@ -87,7 +87,7 @@ export const getPropertyWithUnits = async ({ id }: { id: string }) => {
   }
 }
 
-export type PropertyWithUnits = Prisma.PromiseReturnType<typeof getPropertyWithUnits>
+export type PropertyWithUnits = Awaited<ReturnType<typeof getPropertyWithUnits>>
 export type PropertyUnitWithProcesses = NonNullable<PropertyWithUnits>['units'][number]
 
 export type CreatePropertyInput = {

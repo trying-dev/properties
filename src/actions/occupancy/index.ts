@@ -1,6 +1,6 @@
 'use server'
 
-import { Prisma, PropertyStatus, UnitStatus } from '@prisma/client'
+import { Prisma, PropertyStatus, UnitStatus } from '+/generated/prisma/client'
 import { prisma } from '+/lib/prisma'
 import { deriveOccupancy } from '+/lib/occupancy'
 
@@ -63,7 +63,7 @@ export const getPropertiesWithOccupancy = async ({ onlyAvailable = false }: { on
   })
 }
 
-export type PropertyWithOccupancy = Prisma.PromiseReturnType<typeof getPropertiesWithOccupancy>[0]
+export type PropertyWithOccupancy = Awaited<ReturnType<typeof getPropertiesWithOccupancy>>[0]
 
 // Totales del portafolio para el overview del dashboard admin.
 export const getOccupancySummary = async () => {
@@ -93,7 +93,7 @@ export const getOccupancySummary = async () => {
   return summary
 }
 
-export type OccupancySummary = Prisma.PromiseReturnType<typeof getOccupancySummary>
+export type OccupancySummary = Awaited<ReturnType<typeof getOccupancySummary>>
 
 // ========================================
 // CAMBIO DE ESTADO CENTRALIZADO

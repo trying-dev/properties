@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation'
 import { useDispatch, useSelector } from '+/redux'
 import { setProcessState } from '+/redux/slices/process'
 import { updateTenantProfile } from '+/redux/slices/user'
-import type { Profile as PrismaProfile } from '@prisma/client'
+import type { Profile as PrismaProfile } from '+/generated/prisma/client'
 
 import { updateTenantProfile as updateTenantProfileAction } from '+/actions/user'
 import { profiles } from '+/app/process/_/profiles'

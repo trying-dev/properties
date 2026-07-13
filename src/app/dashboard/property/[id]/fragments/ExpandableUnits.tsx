@@ -32,7 +32,7 @@ import {
   AlertTriangle,
 } from 'lucide-react'
 import { PropertyWithRelations } from '+/actions/property'
-import { PaymentMethod, PaymentStatus, UnitStatus } from '@prisma/client'
+import { PaymentMethod, PaymentStatus, UnitStatus } from '+/generated/prisma/client'
 import { formatAdminLevel } from '../utils'
 
 type IconType = ComponentType<SVGProps<SVGSVGElement>>

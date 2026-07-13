@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
 import { ArrowLeft, CheckCircle2, AlertTriangle, Clock, XCircle } from 'lucide-react'
-import { PaymentMethod, PaymentStatus, PaymentType } from '@prisma/client'
+import { PaymentMethod, PaymentStatus, PaymentType } from '+/generated/prisma/enums'
 
 import Header from '+/components/Header'
 import { confirmPaymentAction, getAdminPaymentsAction } from '+/actions/payments'

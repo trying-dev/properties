@@ -45,13 +45,13 @@ function ResetPasswordContent() {
   const [error, setError] = useState('')
   const [isSuccess, setIsSuccess] = useState(false)
 
-  // Password validation
-  const [passwordStrength, setPasswordStrength] = useState({
-    hasMinLength: false,
-    hasUpperCase: false,
-    hasLowerCase: false,
-    hasNumber: false,
-  })
+  // Password validation (derivado de newPassword, no estado)
+  const passwordStrength = {
+    hasMinLength: newPassword.length >= 8,
+    hasUpperCase: /[A-Z]/.test(newPassword),
+    hasLowerCase: /[a-z]/.test(newPassword),
+    hasNumber: /\d/.test(newPassword),
+  }
 
   // Validate token on mount
   useEffect(() => {
@@ -83,16 +83,6 @@ function ResetPasswordContent() {
 
     validate()
   }, [token])
-
-  // Check password strength
-  useEffect(() => {
-    setPasswordStrength({
-      hasMinLength: newPassword.length >= 8,
-      hasUpperCase: /[A-Z]/.test(newPassword),
-      hasLowerCase: /[a-z]/.test(newPassword),
-      hasNumber: /\d/.test(newPassword),
-    })
-  }, [newPassword])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()

@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { CheckCircle2, MessageSquareWarning, XCircle } from 'lucide-react'
-import { ProcessStatus } from '@prisma/client'
+import { ProcessStatus } from '+/generated/prisma/enums'
 
 import Modal from '+/components/Modal'
 import { requestProcessFeedbackAction, setProcessDecisionAction } from '+/actions/application-review'

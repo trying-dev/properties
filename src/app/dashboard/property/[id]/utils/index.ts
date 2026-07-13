@@ -1,4 +1,4 @@
-import { AdminLevel } from '@prisma/client'
+import { AdminLevel } from '+/generated/prisma/client'
 
 export const formatAdminLevel = (level: AdminLevel) => {
   const levels = {

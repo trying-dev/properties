@@ -1,12 +1,10 @@
 import type { NextConfig } from 'next'
 import path from 'path'
 
-const sassGlobalsPath = path.resolve(process.cwd(), 'src/styles/variables.scss').replace(/\\/g, '/')
-
 const nextConfig: NextConfig = {
   sassOptions: {
-    includePaths: [path.resolve(process.cwd(), 'src/styles')],
-    additionalData: `@use "${sassGlobalsPath}" as *;`,
+    loadPaths: [path.resolve(process.cwd(), 'src/styles')],
+    additionalData: '@use "variables" as *;',
   },
   images: {
     remotePatterns: [

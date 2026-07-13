@@ -1,7 +1,7 @@
 'use client'
 
 import { useMemo, useState } from 'react'
-import type { PaymentMethod, PaymentStatus, PaymentType } from '@prisma/client'
+import type { PaymentMethod, PaymentStatus, PaymentType } from '+/generated/prisma/client'
 
 const PAGE_SIZE = 5
 

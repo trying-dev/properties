@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { FileText, Search, ChevronRight, Plus } from 'lucide-react'
 import Link from 'next/link'
-import type { ProcessStatus } from '@prisma/client'
+import type { ProcessStatus } from '+/generated/prisma/client'
 
 import { getAdminProcessesAction } from '+/actions/processes'
 import type { AdminProcess } from '+/actions/processes'

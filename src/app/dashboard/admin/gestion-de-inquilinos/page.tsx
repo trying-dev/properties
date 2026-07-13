@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef, type FormEvent, useCallback } from 'react'
-import type { DocumentType, Gender, MaritalStatus } from '@prisma/client'
+import type { DocumentType, Gender, MaritalStatus } from '+/generated/prisma/client'
 import { Search, Plus, User, Phone, Mail, MapPin, Briefcase, Edit, Eye, UserX, Download, X } from 'lucide-react'
 import { createTenantAction, disableTenantAction, getTenantsAction, getTenantsStatsAction } from '+/actions/gestion-de-inquilinos'
 import type { TenantListItem } from '+/actions/gestion-de-inquilinos'
@@ -585,6 +585,7 @@ export default function TenantsManagement() {
   }
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- fetch inicial de datos
     loadTenants()
     loadStats()
   }, [loadTenants])

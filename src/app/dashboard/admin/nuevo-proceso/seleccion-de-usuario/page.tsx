@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { Plus, Edit, User, Mail, Phone, MapPin, CheckCircle } from 'lucide-react'
-import { DocumentType, ContractStatus } from '@prisma/client'
+import { DocumentType, ContractStatus } from '+/generated/prisma/enums'
 
 import { CreateTenantForm } from './CreateTenantForm'
 import type { CreateTenantSubmit } from './CreateTenantForm'
@@ -50,6 +50,7 @@ export default function SeleccionDeUsuario() {
   }, [debouncedSearch])
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- fetch de inquilinos al buscar
     loadTenants()
   }, [debouncedSearch, loadTenants])
 

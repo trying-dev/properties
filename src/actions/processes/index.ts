@@ -1,6 +1,6 @@
 'use server'
 
-import { NotificationType, Prisma, ProcessStatus } from '@prisma/client'
+import { NotificationType, Prisma, ProcessStatus } from '+/generated/prisma/client'
 import { prisma } from '+/lib/prisma'
 import { sendSystemNotificationAction } from '+/actions/notifications'
 

@@ -46,6 +46,8 @@ next-env.d.ts
 /prisma/*.db-journal
 /prisma/migrations
 prisma/seed/si/
+# cliente generado por prisma-client (se regenera en build)
+/src/generated/
 
 # graphify knowledge graph output
 graphify-out/

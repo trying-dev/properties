@@ -3,7 +3,7 @@
 import { randomBytes } from 'crypto'
 import { Resend } from 'resend'
 
-import { Prisma } from '@prisma/client'
+import { Prisma } from '+/generated/prisma/client'
 import { prisma } from '+/lib/prisma'
 import { resolveEmailTargets } from '+/lib/email'
 

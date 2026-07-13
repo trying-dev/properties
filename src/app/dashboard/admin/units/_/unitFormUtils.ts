@@ -1,4 +1,4 @@
-import type { Unit } from '@prisma/client'
+import type { Unit } from '+/generated/prisma/client'
 import type { UnitFormState } from './unitFormTypes'
 
 const formatDateInput = (value?: Date | null) => {

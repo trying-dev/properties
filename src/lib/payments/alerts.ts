@@ -1,4 +1,4 @@
-import { NotificationSenderRole, NotificationType, PaymentStatus } from '@prisma/client'
+import { NotificationSenderRole, NotificationType, PaymentStatus } from '+/generated/prisma/client'
 import { prisma } from '+/lib/prisma'
 
 const buildPaymentLink = (paymentId: string) => `/dashboard/tenant/units?paymentId=${paymentId}`

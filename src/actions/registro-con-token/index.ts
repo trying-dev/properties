@@ -1,6 +1,5 @@
 'use server'
 
-import { Prisma } from '@prisma/client'
 import bcrypt from 'bcryptjs'
 import { signIn } from '+/lib/auth'
 import { prisma } from '+/lib/prisma'
@@ -149,5 +148,5 @@ export const completeUserRegistration = async ({
   }
 }
 
-export type TenantValidationRegistrationToken = Prisma.PromiseReturnType<typeof findTenantByToken>
-export type RegistrationCompletionResult = Prisma.PromiseReturnType<typeof findTenantByToken>
+export type TenantValidationRegistrationToken = Awaited<ReturnType<typeof findTenantByToken>>
+export type RegistrationCompletionResult = Awaited<ReturnType<typeof findTenantByToken>>

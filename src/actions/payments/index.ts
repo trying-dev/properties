@@ -1,7 +1,7 @@
 'use server'
 
 import { revalidatePath } from 'next/cache'
-import { PaymentStatus, Prisma } from '@prisma/client'
+import { PaymentStatus, Prisma } from '+/generated/prisma/client'
 import { prisma } from '+/lib/prisma'
 
 const paymentInclude = {
@@ -27,7 +27,7 @@ export const getAdminPayments = async () =>
     orderBy: [{ dueDate: 'desc' }, { createdAt: 'desc' }],
   })
 
-export type AdminPaymentRow = Prisma.PromiseReturnType<typeof getAdminPayments>[0]
+export type AdminPaymentRow = Awaited<ReturnType<typeof getAdminPayments>>[0]
 
 export const getAdminPaymentsAction = async () => {
   try {

@@ -17,7 +17,7 @@ import {
   PropertyStatus,
   PropertyType,
   UnitStatus,
-} from '@prisma/client'
+} from '../../src/generated/prisma/client'
 import { prisma } from '+/lib/prisma'
 
 type AdditionalResidentSeed = {

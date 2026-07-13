@@ -1,4 +1,4 @@
-import type { ProcessStatus } from '@prisma/client'
+import type { ProcessStatus } from '+/generated/prisma/client'
 
 // Etiqueta + estilo por estado de proceso de alquiler. Reutilizable en admin/tenant.
 export const processStatusConfig: Record<ProcessStatus, { label: string; box: string }> = {

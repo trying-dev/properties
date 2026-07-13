@@ -1,7 +1,7 @@
 'use server'
 
 import { revalidatePath } from 'next/cache'
-import { Prisma, PropertyStatus, PropertyType, UnitStatus } from '@prisma/client'
+import { Prisma, PropertyStatus, PropertyType, UnitStatus } from '+/generated/prisma/client'
 import { prisma } from '+/lib/prisma'
 import { setUnitStatus } from '+/actions/occupancy'
 
@@ -160,10 +160,10 @@ export const getUnitsByProperty = async ({ propertyId }: { propertyId: string })
     orderBy: [{ floor: 'asc' }, { unitNumber: 'asc' }],
   })
 
-export type UnitWithRelations = Prisma.PromiseReturnType<typeof getUnitById>
-export type AvailableUnit = Prisma.PromiseReturnType<typeof getAvailableUnits>[0]
-export type HomeUnit = Prisma.PromiseReturnType<typeof getAvailableUnitsForHome>[0]
-export type PropertyWithAvailableUnits = Prisma.PromiseReturnType<typeof getPropertiesWithAvailableUnits>[0]
+export type UnitWithRelations = Awaited<ReturnType<typeof getUnitById>>
+export type AvailableUnit = Awaited<ReturnType<typeof getAvailableUnits>>[0]
+export type HomeUnit = Awaited<ReturnType<typeof getAvailableUnitsForHome>>[0]
+export type PropertyWithAvailableUnits = Awaited<ReturnType<typeof getPropertiesWithAvailableUnits>>[0]
 
 export const getAvailableUnitsAction = async (filters?: {
   propertyId?: string

@@ -278,8 +278,9 @@ export default function NuevoProceso() {
     propertyType: '',
   })
 
-  // Actualizar el rango de precios en filtros cuando cambien los datos
+  // Al cargar los datos, ajustar el rango de precios de los filtros a los límites reales
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- sincroniza el rango del slider con los límites de los datos
     setFilters((prev) => ({
       ...prev,
       priceRange: [priceRange.min, priceRange.max],
@@ -368,6 +369,7 @@ export default function NuevoProceso() {
 
   // Cargar al montar
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- fetch inicial de datos
     loadAllUnits() // Cargar primero todas las unidades para rangos
     loadProperties()
   }, [loadAllUnits])
@@ -376,6 +378,7 @@ export default function NuevoProceso() {
   useEffect(() => {
     if (allUnits.length > 0) {
       // Solo después de tener todas las unidades
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- fetch de unidades filtradas
       loadUnits()
     }
   }, [allUnits, loadUnits]) // Primer carga después de obtener todas las unidades

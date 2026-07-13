@@ -17,7 +17,7 @@ import {
   Heart,
 } from 'lucide-react'
 
-import { DocumentType, Gender, MaritalStatus, Profile } from '@prisma/client'
+import { DocumentType, Gender, MaritalStatus, Profile } from '+/generated/prisma/enums'
 
 interface UserData {
   name: string

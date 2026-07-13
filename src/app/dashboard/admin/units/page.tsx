@@ -3,7 +3,8 @@
 import { useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
 import { ArrowLeft } from 'lucide-react'
-import { UnitStatus, Property } from '@prisma/client'
+import { UnitStatus } from '+/generated/prisma/enums'
+import type { Property } from '+/generated/prisma/client'
 
 import Header from '+/components/Header'
 import { getAdminUnitsAction } from '+/actions/units'
@@ -77,12 +78,23 @@ export default function AdminUnitsPage() {
       propertyId: propertyId || undefined,
       city: city || undefined,
     }
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- fetch de datos al cambiar filtros; el setState de loading es intencional
     void loadUnits(filters)
   }, [status, propertyId, city])
 
-  useEffect(() => {
+  // Al cambiar cualquier filtro, volver a la primera página
+  const handleStatusChange = (value: UnitStatus | '') => {
+    setStatus(value)
     setPage(1)
-  }, [status, propertyId, city, units.length])
+  }
+  const handlePropertyChange = (value: string) => {
+    setPropertyId(value)
+    setPage(1)
+  }
+  const handleCityChange = (value: string) => {
+    setCity(value)
+    setPage(1)
+  }
 
   const totalPages = Math.max(1, Math.ceil(units.length / pageSize))
   const clampedPage = Math.min(page, totalPages)
@@ -114,7 +126,7 @@ export default function AdminUnitsPage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <label className="flex flex-col gap-2 text-sm text-gray-700">
               Estado
-              <select className="border rounded-lg px-3 py-2" value={status} onChange={(e) => setStatus(e.target.value as UnitStatus | '')}>
+              <select className="border rounded-lg px-3 py-2" value={status} onChange={(e) => handleStatusChange(e.target.value as UnitStatus | '')}>
                 <option value="">Todos</option>
                 {Object.values(UnitStatus).map((value) => (
                   <option key={value} value={value}>
@@ -125,7 +137,7 @@ export default function AdminUnitsPage() {
             </label>
             <label className="flex flex-col gap-2 text-sm text-gray-700">
               Propiedad
-              <select className="border rounded-lg px-3 py-2" value={propertyId} onChange={(e) => setPropertyId(e.target.value)}>
+              <select className="border rounded-lg px-3 py-2" value={propertyId} onChange={(e) => handlePropertyChange(e.target.value)}>
                 <option value="">Todas</option>
                 {properties.map((property) => (
                   <option key={property.id} value={property.id}>
@@ -136,7 +148,7 @@ export default function AdminUnitsPage() {
             </label>
             <label className="flex flex-col gap-2 text-sm text-gray-700">
               Ciudad
-              <select className="border rounded-lg px-3 py-2" value={city} onChange={(e) => setCity(e.target.value)}>
+              <select className="border rounded-lg px-3 py-2" value={city} onChange={(e) => handleCityChange(e.target.value)}>
                 <option value="">Todas</option>
                 {cities.map((value) => (
                   <option key={value} value={value}>

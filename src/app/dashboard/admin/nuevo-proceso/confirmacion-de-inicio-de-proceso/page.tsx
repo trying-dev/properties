@@ -20,29 +20,6 @@ export default function ConfirmacionDeInicioDeProceso() {
   const [selectedUnitId, setSelectedUnitId] = useState('')
   const [selectedTenantId, setSelectedTenantId] = useState('')
 
-  useEffect(() => {
-    // Obtener IDs del localStorage
-    try {
-      const unitId = localStorage.getItem('np:selectedUnitId')
-      const tenantId = localStorage.getItem('selectedTenantId')
-
-      if (!unitId || !tenantId) {
-        setError('No se encontraron los datos necesarios. Por favor, inicia el proceso nuevamente.')
-        setLoading(false)
-        return
-      }
-
-      setSelectedUnitId(unitId)
-      setSelectedTenantId(tenantId)
-
-      loadProcessDetails(unitId, tenantId)
-    } catch (err) {
-      console.error('Error al acceder a los datos almacenados.', err)
-      setError('Error al acceder a los datos almacenados.')
-      setLoading(false)
-    }
-  }, [])
-
   const loadProcessDetails = async (unitId: string, tenantId: string) => {
     try {
       const result = await getProcessDetailsAction(unitId, tenantId)
@@ -59,6 +36,30 @@ export default function ConfirmacionDeInicioDeProceso() {
       setLoading(false)
     }
   }
+
+  useEffect(() => {
+    // Obtener IDs del localStorage
+    try {
+      const unitId = localStorage.getItem('np:selectedUnitId')
+      const tenantId = localStorage.getItem('selectedTenantId')
+
+      if (!unitId || !tenantId) {
+        // eslint-disable-next-line react-hooks/set-state-in-effect -- init desde localStorage al montar
+        setError('No se encontraron los datos necesarios. Por favor, inicia el proceso nuevamente.')
+        setLoading(false)
+        return
+      }
+
+      setSelectedUnitId(unitId)
+      setSelectedTenantId(tenantId)
+
+      loadProcessDetails(unitId, tenantId)
+    } catch (err) {
+      console.error('Error al acceder a los datos almacenados.', err)
+      setError('Error al acceder a los datos almacenados.')
+      setLoading(false)
+    }
+  }, [])
 
   const handleInitializeContract = async () => {
     if (!selectedUnitId || !selectedTenantId || !session?.user?.id) {

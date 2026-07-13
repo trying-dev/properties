@@ -6,7 +6,7 @@ import Header from '+/components/Header'
 import { getPropertyWithUnits } from '+/actions/property'
 import PropertyActions from './_/PropertyActions'
 import PropertyUnits from './_/PropertyUnits'
-import type { PropertyStatus, PropertyType } from '@prisma/client'
+import type { PropertyStatus, PropertyType } from '+/generated/prisma/client'
 import { toPropertyFormState } from '../_/propertyFormUtils'
 
 const statusLabel: Record<PropertyStatus, string> = {

@@ -36,6 +36,21 @@ const parseCommonZones = (commonZonesJson: string | null): CommonZone[] => {
   }
 }
 
+// Componentes auxiliares
+const Card = ({ children, className = '' }: { children: ReactNode; className?: string }) => (
+  <div className={`bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-shadow duration-200 ${className}`}>
+    {children}
+  </div>
+)
+
+const CardHeader = ({ children, className = '' }: { children: ReactNode; className?: string }) => (
+  <div className={`px-6 py-4 border-b border-gray-100 ${className}`}>{children}</div>
+)
+
+const CardContent = ({ children, className = '' }: { children: ReactNode; className?: string }) => (
+  <div className={`px-6 py-4 ${className}`}>{children}</div>
+)
+
 export default function PropertyPage() {
   const { id } = useParams()
   const [property, setProperty] = useState<PropertyWithRelations | null>(null)
@@ -93,21 +108,6 @@ export default function PropertyPage() {
       totalMonthlyRent,
     }
   }
-
-  // Componentes auxiliares
-  const Card = ({ children, className = '' }: { children: ReactNode; className?: string }) => (
-    <div className={`bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-shadow duration-200 ${className}`}>
-      {children}
-    </div>
-  )
-
-  const CardHeader = ({ children, className = '' }: { children: ReactNode; className?: string }) => (
-    <div className={`px-6 py-4 border-b border-gray-100 ${className}`}>{children}</div>
-  )
-
-  const CardContent = ({ children, className = '' }: { children: ReactNode; className?: string }) => (
-    <div className={`px-6 py-4 ${className}`}>{children}</div>
-  )
 
   // Loading state
   if (loading) {

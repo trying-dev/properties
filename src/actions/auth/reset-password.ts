@@ -3,7 +3,7 @@
 import { z } from 'zod'
 import { prisma } from '+/lib/prisma'
 import { resolveEmailTargets } from '+/lib/email'
-import type { Prisma } from '@prisma/client'
+import type { Prisma } from '+/generated/prisma/client'
 import crypto from 'crypto'
 import { Resend } from 'resend'
 import bcrypt from 'bcryptjs'

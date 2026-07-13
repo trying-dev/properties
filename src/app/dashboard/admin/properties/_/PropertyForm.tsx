@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { PropertyType } from '@prisma/client'
+import { PropertyType } from '+/generated/prisma/enums'
 
 import { createPropertyAction, updatePropertyAction } from '+/actions/property'
 import type { PropertyFormState } from './propertyFormTypes'

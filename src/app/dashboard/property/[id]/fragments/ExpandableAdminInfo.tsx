@@ -1,7 +1,7 @@
 import { useState, type ComponentType, type ReactNode, type SVGProps } from 'react'
 import { User, Plus, Minus, Mail, Phone, MapPin, Calendar, Briefcase, Heart, CreditCard, Shield, Clock, Users, Award } from 'lucide-react'
 import { PropertyWithRelations } from '+/actions/property'
-import { AdminLevel, DocumentType, Gender, MaritalStatus } from '@prisma/client'
+import { AdminLevel, DocumentType, Gender, MaritalStatus } from '+/generated/prisma/client'
 import { formatAdminLevel } from '../utils'
 
 type IconType = ComponentType<SVGProps<SVGSVGElement>>

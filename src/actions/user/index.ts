@@ -5,7 +5,7 @@ import { prisma } from '+/lib/prisma'
 import { serializeDate } from '+/utils'
 
 import { adminSelection, tenantSelection, UserForRedux, userSelection } from './types'
-import { Profile } from '@prisma/client'
+import { Profile } from '+/generated/prisma/client'
 
 const userSafeSelect = {
   id: true,

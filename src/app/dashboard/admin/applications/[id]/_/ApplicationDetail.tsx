@@ -1,7 +1,7 @@
 'use client'
 
 import { FileText, User, Building2, ShieldCheck, ClipboardList, ClipboardCheck } from 'lucide-react'
-import { ProcessReviewStatus, ProcessReviewTargetType } from '@prisma/client'
+import { ProcessReviewStatus, ProcessReviewTargetType } from '+/generated/prisma/enums'
 
 import { processStatusConfig } from '+/lib/processStatus'
 import { profiles, securityOptions } from '+/app/process/_/profiles'

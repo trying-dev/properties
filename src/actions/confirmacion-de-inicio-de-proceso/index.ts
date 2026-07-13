@@ -2,7 +2,6 @@
 
 import { emailService } from './emailResend'
 import { randomBytes } from 'crypto'
-import { Prisma } from '@prisma/client'
 import { prisma } from '+/lib/prisma'
 
 export const getProcessDetails = async ({ unitId, tenantId }: { unitId: string; tenantId: string }) => {
@@ -111,7 +110,7 @@ export const updateUserRegistrationToken = async (tenantId: string, registration
     },
   })
 
-export type ProcessDetails = Prisma.PromiseReturnType<typeof getProcessDetails>
+export type ProcessDetails = Awaited<ReturnType<typeof getProcessDetails>>
 
 export const getProcessDetailsAction = async (unitId: string, tenantId: string) => {
   try {

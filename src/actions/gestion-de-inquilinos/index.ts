@@ -1,6 +1,6 @@
 'use server'
 
-import { DocumentType, MaritalStatus, Prisma, ContractStatus, Profile } from '@prisma/client'
+import { DocumentType, MaritalStatus, Prisma, ContractStatus, Profile } from '+/generated/prisma/client'
 import { revalidatePath } from 'next/cache'
 import { prisma } from '+/lib/prisma'
 import { CreateTenantSubmit } from '+/app/dashboard/admin/nuevo-proceso/seleccion-de-usuario/CreateTenantForm'

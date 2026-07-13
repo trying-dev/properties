@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { Check, MessageSquareWarning, X } from 'lucide-react'
-import { ProcessReviewStatus, ProcessReviewTargetType } from '@prisma/client'
+import { ProcessReviewStatus, ProcessReviewTargetType } from '+/generated/prisma/enums'
 
 import { upsertProcessReviewItemAction } from '+/actions/application-review'
 import type { ProcessReviewBundle } from '+/actions/application-review'

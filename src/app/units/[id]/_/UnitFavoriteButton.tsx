@@ -64,6 +64,7 @@ export default function UnitFavoriteButton({ unitId }: UnitFavoriteButtonProps) 
     if (!isAuthenticated || !pendingFavoriteRef.current) return
     pendingFavoriteRef.current = false
     if (role !== 'tenant') return
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- ejecuta el favorito pendiente tras autenticación
     void handleToggle()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isAuthenticated, role])

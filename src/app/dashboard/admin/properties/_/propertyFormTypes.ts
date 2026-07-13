@@ -1,4 +1,4 @@
-import { PropertyType } from '@prisma/client'
+import { PropertyType } from '+/generated/prisma/client'
 
 export type PropertyFormState = {
   name: string

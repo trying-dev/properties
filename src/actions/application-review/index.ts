@@ -9,7 +9,7 @@ import {
   ProcessReviewStatus,
   ProcessReviewTargetType,
   ProcessStatus,
-} from '@prisma/client'
+} from '+/generated/prisma/client'
 
 import { sendSystemNotificationAction } from '+/actions/notifications'
 import { auth } from '+/lib/auth'

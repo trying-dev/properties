@@ -7,7 +7,7 @@ import Link from 'next/link'
 import { getProperties } from '+/actions/property'
 import Header from '+/components/Header'
 import CardProperty from '../../fragments/CardProperty'
-import { Property } from '@prisma/client'
+import type { Property } from '+/generated/prisma/client'
 import Modal from '+/components/Modal'
 import PropertyForm from './_/PropertyForm'
 import type { PropertyFormState } from './_/propertyFormTypes'
@@ -33,6 +33,7 @@ export default function AdminPropertiesPage() {
   }
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- fetch inicial de datos
     loadProperties()
   }, [])
 

@@ -4,7 +4,7 @@ import { ArrowLeft, Building2, FileText } from 'lucide-react'
 
 import Header from '+/components/Header'
 import { getUnitById } from '+/actions/nuevo-proceso'
-import type { ContractStatus, ContractPriority, UnitStatus } from '@prisma/client'
+import type { ContractStatus, ContractPriority, UnitStatus } from '+/generated/prisma/client'
 import UnitActions from './_/UnitActions'
 import { toUnitFormState } from '../_/unitFormUtils'
 import ContractPayments from './_/ContractPayments'
