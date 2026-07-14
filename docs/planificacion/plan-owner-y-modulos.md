@@ -1,6 +1,7 @@
 # Plan: Owner, Liquidaciones y módulos futuros
 
-> Estado: **Fases 0 y 0.4 IMPLEMENTADAS** (2026-07-14). Resto en planeación.
+> Estado: **Fases 0, 0.4 y 0.5 IMPLEMENTADAS** (2026-07-14). Resto en planeación.
+> Fase 0.5 aplicada: `Contract.commissionRate` (Float, default 10), modelo `OwnerPayout` + enum `PayoutStatus` + relación `Owner.payouts`, ambos schemas. Servicio en `src/actions/payouts/`: `calculateOwnerPayoutsForPeriod` (preview, no persiste), `generateOwnerPayoutsForPeriod` (upsert por ownerId+period, respeta payouts ya PAID), `getOwnerPayouts`, `markPayoutPaidAction`. Verificado contra dev.db (tibabuyes 60/40: gross 15.94M → neto 14.346M split correcto). Sin UI todavía (eso es F0.6). Sqlite pusheado; prod NO.
 > Fase 0 aplicada: modelos `Owner` + `PropertyOwner`, relación en `User`/`Property`, campos baratos en `Property`/`Unit`/`Tenant`, en ambos schemas. Migrado a sqlite local + seed `seed-casa-tibabuyes-owners.ts` (2 dueños 60/40, gitignored). Prod (postgres) sin migrar todavía.
 > Fase 0.4 aplicada: estado `REPORTED` + campos `reportedAt`/`proofUrl`/`confirmedAt`/`confirmedById` en `Payment` (ambos schemas). Actions `reportPaymentAction` (tenant) y `confirmPaymentAction` extendida (setea `confirmedAt`/`confirmedById`, acepta REPORTED) en `src/actions/payments/`. UI: botón "Reportar pago" en `tenant/units`, badge azul REPORTED + filtro unpaid en `admin/payments`. Sqlite migrado; prod NO. proofUrl aún sin upload real (se pasa opcional).
 > Origen: comparación entre el modelo actual y el JSON maximalista `casas.txt` (plantilla que captura "todo lo imaginable" de un inmueble).
@@ -237,7 +238,14 @@ Alternativa (si se quiere auditoría fuerte, varias verificaciones): tabla `Paym
 
 ---
 
-## 6. Fase 0.5 — Liquidación / payout (borrador)
+## 6. Fase 0.5 — Liquidación / payout — ✅ IMPLEMENTADA
+
+> Aplicado 2026-07-14. Schema tal cual el borrador de abajo + `Contract.commissionRate Float @default(10)` + `@@unique([ownerId, period])` en OwnerPayout. Lógica en `src/actions/payouts/index.ts`:
+> - Solo cuenta `Payment` PAID de tipo CANON/RENT con `dueDate` dentro del mes del periodo.
+> - Comisión por contrato (`commissionRate`), no global. Bruto/comisión de la propiedad = suma por contrato.
+> - Reparto entre dueños según `PropertyOwner.participation` (solo `active`).
+> - `generateOwnerPayoutsForPeriod` no recalcula payouts ya `PAID` (el pago al dueño ya ocurrió).
+> - Pendiente: descuento de costos del dueño (mantenimiento F2, predial F5) — pasos 4 de abajo aún no aplicado; UI (F0.6).
 
 ```prisma
 // Liquidación mensual a un dueño: canon cobrado − comisión = neto.

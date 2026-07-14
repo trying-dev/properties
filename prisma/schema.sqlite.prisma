@@ -28,6 +28,9 @@ model Contract {
   lateFeePenalty  Float? // postgres @db.Decimal(5, 2) // Porcentaje
   gracePeriodDays Int    @default(5)
 
+  // Comisión que retiene Properties (%); se fija al firmar, alimenta la liquidación (F0.5)
+  commissionRate Float @default(10) // postgres @db.Decimal(5, 2)
+
   // Fechas con validación
   startDate DateTime
   endDate   DateTime
@@ -791,6 +794,7 @@ model Owner {
 
   user       User            @relation(fields: [userId], references: [id], onDelete: Cascade)
   properties PropertyOwner[]
+  payouts    OwnerPayout[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -817,4 +821,37 @@ model PropertyOwner {
   @@index([propertyId])
   @@index([ownerId])
   @@map("property_owners")
+}
+
+// Liquidación mensual a un dueño: canon cobrado − comisión = neto (F0.5).
+model OwnerPayout {
+  id      String @id @default(cuid())
+  ownerId String
+
+  period      String // "2026-07" (mes liquidado)
+  grossAmount Float // Canon cobrado atribuible a este dueño
+  commission  Float // Comisión Properties
+  netAmount   Float // Neto a pagar (gross − commission), ajustado por participación
+
+  status    PayoutStatus @default(PENDING)
+  paidDate  DateTime?
+  reference String? // Comprobante/transacción del payout
+  notes     String?
+
+  owner Owner @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([ownerId, period])
+  @@index([ownerId])
+  @@index([period])
+  @@index([status])
+  @@map("owner_payouts")
+}
+
+enum PayoutStatus {
+  PENDING // Por pagar
+  PAID // Pagado al dueño
+  ON_HOLD // Retenido
 }
