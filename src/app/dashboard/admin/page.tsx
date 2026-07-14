@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { AlertTriangle, Building2, ClipboardCheck, CreditCard, FilePlus, FileText, Layers, MessageCircle, Receipt, ShieldCheck, UserCog, Users, Wallet, Wrench } from 'lucide-react'
+import { AlertTriangle, Building2, ClipboardCheck, CreditCard, FilePlus, FileText, Gauge, Layers, MessageCircle, Receipt, ShieldCheck, UserCog, Users, Wallet, Wrench } from 'lucide-react'
 
 import { getProperties } from '+/actions/property'
 import { getPendingPaymentsCount } from '+/actions/payments'
@@ -153,6 +153,15 @@ export default function AdminDashboard() {
       title: 'Pólizas',
       description: 'Seguros del inmueble y su vigencia',
       href: '/dashboard/admin/insurance',
+      badge: null,
+      hasBadge: false,
+    },
+    {
+      id: 'meters',
+      icon: Gauge,
+      title: 'Medidores',
+      description: 'Medidores de servicios y lecturas de consumo',
+      href: '/dashboard/admin/meters',
       badge: null,
       hasBadge: false,
     },

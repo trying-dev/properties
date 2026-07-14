@@ -430,6 +430,7 @@ model Property {
   owners   PropertyOwner[] // Dueños con % de participación
   taxes    PropertyTax[] // Predial (impuesto anual)
   policies InsurancePolicy[] // Pólizas de seguro
+  meters   Meter[] // Medidores de servicios
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -519,6 +520,7 @@ model Unit {
 
   inspections  Inspection[]
   maintenances Maintenance[]
+  meters       Meter[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -1055,4 +1057,56 @@ enum PolicyStatus {
   ACTIVE // Vigente
   EXPIRED // Vencida
   CANCELLED // Cancelada
+}
+
+// Medidor de servicio (agua/luz/gas). Ligado a la propiedad; unidad opcional
+// (null = medidor de zona común/general). Las lecturas se guardan en MeterReading.
+model Meter {
+  id         String  @id @default(cuid())
+  propertyId String
+  unitId     String? // null = medidor general/zona común
+
+  type          MeterType
+  serial        String? // Número de serie
+  provider      String? // Empresa de servicios (Codensa, EAB, Vanti...)
+  unitOfMeasure String? // Unidad de medida (m³, kWh)
+  active        Boolean   @default(true)
+
+  property Property       @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  unit     Unit?          @relation(fields: [unitId], references: [id], onDelete: SetNull)
+  readings MeterReading[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([propertyId])
+  @@index([unitId])
+  @@index([type])
+  @@map("meters")
+}
+
+// Lectura de un medidor. `consumption` = value − lectura anterior (calculado al crear).
+model MeterReading {
+  id      String @id @default(cuid())
+  meterId String
+
+  value       Float // Lectura acumulada del medidor
+  readingDate DateTime @default(now())
+  consumption Float? // Consumo desde la lectura anterior (value − previa)
+  notes       String?
+
+  meter Meter @relation(fields: [meterId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@index([meterId])
+  @@index([readingDate])
+  @@map("meter_readings")
+}
+
+enum MeterType {
+  WATER // Agua
+  ELECTRICITY // Luz
+  GAS // Gas
+  OTHER // Otro
 }

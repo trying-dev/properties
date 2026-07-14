@@ -1,6 +1,6 @@
 # Plan: Owner, Liquidaciones y módulos futuros
 
-> Estado: **Fases 0, 0.4, 0.5, 0.6, 1, 2 y 5 (F5a Predial + F5b Cartera + F5c Póliza) IMPLEMENTADAS** (2026-07-15). Ciclo Owner + Inspecciones + Mantenimiento + Finanzas (predial descuenta liquidación, cartera derivada, pólizas). `Invoice` aplazado. Quedan F3 Medidores, F4 Seguridad/Docs, F6 Alertas + migrar prod postgres.
+> Estado: **Fases 0, 0.4, 0.5, 0.6, 1, 2, 3 y 5 IMPLEMENTADAS** (2026-07-15). Owner + Inspecciones + Mantenimiento + Finanzas (F5a-c) + Medidores (F3). `Invoice` aplazado. Quedan F4 Seguridad/Docs, F6 Alertas + migrar prod postgres.
 > Fase 1: modelo `Inspection` + UI `/dashboard/admin/inspections`. Fase 2: modelo `Maintenance` (costBearer) + UI `/dashboard/admin/maintenance`, con costos OWNER descontados en la liquidación. Ver §8 F1/F2.
 > Fase 0.6 aplicada: rol `owner` en next-auth (3-way `admin>owner>tenant`), dashboard dueño `/dashboard/owner`, UI liquidación admin `/dashboard/admin/payouts` (generar + marcar pagado). Ver §7.
 > Fase 0.5 aplicada: `Contract.commissionRate` (Float, default 10), modelo `OwnerPayout` + enum `PayoutStatus` + relación `Owner.payouts`, ambos schemas. Servicio en `src/actions/payouts/`: `calculateOwnerPayoutsForPeriod` (preview, no persiste), `generateOwnerPayoutsForPeriod` (upsert por ownerId+period, respeta payouts ya PAID), `getOwnerPayouts`, `markPayoutPaidAction`. Verificado contra dev.db (tibabuyes 60/40: gross 15.94M → neto 14.346M split correcto). Sin UI todavía (eso es F0.6). Sqlite pusheado; prod NO.
@@ -328,9 +328,12 @@ Requiere: autenticación/rol Owner en el sistema de auth actual (revisar `next-a
 - **UI** `/dashboard/admin/maintenance`: crear (unidad/tipo/costBearer/título/proveedor/costo/fecha), listar, completar inline (costo real/solución), cancelar. Card en admin home.
 - **Pendiente:** UI para vincular finding de inspección (`inspectionId` soportado en action, sin selector en UI); `OwnerPayout` no persiste el desglose de costos (solo el neto ya descontado); migrar prod.
 
-### Fase 3 — Medidores
-- `Meter` (tipo agua/luz/gas, serial, empresa, lecturas). Historial de lecturas.
-- Ligado a `Unit`/`Property`.
+### Fase 3 — Medidores — ✅ IMPLEMENTADA (2026-07-15)
+- **Modelos** (ambos schemas): `Meter` (`type` `MeterType` WATER/ELECTRICITY/GAS/OTHER, `serial`, `provider`, `unitOfMeasure`, `active`, relación `Property` cascade + `Unit?` setNull — `unitId` null = medidor general/zona común) + `MeterReading` (`value` acumulado, `readingDate`, `consumption`, `notes`, relación `Meter` cascade). `Property.meters`/`Unit.meters`.
+- **Consumo**: `addMeterReadingAction` calcula `consumption = value − última lectura previa (≤ fecha)`; null si no hay previa o si retrocede (reinicio/cambio de medidor), evitando negativos.
+- **Actions** `src/actions/meters/`: `getAdminMeters` (incluye últimas 12 lecturas), `getAdminUnitsWithProperty` (filtrar unidades por propiedad en el selector), `createMeterAction` (valida unidad∈propiedad), `addMeterReadingAction`, `toggleMeterActiveAction`, `deleteMeterAction`. Guard admin-gestiona-propiedad.
+- **UI** `/dashboard/admin/meters`: crear medidor (propiedad/unidad opcional/tipo/serial/empresa/medida), tarjetas con última lectura, panel de lecturas inline (registrar + historial con consumo), activar/desactivar/eliminar. Card admin home.
+- Verificado end-to-end (100→135 = consumo 35; retroceso → null; cascade delete de lecturas). **Pendiente:** migrar prod. Reparto de consumo a inquilinos = on-demand (no se construyó).
 
 ### Fase 4 — Seguridad + Documentación
 - Inventario de seguridad (extintores, cámaras, alarmas, detectores) — mayormente `Json` salvo lo que requiera alertas de vencimiento.
