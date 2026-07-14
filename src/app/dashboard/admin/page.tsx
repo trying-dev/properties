@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Building2, ClipboardCheck, CreditCard, FilePlus, FileText, Layers, MessageCircle, UserCog, Users, Wallet, Wrench } from 'lucide-react'
+import { AlertTriangle, Building2, ClipboardCheck, CreditCard, FilePlus, FileText, Layers, MessageCircle, Receipt, ShieldCheck, UserCog, Users, Wallet, Wrench } from 'lucide-react'
 
 import { getProperties } from '+/actions/property'
 import { getPendingPaymentsCount } from '+/actions/payments'
@@ -103,6 +103,15 @@ export default function AdminDashboard() {
       hasBadge: true,
     },
     {
+      id: 'arrears',
+      icon: AlertTriangle,
+      title: 'Cartera / mora',
+      description: 'Cuotas vencidas e impagas por contrato',
+      href: '/dashboard/admin/arrears',
+      badge: null,
+      hasBadge: false,
+    },
+    {
       id: 'payouts',
       icon: Wallet,
       title: 'Liquidaciones',
@@ -126,6 +135,24 @@ export default function AdminDashboard() {
       title: 'Mantenimiento',
       description: 'Correctivos, preventivos e incidentes por unidad',
       href: '/dashboard/admin/maintenance',
+      badge: null,
+      hasBadge: false,
+    },
+    {
+      id: 'property-tax',
+      icon: Receipt,
+      title: 'Predial',
+      description: 'Impuesto predial por propiedad; el pagado se descuenta de la liquidación',
+      href: '/dashboard/admin/property-tax',
+      badge: null,
+      hasBadge: false,
+    },
+    {
+      id: 'insurance',
+      icon: ShieldCheck,
+      title: 'Pólizas',
+      description: 'Seguros del inmueble y su vigencia',
+      href: '/dashboard/admin/insurance',
       badge: null,
       hasBadge: false,
     },

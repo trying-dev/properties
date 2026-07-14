@@ -85,6 +85,7 @@ model Contract {
   inspections Inspection[]
 
   additionalResidents User[] @relation("AdditionalResidents")
+  policies            InsurancePolicy[] // Pólizas ligadas al contrato
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -426,7 +427,9 @@ model Property {
 
   admins Admin[]          @relation("PropertyAdmins")
   units  Unit[]
-  owners PropertyOwner[] // Dueños con % de participación
+  owners   PropertyOwner[] // Dueños con % de participación
+  taxes    PropertyTax[] // Predial (impuesto anual)
+  policies InsurancePolicy[] // Pólizas de seguro
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -986,4 +989,70 @@ enum CostResponsibility {
   OWNER // Lo asume el dueño (se descuenta de la liquidación)
   TENANT // Lo asume el inquilino (daño que causó)
   PROPERTIES // Lo asume la inmobiliaria
+}
+
+// Predial (impuesto anual del inmueble). Costo del dueño: se descuenta de la
+// liquidación (§6 paso 4) cuando está PAID y su paidDate cae en el mes liquidado.
+model PropertyTax {
+  id         String @id @default(cuid())
+  propertyId String
+
+  year      Int // Año gravable
+  amount    Float // postgres @db.Decimal(12, 2) // Valor del predial
+  status    TaxStatus @default(PENDING)
+  dueDate   DateTime? // Fecha límite de pago
+  paidDate  DateTime? // Su mes imputa el descuento al periodo de liquidación
+  reference String? // Recibo/comprobante
+
+  property Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([propertyId])
+  @@index([year])
+  @@index([status])
+  @@index([paidDate])
+  @@map("property_taxes")
+}
+
+enum TaxStatus {
+  PENDING // Sin pagar
+  PAID // Pagado
+  OVERDUE // Vencido
+}
+
+// Póliza de seguro del inmueble (o del contrato). Su vigencia (endDate) alimenta
+// las alertas de vencimiento (F6).
+model InsurancePolicy {
+  id         String  @id @default(cuid())
+  propertyId String
+  contractId String?
+
+  insurer      String // Aseguradora
+  policyNumber String // Número de póliza
+  coverage     String? // Tipo/descripción de cobertura
+  amount       Float? // postgres @db.Decimal(12, 2) // Valor asegurado
+  premium      Float? // postgres @db.Decimal(12, 2) // Prima
+  startDate    DateTime
+  endDate      DateTime // Fin de vigencia → alerta (F6)
+  status       PolicyStatus @default(ACTIVE)
+
+  property Property  @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  contract Contract? @relation(fields: [contractId], references: [id], onDelete: SetNull)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([propertyId])
+  @@index([contractId])
+  @@index([endDate])
+  @@index([status])
+  @@map("insurance_policies")
+}
+
+enum PolicyStatus {
+  ACTIVE // Vigente
+  EXPIRED // Vencida
+  CANCELLED // Cancelada
 }

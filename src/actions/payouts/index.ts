@@ -8,6 +8,7 @@ import {
   PaymentType,
   PayoutStatus,
   Prisma,
+  TaxStatus,
 } from '+/generated/prisma/client'
 import { prisma } from '+/lib/prisma'
 
@@ -31,7 +32,8 @@ export type OwnerPayoutLine = {
   participation: number
   grossAmount: number
   commission: number
-  ownerCosts: number // Parte de los costos del dueño (mantenimientos OWNER) descontada a esta línea
+  ownerCosts: number // Parte de los mantenimientos OWNER descontada a esta línea
+  taxCosts: number // Parte del predial (PropertyTax) descontada a esta línea
   netAmount: number
 }
 
@@ -41,6 +43,7 @@ export type PayoutComputation = {
   propertyGross: number
   propertyCommission: number
   propertyOwnerCosts: number // Mantenimientos COMPLETED con costBearer=OWNER del periodo (F2)
+  propertyTaxCosts: number // Predial PAID cuyo paidDate cae en el periodo (F5)
   propertyNet: number
   lines: OwnerPayoutLine[]
 }
@@ -58,6 +61,10 @@ export const calculateOwnerPayoutsForPeriod = async (
       owners: {
         where: { active: true },
         include: { owner: { include: { user: true } } },
+      },
+      // Predial del periodo: PropertyTax PAID cuyo paidDate cae en el mes liquidado (F5).
+      taxes: {
+        where: { status: TaxStatus.PAID, paidDate: { gte: start, lt: end } },
       },
       units: {
         include: {
@@ -103,8 +110,9 @@ export const calculateOwnerPayoutsForPeriod = async (
     }
     propertyOwnerCosts += unit.maintenances.reduce((sum, m) => sum + (m.cost ?? 0), 0)
   }
-  // TODO F5: descontar también el predial / PropertyTax del periodo aquí.
-  const propertyNet = propertyGross - propertyCommission - propertyOwnerCosts
+  // Predial del periodo (F5): costo del dueño, se descuenta antes de repartir.
+  const propertyTaxCosts = property.taxes.reduce((sum, t) => sum + t.amount, 0)
+  const propertyNet = propertyGross - propertyCommission - propertyOwnerCosts - propertyTaxCosts
 
   // Repartir entre dueños según participación.
   const lines: OwnerPayoutLine[] = property.owners.map((po) => {
@@ -118,11 +126,21 @@ export const calculateOwnerPayoutsForPeriod = async (
       grossAmount: propertyGross * share,
       commission: propertyCommission * share,
       ownerCosts: propertyOwnerCosts * share,
+      taxCosts: propertyTaxCosts * share,
       netAmount: propertyNet * share,
     }
   })
 
-  return { propertyId, period, propertyGross, propertyCommission, propertyOwnerCosts, propertyNet, lines }
+  return {
+    propertyId,
+    period,
+    propertyGross,
+    propertyCommission,
+    propertyOwnerCosts,
+    propertyTaxCosts,
+    propertyNet,
+    lines,
+  }
 }
 
 export const calculateOwnerPayoutsAction = async (propertyId: string, period: string) => {
