@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { AlertTriangle, Building2, ClipboardCheck, CreditCard, FilePlus, FileText, FolderArchive, Gauge, Layers, MessageCircle, Receipt, ShieldAlert, ShieldCheck, UserCog, Users, Wallet, Wrench } from 'lucide-react'
+import { AlertTriangle, BellRing, Building2, ClipboardCheck, CreditCard, FilePlus, FileText, FolderArchive, Gauge, Layers, MessageCircle, Receipt, ShieldAlert, ShieldCheck, UserCog, Users, Wallet, Wrench } from 'lucide-react'
 
 import { getProperties } from '+/actions/property'
 import { getPendingPaymentsCount } from '+/actions/payments'
@@ -101,6 +101,15 @@ export default function AdminDashboard() {
       href: '/dashboard/admin/payments',
       badge: pendingPaymentsCount,
       hasBadge: true,
+    },
+    {
+      id: 'alerts',
+      icon: BellRing,
+      title: 'Alertas',
+      description: 'Vencimientos próximos: pólizas, seguridad, documentos, predial',
+      href: '/dashboard/admin/alerts',
+      badge: null,
+      hasBadge: false,
     },
     {
       id: 'arrears',

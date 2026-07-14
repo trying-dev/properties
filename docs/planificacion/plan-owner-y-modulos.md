@@ -1,6 +1,6 @@
 # Plan: Owner, Liquidaciones y módulos futuros
 
-> Estado: **Fases 0, 0.4, 0.5, 0.6, 1, 2, 3, 4 y 5 IMPLEMENTADAS** (2026-07-15). Owner + Inspecciones + Mantenimiento + Finanzas (F5a-c) + Medidores (F3) + Seguridad/Docs (F4). `Invoice` aplazado. Queda **F6 Alertas** (único módulo funcional) + migrar prod postgres + upload real de archivos.
+> Estado: **TODAS las fases funcionales IMPLEMENTADAS (F0–F6)** (2026-07-15). Owner + confirmación pago + liquidación + dashboard dueño + inspecciones + mantenimiento + medidores + seguridad/docs + finanzas (predial/cartera/póliza) + motor de alertas. `Invoice` aplazado on-demand. **Deuda restante (no-fase):** migrar prod postgres (todo solo en sqlite local) · upload real de archivos (proofUrl/fileUrl hoy URL pegable) · elegir PSP para auto-confirmar pagos.
 > Fase 1: modelo `Inspection` + UI `/dashboard/admin/inspections`. Fase 2: modelo `Maintenance` (costBearer) + UI `/dashboard/admin/maintenance`, con costos OWNER descontados en la liquidación. Ver §8 F1/F2.
 > Fase 0.6 aplicada: rol `owner` en next-auth (3-way `admin>owner>tenant`), dashboard dueño `/dashboard/owner`, UI liquidación admin `/dashboard/admin/payouts` (generar + marcar pagado). Ver §7.
 > Fase 0.5 aplicada: `Contract.commissionRate` (Float, default 10), modelo `OwnerPayout` + enum `PayoutStatus` + relación `Owner.payouts`, ambos schemas. Servicio en `src/actions/payouts/`: `calculateOwnerPayoutsForPeriod` (preview, no persiste), `generateOwnerPayoutsForPeriod` (upsert por ownerId+period, respeta payouts ya PAID), `getOwnerPayouts`, `markPayoutPaidAction`. Verificado contra dev.db (tibabuyes 60/40: gross 15.94M → neto 14.346M split correcto). Sin UI todavía (eso es F0.6). Sqlite pusheado; prod NO.
@@ -347,10 +347,13 @@ Cuatro piezas del bloque `finanzas` del JSON. Estado: **F5a Predial + F5b Carter
 - **Seguro / póliza** (`finanzas.poliza`) — ✅ **F5c IMPLEMENTADA**: modelo `InsurancePolicy` (ambos schemas): `insurer`, `policyNumber`, `coverage`, `amount`, `premium`, `startDate`, `endDate`, `status` (`PolicyStatus` ACTIVE/EXPIRED/CANCELLED), relación `Property` (cascade) + `Contract?` (setNull). `Property.policies`/`Contract.policies`. Actions `src/actions/insurance/` (create/updateStatus/delete/list, guard admin-propiedad). UI `/dashboard/admin/insurance` (crear/listar/marcar vencida/eliminar, aviso "vence en N d" ≤30 d) + card home. `endDate` alimentará alertas de vencimiento en **F6**. Verificado (create→list→EXPIRED→delete). Pendiente: migrar prod.
 - **Facturación** (`finanzas.facturas`): modelo `Invoice` — **aplazado/on-demand (§9)**. Solo si se requiere facturación legal formal.
 
-### Fase 6 — Motor de alertas / vencimientos
-- Transversal. Genera avisos cuando algo vence o requiere acción: póliza por vencer, recarga de extintor, mantenimiento preventivo programado, pago en mora, batería de sensor.
-- Se apoya en el modelo `Notification` existente + una capa de reglas/cron (ver `docs/cron-payments.md` como patrón de tarea programada).
-- No inventar tabla de "alerta" hasta confirmar que se necesita historial; puede ser generación de `Notification` desde un job.
+### Fase 6 — Motor de alertas / vencimientos — ✅ IMPLEMENTADA (2026-07-15)
+- **Sin tabla nueva** (§8): genera `Notification` (tipo `REMINDER`) desde un job. `src/lib/alerts/expirations.ts`:
+  - `scanExpirations(date, windowDays=30)`: escanea **5 fuentes** con fecha de vencimiento dentro de la ventana (o vencidas) → `ExpirationItem[]` ordenado por urgencia: **pólizas** `endDate` (F5c) · **seguridad** `nextServiceDate` (F4) · **documentos** `expiryDate` (F4) · **mantenimiento preventivo** `nextDueDate` (F2) · **predial** `dueDate` PENDING/OVERDUE (F5a). Derivado, no escribe.
+  - `generateExpirationAlerts()`: crea notificaciones a los admins de cada propiedad. **Idempotente**: dedupe por `link` (incluye id + fecha `due=YYYY-MM-DD`, así una renovación con nueva fecha vuelve a avisar).
+- **Cron** `/api/cron/alerts` (ya existía para pagos) ahora también corre `generateExpirationAlerts`; schedule diario en `vercel.json` (`5 5 * * *`). La mora/pago vencido siguen en `generatePaymentAlerts` (`src/lib/payments/alerts.ts`).
+- **Action** `getUpcomingExpirations(windowDays)` (filtra a las propiedades del admin) + **UI** `/dashboard/admin/alerts` (lista con severidad por días, links a cada módulo) + card admin home.
+- Verificado end-to-end (3 fuentes creadas → scan ordena por urgencia TAX −3/SECURITY 5/POLICY 10; run1 notifica 3, run2 notifica 0 idempotente). **Roadmap funcional cerrado.**
 
 ---
 

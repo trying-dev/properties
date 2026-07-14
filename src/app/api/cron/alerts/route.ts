@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { generatePaymentAlerts } from '+/lib/payments/alerts'
+import { generateExpirationAlerts } from '+/lib/alerts/expirations'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
@@ -17,9 +18,10 @@ export async function GET(request: NextRequest) {
   }
 
   const result = await generatePaymentAlerts()
+  const expirations = await generateExpirationAlerts()
   const durationMs = Date.now() - startedAt
   console.log(
-    `[cron] alerts done overdueUpdated=${result.overdueUpdated} overdueNotified=${result.overdueNotified} remindersSent=${result.remindersSent} ms=${durationMs}`
+    `[cron] alerts done overdueUpdated=${result.overdueUpdated} overdueNotified=${result.overdueNotified} remindersSent=${result.remindersSent} expirationsScanned=${expirations.scanned} expirationsNotified=${expirations.notified} ms=${durationMs}`
   )
-  return NextResponse.json(result)
+  return NextResponse.json({ ...result, expirations })
 }
