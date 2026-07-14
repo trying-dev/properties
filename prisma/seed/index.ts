@@ -1260,11 +1260,11 @@ const main = async (): Promise<void> => {
   const tenants = await createTenants(hashedPassword)
   const units = await createPropertyAndUnits(admins.admin1.id)
   await createExtraProperties(admins.admin1.id)
-  if (existsSync(join(__dirname, 'si', 'index.ts'))) {
-    const siPath = './si'
-    const siModule = await import(siPath)
-    if (typeof siModule.runSiSeeds === 'function') {
-      await siModule.runSiSeeds()
+  if (existsSync(join(__dirname, 'first-cases', 'index.ts'))) {
+    const firstCasesPath = './first-cases'
+    const firstCasesModule = await import(firstCasesPath)
+    if (typeof firstCasesModule.runFirstCasesSeeds === 'function') {
+      await firstCasesModule.runFirstCasesSeeds()
     }
   }
   const contracts = await createContracts({ admins, tenants, units, hashedPassword })

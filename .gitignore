@@ -45,7 +45,6 @@ next-env.d.ts
 /prisma/**/*.db
 /prisma/*.db-journal
 /prisma/migrations
-prisma/seed/si/
 # cliente generado por prisma-client (se regenera en build)
 /src/generated/
 

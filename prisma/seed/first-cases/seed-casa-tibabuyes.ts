@@ -1,0 +1,333 @@
+import { PropertyStatus, PropertyType, UnitStatus } from '../../../src/generated/prisma/client'
+import { prisma } from '+/lib/prisma'
+
+const PROPERTY_ID = 'case-casa-tibabuyes'
+
+const units = [
+  {
+    unitNumber: 'C1-LOCAL-A',
+    floor: 1,
+    area: 40,
+    bedrooms: 0,
+    bathrooms: 1,
+    kitchen: true,
+    bathroom: true,
+    furnished: false,
+    petFriendly: false,
+    status: UnitStatus.VACANT,
+    baseRent: 1_800_000,
+    deposit: 1_800_000,
+    description: 'Local comercial con cocina y baño privado.',
+    images: JSON.stringify([
+      'https://picsum.photos/seed/casal1a/800/600',
+      'https://picsum.photos/seed/casal1b/800/600',
+      'https://picsum.photos/seed/casal1c/800/600',
+      'https://picsum.photos/seed/casal1d/800/600',
+      'https://picsum.photos/seed/casal1e/800/600',
+    ]),
+  },
+  {
+    unitNumber: 'C1-LOCAL-B',
+    floor: 1,
+    area: 30,
+    bedrooms: 0,
+    bathrooms: 0,
+    furnished: false,
+    petFriendly: false,
+    status: UnitStatus.VACANT,
+    baseRent: 1_200_000,
+    deposit: 1_200_000,
+    description: 'Local comercial tipo open space (sin baño ni cocina).',
+    images: JSON.stringify([
+      'https://picsum.photos/seed/casal2a/800/600',
+      'https://picsum.photos/seed/casal2b/800/600',
+      'https://picsum.photos/seed/casal2c/800/600',
+      'https://picsum.photos/seed/casal2d/800/600',
+      'https://picsum.photos/seed/casal2e/800/600',
+    ]),
+  },
+  {
+    unitNumber: 'C2-201',
+    floor: 2,
+    area: 45,
+    bedrooms: 1,
+    bathrooms: 1,
+    kitchen: true,
+    bathroom: true,
+    furnished: false,
+    petFriendly: true,
+    status: UnitStatus.VACANT,
+    baseRent: 1_300_000,
+    deposit: 1_300_000,
+    description: 'Unidad con cocina y baño privado.',
+    images: JSON.stringify([
+      'https://picsum.photos/seed/casa201a/800/600',
+      'https://picsum.photos/seed/casa201b/800/600',
+      'https://picsum.photos/seed/casa201c/800/600',
+      'https://picsum.photos/seed/casa201d/800/600',
+      'https://picsum.photos/seed/casa201e/800/600',
+    ]),
+  },
+  {
+    unitNumber: 'C2-202',
+    floor: 2,
+    area: 48,
+    bedrooms: 1,
+    bathrooms: 1,
+    kitchen: true,
+    bathroom: true,
+    furnished: false,
+    petFriendly: true,
+    status: UnitStatus.VACANT,
+    baseRent: 1_350_000,
+    deposit: 1_350_000,
+    description: 'Unidad con cocina y baño privado.',
+    images: JSON.stringify([
+      'https://picsum.photos/seed/casa202a/800/600',
+      'https://picsum.photos/seed/casa202b/800/600',
+      'https://picsum.photos/seed/casa202c/800/600',
+      'https://picsum.photos/seed/casa202d/800/600',
+      'https://picsum.photos/seed/casa202e/800/600',
+    ]),
+  },
+  {
+    unitNumber: 'C3-301',
+    floor: 3,
+    area: 120,
+    bedrooms: 3,
+    bathrooms: 2,
+    kitchen: true,
+    bathroom: true,
+    livingDiningRoom: true,
+    laundry: true,
+    furnished: false,
+    petFriendly: true,
+    balcony: true,
+    status: UnitStatus.VACANT,
+    baseRent: 3_500_000,
+    deposit: 3_500_000,
+    description: 'Apartamento completo con 3 habitaciones, sala-comedor, cocina, baño y área de lavado.',
+    images: JSON.stringify([
+      'https://picsum.photos/seed/casa301a/800/600',
+      'https://picsum.photos/seed/casa301b/800/600',
+      'https://picsum.photos/seed/casa301c/800/600',
+      'https://picsum.photos/seed/casa301d/800/600',
+      'https://picsum.photos/seed/casa301e/800/600',
+    ]),
+  },
+  {
+    unitNumber: 'C4-401',
+    floor: 4,
+    area: 18,
+    bedrooms: 1,
+    bathrooms: 0,
+    sharedKitchen: true,
+    sharedBathroom: true,
+    sharedLaundry: true,
+    furnished: false,
+    petFriendly: false,
+    status: UnitStatus.VACANT,
+    baseRent: 650_000,
+    deposit: 650_000,
+    description: 'Habitación con cocina, baño y lavandería compartidos.',
+    images: JSON.stringify([
+      'https://picsum.photos/seed/casa401a/800/600',
+      'https://picsum.photos/seed/casa401b/800/600',
+      'https://picsum.photos/seed/casa401c/800/600',
+      'https://picsum.photos/seed/casa401d/800/600',
+      'https://picsum.photos/seed/casa401e/800/600',
+    ]),
+  },
+  {
+    unitNumber: 'C4-402',
+    floor: 4,
+    area: 20,
+    bedrooms: 1,
+    bathrooms: 0,
+    sharedKitchen: true,
+    sharedBathroom: true,
+    sharedLaundry: true,
+    furnished: false,
+    petFriendly: false,
+    status: UnitStatus.VACANT,
+    baseRent: 680_000,
+    deposit: 680_000,
+    description: 'Habitación con cocina, baño y lavandería compartidos.',
+    images: JSON.stringify([
+      'https://picsum.photos/seed/casa402a/800/600',
+      'https://picsum.photos/seed/casa402b/800/600',
+      'https://picsum.photos/seed/casa402c/800/600',
+      'https://picsum.photos/seed/casa402d/800/600',
+      'https://picsum.photos/seed/casa402e/800/600',
+    ]),
+  },
+  {
+    unitNumber: 'C4-403',
+    floor: 4,
+    area: 19,
+    bedrooms: 1,
+    bathrooms: 0,
+    sharedKitchen: true,
+    sharedBathroom: true,
+    sharedLaundry: true,
+    furnished: false,
+    petFriendly: false,
+    status: UnitStatus.VACANT,
+    baseRent: 670_000,
+    deposit: 670_000,
+    description: 'Habitación con cocina, baño y lavandería compartidos.',
+    images: JSON.stringify([
+      'https://picsum.photos/seed/casa403a/800/600',
+      'https://picsum.photos/seed/casa403b/800/600',
+      'https://picsum.photos/seed/casa403c/800/600',
+      'https://picsum.photos/seed/casa403d/800/600',
+      'https://picsum.photos/seed/casa403e/800/600',
+    ]),
+  },
+  {
+    unitNumber: 'C4-404',
+    floor: 4,
+    area: 21,
+    bedrooms: 1,
+    bathrooms: 0,
+    sharedKitchen: true,
+    sharedBathroom: true,
+    sharedLaundry: true,
+    furnished: false,
+    petFriendly: false,
+    status: UnitStatus.VACANT,
+    baseRent: 690_000,
+    deposit: 690_000,
+    description: 'Habitación con cocina, baño y lavandería compartidos.',
+    images: JSON.stringify([
+      'https://picsum.photos/seed/casa404a/800/600',
+      'https://picsum.photos/seed/casa404b/800/600',
+      'https://picsum.photos/seed/casa404c/800/600',
+      'https://picsum.photos/seed/casa404d/800/600',
+      'https://picsum.photos/seed/casa404e/800/600',
+    ]),
+  },
+  {
+    unitNumber: 'C5-501',
+    floor: 5,
+    area: 85,
+    bedrooms: 2,
+    bathrooms: 1,
+    kitchen: true,
+    bathroom: true,
+    livingDiningRoom: true,
+    furnished: false,
+    petFriendly: true,
+    balcony: true,
+    status: UnitStatus.VACANT,
+    baseRent: 2_400_000,
+    deposit: 2_400_000,
+    description: 'Unidad con 2 habitaciones, sala-comedor, cocina y baño.',
+    images: JSON.stringify([
+      'https://picsum.photos/seed/casa501a/800/600',
+      'https://picsum.photos/seed/casa501b/800/600',
+      'https://picsum.photos/seed/casa501c/800/600',
+      'https://picsum.photos/seed/casa501d/800/600',
+      'https://picsum.photos/seed/casa501e/800/600',
+    ]),
+  },
+  {
+    unitNumber: 'C5-502',
+    floor: 5,
+    area: 55,
+    bedrooms: 1,
+    bathrooms: 1,
+    kitchen: true,
+    bathroom: true,
+    furnished: false,
+    petFriendly: true,
+    status: UnitStatus.VACANT,
+    baseRent: 1_700_000,
+    deposit: 1_700_000,
+    description: 'Unidad con 1 habitación, cocina y baño.',
+    images: JSON.stringify([
+      'https://picsum.photos/seed/casa502a/800/600',
+      'https://picsum.photos/seed/casa502b/800/600',
+      'https://picsum.photos/seed/casa502c/800/600',
+      'https://picsum.photos/seed/casa502d/800/600',
+      'https://picsum.photos/seed/casa502e/800/600',
+    ]),
+  },
+]
+
+export const seedCasaTibabuyes = async () => {
+  const admin = await prisma.admin.findFirst({
+    where: { user: { email: 'admin1@propiedades.com' } },
+  })
+
+  if (!admin) {
+    throw new Error('No existe admin1@propiedades.com. Ejecuta el seed principal primero.')
+  }
+
+  const existing = await prisma.property.findUnique({ where: { id: PROPERTY_ID } })
+  if (existing) {
+    await prisma.unit.deleteMany({ where: { propertyId: PROPERTY_ID } })
+    await prisma.property.update({
+      where: { id: PROPERTY_ID },
+      data: {
+        name: 'Casa Tibabuyes',
+        description: 'Casa de 5 pisos con locales y unidades residenciales.',
+        street: 'Calle 137B',
+        number: '105B-10',
+        city: 'Bogotá',
+        neighborhood: 'Chapinero',
+        state: 'Bogotá',
+        postalCode: '00000',
+        country: 'Colombia',
+        gpsCoordinates: '4.74097,-74.09929',
+        propertyType: PropertyType.BUILDING,
+        status: PropertyStatus.ACTIVE,
+        builtArea: 420,
+        totalLandArea: 160,
+        floors: 5,
+        age: 8,
+        admins: { connect: [{ id: admin.id }] },
+        units: { create: units },
+      },
+    })
+    console.log('✅ Casa Alameda actualizada.')
+    return
+  }
+
+  await prisma.property.create({
+    data: {
+      id: PROPERTY_ID,
+      admins: { connect: [{ id: admin.id }] },
+      name: 'Casa Tibabuyes',
+      description: 'Casa de 5 pisos con locales y unidades residenciales.',
+      street: 'Calle 137B',
+      number: '105B-10',
+      city: 'Bogotá',
+      neighborhood: 'Chapinero',
+      state: 'Bogotá',
+      postalCode: '00000',
+      country: 'Colombia',
+      gpsCoordinates: '4.74097,-74.09929',
+      propertyType: PropertyType.BUILDING,
+      status: PropertyStatus.ACTIVE,
+      builtArea: 420,
+      totalLandArea: 160,
+      floors: 5,
+      age: 8,
+      units: { create: units },
+    },
+  })
+
+  console.log('✅ Casa Alameda creada.')
+}
+
+if (process.argv[1]?.includes('seed-casa-tibabuyes.ts')) {
+  seedCasaTibabuyes()
+    .catch((error) => {
+      console.error('❌ Error creando Casa Tibabuyes:', error)
+      process.exit(1)
+    })
+    .finally(async () => {
+      await prisma.$disconnect()
+    })
+}

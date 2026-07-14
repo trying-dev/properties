@@ -1,6 +1,7 @@
 # Plan: Owner, Liquidaciones y módulos futuros
 
-> Estado: **PLANEACIÓN** (sin código todavía). Documento de diseño para decidir antes de tocar schema.
+> Estado: **Fase 0 IMPLEMENTADA** (2026-07-14). Resto en planeación.
+> Fase 0 aplicada: modelos `Owner` + `PropertyOwner`, relación en `User`/`Property`, campos baratos en `Property`/`Unit`/`Tenant`, en ambos schemas. Migrado a sqlite local + seed `seed-casa-tibabuyes-owners.ts` (2 dueños 60/40, gitignored). Prod (postgres) sin migrar todavía.
 > Origen: comparación entre el modelo actual y el JSON maximalista `casas.txt` (plantilla que captura "todo lo imaginable" de un inmueble).
 
 ## 1. Principio rector

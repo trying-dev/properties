@@ -387,6 +387,18 @@ model Property {
   floors        Int          @default(1)
   age           Int
 
+  // Detalle catastral/comercial (opcional)
+  stratum            Int? // Estrato socioeconómico
+  district           String? // Localidad (distinto de barrio)
+  constructionYear   Int? // Año de construcción
+  commercialValue    Float? // Valor comercial
+  cadastralValue     Float? // Valor catastral
+  structuralMaterial String? // Material estructural
+
+  // Estructura multi-torre (opcional; solo conjuntos)
+  complex  String? // Conjunto
+  building String? // Edificio
+
   // Exterior
   yardOrGarden         String?
   parking              Int     @default(0)
@@ -401,8 +413,9 @@ model Property {
   // Estado y disponibilidad
   status PropertyStatus @default(ACTIVE)
 
-  admins Admin[] @relation("PropertyAdmins")
+  admins Admin[]          @relation("PropertyAdmins")
   units  Unit[]
+  owners PropertyOwner[] // Dueños con % de participación
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -437,10 +450,14 @@ model Unit {
 
   propertyId String
 
-  unitNumber String
-  floor      Int?
-  area       Float? // postgres @db.Decimal(8, 2)
-  bedrooms   Int     @default(0)
+  unitNumber   String
+  internalCode String? // Código interno
+  qrCode       String? // Código QR
+  floor        Int?
+  area         Float? // postgres @db.Decimal(8, 2)
+  privateArea  Float? // Área privada (m²)
+  commonArea   Float? // Área común (m²)
+  bedrooms     Int     @default(0)
   bathrooms  Float   @default(0) // postgres @db.Decimal(3, 1)
   furnished  Boolean @default(false)
 
@@ -569,6 +586,7 @@ model User {
 
   admin  Admin?
   tenant Tenant?
+  owner  Owner?
 
   additionalContracts      Contract[]        @relation("AdditionalResidents") // Contratos donde es residente adicional
   uploadedProcessDocuments ProcessDocument[] @relation("ProcessDocumentUploader")
@@ -666,6 +684,11 @@ model Tenant {
   emergencyContactPhone String?
   monthlyIncome         Float?
 
+  // Datos adicionales (JSON)
+  pets               Json? // Mascotas
+  vehicles           Json? // Vehículos
+  authorizedContacts Json? // Contactos autorizados
+
   // Referencias
   references Reference[]
 
@@ -741,4 +764,50 @@ model Reference {
   tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
 
   @@map("references")
+}
+
+// ========================================
+// OWNER - Dueño que inscribe su propiedad para gestión
+// ========================================
+
+model Owner {
+  id     String @id @default(cuid())
+  userId String @unique
+
+  // Datos de inscripción
+  enrolledAt DateTime @default(now()) // Cuándo inscribió con Properties
+  active     Boolean  @default(true)
+
+  // Preferencias de pago (cómo se le liquida)
+  payoutMethod String? // BANK_TRANSFER, etc. (enum futuro)
+  bankAccount  String? // Datos de cuenta para el payout
+
+  user       User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  properties PropertyOwner[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@map("owners")
+}
+
+// Tabla puente: qué dueño posee qué propiedad y con qué % de participación.
+model PropertyOwner {
+  id         String @id @default(cuid())
+  ownerId    String
+  propertyId String
+
+  participation Float     @default(100) // % de participación (copropiedad)
+  startDate     DateTime  @default(now())
+  endDate       DateTime?
+  active        Boolean   @default(true)
+
+  owner    Owner    @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  property Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+  @@unique([ownerId, propertyId])
+  @@index([propertyId])
+  @@index([ownerId])
+  @@map("property_owners")
 }
