@@ -1,6 +1,6 @@
 # Plan: Owner, Liquidaciones y módulos futuros
 
-> Estado: **Fases 0, 0.4, 0.5, 0.6, 1, 2, 3 y 5 IMPLEMENTADAS** (2026-07-15). Owner + Inspecciones + Mantenimiento + Finanzas (F5a-c) + Medidores (F3). `Invoice` aplazado. Quedan F4 Seguridad/Docs, F6 Alertas + migrar prod postgres.
+> Estado: **Fases 0, 0.4, 0.5, 0.6, 1, 2, 3, 4 y 5 IMPLEMENTADAS** (2026-07-15). Owner + Inspecciones + Mantenimiento + Finanzas (F5a-c) + Medidores (F3) + Seguridad/Docs (F4). `Invoice` aplazado. Queda **F6 Alertas** (único módulo funcional) + migrar prod postgres + upload real de archivos.
 > Fase 1: modelo `Inspection` + UI `/dashboard/admin/inspections`. Fase 2: modelo `Maintenance` (costBearer) + UI `/dashboard/admin/maintenance`, con costos OWNER descontados en la liquidación. Ver §8 F1/F2.
 > Fase 0.6 aplicada: rol `owner` en next-auth (3-way `admin>owner>tenant`), dashboard dueño `/dashboard/owner`, UI liquidación admin `/dashboard/admin/payouts` (generar + marcar pagado). Ver §7.
 > Fase 0.5 aplicada: `Contract.commissionRate` (Float, default 10), modelo `OwnerPayout` + enum `PayoutStatus` + relación `Owner.payouts`, ambos schemas. Servicio en `src/actions/payouts/`: `calculateOwnerPayoutsForPeriod` (preview, no persiste), `generateOwnerPayoutsForPeriod` (upsert por ownerId+period, respeta payouts ya PAID), `getOwnerPayouts`, `markPayoutPaidAction`. Verificado contra dev.db (tibabuyes 60/40: gross 15.94M → neto 14.346M split correcto). Sin UI todavía (eso es F0.6). Sqlite pusheado; prod NO.
@@ -335,9 +335,10 @@ Requiere: autenticación/rol Owner en el sistema de auth actual (revisar `next-a
 - **UI** `/dashboard/admin/meters`: crear medidor (propiedad/unidad opcional/tipo/serial/empresa/medida), tarjetas con última lectura, panel de lecturas inline (registrar + historial con consumo), activar/desactivar/eliminar. Card admin home.
 - Verificado end-to-end (100→135 = consumo 35; retroceso → null; cascade delete de lecturas). **Pendiente:** migrar prod. Reparto de consumo a inquilinos = on-demand (no se construyó).
 
-### Fase 4 — Seguridad + Documentación
-- Inventario de seguridad (extintores, cámaras, alarmas, detectores) — mayormente `Json` salvo lo que requiera alertas de vencimiento.
-- Documentación legal (escritura, certificado tradición, predial, pólizas) — metadatos + rutas de archivo.
+### Fase 4 — Seguridad + Documentación — ✅ IMPLEMENTADA (2026-07-15)
+- **Seguridad** — modelo `SecurityDevice` (ambos schemas): `type` (`SecurityDeviceType` EXTINGUISHER/CAMERA/ALARM/DETECTOR/OTHER), `location`, `brand`, `nextServiceDate` (recarga/servicio → alerta F6), `active`, `payload Json?` (detalle profundo, patrón §1), relación `Property` cascade + `Unit?` setNull (null = zona común). Actions `src/actions/security/` (create/toggleActive/delete/list, guard admin-propiedad, valida unidad∈propiedad). UI `/dashboard/admin/security` (aviso próx. servicio ≤30 d) + card.
+- **Documentación** — modelo `PropertyDocument` (ambos schemas): `type` (`PropertyDocumentType` DEED/TRADITION_CERT/TAX_RECEIPT/POLICY/FLOOR_PLAN/OTHER), `name`, `fileUrl` (URL pegable, **sin storage propio** — mismo interino que proofUrl F0.4), `issuedDate`, `expiryDate` (cert. tradición vence → alerta F6), relación `Property` cascade + `Unit?` setNull. Enum se llama `PropertyDocumentType` para no chocar con `DocumentType` (docs de usuario). **NO** se ligó a `Contract` (ya tiene `ContractDocument`). Actions `src/actions/documents/` (create/delete/list). UI `/dashboard/admin/documents` (link externo + aviso vence ≤30 d) + card.
+- Verificado end-to-end (device con payload Json roundtrip; document con fileUrl/expiry). **Pendiente:** upload real de archivos (hoy URL pegable), migrar prod.
 
 ### Fase 5 — Finanzas avanzadas
 Cuatro piezas del bloque `finanzas` del JSON. Estado: **F5a Predial + F5b Cartera + F5c Póliza ✅ IMPLEMENTADAS (2026-07-15)**; `Invoice` aplazado.

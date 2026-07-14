@@ -431,6 +431,8 @@ model Property {
   taxes    PropertyTax[] // Predial (impuesto anual)
   policies InsurancePolicy[] // Pólizas de seguro
   meters   Meter[] // Medidores de servicios
+  devices  SecurityDevice[] // Dispositivos de seguridad
+  documents PropertyDocument[] // Documentación legal
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -521,6 +523,8 @@ model Unit {
   inspections  Inspection[]
   maintenances Maintenance[]
   meters       Meter[]
+  devices      SecurityDevice[]
+  documents    PropertyDocument[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -1108,5 +1112,78 @@ enum MeterType {
   WATER // Agua
   ELECTRICITY // Luz
   GAS // Gas
+  OTHER // Otro
+}
+
+// Dispositivo de seguridad (extintor, cámara, alarma, detector). Detalle profundo
+// en `payload Json`. `nextServiceDate` (recarga/mantenimiento) alimenta alertas (F6).
+model SecurityDevice {
+  id         String  @id @default(cuid())
+  propertyId String
+  unitId     String? // null = dispositivo de zona común/general
+
+  type            SecurityDeviceType
+  location        String? // Ubicación física
+  brand           String? // Marca/modelo
+  nextServiceDate DateTime? // Próxima recarga/mantenimiento → alerta (F6)
+  active          Boolean            @default(true)
+  payload         Json? // Detalle (sensores, cobertura, capacidad)
+  notes           String?
+
+  property Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  unit     Unit?    @relation(fields: [unitId], references: [id], onDelete: SetNull)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([propertyId])
+  @@index([unitId])
+  @@index([type])
+  @@index([nextServiceDate])
+  @@map("security_devices")
+}
+
+enum SecurityDeviceType {
+  EXTINGUISHER // Extintor
+  CAMERA // Cámara
+  ALARM // Alarma
+  DETECTOR // Detector (humo/gas)
+  OTHER // Otro
+}
+
+// Documento legal del inmueble (escritura, certificado de tradición, recibos, pólizas).
+// `fileUrl` es una URL pegable (sin storage propio; mismo interino que proofUrl F0.4).
+// `expiryDate` (ej. certificado de tradición) alimenta alertas (F6).
+model PropertyDocument {
+  id         String  @id @default(cuid())
+  propertyId String
+  unitId     String?
+
+  type       PropertyDocumentType
+  name       String // Nombre/título del documento
+  fileUrl    String? // URL del archivo (pegable)
+  issuedDate DateTime? // Fecha de expedición
+  expiryDate DateTime? // Fecha de vencimiento → alerta (F6)
+  notes      String?
+
+  property Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  unit     Unit?    @relation(fields: [unitId], references: [id], onDelete: SetNull)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([propertyId])
+  @@index([unitId])
+  @@index([type])
+  @@index([expiryDate])
+  @@map("property_documents")
+}
+
+enum PropertyDocumentType {
+  DEED // Escritura
+  TRADITION_CERT // Certificado de tradición y libertad
+  TAX_RECEIPT // Recibo de predial/servicios
+  POLICY // Póliza
+  FLOOR_PLAN // Plano
   OTHER // Otro
 }

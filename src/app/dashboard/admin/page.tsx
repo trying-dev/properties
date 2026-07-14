@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { AlertTriangle, Building2, ClipboardCheck, CreditCard, FilePlus, FileText, Gauge, Layers, MessageCircle, Receipt, ShieldCheck, UserCog, Users, Wallet, Wrench } from 'lucide-react'
+import { AlertTriangle, Building2, ClipboardCheck, CreditCard, FilePlus, FileText, FolderArchive, Gauge, Layers, MessageCircle, Receipt, ShieldAlert, ShieldCheck, UserCog, Users, Wallet, Wrench } from 'lucide-react'
 
 import { getProperties } from '+/actions/property'
 import { getPendingPaymentsCount } from '+/actions/payments'
@@ -162,6 +162,24 @@ export default function AdminDashboard() {
       title: 'Medidores',
       description: 'Medidores de servicios y lecturas de consumo',
       href: '/dashboard/admin/meters',
+      badge: null,
+      hasBadge: false,
+    },
+    {
+      id: 'security',
+      icon: ShieldAlert,
+      title: 'Seguridad',
+      description: 'Extintores, cámaras, alarmas y su próxima recarga/servicio',
+      href: '/dashboard/admin/security',
+      badge: null,
+      hasBadge: false,
+    },
+    {
+      id: 'documents',
+      icon: FolderArchive,
+      title: 'Documentación',
+      description: 'Escrituras, certificados y documentos legales del inmueble',
+      href: '/dashboard/admin/documents',
       badge: null,
       hasBadge: false,
     },
