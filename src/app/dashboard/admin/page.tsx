@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Building2, ClipboardCheck, CreditCard, FilePlus, FileText, Layers, MessageCircle, UserCog, Users, Wallet } from 'lucide-react'
+import { Building2, ClipboardCheck, CreditCard, FilePlus, FileText, Layers, MessageCircle, UserCog, Users, Wallet, Wrench } from 'lucide-react'
 
 import { getProperties } from '+/actions/property'
 import { getPendingPaymentsCount } from '+/actions/payments'
@@ -117,6 +117,15 @@ export default function AdminDashboard() {
       title: 'Inspecciones',
       description: 'Diagnóstico del estado de las unidades (entrega, recepción)',
       href: '/dashboard/admin/inspections',
+      badge: null,
+      hasBadge: false,
+    },
+    {
+      id: 'maintenance',
+      icon: Wrench,
+      title: 'Mantenimiento',
+      description: 'Correctivos, preventivos e incidentes por unidad',
+      href: '/dashboard/admin/maintenance',
       badge: null,
       hasBadge: false,
     },

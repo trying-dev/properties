@@ -1,7 +1,14 @@
 'use server'
 
 import { revalidatePath } from 'next/cache'
-import { PaymentStatus, PaymentType, PayoutStatus, Prisma } from '+/generated/prisma/client'
+import {
+  CostResponsibility,
+  MaintenanceStatus,
+  PaymentStatus,
+  PaymentType,
+  PayoutStatus,
+  Prisma,
+} from '+/generated/prisma/client'
 import { prisma } from '+/lib/prisma'
 
 // Tipos de pago que cuentan como canon liquidable al dueño.
@@ -24,6 +31,7 @@ export type OwnerPayoutLine = {
   participation: number
   grossAmount: number
   commission: number
+  ownerCosts: number // Parte de los costos del dueño (mantenimientos OWNER) descontada a esta línea
   netAmount: number
 }
 
@@ -32,6 +40,7 @@ export type PayoutComputation = {
   period: string
   propertyGross: number
   propertyCommission: number
+  propertyOwnerCosts: number // Mantenimientos COMPLETED con costBearer=OWNER del periodo (F2)
   propertyNet: number
   lines: OwnerPayoutLine[]
 }
@@ -63,6 +72,15 @@ export const calculateOwnerPayoutsForPeriod = async (
               },
             },
           },
+          // Costos del dueño del periodo: mantenimientos COMPLETED con costBearer=OWNER
+          // cuya fecha de finalización cae en el mes liquidado.
+          maintenances: {
+            where: {
+              status: MaintenanceStatus.COMPLETED,
+              costBearer: CostResponsibility.OWNER,
+              completedDate: { gte: start, lt: end },
+            },
+          },
         },
       },
     },
@@ -71,8 +89,10 @@ export const calculateOwnerPayoutsForPeriod = async (
   if (!property) throw new Error('Propiedad no encontrada')
 
   // Bruto y comisión de la propiedad: sumar por contrato aplicando su commissionRate.
+  // Costos del dueño: sumar mantenimientos OWNER del periodo por unidad.
   let propertyGross = 0
   let propertyCommission = 0
+  let propertyOwnerCosts = 0
   for (const unit of property.units) {
     for (const contract of unit.contracts) {
       const contractGross = contract.payments.reduce((sum, p) => sum + p.amount, 0)
@@ -81,13 +101,10 @@ export const calculateOwnerPayoutsForPeriod = async (
       propertyGross += contractGross
       propertyCommission += contractGross * (rate / 100)
     }
+    propertyOwnerCosts += unit.maintenances.reduce((sum, m) => sum + (m.cost ?? 0), 0)
   }
-  // TODO F2/F5: descontar aquí los costos atribuibles al dueño antes de repartir:
-  //   - Mantenimientos con Maintenance.costBearer = OWNER del periodo (F2).
-  //   - Predial / PropertyTax del periodo (F5).
-  // El descuento debe aplicarse por propiedad (o por dueño si el costo es específico)
-  // y restarse de propertyNet / de la línea del dueño según corresponda.
-  const propertyNet = propertyGross - propertyCommission
+  // TODO F5: descontar también el predial / PropertyTax del periodo aquí.
+  const propertyNet = propertyGross - propertyCommission - propertyOwnerCosts
 
   // Repartir entre dueños según participación.
   const lines: OwnerPayoutLine[] = property.owners.map((po) => {
@@ -100,11 +117,12 @@ export const calculateOwnerPayoutsForPeriod = async (
       participation: po.participation,
       grossAmount: propertyGross * share,
       commission: propertyCommission * share,
+      ownerCosts: propertyOwnerCosts * share,
       netAmount: propertyNet * share,
     }
   })
 
-  return { propertyId, period, propertyGross, propertyCommission, propertyNet, lines }
+  return { propertyId, period, propertyGross, propertyCommission, propertyOwnerCosts, propertyNet, lines }
 }
 
 export const calculateOwnerPayoutsAction = async (propertyId: string, period: string) => {

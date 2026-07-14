@@ -1,7 +1,7 @@
 # Plan: Owner, Liquidaciones y módulos futuros
 
-> Estado: **Fases 0, 0.4, 0.5, 0.6 y 1 IMPLEMENTADAS** (2026-07-14). Ciclo Owner completo + Inspecciones. Resto en planeación.
-> Fase 1 aplicada: modelo `Inspection` + enums (type/status/condition), relación en `Unit`/`Contract`, actions en `src/actions/inspections/`, UI `/dashboard/admin/inspections`. Ver §8 Fase 1.
+> Estado: **Fases 0, 0.4, 0.5, 0.6, 1 y 2 IMPLEMENTADAS** (2026-07-14). Ciclo Owner + Inspecciones + Mantenimiento (con descuento en liquidación). Resto en planeación.
+> Fase 1: modelo `Inspection` + UI `/dashboard/admin/inspections`. Fase 2: modelo `Maintenance` (costBearer) + UI `/dashboard/admin/maintenance`, con costos OWNER descontados en la liquidación. Ver §8 F1/F2.
 > Fase 0.6 aplicada: rol `owner` en next-auth (3-way `admin>owner>tenant`), dashboard dueño `/dashboard/owner`, UI liquidación admin `/dashboard/admin/payouts` (generar + marcar pagado). Ver §7.
 > Fase 0.5 aplicada: `Contract.commissionRate` (Float, default 10), modelo `OwnerPayout` + enum `PayoutStatus` + relación `Owner.payouts`, ambos schemas. Servicio en `src/actions/payouts/`: `calculateOwnerPayoutsForPeriod` (preview, no persiste), `generateOwnerPayoutsForPeriod` (upsert por ownerId+period, respeta payouts ya PAID), `getOwnerPayouts`, `markPayoutPaidAction`. Verificado contra dev.db (tibabuyes 60/40: gross 15.94M → neto 14.346M split correcto). Sin UI todavía (eso es F0.6). Sqlite pusheado; prod NO.
 > Fase 0 aplicada: modelos `Owner` + `PropertyOwner`, relación en `User`/`Property`, campos baratos en `Property`/`Unit`/`Tenant`, en ambos schemas. Migrado a sqlite local + seed `seed-casa-tibabuyes-owners.ts` (2 dueños 60/40, gitignored). Prod (postgres) sin migrar todavía.
@@ -319,12 +319,14 @@ Requiere: autenticación/rol Owner en el sistema de auth actual (revisar `next-a
 - **UI** `/dashboard/admin/inspections`: crear (unidad/tipo/fecha/notas), listar, completar inline (estado/score/críticos), cancelar. Card en admin home.
 - Verificado end-to-end contra dev.db. **Pendiente:** los findings que originan mantenimientos se conectan en **F2**; UI para editar el árbol `payload` (hoy se guarda vía action, sin editor visual); migrar prod.
 
-### Fase 2 — Mantenimiento (correctivo + planes preventivos) + órdenes de trabajo
-- `Maintenance` (correctivo/preventivo, costos, proveedor) y `WorkOrder` (estado, técnico, diagnóstico, solución).
-- **Planes de mantenimiento preventivo:** calendario/recurrencia por unidad o propiedad (ej. revisar cubierta cada 6 meses, pintar cada 2 años). Sirve para anticipar y presupuestar.
-- **Responsabilidades administrativas:** cada mantenimiento/plan indica **quién asume el costo** — Owner, Tenant o Properties. Esto aclara las obligaciones de cada parte y alimenta la liquidación (§6) cuando el costo lo asume el dueño (se descuenta del neto) o Properties.
-- **Incidentes** (inundación, daño súbito, etc.) se pliegan aquí: son un `type: INCIDENTE` dentro de `Maintenance`/`WorkOrder` con nivel de impacto y pérdidas estimadas, no un módulo aparte.
-- Ligado a `Unit`; opcional link a un hallazgo de inspección (Fase 1).
+### Fase 2 — Mantenimiento — ✅ IMPLEMENTADA (2026-07-14)
+- **Modelo único `Maintenance`** (ambos schemas): `type` (`CORRECTIVE`/`PREVENTIVE`/`INCIDENT`), `status` (`PENDING`/`SCHEDULED`/`IN_PROGRESS`/`COMPLETED`/`CANCELLED`), `costBearer` (`CostResponsibility` OWNER/TENANT/PROPERTIES, **default OWNER**), `title`/`description`, orden de trabajo inline (`provider`/`diagnosis`/`solution`), `cost`, `scheduledDate`/`completedDate`, recurrencia preventiva (`recurrenceMonths`/`nextDueDate`), incidente (`severity`/`estimatedLoss`). Relación `Unit` (cascade) + `Inspection?` (setNull, para el finding origen). `Unit`/`Inspection` ganan `maintenances[]`.
+- **Decisión de diseño:** se descartó tabla `WorkOrder` aparte — los datos de la orden van inline en `Maintenance` (principio §1, evitar explosión de tablas). Planes preventivos = `recurrenceMonths`/`nextDueDate` en el mismo modelo, no tabla `MaintenancePlan` separada.
+- **Liquidación (§6) conectada:** `calculateOwnerPayoutsForPeriod` descuenta los `Maintenance` con `status=COMPLETED` y `costBearer=OWNER` cuyo `completedDate` cae en el mes, antes de repartir. `PayoutComputation` gana `propertyOwnerCosts` y cada línea `ownerCosts`. Verificado: OWNER 1M → net baja 1M, repartido por participación; TENANT/PROPERTIES no descuentan.
+- **Incidentes** = `type: INCIDENT` con `severity`/`estimatedLoss`, no módulo aparte.
+- **Actions** `src/actions/maintenance/`: `getAdminMaintenances`, `getUnitMaintenances`, `createMaintenanceAction`, `completeMaintenanceAction` (→ COMPLETED, `completedDate`, costo real, `nextDueDate` si recurrente; revalida payouts), `cancelMaintenanceAction`. Validan admin gestiona la unidad.
+- **UI** `/dashboard/admin/maintenance`: crear (unidad/tipo/costBearer/título/proveedor/costo/fecha), listar, completar inline (costo real/solución), cancelar. Card en admin home.
+- **Pendiente:** UI para vincular finding de inspección (`inspectionId` soportado en action, sin selector en UI); `OwnerPayout` no persiste el desglose de costos (solo el neto ya descontado); migrar prod.
 
 ### Fase 3 — Medidores
 - `Meter` (tipo agua/luz/gas, serial, empresa, lecturas). Historial de lecturas.
@@ -384,7 +386,7 @@ Mientras cada `Property` sea un edificio plano, no se necesita.
 
 ### Pendientes
 - **Fuente del comprobante / confirmación de pago** (abierta 2026-07-14): pasarela PSP (recomendado, auto-confirma) vs email banco (descartado) vs upload app. Interino = URL pegable, sin storage. Falta elegir PSP e integrar webhook. Ver §5.4.
-- Costos del dueño en liquidación → se implementará en **F2** (Maintenance con `costBearer`); el gancho ya está comentado en `calculateOwnerPayoutsForPeriod`.
+- ✅ Costos del dueño en liquidación → **implementado en F2** (2026-07-14): `Maintenance.costBearer=OWNER` COMPLETED del periodo se descuenta en `calculateOwnerPayoutsForPeriod`. `costBearer` quedó con **default OWNER** (no obligatorio); reevaluar hacerlo obligatorio si aparecen descuentos mal atribuidos.
 
 ## 10. Cuando se implemente (checklist técnico)
 

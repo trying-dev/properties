@@ -514,7 +514,8 @@ model Unit {
   contracts Contract[]
   processes Process[]  @relation("ProcessUnit")
 
-  inspections Inspection[]
+  inspections  Inspection[]
+  maintenances Maintenance[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -886,6 +887,8 @@ model Inspection {
   unit     Unit      @relation(fields: [unitId], references: [id], onDelete: Cascade)
   contract Contract? @relation(fields: [contractId], references: [id], onDelete: SetNull)
 
+  maintenances Maintenance[]
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -915,4 +918,72 @@ enum InspectionCondition {
   GOOD // Bueno
   FAIR // Regular
   POOR // Malo
+}
+
+// Mantenimiento (F2): correctivo, preventivo o incidente. Incluye los datos de la
+// orden de trabajo inline (proveedor/diagnóstico/solución), sin tabla WorkOrder aparte.
+model Maintenance {
+  id           String  @id @default(cuid())
+  unitId       String
+  inspectionId String? // Origen: hallazgo de una inspección (F1)
+
+  type   MaintenanceType
+  status MaintenanceStatus @default(PENDING)
+
+  // Quién asume el costo. OWNER → se descuenta de la liquidación del dueño (§6).
+  costBearer CostResponsibility @default(OWNER)
+
+  title       String
+  description String?
+
+  // Orden de trabajo (inline)
+  provider  String? // Proveedor/técnico
+  diagnosis String?
+  solution  String?
+
+  cost          Float? // Costo real
+  scheduledDate DateTime?
+  completedDate DateTime? // Su mes atribuye el costo al periodo de liquidación
+
+  // Preventivo: recurrencia
+  recurrenceMonths Int? // Cada cuántos meses se repite
+  nextDueDate      DateTime?
+
+  // Incidente: severidad y pérdida estimada
+  severity      String? // LOW/MEDIUM/HIGH/CRITICAL (enum futuro)
+  estimatedLoss Float?
+
+  unit       Unit        @relation(fields: [unitId], references: [id], onDelete: Cascade)
+  inspection Inspection? @relation(fields: [inspectionId], references: [id], onDelete: SetNull)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([unitId])
+  @@index([inspectionId])
+  @@index([type])
+  @@index([status])
+  @@index([costBearer])
+  @@index([completedDate])
+  @@map("maintenances")
+}
+
+enum MaintenanceType {
+  CORRECTIVE // Correctivo (reparación)
+  PREVENTIVE // Preventivo (plan/recurrencia)
+  INCIDENT // Incidente (daño súbito, inundación)
+}
+
+enum MaintenanceStatus {
+  PENDING // Registrado, sin programar
+  SCHEDULED // Programado
+  IN_PROGRESS // En ejecución
+  COMPLETED // Terminado
+  CANCELLED // Cancelado
+}
+
+enum CostResponsibility {
+  OWNER // Lo asume el dueño (se descuenta de la liquidación)
+  TENANT // Lo asume el inquilino (daño que causó)
+  PROPERTIES // Lo asume la inmobiliaria
 }
