@@ -11,6 +11,7 @@ import type { AdminPaymentRow } from '+/actions/payments'
 
 const statusLabel: Record<PaymentStatus, string> = {
   PENDING: 'Pendiente',
+  REPORTED: 'Reportado',
   PAID: 'Pagado',
   OVERDUE: 'Vencido',
   PARTIAL: 'Parcial',
@@ -19,6 +20,7 @@ const statusLabel: Record<PaymentStatus, string> = {
 
 const statusStyles: Record<PaymentStatus, { badge: string; icon: typeof Clock }> = {
   PENDING: { badge: 'bg-yellow-100 text-yellow-700', icon: Clock },
+  REPORTED: { badge: 'bg-blue-100 text-blue-700', icon: Clock },
   PAID: { badge: 'bg-green-100 text-green-700', icon: CheckCircle2 },
   OVERDUE: { badge: 'bg-red-100 text-red-700', icon: AlertTriangle },
   PARTIAL: { badge: 'bg-orange-100 text-orange-700', icon: Clock },
@@ -59,7 +61,12 @@ const formatMoney = (value?: number | null) => {
   return `$${value.toLocaleString('es-CO')}`
 }
 
-const unpaidStatuses = new Set<PaymentStatus>([PaymentStatus.PENDING, PaymentStatus.OVERDUE, PaymentStatus.PARTIAL])
+const unpaidStatuses = new Set<PaymentStatus>([
+  PaymentStatus.PENDING,
+  PaymentStatus.REPORTED,
+  PaymentStatus.OVERDUE,
+  PaymentStatus.PARTIAL,
+])
 
 type StatusFilter = 'ALL' | 'UNPAID' | PaymentStatus
 

@@ -8,6 +8,7 @@ import { PaymentStatus, PaymentType } from '+/generated/prisma/enums'
 import Header from '+/components/Header'
 import Footer from '+/components/Footer'
 import { getUserTenant, type UserTenant } from '+/actions/user'
+import { reportPaymentAction } from '+/actions/payments'
 
 const formatDate = (value?: Date | string | null) => {
   if (!value) return '-'
@@ -23,6 +24,7 @@ type ContractRow = NonNullable<UserTenant['tenant']>['contracts'][0]
 
 const paymentStatusLabel: Record<PaymentStatus, string> = {
   PENDING: 'Pendiente',
+  REPORTED: 'Reportado',
   PAID: 'Pagado',
   OVERDUE: 'Vencido',
   PARTIAL: 'Parcial',
@@ -31,6 +33,7 @@ const paymentStatusLabel: Record<PaymentStatus, string> = {
 
 const paymentStatusStyle: Record<PaymentStatus, { badge: string; icon: typeof Clock }> = {
   PENDING: { badge: 'bg-yellow-100 text-yellow-700', icon: Clock },
+  REPORTED: { badge: 'bg-blue-100 text-blue-700', icon: Clock },
   PAID: { badge: 'bg-green-100 text-green-700', icon: CheckCircle },
   OVERDUE: { badge: 'bg-red-100 text-red-700', icon: AlertTriangle },
   PARTIAL: { badge: 'bg-orange-100 text-orange-700', icon: Clock },
@@ -49,6 +52,8 @@ const paymentTypeLabel: Record<PaymentType, string> = {
 }
 
 const pendingStatuses = new Set<PaymentStatus>([PaymentStatus.PENDING, PaymentStatus.OVERDUE, PaymentStatus.PARTIAL])
+// Estados en los que el inquilino puede reportar el pago (aún no confirmado).
+const reportableStatuses = new Set<PaymentStatus>([PaymentStatus.PENDING, PaymentStatus.OVERDUE, PaymentStatus.PARTIAL])
 
 export default function TenantUnitsPage() {
   const [contracts, setContracts] = useState<ContractRow[]>([])
@@ -56,14 +61,19 @@ export default function TenantUnitsPage() {
   const [error, setError] = useState<string | null>(null)
   const [expandedContractId, setExpandedContractId] = useState<string | null>(null)
   const [visiblePaymentsByContract, setVisiblePaymentsByContract] = useState<Record<string, number>>({})
+  const [reportingId, setReportingId] = useState<string | null>(null)
+
+  const loadContracts = async () => {
+    const user = await getUserTenant()
+    setContracts(user?.tenant?.contracts ?? [])
+  }
 
   useEffect(() => {
     const load = async () => {
       try {
         setIsLoading(true)
         setError(null)
-        const user = await getUserTenant()
-        setContracts(user?.tenant?.contracts ?? [])
+        await loadContracts()
       } catch (err) {
         console.error('Error loading tenant units:', err)
         setError('No se pudieron cargar las unidades')
@@ -74,6 +84,23 @@ export default function TenantUnitsPage() {
 
     load()
   }, [])
+
+  const handleReportPayment = async (paymentId: string) => {
+    setReportingId(paymentId)
+    try {
+      const result = await reportPaymentAction({ paymentId })
+      if (!result.success) {
+        setError(result.error ?? 'No se pudo reportar el pago')
+        return
+      }
+      await loadContracts()
+    } catch (err) {
+      console.error('Error reporting payment:', err)
+      setError('No se pudo reportar el pago')
+    } finally {
+      setReportingId(null)
+    }
+  }
 
   const contractCards = useMemo(() => {
     return contracts.map((contract) => {
@@ -255,6 +282,7 @@ export default function TenantUnitsPage() {
                                 <th className="py-2 pr-4">Estado</th>
                                 <th className="py-2 pr-4">Pagado</th>
                                 <th className="py-2 pr-4">Referencia</th>
+                                <th className="py-2 pr-4">Acción</th>
                               </tr>
                             </thead>
                             <tbody className="divide-y divide-gray-200">
@@ -275,6 +303,22 @@ export default function TenantUnitsPage() {
                                     </td>
                                     <td className="py-2 pr-4 whitespace-nowrap">{formatDate(payment.paidDate)}</td>
                                     <td className="py-2 pr-4 whitespace-nowrap">{payment.reference ?? '-'}</td>
+                                    <td className="py-2 pr-4 whitespace-nowrap">
+                                      {reportableStatuses.has(payment.status) ? (
+                                        <button
+                                          type="button"
+                                          onClick={() => handleReportPayment(payment.id)}
+                                          disabled={reportingId === payment.id}
+                                          className="inline-flex items-center gap-1 rounded-lg border border-blue-200 px-2.5 py-1 text-xs font-semibold text-blue-700 hover:bg-blue-50 disabled:opacity-50"
+                                        >
+                                          {reportingId === payment.id ? 'Reportando…' : 'Reportar pago'}
+                                        </button>
+                                      ) : payment.status === PaymentStatus.REPORTED ? (
+                                        <span className="text-xs text-blue-600">En revisión</span>
+                                      ) : (
+                                        '-'
+                                      )}
+                                    </td>
                                   </tr>
                                 )
                               })}

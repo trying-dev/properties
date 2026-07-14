@@ -7,6 +7,7 @@ const PAGE_SIZE = 5
 
 const paymentStatusLabel: Record<PaymentStatus, string> = {
   PENDING: 'Pendiente',
+  REPORTED: 'Reportado',
   PAID: 'Pagado',
   OVERDUE: 'Vencido',
   PARTIAL: 'Parcial',

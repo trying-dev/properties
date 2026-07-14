@@ -182,6 +182,12 @@ model Payment {
   lateFeeAmount  Float? // postgres @db.Decimal(8, 2)
   lateFeeApplied Boolean @default(false)
 
+  // Flujo de confirmación (F0.4): tenant reporta → Properties confirma
+  reportedAt    DateTime? // Cuándo el tenant reportó el pago
+  proofUrl      String? // Comprobante subido por el tenant
+  confirmedAt   DateTime? // Cuándo Properties confirmó
+  confirmedById String? // Admin que confirmó (verificadoPor)
+
   reference String?
   notes     String?
 
@@ -221,8 +227,9 @@ enum PaymentType {
 }
 
 enum PaymentStatus {
-  PENDING // Pendiente
-  PAID // Pagado
+  PENDING // Pendiente, sin reportar
+  REPORTED // Tenant reportó pago, en espera de confirmación
+  PAID // Pagado, confirmado por Properties
   OVERDUE // Vencido
   PARTIAL // Parcial
   CANCELLED // Cancelado

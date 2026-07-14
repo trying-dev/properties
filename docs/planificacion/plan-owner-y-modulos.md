@@ -1,7 +1,8 @@
 # Plan: Owner, Liquidaciones y módulos futuros
 
-> Estado: **Fase 0 IMPLEMENTADA** (2026-07-14). Resto en planeación.
+> Estado: **Fases 0 y 0.4 IMPLEMENTADAS** (2026-07-14). Resto en planeación.
 > Fase 0 aplicada: modelos `Owner` + `PropertyOwner`, relación en `User`/`Property`, campos baratos en `Property`/`Unit`/`Tenant`, en ambos schemas. Migrado a sqlite local + seed `seed-casa-tibabuyes-owners.ts` (2 dueños 60/40, gitignored). Prod (postgres) sin migrar todavía.
+> Fase 0.4 aplicada: estado `REPORTED` + campos `reportedAt`/`proofUrl`/`confirmedAt`/`confirmedById` en `Payment` (ambos schemas). Actions `reportPaymentAction` (tenant) y `confirmPaymentAction` extendida (setea `confirmedAt`/`confirmedById`, acepta REPORTED) en `src/actions/payments/`. UI: botón "Reportar pago" en `tenant/units`, badge azul REPORTED + filtro unpaid en `admin/payments`. Sqlite migrado; prod NO. proofUrl aún sin upload real (se pasa opcional).
 > Origen: comparación entre el modelo actual y el JSON maximalista `casas.txt` (plantilla que captura "todo lo imaginable" de un inmueble).
 
 ## 1. Principio rector
@@ -195,7 +196,9 @@ model Contract {
 - Alimenta la liquidación (§6): `netAmount = grossAmount − (grossAmount × commissionRate/100)`, luego repartido por `participation`.
 - Default sugerido `10` (%), editable.
 
-### 5.4 Confirmación / recepción de pagos (Fase 0.4)
+### 5.4 Confirmación / recepción de pagos (Fase 0.4) — ✅ IMPLEMENTADA
+
+> Aplicado 2026-07-14: enum `REPORTED` + campos `reportedAt`/`proofUrl`/`confirmedAt`/`confirmedById` en ambos schemas. `reportPaymentAction` valida que el pago sea del tenant autenticado y no esté ya PAID. `confirmPaymentAction` setea `confirmedAt`/`confirmedById` desde la sesión. Falta: upload real de comprobante (proofUrl); migrar prod.
 
 **Problema:** el modelo `Payment` actual tiene `status` (`PENDING`/`PAID`/`OVERDUE`/`PARTIAL`/`CANCELLED`), `paidDate`, `receiptNumber`, `transactionId`. Pero **no modela el flujo de confirmación**: el seed pone `PAID` directo. En la realidad el tenant reporta que pagó (sube comprobante) y Properties lo **recibe/confirma**. Es el `verificacionPagos` del JSON.
 
@@ -356,7 +359,7 @@ Mientras cada `Property` sea un edificio plano, no se necesita.
 - **Primera tanda de código** → **ninguna por ahora**; seguimos en planeación, sin tocar schema.
 
 ### Pendientes
-1. **Confirmación de pago — origen**: ¿el tenant reporta desde la app, o solo Properties registra el pago? (el modelo ya quedó decidido; falta el flujo de UI).
+1. ✅ **Confirmación de pago — origen** (resuelto 2026-07-14): el tenant reporta desde la app (`reportPaymentAction` + botón en `tenant/units`) y Properties confirma (`confirmPaymentAction` en `admin/payments`). Falta solo el upload real de comprobante (proofUrl hoy opcional sin archivo).
 2. **Dashboard de dueño**: ¿misma app con rol nuevo, o app/área separada?
 3. **Auth**: cómo se integra el rol Owner con `next-auth` actual.
 4. **Responsabilidad de costos de mantenimiento**: ¿quién asume por defecto (Owner/Tenant/Properties) y cómo impacta la liquidación del dueño?

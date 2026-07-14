@@ -108,6 +108,8 @@ export const ExpandableUnits = ({ property }: { property?: NonNullable<PropertyW
         return { status: 'Al día', color: 'green' }
       case 'PENDING':
         return { status: 'Pendiente', color: 'yellow' }
+      case 'REPORTED':
+        return { status: 'Reportado', color: 'blue' }
       case 'OVERDUE':
         return { status: 'Vencido', color: 'red' }
       case 'PARTIAL':
@@ -123,6 +125,7 @@ export const ExpandableUnits = ({ property }: { property?: NonNullable<PropertyW
     const statuses = {
       PAID: 'Pagado',
       PENDING: 'Pendiente',
+      REPORTED: 'Reportado',
       OVERDUE: 'Vencido',
       PARTIAL: 'Parcial',
       CANCELLED: 'Cancelado',
@@ -134,6 +137,7 @@ export const ExpandableUnits = ({ property }: { property?: NonNullable<PropertyW
     const colors = {
       PAID: 'bg-green-100 text-green-800',
       PENDING: 'bg-yellow-100 text-yellow-800',
+      REPORTED: 'bg-blue-100 text-blue-800',
       OVERDUE: 'bg-red-100 text-red-800',
       PARTIAL: 'bg-orange-100 text-orange-800',
       CANCELLED: 'bg-gray-100 text-gray-800',
