@@ -41,6 +41,9 @@ export default function DashboardLoading() {
           if (role === 'admin') {
             redirectUrl = '/dashboard/admin'
             console.log(`👑 Redirigiendo admin a: ${redirectUrl}`)
+          } else if (role === 'owner') {
+            redirectUrl = '/dashboard/owner'
+            console.log(`🏦 Redirigiendo owner a: ${redirectUrl}`)
           } else if (role === 'tenant') {
             redirectUrl = '/dashboard/tenant'
             console.log(`🏠 Redirigiendo tenant a: ${redirectUrl}`)

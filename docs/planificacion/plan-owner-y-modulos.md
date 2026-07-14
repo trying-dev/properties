@@ -1,6 +1,7 @@
 # Plan: Owner, Liquidaciones y módulos futuros
 
-> Estado: **Fases 0, 0.4 y 0.5 IMPLEMENTADAS** (2026-07-14). Resto en planeación.
+> Estado: **Fases 0, 0.4, 0.5 y 0.6 IMPLEMENTADAS** (2026-07-14). Ciclo Owner completo end-to-end. Resto en planeación.
+> Fase 0.6 aplicada: rol `owner` en next-auth (3-way `admin>owner>tenant`), dashboard dueño `/dashboard/owner`, UI liquidación admin `/dashboard/admin/payouts` (generar + marcar pagado). Ver §7.
 > Fase 0.5 aplicada: `Contract.commissionRate` (Float, default 10), modelo `OwnerPayout` + enum `PayoutStatus` + relación `Owner.payouts`, ambos schemas. Servicio en `src/actions/payouts/`: `calculateOwnerPayoutsForPeriod` (preview, no persiste), `generateOwnerPayoutsForPeriod` (upsert por ownerId+period, respeta payouts ya PAID), `getOwnerPayouts`, `markPayoutPaidAction`. Verificado contra dev.db (tibabuyes 60/40: gross 15.94M → neto 14.346M split correcto). Sin UI todavía (eso es F0.6). Sqlite pusheado; prod NO.
 > Fase 0 aplicada: modelos `Owner` + `PropertyOwner`, relación en `User`/`Property`, campos baratos en `Property`/`Unit`/`Tenant`, en ambos schemas. Migrado a sqlite local + seed `seed-casa-tibabuyes-owners.ts` (2 dueños 60/40, gitignored). Prod (postgres) sin migrar todavía.
 > Fase 0.4 aplicada: estado `REPORTED` + campos `reportedAt`/`proofUrl`/`confirmedAt`/`confirmedById` en `Payment` (ambos schemas). Actions `reportPaymentAction` (tenant) y `confirmPaymentAction` extendida (setea `confirmedAt`/`confirmedById`, acepta REPORTED) en `src/actions/payments/`. UI: botón "Reportar pago" en `tenant/units`, badge azul REPORTED + filtro unpaid en `admin/payments`. Sqlite migrado; prod NO. proofUrl aún sin upload real (se pasa opcional).
@@ -287,7 +288,13 @@ Lógica de cálculo (fuera del schema, en servicio):
 4. Descontar costos que asuma el dueño (mantenimientos §Fase 2, predial §Fase 5).
 5. Generar un `OwnerPayout` por dueño.
 
-## 7. Fase 0.6 — Dashboard de dueño (esbozo)
+## 7. Fase 0.6 — Dashboard de dueño — ✅ IMPLEMENTADA
+
+> Aplicado 2026-07-14.
+> - **Auth 3-way**: rol `'owner'` añadido (`admin > owner > tenant`) en `src/lib/auth.ts` (2 callbacks + query), `src/types/next-auth.d.ts`, `src/hooks/useSession.ts`, `PropertyCard`. `dashboard/page.tsx` redirige owner → `/dashboard/owner`.
+> - **Dashboard dueño** `/dashboard/owner` ([page](../../src/app/dashboard/owner/page.tsx)): resumen (nº props, por cobrar, cobrado), tarjetas de propiedades (participación %, ocupación) y tabla de liquidaciones (periodo, bruto, comisión, neto, estado). Action `getOwnerDashboard` en `src/actions/owner/`.
+> - **UI liquidación admin** `/dashboard/admin/payouts` ([page](../../src/app/dashboard/admin/payouts/page.tsx)): selector propiedad + periodo → "Generar liquidación" (`generateOwnerPayoutsForPeriod`), listado de payouts con "Marcar pagado" (`markPayoutPaidAction`). Card en el home de admin. Actions `getPropertiesWithOwners`/`getAllPayouts` en payouts.
+> - Verificado end-to-end contra dev.db (tibabuyes). Falta: upload de comprobante (proofUrl F0.4), descuento de costos del dueño (F2/F5), migrar prod.
 
 El dueño (rol Owner) entra a la app y ve:
 - Sus propiedades y unidades (via `PropertyOwner`).
@@ -364,16 +371,16 @@ Mientras cada `Property` sea un edificio plano, no se necesita.
 ### Tomadas
 - **Comisión** → vive en `Contract.commissionRate` (`Float`, default 10%, editable al firmar). §5.5.
 - **Confirmación de pago** → **extender `Payment`** (estado `REPORTED` + `reportedAt`/`proofUrl`/`confirmedAt`/`confirmedById`), no tabla aparte. §5.4.
-- **Primera tanda de código** → **ninguna por ahora**; seguimos en planeación, sin tocar schema.
+- **Confirmación de pago — origen** (2026-07-14): el tenant reporta desde la app (`reportPaymentAction` + botón en `tenant/units`) y Properties confirma (`confirmPaymentAction` en `admin/payments`). Falta solo el upload real de comprobante (proofUrl hoy opcional sin archivo).
+- **Dashboard de dueño — ubicación** (2026-07-14): **misma app**, área nueva `/dashboard/owner` (mismo patrón que `admin`/`tenant`). No app separada. Detalle en F0.6.
+- **Auth rol Owner** (2026-07-14): rol pasa a ser **3-way** con prioridad `admin > owner > tenant`: `role = user.admin ? 'admin' : user.owner ? 'owner' : 'tenant'`. Extender la unión `'admin'|'tenant'` a `'owner'` en `src/types/next-auth.d.ts` + los 2 callbacks de `src/lib/auth.ts` + incluir `owner` en el query de usuario. Un usuario dueño-y-tenant solo verá un rol (aceptable ahora; multi-rol si se necesita después).
+- **Responsabilidad de costos de mantenimiento** (2026-07-14): **Properties siempre gestiona** (ejecuta/coordina); el **costo** se marca por ítem con `Maintenance.costBearer: CostResponsibility { OWNER, TENANT, PROPERTIES }`, **default OWNER** (editable al registrar). `OWNER` → se descuenta del payout (§6 paso 4); `TENANT` → daño causado por el inquilino, se le cobra; `PROPERTIES` → lo asume la inmobiliaria. Implementación en F2; ahora solo el concepto. **A reevaluar en F2:** hacer el campo obligatorio (sin default) para forzar atribución consciente, ya que el descuento toca plata del dueño; por ahora default OWNER por menor fricción.
+- **Facturación** (2026-07-14): **aplazada / on-demand**. `Payment` ya tiene `receiptNumber`/`transactionId`/`reference`; no se crea modelo `Invoice` (numeración fiscal + PDF) hasta que el negocio exija factura legal formal. Se reevalúa en F5.
+- **Mora** (2026-07-14): **cálculo derivado, sin tabla**. Cartera = query de `Payment` OVERDUE; `Contract.lateFeePenalty` (%) + `Payment.lateFeeAmount`/`lateFeeApplied` ya existen. No se persiste tabla `mora`. Intereses solo si el negocio confirma tasa; opcional flag `Contract.arrearsStatus` si se quiere marcar AL_DIA/EN_MORA. Se afina en F5.
+- **Soft delete** (2026-07-14): **selectivo, no uniforme**. `deletedAt` solo en `Property`/`Unit`/`Contract` (historia/FK que no se quiere perder). `Payment`/`OwnerPayout` **nunca** se borran (registro financiero; usar `CANCELLED`/`ON_HOLD`). Resto, borrado duro. Se aplica al tocar cada modelo, no como fase.
 
 ### Pendientes
-1. ✅ **Confirmación de pago — origen** (resuelto 2026-07-14): el tenant reporta desde la app (`reportPaymentAction` + botón en `tenant/units`) y Properties confirma (`confirmPaymentAction` en `admin/payments`). Falta solo el upload real de comprobante (proofUrl hoy opcional sin archivo).
-2. **Dashboard de dueño**: ¿misma app con rol nuevo, o app/área separada?
-3. **Auth**: cómo se integra el rol Owner con `next-auth` actual.
-4. **Responsabilidad de costos de mantenimiento**: ¿quién asume por defecto (Owner/Tenant/Properties) y cómo impacta la liquidación del dueño?
-5. **Facturación**: ¿se emite factura legal (requiere modelo `Invoice`) o basta con el registro de pagos/recibos actual?
-6. **Mora**: ¿se cobran intereses? ¿tasa fija o configurable? Define si `mora` es solo cálculo derivado o necesita persistencia.
-7. **Soft delete**: ¿se estandariza `deletedAt` en todos los modelos de negocio o borrado duro salvo `User`?
+- (ninguna decisión de diseño abierta; lo que resta es implementación — ver §10 y roadmap §4)
 
 ## 10. Cuando se implemente (checklist técnico)
 

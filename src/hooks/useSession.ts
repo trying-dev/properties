@@ -8,7 +8,7 @@ interface User {
   name?: string | null
   email?: string | null
   image?: string
-  role: 'admin' | 'tenant'
+  role: 'admin' | 'owner' | 'tenant'
   profile?: string | null
   adminLevel?: string
   emailVerified?: Date | null
@@ -26,7 +26,7 @@ interface UseSessionReturn {
   isLoading: boolean
   isAuthenticated: boolean
   user: User | null
-  role: 'admin' | 'tenant' | null
+  role: 'admin' | 'owner' | 'tenant' | null
   refreshSession: () => Promise<void>
   clearSession: () => void
 }

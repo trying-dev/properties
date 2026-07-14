@@ -39,6 +39,7 @@ export const authConfig: NextAuthConfig = {
               password: true,
               disable: true,
               admin: { select: { adminLevel: true } },
+              owner: { select: { id: true } },
             },
           })
 
@@ -56,7 +57,8 @@ export const authConfig: NextAuthConfig = {
             id: user.id,
             email: user.email,
             name: user.name ?? undefined,
-            role: user.admin ? 'admin' : 'tenant',
+            // Prioridad de rol: admin > owner > tenant
+            role: user.admin ? 'admin' : user.owner ? 'owner' : 'tenant',
             adminLevel: user.admin?.adminLevel ?? undefined,
           }
         } catch (error) {
@@ -79,7 +81,7 @@ export const authConfig: NextAuthConfig = {
 
     async jwt({ token, user }) {
       if (user) {
-        const userRole = (user as { role?: 'admin' | 'tenant' }).role
+        const userRole = (user as { role?: 'admin' | 'owner' | 'tenant' }).role
         const adminLevel = (user as { adminLevel?: string }).adminLevel
         const email = (user as { email?: string }).email
         const name = (user as { name?: string }).name
@@ -96,11 +98,12 @@ export const authConfig: NextAuthConfig = {
           where: { id: token.sub },
           select: {
             admin: { select: { adminLevel: true } },
+            owner: { select: { id: true } },
           },
         })
 
         if (dbUser) {
-          token.role = dbUser.admin ? 'admin' : 'tenant'
+          token.role = dbUser.admin ? 'admin' : dbUser.owner ? 'owner' : 'tenant'
           token.adminLevel = dbUser.admin?.adminLevel ?? undefined
         }
       }

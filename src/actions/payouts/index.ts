@@ -152,7 +152,8 @@ export const generateOwnerPayoutsForPeriod = async (propertyId: string, period: 
         ),
     )
 
-    revalidatePath('/dashboard/admin/payments')
+    revalidatePath('/dashboard/admin/payouts')
+    revalidatePath('/dashboard/owner')
 
     return { success: true, data: payouts }
   } catch (error) {
@@ -177,6 +178,23 @@ export const getOwnerPayouts = async (ownerId: string) =>
 
 export type OwnerPayoutRow = Awaited<ReturnType<typeof getOwnerPayouts>>[0]
 
+// Propiedades con al menos un dueño (para el selector de liquidación en admin).
+export const getPropertiesWithOwners = async () =>
+  prisma.property.findMany({
+    where: { owners: { some: { active: true } } },
+    select: { id: true, name: true },
+    orderBy: { name: 'asc' },
+  })
+
+// Todos los payouts para la vista admin (incluye datos del dueño).
+export const getAllPayouts = async () =>
+  prisma.ownerPayout.findMany({
+    include: payoutInclude,
+    orderBy: [{ period: 'desc' }, { createdAt: 'desc' }],
+  })
+
+export type AdminPayoutRow = Awaited<ReturnType<typeof getAllPayouts>>[0]
+
 // Marca un payout como pagado al dueño.
 export const markPayoutPaidAction = async (input: { payoutId: string; reference?: string }) => {
   try {
@@ -192,7 +210,8 @@ export const markPayoutPaidAction = async (input: { payoutId: string; reference?
       include: payoutInclude,
     })
 
-    revalidatePath('/dashboard/admin/payments')
+    revalidatePath('/dashboard/admin/payouts')
+    revalidatePath('/dashboard/owner')
 
     return { success: true, data: updated }
   } catch (error) {

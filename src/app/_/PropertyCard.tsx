@@ -22,7 +22,7 @@ interface PropertyCardProps {
   unit: HomeUnit
   index: number
   isAuthenticated?: boolean
-  role?: 'admin' | 'tenant' | null
+  role?: 'admin' | 'owner' | 'tenant' | null
   isFavorite?: boolean
   isFavoritesLoading?: boolean
   onToggleFavorite?: (unitId: string) => Promise<void> | void

@@ -1,7 +1,7 @@
 import 'next-auth'
 import 'next-auth/jwt'
 
-type UserRoleForAuth = 'admin' | 'tenant'
+type UserRoleForAuth = 'admin' | 'owner' | 'tenant'
 
 declare module 'next-auth' {
   interface Session {
