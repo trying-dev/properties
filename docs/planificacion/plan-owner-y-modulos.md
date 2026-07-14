@@ -1,6 +1,7 @@
 # Plan: Owner, Liquidaciones y módulos futuros
 
-> Estado: **Fases 0, 0.4, 0.5 y 0.6 IMPLEMENTADAS** (2026-07-14). Ciclo Owner completo end-to-end. Resto en planeación.
+> Estado: **Fases 0, 0.4, 0.5, 0.6 y 1 IMPLEMENTADAS** (2026-07-14). Ciclo Owner completo + Inspecciones. Resto en planeación.
+> Fase 1 aplicada: modelo `Inspection` + enums (type/status/condition), relación en `Unit`/`Contract`, actions en `src/actions/inspections/`, UI `/dashboard/admin/inspections`. Ver §8 Fase 1.
 > Fase 0.6 aplicada: rol `owner` en next-auth (3-way `admin>owner>tenant`), dashboard dueño `/dashboard/owner`, UI liquidación admin `/dashboard/admin/payouts` (generar + marcar pagado). Ver §7.
 > Fase 0.5 aplicada: `Contract.commissionRate` (Float, default 10), modelo `OwnerPayout` + enum `PayoutStatus` + relación `Owner.payouts`, ambos schemas. Servicio en `src/actions/payouts/`: `calculateOwnerPayoutsForPeriod` (preview, no persiste), `generateOwnerPayoutsForPeriod` (upsert por ownerId+period, respeta payouts ya PAID), `getOwnerPayouts`, `markPayoutPaidAction`. Verificado contra dev.db (tibabuyes 60/40: gross 15.94M → neto 14.346M split correcto). Sin UI todavía (eso es F0.6). Sqlite pusheado; prod NO.
 > Fase 0 aplicada: modelos `Owner` + `PropertyOwner`, relación en `User`/`Property`, campos baratos en `Property`/`Unit`/`Tenant`, en ambos schemas. Migrado a sqlite local + seed `seed-casa-tibabuyes-owners.ts` (2 dueños 60/40, gitignored). Prod (postgres) sin migrar todavía.
@@ -200,7 +201,9 @@ model Contract {
 
 ### 5.4 Confirmación / recepción de pagos (Fase 0.4) — ✅ IMPLEMENTADA
 
-> Aplicado 2026-07-14: enum `REPORTED` + campos `reportedAt`/`proofUrl`/`confirmedAt`/`confirmedById` en ambos schemas. `reportPaymentAction` valida que el pago sea del tenant autenticado y no esté ya PAID. `confirmPaymentAction` setea `confirmedAt`/`confirmedById` desde la sesión. Falta: upload real de comprobante (proofUrl); migrar prod.
+> Aplicado 2026-07-14: enum `REPORTED` + campos `reportedAt`/`proofUrl`/`confirmedAt`/`confirmedById` en ambos schemas. `reportPaymentAction` valida que el pago sea del tenant autenticado y no esté ya PAID. `confirmPaymentAction` setea `confirmedAt`/`confirmedById` desde la sesión. Migrar prod pendiente.
+>
+> **Comprobante / fuente de la confirmación (decisión abierta 2026-07-14):** la app hoy no tiene upload real (los "archivos" del proceso son mocks). Evaluado de dónde debe venir el comprobante: (a) upload manual en app, (b) parseo de email bancario, (c) webhook de pasarela de pago (PSE/Wompi/Mercado Pago). **Recomendación: pasarela (PSP) como objetivo** → el webhook auto-confirma (pago → `PAID` directo, sin subir ni verificar a mano) y concilia de verdad; el email bancario se descarta por frágil/falsificable. **Interino:** mantener REPORTED→confirmación manual y `proofUrl` como campo URL pegable (sin storage propio). NO construir upload a disco. Pendiente: confirmar PSP e integrar webhook.
 
 **Problema:** el modelo `Payment` actual tiene `status` (`PENDING`/`PAID`/`OVERDUE`/`PARTIAL`/`CANCELLED`), `paidDate`, `receiptNumber`, `transactionId`. Pero **no modela el flujo de confirmación**: el seed pone `PAID` directo. En la realidad el tenant reporta que pagó (sube comprobante) y Properties lo **recibe/confirma**. Es el `verificacionPagos` del JSON.
 
@@ -308,13 +311,13 @@ Requiere: autenticación/rol Owner en el sistema de auth actual (revisar `next-a
 
 ## 8. Módulos futuros (specs breves, se detallan al llegar)
 
-### Fase 1 — Inspecciones (evaluación / diagnóstico antes de entregar)
-- **Momento clave:** cuando se va a alquilar, se hace una **evaluación/diagnóstico del estado de la propiedad/unidad antes de entregarla** al tenant. Es el punto de referencia para saber en qué estado se entregó vs. en qué estado se devuelve (disputas de depósito).
-- Modelo `Inspection`: tipo (`ENTREGA` / `RECEPCION` / `PERIODICA` / `DIAGNOSTICO`), estado, fechas, responsable, resultado (semáforo/%).
-- Ligado a `Unit` y opcionalmente `Contract` (la inspección de entrega ancla el inicio del contrato).
-- El árbol `espacios` del JSON (cuartos → ventanas/puertas/componentes/mediciones) va como **`payload Json`**, no tablas.
-- Genera **hallazgos** (findings) que pueden originar mantenimientos u órdenes de trabajo (Fase 2).
-- Campos promovibles a columna solo si se filtran (ej. hallazgos críticos).
+### Fase 1 — Inspecciones — ✅ IMPLEMENTADA (2026-07-14)
+- **Momento clave:** cuando se va a alquilar, se hace una **evaluación/diagnóstico del estado de la propiedad/unidad antes de entregarla** al tenant. Referencia entrega vs. devolución (disputas de depósito).
+- **Modelo `Inspection`** (ambos schemas): `type` (`ENTREGA`/`RECEPCION`/`PERIODICA`/`DIAGNOSTICO`), `status` (`SCHEDULED`/`IN_PROGRESS`/`COMPLETED`/`CANCELLED`), `scheduledDate`/`performedDate`, `inspectorId`, `overallCondition` (`GOOD`/`FAIR`/`POOR`), `score` (%), `criticalFindings Int` (promovido para filtrar/alertar), `payload Json?` (árbol espacios/hallazgos), `notes`. Relación `Unit` (cascade) y `Contract?` (setNull). `Unit`/`Contract` ganan `inspections Inspection[]`.
+- El árbol `espacios` (cuartos → ventanas/puertas/componentes/mediciones) va en **`payload Json`**, no tablas. Hallazgos críticos promovidos a `criticalFindings`.
+- **Actions** `src/actions/inspections/`: `getUnitInspections`, `getInspection`, `getAdminInspections`, `getAdminUnitsForSelect`, `createInspectionAction`, `completeInspectionAction` (→ COMPLETED + actualiza `Unit.lastInspectionDate`), `cancelInspectionAction`. Todas validan que el admin gestione la unidad.
+- **UI** `/dashboard/admin/inspections`: crear (unidad/tipo/fecha/notas), listar, completar inline (estado/score/críticos), cancelar. Card en admin home.
+- Verificado end-to-end contra dev.db. **Pendiente:** los findings que originan mantenimientos se conectan en **F2**; UI para editar el árbol `payload` (hoy se guarda vía action, sin editor visual); migrar prod.
 
 ### Fase 2 — Mantenimiento (correctivo + planes preventivos) + órdenes de trabajo
 - `Maintenance` (correctivo/preventivo, costos, proveedor) y `WorkOrder` (estado, técnico, diagnóstico, solución).
@@ -380,7 +383,8 @@ Mientras cada `Property` sea un edificio plano, no se necesita.
 - **Soft delete** (2026-07-14): **selectivo, no uniforme**. `deletedAt` solo en `Property`/`Unit`/`Contract` (historia/FK que no se quiere perder). `Payment`/`OwnerPayout` **nunca** se borran (registro financiero; usar `CANCELLED`/`ON_HOLD`). Resto, borrado duro. Se aplica al tocar cada modelo, no como fase.
 
 ### Pendientes
-- (ninguna decisión de diseño abierta; lo que resta es implementación — ver §10 y roadmap §4)
+- **Fuente del comprobante / confirmación de pago** (abierta 2026-07-14): pasarela PSP (recomendado, auto-confirma) vs email banco (descartado) vs upload app. Interino = URL pegable, sin storage. Falta elegir PSP e integrar webhook. Ver §5.4.
+- Costos del dueño en liquidación → se implementará en **F2** (Maintenance con `costBearer`); el gancho ya está comentado en `calculateOwnerPayoutsForPeriod`.
 
 ## 10. Cuando se implemente (checklist técnico)
 

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Building2, CreditCard, FilePlus, FileText, Layers, MessageCircle, UserCog, Users, Wallet } from 'lucide-react'
+import { Building2, ClipboardCheck, CreditCard, FilePlus, FileText, Layers, MessageCircle, UserCog, Users, Wallet } from 'lucide-react'
 
 import { getProperties } from '+/actions/property'
 import { getPendingPaymentsCount } from '+/actions/payments'
@@ -108,6 +108,15 @@ export default function AdminDashboard() {
       title: 'Liquidaciones',
       description: 'Genera y paga las liquidaciones mensuales a los dueños',
       href: '/dashboard/admin/payouts',
+      badge: null,
+      hasBadge: false,
+    },
+    {
+      id: 'inspections',
+      icon: ClipboardCheck,
+      title: 'Inspecciones',
+      description: 'Diagnóstico del estado de las unidades (entrega, recepción)',
+      href: '/dashboard/admin/inspections',
       badge: null,
       hasBadge: false,
     },

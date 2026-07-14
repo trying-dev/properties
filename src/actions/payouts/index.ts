@@ -82,6 +82,11 @@ export const calculateOwnerPayoutsForPeriod = async (
       propertyCommission += contractGross * (rate / 100)
     }
   }
+  // TODO F2/F5: descontar aquí los costos atribuibles al dueño antes de repartir:
+  //   - Mantenimientos con Maintenance.costBearer = OWNER del periodo (F2).
+  //   - Predial / PropertyTax del periodo (F5).
+  // El descuento debe aplicarse por propiedad (o por dueño si el costo es específico)
+  // y restarse de propertyNet / de la línea del dueño según corresponda.
   const propertyNet = propertyGross - propertyCommission
 
   // Repartir entre dueños según participación.

@@ -80,8 +80,9 @@ model Contract {
   admins    Admin[]   @relation("ContractAdmins")
   processes Process[] @relation("ProcessContract")
 
-  payments  Payment[]
-  documents ContractDocument[] // Documentos del contrato firmado
+  payments    Payment[]
+  documents   ContractDocument[] // Documentos del contrato firmado
+  inspections Inspection[]
 
   additionalResidents User[] @relation("AdditionalResidents")
 
@@ -513,6 +514,8 @@ model Unit {
   contracts Contract[]
   processes Process[]  @relation("ProcessUnit")
 
+  inspections Inspection[]
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -854,4 +857,62 @@ enum PayoutStatus {
   PENDING // Por pagar
   PAID // Pagado al dueño
   ON_HOLD // Retenido
+}
+
+// Inspección/diagnóstico del estado de una unidad (F1). La de ENTREGA es la
+// referencia del estado en que se entrega vs. cómo se devuelve (disputas de depósito).
+model Inspection {
+  id         String  @id @default(cuid())
+  unitId     String
+  contractId String? // Opcional: la de ENTREGA ancla el inicio del contrato
+
+  type   InspectionType
+  status InspectionStatus @default(SCHEDULED)
+
+  scheduledDate DateTime?
+  performedDate DateTime?
+
+  inspectorId String? // Admin que la realizó (User.id)
+
+  overallCondition InspectionCondition? // Semáforo global del estado
+  score            Float? // % de estado (0-100), opcional
+  criticalFindings Int                  @default(0) // Promovido a columna para filtrar/alertar
+
+  // Árbol de espacios y hallazgos (cuartos → ventanas/puertas/componentes/mediciones).
+  // Se guarda como JSON, no como tablas (micro-detalle sin uso de query directo).
+  payload Json?
+  notes   String?
+
+  unit     Unit      @relation(fields: [unitId], references: [id], onDelete: Cascade)
+  contract Contract? @relation(fields: [contractId], references: [id], onDelete: SetNull)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([unitId])
+  @@index([contractId])
+  @@index([type])
+  @@index([status])
+  @@index([criticalFindings])
+  @@map("inspections")
+}
+
+enum InspectionType {
+  ENTREGA // Antes de entregar al tenant (diagnóstico de referencia)
+  RECEPCION // Al devolver la unidad
+  PERIODICA // Durante el arriendo
+  DIAGNOSTICO // Evaluación general
+}
+
+enum InspectionStatus {
+  SCHEDULED // Programada
+  IN_PROGRESS // En curso
+  COMPLETED // Terminada
+  CANCELLED // Cancelada
+}
+
+enum InspectionCondition {
+  GOOD // Bueno
+  FAIR // Regular
+  POOR // Malo
 }
