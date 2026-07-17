@@ -1,7 +1,7 @@
 'use server'
 
 import { revalidatePath } from 'next/cache'
-import { PaymentStatus, Prisma } from '+/generated/prisma/client'
+import { NotificationSenderRole, NotificationType, PaymentStatus, Prisma } from '+/generated/prisma/client'
 import { prisma } from '+/lib/prisma'
 import { auth } from '+/lib/auth'
 
@@ -88,6 +88,31 @@ export const reportPaymentAction = async (input: { paymentId: string; proofUrl?:
       include: paymentInclude,
     })
 
+    // Notificar al admin del contrato que hay un pago reportado esperando confirmación.
+    // Upsert por pago (id determinístico): re-reportar actualiza y reabre (readAt=null).
+    const c = updated.contract
+    if (c?.adminId) {
+      const tenantName = `${c.tenant?.user?.name ?? ''} ${c.tenant?.user?.lastName ?? ''}`.trim() || 'El inquilino'
+      const body = `${tenantName} reportó el pago de la unidad ${c.unit?.unitNumber ?? ''}. Espera tu confirmación.`
+      const link = `/dashboard/admin/units/${c.unitId}?paymentId=${updated.id}`
+      const notifData = {
+        adminId: c.adminId,
+        tenantId: tenant.id,
+        unitId: c.unitId,
+        senderRole: NotificationSenderRole.TENANT,
+        type: NotificationType.REMINDER,
+        title: 'Pago reportado',
+        body,
+        link,
+        metadata: { paymentId: updated.id, proofUrl: updated.proofUrl ?? null },
+      }
+      await prisma.notification.upsert({
+        where: { id: `payreport-${updated.id}` },
+        update: { ...notifData, readAt: null },
+        create: { id: `payreport-${updated.id}`, ...notifData },
+      })
+    }
+
     revalidatePath('/dashboard/tenant/units')
     revalidatePath('/dashboard/admin/payments')
 
@@ -132,7 +157,27 @@ export const confirmPaymentAction = async (input: {
       include: paymentInclude,
     })
 
+    // Cierra la notificación del reporte (si existía) y avisa al inquilino que quedó confirmado.
+    await prisma.notification.deleteMany({ where: { id: `payreport-${updated.id}` } })
+    const c = updated.contract
+    if (c?.tenantId) {
+      await prisma.notification.create({
+        data: {
+          tenantId: c.tenantId,
+          adminId: c.adminId,
+          unitId: c.unitId,
+          senderRole: NotificationSenderRole.ADMIN,
+          type: NotificationType.GENERAL,
+          title: 'Pago confirmado',
+          body: `Tu pago de la unidad ${c.unit?.unitNumber ?? ''} fue confirmado por la administración.`,
+          link: `/dashboard/tenant/units`,
+          metadata: { paymentId: updated.id },
+        },
+      })
+    }
+
     revalidatePath('/dashboard/admin/payments')
+    revalidatePath('/dashboard/tenant/units')
 
     return { success: true, data: updated }
   } catch (error) {

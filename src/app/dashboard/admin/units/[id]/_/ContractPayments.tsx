@@ -1,9 +1,15 @@
 'use client'
 
 import { useMemo, useState } from 'react'
+import { useRouter } from 'next/navigation'
+import { CheckCircle2, ExternalLink } from 'lucide-react'
 import type { PaymentMethod, PaymentStatus, PaymentType } from '+/generated/prisma/client'
+import { confirmPaymentAction } from '+/actions/payments'
 
 const PAGE_SIZE = 5
+
+// Estados en los que aún tiene sentido registrar la recepción del pago.
+const CONFIRMABLE = new Set<PaymentStatus>(['PENDING', 'REPORTED', 'OVERDUE', 'PARTIAL'])
 
 const paymentStatusLabel: Record<PaymentStatus, string> = {
   PENDING: 'Pendiente',
@@ -46,6 +52,8 @@ const formatMoney = (value?: number | null) => {
 }
 
 const isUrl = (value?: string | null) => Boolean(value && /^https?:\/\//i.test(value))
+const isImageProof = (value?: string | null) =>
+  Boolean(value && (value.startsWith('data:image') || /\.(png|jpe?g|webp|gif)$/i.test(value)))
 
 type ContractPaymentsProps = {
   payments: Array<{
@@ -59,17 +67,33 @@ type ContractPaymentsProps = {
     transactionId: string | null
     receiptNumber: string | null
     reference: string | null
+    proofUrl?: string | null
   }>
 }
 
 export default function ContractPayments({ payments }: ContractPaymentsProps) {
+  const router = useRouter()
   const sortedPayments = useMemo(
     () => [...payments].sort((a, b) => new Date(b.dueDate).getTime() - new Date(a.dueDate).getTime()),
     [payments]
   )
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE)
+  const [confirmingId, setConfirmingId] = useState<string | null>(null)
+  const [error, setError] = useState<string | null>(null)
   const visiblePayments = sortedPayments.slice(0, visibleCount)
   const canShowMore = sortedPayments.length > visibleCount
+
+  const handleConfirm = async (paymentId: string) => {
+    setConfirmingId(paymentId)
+    setError(null)
+    try {
+      const result = await confirmPaymentAction({ paymentId })
+      if (!result.success) setError(result.error ?? 'No se pudo confirmar el pago')
+      else router.refresh()
+    } finally {
+      setConfirmingId(null)
+    }
+  }
 
   return (
     <div className="mt-4">
@@ -79,6 +103,7 @@ export default function ContractPayments({ payments }: ContractPaymentsProps) {
           Mostrando {Math.min(visibleCount, sortedPayments.length)} de {sortedPayments.length}
         </p>
       </div>
+      {error && <p className="mb-2 text-xs text-red-600">{error}</p>}
       <div className="space-y-2">
         {visiblePayments.map((payment) => {
           const hasDetails =
@@ -97,6 +122,28 @@ export default function ContractPayments({ payments }: ContractPaymentsProps) {
                 <span className="px-2 py-1 rounded-full bg-gray-100 text-gray-700">{paymentStatusLabel[payment.status]}</span>
                 {payment.paidDate && <span>Pagado: {formatDate(payment.paidDate)}</span>}
                 {payment.reference && !isUrl(payment.reference) && <span>Ref: {payment.reference}</span>}
+                {payment.proofUrl && (
+                  <a className="inline-flex items-center gap-1 text-blue-600 hover:underline" href={payment.proofUrl} target="_blank" rel="noreferrer">
+                    {isImageProof(payment.proofUrl) ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={payment.proofUrl} alt="Comprobante" className="h-8 w-8 rounded object-cover" />
+                    ) : (
+                      <ExternalLink className="h-3 w-3" />
+                    )}
+                    Comprobante
+                  </a>
+                )}
+                {CONFIRMABLE.has(payment.status) && (
+                  <button
+                    type="button"
+                    onClick={() => handleConfirm(payment.id)}
+                    disabled={confirmingId === payment.id}
+                    className="ml-auto inline-flex items-center gap-1 rounded-lg bg-green-600 px-2.5 py-1 text-xs font-semibold text-white hover:bg-green-700 disabled:opacity-50"
+                  >
+                    <CheckCircle2 className="h-3 w-3" />
+                    {confirmingId === payment.id ? 'Confirmando…' : 'Confirmar recibido'}
+                  </button>
+                )}
               </div>
               {hasDetails && (
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-gray-600">

@@ -38,6 +38,7 @@ export const getTenantNotificationsAction = async () => {
       select: {
         id: true,
         adminId: true,
+        unitId: true,
         type: true,
         title: true,
         body: true,
@@ -46,6 +47,7 @@ export const getTenantNotificationsAction = async () => {
         readAt: true,
         createdAt: true,
         admin: { select: { id: true, user: { select: { name: true, lastName: true, email: true } } } },
+        unit: { select: { id: true, unitNumber: true } },
       },
     })
 
@@ -132,6 +134,7 @@ export const markNotificationReadAction = async (notificationId: string) => {
 
 type SendNotificationInput = {
   tenantId?: string
+  unitId?: string
   body: string
   title?: string
   type?: NotificationType
@@ -156,20 +159,33 @@ export const sendNotificationAction = async (input: SendNotificationInput) => {
 
     let tenantId: string | null = null
     let adminId: string | null = null
+    let unitId: string | null = null
 
     if (senderRole === NotificationSenderRole.ADMIN) {
       tenantId = input.tenantId?.trim() || null
       if (!tenantId) return { success: false, error: 'Selecciona un inquilino' }
       adminId = admin?.id ?? null
+      unitId = input.unitId?.trim() || null
     } else {
       tenantId = tenant?.id ?? null
-      adminId = null
+      // Reporte del inquilino sobre una de sus unidades: se dirige al admin del
+      // contrato activo para que llegue a su bandeja (adminId null no lo verían).
+      if (input.unitId) {
+        const contract = await prisma.contract.findFirst({
+          where: { unitId: input.unitId, tenantId: tenant?.id, status: 'ACTIVE' },
+          select: { id: true, adminId: true },
+        })
+        if (!contract) return { success: false, error: 'No tienes un contrato activo en esa unidad' }
+        unitId = input.unitId
+        adminId = contract.adminId
+      }
     }
 
     const notification = await prisma.notification.create({
       data: {
         tenantId,
         adminId,
+        unitId,
         senderRole,
         senderUserId: userId,
         type: input.type ?? NotificationType.GENERAL,

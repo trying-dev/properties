@@ -522,9 +522,10 @@ model Unit {
 
   inspections  Inspection[]
   maintenances Maintenance[]
-  meters       Meter[]
-  devices      SecurityDevice[]
-  documents    PropertyDocument[]
+  meters        Meter[]
+  devices       SecurityDevice[]
+  documents     PropertyDocument[]
+  notifications Notification[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -734,8 +735,12 @@ model Tenant {
 model Notification {
   id String @id @default(cuid())
 
+  // Destinatario (quién la ve). Ambos null = notificación de la app (broadcast).
   tenantId String?
   adminId  String?
+
+  // Alcance (de qué es). Opcional: null = notificación general/de usuario.
+  unitId String?
 
   senderRole   NotificationSenderRole @default(SYSTEM)
   senderUserId String?
@@ -750,12 +755,14 @@ model Notification {
 
   tenant Tenant? @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   admin  Admin?  @relation(fields: [adminId], references: [id], onDelete: SetNull)
+  unit   Unit?   @relation(fields: [unitId], references: [id], onDelete: SetNull)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@index([tenantId])
   @@index([adminId])
+  @@index([unitId])
   @@index([type])
   @@index([readAt])
   @@index([createdAt])
@@ -768,6 +775,7 @@ enum NotificationType {
   REJECTION
   PAYMENT_OVERDUE
   REMINDER
+  TENANT_REPORT // Novedad/reporte que el inquilino envía sobre su unidad
 }
 
 enum NotificationSenderRole {

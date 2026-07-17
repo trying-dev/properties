@@ -2,13 +2,26 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
-import { ArrowLeft, Building2, Home, Search, AlertTriangle, CheckCircle, Clock } from 'lucide-react'
-import { PaymentStatus, PaymentType } from '+/generated/prisma/enums'
+import Image from 'next/image'
+import { ArrowLeft, Bell, Building2, History, Home, Info, MessageSquare, Search, CheckCircle, Clock, AlertTriangle } from 'lucide-react'
+
+// Las imágenes de la unidad se guardan como JSON string de URLs.
+const parseImages = (images?: string | null): string[] => {
+  if (!images) return []
+  try {
+    const parsed = JSON.parse(images)
+    return Array.isArray(parsed) ? (parsed as string[]) : []
+  } catch {
+    return []
+  }
+}
+import { PaymentStatus } from '+/generated/prisma/enums'
 
 import Header from '+/components/Header'
 import Footer from '+/components/Footer'
 import { getUserTenant, type UserTenant } from '+/actions/user'
-import { reportPaymentAction } from '+/actions/payments'
+import { getTenantNotificationsAction, type TenantNotificationItem } from '+/actions/notifications'
+import UnitDetailModal from './_/UnitDetailModal'
 
 const formatDate = (value?: Date | string | null) => {
   if (!value) return '-'
@@ -22,50 +35,48 @@ const formatMoney = (value?: number | null) => {
 
 type ContractRow = NonNullable<UserTenant['tenant']>['contracts'][0]
 
-const paymentStatusLabel: Record<PaymentStatus, string> = {
-  PENDING: 'Pendiente',
-  REPORTED: 'Reportado',
-  PAID: 'Pagado',
-  OVERDUE: 'Vencido',
-  PARTIAL: 'Parcial',
-  CANCELLED: 'Cancelado',
-}
-
-const paymentStatusStyle: Record<PaymentStatus, { badge: string; icon: typeof Clock }> = {
-  PENDING: { badge: 'bg-yellow-100 text-yellow-700', icon: Clock },
-  REPORTED: { badge: 'bg-blue-100 text-blue-700', icon: Clock },
-  PAID: { badge: 'bg-green-100 text-green-700', icon: CheckCircle },
-  OVERDUE: { badge: 'bg-red-100 text-red-700', icon: AlertTriangle },
-  PARTIAL: { badge: 'bg-orange-100 text-orange-700', icon: Clock },
-  CANCELLED: { badge: 'bg-gray-100 text-gray-600', icon: Clock },
-}
-
-const paymentTypeLabel: Record<PaymentType, string> = {
-  CANON: 'Canon',
-  RENT: 'Alquiler',
-  DEPOSIT: 'Depósito',
-  UTILITIES: 'Servicios',
-  MAINTENANCE: 'Mantenimiento',
-  REPAIR: 'Reparación',
-  LATE_FEE: 'Mora',
-  OTHER: 'Otro',
-}
-
 const pendingStatuses = new Set<PaymentStatus>([PaymentStatus.PENDING, PaymentStatus.OVERDUE, PaymentStatus.PARTIAL])
-// Estados en los que el inquilino puede reportar el pago (aún no confirmado).
-const reportableStatuses = new Set<PaymentStatus>([PaymentStatus.PENDING, PaymentStatus.OVERDUE, PaymentStatus.PARTIAL])
+
+type CurrentPayment = { status: PaymentStatus; dueDate: Date | string } | undefined
+
+// Chip de color por estado (acento, no fondo completo).
+const chipClasses: Record<string, string> = {
+  green: 'bg-green-100 text-green-700',
+  amber: 'bg-amber-100 text-amber-700',
+  red: 'bg-red-100 text-red-700',
+  blue: 'bg-blue-100 text-blue-700',
+  gray: 'bg-gray-100 text-gray-600',
+}
+
+// Estado del alquiler derivado del pago actual (para el banner de la tarjeta).
+const rentalStatus = (cp: CurrentPayment) => {
+  if (!cp) return { label: 'Sin pagos', tone: 'gray', icon: Clock, dateLabel: 'Próximo pago', date: null as Date | string | null, sub: '' }
+  const days = Math.ceil((new Date(cp.dueDate).getTime() - Date.now()) / 86_400_000)
+  if (cp.status === PaymentStatus.PAID) return { label: 'Al día', tone: 'green', icon: CheckCircle, dateLabel: 'Próximo pago', date: cp.dueDate, sub: '' }
+  if (cp.status === PaymentStatus.REPORTED) return { label: 'Esperando confirmación', tone: 'blue', icon: Clock, dateLabel: 'Próximo pago', date: cp.dueDate, sub: 'En revisión' }
+  if (days < 0) return { label: 'Atrasado', tone: 'red', icon: AlertTriangle, dateLabel: 'Vencimiento', date: cp.dueDate, sub: `${-days} días de retraso` }
+  if (days <= 7) return { label: 'Vence pronto', tone: 'amber', icon: Clock, dateLabel: 'Próximo pago', date: cp.dueDate, sub: days === 0 ? 'Vence hoy' : `Vence en ${days} días` }
+  return { label: 'Al día', tone: 'green', icon: CheckCircle, dateLabel: 'Próximo pago', date: cp.dueDate, sub: '' }
+}
 
 export default function TenantUnitsPage() {
   const [contracts, setContracts] = useState<ContractRow[]>([])
+  const [notifications, setNotifications] = useState<TenantNotificationItem[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [expandedContractId, setExpandedContractId] = useState<string | null>(null)
-  const [visiblePaymentsByContract, setVisiblePaymentsByContract] = useState<Record<string, number>>({})
-  const [reportingId, setReportingId] = useState<string | null>(null)
+  // Modal de detalle de la unidad (pago/historial/reportar/notificaciones)
+  const [detailContractId, setDetailContractId] = useState<string | null>(null)
+  const [detailTab, setDetailTab] = useState<'pago' | 'historial' | 'reportar' | 'notificaciones'>('pago')
+
+  const openDetail = (contractId: string, tab: 'pago' | 'historial' | 'reportar' | 'notificaciones' = 'pago') => {
+    setDetailTab(tab)
+    setDetailContractId(contractId)
+  }
 
   const loadContracts = async () => {
-    const user = await getUserTenant()
+    const [user, notifResult] = await Promise.all([getUserTenant(), getTenantNotificationsAction()])
     setContracts(user?.tenant?.contracts ?? [])
+    setNotifications(notifResult.success && notifResult.data ? notifResult.data : [])
   }
 
   useEffect(() => {
@@ -85,23 +96,6 @@ export default function TenantUnitsPage() {
     load()
   }, [])
 
-  const handleReportPayment = async (paymentId: string) => {
-    setReportingId(paymentId)
-    try {
-      const result = await reportPaymentAction({ paymentId })
-      if (!result.success) {
-        setError(result.error ?? 'No se pudo reportar el pago')
-        return
-      }
-      await loadContracts()
-    } catch (err) {
-      console.error('Error reporting payment:', err)
-      setError('No se pudo reportar el pago')
-    } finally {
-      setReportingId(null)
-    }
-  }
-
   const contractCards = useMemo(() => {
     return contracts.map((contract) => {
       const unit = contract.unit
@@ -116,39 +110,38 @@ export default function TenantUnitsPage() {
       const latestPayment = payments[0]
       const pendingCount = payments.filter((payment) => pendingStatuses.has(payment.status)).length
 
+      // Pago actual = la cuota abierta más próxima a vencer (o la más antigua vencida);
+      // si todo está pagado, el último pago.
+      const openPayments = payments
+        .filter((p) => p.status !== PaymentStatus.PAID && p.status !== PaymentStatus.CANCELLED)
+        .sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime())
+      const currentPayment = openPayments[0] ?? latestPayment
+
+      // Último pago confirmado (para "Último pago").
+      const lastPaid = payments
+        .filter((p) => p.status === PaymentStatus.PAID)
+        .sort((a, b) => new Date(b.paidDate ?? b.dueDate).getTime() - new Date(a.paidDate ?? a.dueDate).getTime())[0]
+
+      const unitNotifs = unit ? notifications.filter((n) => n.unitId === unit.id) : []
+      const unitUnread = unitNotifs.filter((n) => !n.readAt).length
+
       return {
         contract,
         unit,
         property,
         address,
         latestPayment,
+        currentPayment,
+        lastPaid,
         payments,
         pendingCount,
+        unitNotifs,
+        unitUnread,
       }
     })
-  }, [contracts])
+  }, [contracts, notifications])
 
-  const toggleContract = (contractId: string) => {
-    setExpandedContractId((current) => (current === contractId ? null : contractId))
-    setVisiblePaymentsByContract((current) =>
-      current[contractId]
-        ? current
-        : {
-            ...current,
-            [contractId]: 10,
-          }
-    )
-  }
-
-  const showMorePayments = (contractId: string, total: number) => {
-    setVisiblePaymentsByContract((current) => {
-      const nextCount = Math.min((current[contractId] ?? 10) + 10, total)
-      return {
-        ...current,
-        [contractId]: nextCount,
-      }
-    })
-  }
+  const detailCard = contractCards.find((c) => c.contract.id === detailContractId) ?? null
 
   return (
     <div className="min-h-screen bg-white flex flex-col">
@@ -191,160 +184,131 @@ export default function TenantUnitsPage() {
             </Link>
           </div>
         ) : (
-          <div className="space-y-4">
-            {contractCards.map(({ contract, unit, property, address, latestPayment, payments, pendingCount }) => {
-              const statusMeta = latestPayment ? paymentStatusStyle[latestPayment.status] : null
-              const StatusIcon = statusMeta?.icon
-              const isExpanded = expandedContractId === contract.id
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+            {contractCards.map(({ contract, unit, property, address, currentPayment, lastPaid, unitUnread }) => {
+              const cover = parseImages(unit?.images)[0]
 
               return (
-                <div key={contract.id} className="border border-gray-200 rounded-lg p-5 bg-white">
-                  <div className="flex flex-col xl:flex-row xl:items-center xl:justify-between gap-4">
-                    <div className="flex items-start gap-3">
-                      <div className="w-10 h-10 rounded-lg bg-gray-100 flex items-center justify-center">
-                        <Building2 className="h-5 w-5 text-gray-700" />
+                <div
+                  key={contract.id}
+                  className="flex h-full flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm transition-shadow hover:shadow-md"
+                >
+                  {/* Portada */}
+                  <div className="relative aspect-video w-full bg-gray-100">
+                    {cover ? (
+                      <Image
+                        src={cover}
+                        alt={property?.name ?? 'Unidad'}
+                        fill
+                        sizes="(max-width: 1024px) 100vw, 50vw"
+                        className="object-cover"
+                      />
+                    ) : (
+                      <div className="flex h-full w-full items-center justify-center bg-linear-to-br from-gray-100 to-gray-200">
+                        <Building2 className="h-10 w-10 text-gray-400" />
                       </div>
-                      <div>
-                        <h3 className="text-lg font-semibold text-gray-900">{property?.name ?? 'Unidad'}</h3>
-                        <p className="text-sm text-gray-500">{address}</p>
-                        <p className="text-xs text-gray-500 mt-1">Unidad: {unit?.unitNumber ?? '-'}</p>
-                      </div>
-                    </div>
+                    )}
+                    <span className="absolute bottom-3 left-3 rounded-full bg-black/60 px-2.5 py-1 text-xs font-semibold text-white backdrop-blur-sm">
+                      Unidad {unit?.unitNumber ?? '-'}
+                    </span>
+                  </div>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 flex-1">
-                      <div className="text-sm text-gray-600">
-                        <p className="text-xs uppercase tracking-wide text-gray-500">Contrato</p>
-                        <p className="font-semibold text-gray-900">{contract.status}</p>
+                  {/* Cuerpo */}
+                  <div className="flex flex-1 flex-col p-5">
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="min-w-0">
+                        <h3 className="text-xl font-bold text-gray-900 truncate">{property?.name ?? 'Unidad'}</h3>
+                        <p className="text-sm text-gray-500 truncate">{address}</p>
                       </div>
-                      <div className="text-sm text-gray-600">
-                        <p className="text-xs uppercase tracking-wide text-gray-500">Renta</p>
+                      <div className="shrink-0 text-right">
+                        <p className="text-[11px] uppercase tracking-wide text-gray-400">Alquiler</p>
                         <p className="font-semibold text-gray-900">{formatMoney(contract.rent)}</p>
                       </div>
-                      <div className="text-sm text-gray-600">
-                        <p className="text-xs uppercase tracking-wide text-gray-500">Vigencia</p>
-                        <p className="font-semibold text-gray-900">
-                          {formatDate(contract.startDate)} - {formatDate(contract.endDate)}
-                        </p>
-                      </div>
-                      <div className="text-sm text-gray-600">
-                        <p className="text-xs uppercase tracking-wide text-gray-500">Pagos pendientes</p>
-                        <p className="font-semibold text-gray-900">{pendingCount}</p>
-                      </div>
                     </div>
 
-                    <div className="text-sm text-gray-600">
-                      <p className="text-xs uppercase tracking-wide text-gray-500">Último pago</p>
-                      {latestPayment ? (
-                        <div>
-                          <span
-                            className={`inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-full ${
-                              statusMeta?.badge ?? 'bg-gray-100 text-gray-600'
-                            }`}
-                          >
-                            {StatusIcon && <StatusIcon className="h-3 w-3" />}
-                            {paymentStatusLabel[latestPayment.status]}
+                    {(() => {
+                      const s = rentalStatus(currentPayment)
+                      const st = currentPayment?.status
+                      const isReportable = st === PaymentStatus.PENDING || st === PaymentStatus.OVERDUE || st === PaymentStatus.PARTIAL
+                      const isReported = st === PaymentStatus.REPORTED
+                      return (
+                        <>
+                          {/* Detalle */}
+                          <dl className="mt-4 space-y-2 text-sm">
+                            <div className="flex justify-between">
+                              <dt className="text-gray-500">Contrato desde</dt>
+                              <dd className="font-medium text-gray-800">{formatDate(contract.startDate)}</dd>
+                            </div>
+                            <div className="flex justify-between">
+                              <dt className="text-gray-500">Último pago</dt>
+                              <dd className="font-medium text-gray-800">{lastPaid ? formatDate(lastPaid.paidDate ?? lastPaid.dueDate) : '-'}</dd>
+                            </div>
+                            <div className="flex justify-between">
+                              <dt className="text-gray-500">Próximo pago</dt>
+                              <dd className="font-medium text-gray-800">{currentPayment ? formatDate(currentPayment.dueDate) : '-'}</dd>
+                            </div>
+                            <div className="flex items-center justify-between">
+                              <dt className="text-gray-500">Estado pago actual</dt>
+                              <dd className="flex items-center gap-1.5">
+                                <button
+                                  type="button"
+                                  onClick={() => openDetail(contract.id, 'pago')}
+                                  className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-bold hover:opacity-80 ${chipClasses[s.tone]}`}
+                                >
+                                  {s.label}
+                                  {s.sub ? ` · ${s.sub}` : ''}
+                                </button>
+                                <span className="group relative inline-flex">
+                                  <Info className="h-4 w-4 cursor-help text-gray-400" />
+                                  <span className="pointer-events-none absolute right-0 top-full z-10 mt-1 hidden w-56 rounded-lg bg-gray-900 px-3 py-2 text-xs font-medium leading-snug text-white shadow-lg group-hover:block">
+                                    {isReported
+                                      ? 'Da click al estado para ver la confirmación o editar el comprobante que enviaste.'
+                                      : isReportable
+                                        ? 'Da click al estado para subir el comprobante y confirmar el pago.'
+                                        : 'Da click al estado para ver el detalle del pago.'}
+                                  </span>
+                                </span>
+                              </dd>
+                            </div>
+                          </dl>
+                        </>
+                      )
+                    })()}
+
+                    {/* Acciones */}
+                    <div className="mt-auto flex items-center justify-between gap-2 border-t border-gray-100 pt-4 text-sm font-semibold">
+                      <button type="button" onClick={() => openDetail(contract.id, 'historial')} className="inline-flex items-center gap-1.5 text-gray-700 hover:text-gray-900">
+                        <History className="h-4 w-4" /> Historia de pagos
+                      </button>
+                      <button type="button" onClick={() => openDetail(contract.id, 'reportar')} className="inline-flex items-center gap-1.5 text-gray-700 hover:text-gray-900">
+                        <MessageSquare className="h-4 w-4" /> Empezar comunicación
+                      </button>
+                      <button type="button" onClick={() => openDetail(contract.id, 'notificaciones')} className="relative inline-flex items-center gap-1.5 text-gray-700 hover:text-gray-900">
+                        <Bell className="h-4 w-4" /> Notificaciones
+                        {unitUnread > 0 && (
+                          <span className="inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-bold text-white">
+                            {unitUnread}
                           </span>
-                          <p className="text-xs text-gray-500 mt-2">Vence: {formatDate(latestPayment.dueDate)}</p>
-                        </div>
-                      ) : (
-                        <p className="text-sm text-gray-500">Sin pagos registrados</p>
-                      )}
-                    </div>
-
-                    <div className="text-sm text-gray-600">
-                      <button
-                        type="button"
-                        onClick={() => toggleContract(contract.id)}
-                        className="mt-2 inline-flex items-center gap-2 rounded-lg border border-gray-200 px-3 py-2 text-sm font-semibold text-gray-900 hover:bg-gray-50"
-                      >
-                        {isExpanded ? 'Ocultar pagos' : 'Ver pagos'}
+                        )}
                       </button>
                     </div>
                   </div>
-
-                  {isExpanded && (
-                    <div className="mt-4 border-t border-gray-200 pt-4">
-                      {payments.length === 0 ? (
-                        <p className="text-sm text-gray-500">No hay pagos registrados para este contrato.</p>
-                      ) : (
-                        <div className="overflow-x-auto">
-                          <div className="flex items-center justify-between text-xs text-gray-500 mb-2">
-                            <span>
-                              Mostrando {Math.min(visiblePaymentsByContract[contract.id] ?? 10, payments.length)} de {payments.length}
-                            </span>
-                          </div>
-                          <table className="min-w-full text-sm">
-                            <thead>
-                              <tr className="text-left text-xs uppercase tracking-wide text-gray-500">
-                                <th className="py-2 pr-4">Concepto</th>
-                                <th className="py-2 pr-4">Vence</th>
-                                <th className="py-2 pr-4">Monto</th>
-                                <th className="py-2 pr-4">Estado</th>
-                                <th className="py-2 pr-4">Pagado</th>
-                                <th className="py-2 pr-4">Referencia</th>
-                                <th className="py-2 pr-4">Acción</th>
-                              </tr>
-                            </thead>
-                            <tbody className="divide-y divide-gray-200">
-                              {payments.slice(0, visiblePaymentsByContract[contract.id] ?? 10).map((payment) => {
-                                const meta = paymentStatusStyle[payment.status]
-                                const PaymentIcon = meta.icon
-                                const rentLabel = paymentTypeLabel[payment.paymentType]
-                                return (
-                                  <tr key={payment.id} className="text-gray-700">
-                                    <td className="py-2 pr-4 whitespace-nowrap font-medium text-gray-900">{rentLabel}</td>
-                                    <td className="py-2 pr-4 whitespace-nowrap">{formatDate(payment.dueDate)}</td>
-                                    <td className="py-2 pr-4 whitespace-nowrap">{formatMoney(payment.amount)}</td>
-                                    <td className="py-2 pr-4 whitespace-nowrap">
-                                      <span className={`inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-full ${meta.badge}`}>
-                                        <PaymentIcon className="h-3 w-3" />
-                                        {paymentStatusLabel[payment.status]}
-                                      </span>
-                                    </td>
-                                    <td className="py-2 pr-4 whitespace-nowrap">{formatDate(payment.paidDate)}</td>
-                                    <td className="py-2 pr-4 whitespace-nowrap">{payment.reference ?? '-'}</td>
-                                    <td className="py-2 pr-4 whitespace-nowrap">
-                                      {reportableStatuses.has(payment.status) ? (
-                                        <button
-                                          type="button"
-                                          onClick={() => handleReportPayment(payment.id)}
-                                          disabled={reportingId === payment.id}
-                                          className="inline-flex items-center gap-1 rounded-lg border border-blue-200 px-2.5 py-1 text-xs font-semibold text-blue-700 hover:bg-blue-50 disabled:opacity-50"
-                                        >
-                                          {reportingId === payment.id ? 'Reportando…' : 'Reportar pago'}
-                                        </button>
-                                      ) : payment.status === PaymentStatus.REPORTED ? (
-                                        <span className="text-xs text-blue-600">En revisión</span>
-                                      ) : (
-                                        '-'
-                                      )}
-                                    </td>
-                                  </tr>
-                                )
-                              })}
-                            </tbody>
-                          </table>
-                          {payments.length > (visiblePaymentsByContract[contract.id] ?? 10) && (
-                            <div className="mt-3">
-                              <button
-                                type="button"
-                                onClick={() => showMorePayments(contract.id, payments.length)}
-                                className="inline-flex items-center gap-2 rounded-lg border border-gray-200 px-3 py-2 text-sm font-semibold text-gray-900 hover:bg-gray-50"
-                              >
-                                Ver 10 más
-                              </button>
-                            </div>
-                          )}
-                        </div>
-                      )}
-                    </div>
-                  )}
                 </div>
               )
             })}
           </div>
         )}
       </main>
+
+      {detailCard && (
+        <UnitDetailModal
+          contract={detailCard.contract}
+          notifications={detailCard.unitNotifs}
+          initialTab={detailTab}
+          onClose={() => setDetailContractId(null)}
+          onReload={loadContracts}
+        />
+      )}
 
       <Footer />
     </div>

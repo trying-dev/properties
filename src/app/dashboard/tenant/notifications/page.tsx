@@ -50,9 +50,20 @@ export default function TenantNotificationsPage() {
   const router = useRouter()
   const [notifications, setNotifications] = useState<TenantNotificationItem[]>([])
   const [isLoading, setIsLoading] = useState(true)
-  const unreadCount = useMemo(() => notifications.filter((notification) => !notification.readAt).length, [notifications])
+  // Filtro por unidad (?unitId=…), para "notificaciones de la unidad".
+  const [unitFilter, setUnitFilter] = useState<string | null>(null)
+
+  const visible = useMemo(
+    () => (unitFilter ? notifications.filter((n) => n.unitId === unitFilter) : notifications),
+    [notifications, unitFilter]
+  )
+  const unreadCount = useMemo(() => visible.filter((notification) => !notification.readAt).length, [visible])
+  const unitLabel = useMemo(() => visible.find((n) => n.unit)?.unit?.unitNumber ?? null, [visible])
 
   useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setUnitFilter(new URLSearchParams(window.location.search).get('unitId'))
+    }
     let isMounted = true
     const loadNotifications = async () => {
       setIsLoading(true)
@@ -104,16 +115,24 @@ export default function TenantNotificationsPage() {
           <div className="space-y-6">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <p className="text-sm text-gray-600">Tienes {unreadCount} notificación(es) sin leer.</p>
+              {unitFilter && (
+                <span className="inline-flex items-center gap-2 rounded-full bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-700">
+                  Unidad {unitLabel ?? ''}
+                  <button type="button" onClick={() => setUnitFilter(null)} className="text-blue-500 hover:text-blue-700 underline">
+                    Ver todas
+                  </button>
+                </span>
+              )}
             </div>
 
             <div className="space-y-3">
-              {notifications.length === 0 ? (
+              {visible.length === 0 ? (
                 <div className="rounded-xl border border-gray-200 bg-gray-50 p-6 text-center">
                   <Bell className="w-8 h-8 text-gray-400 mx-auto mb-2" />
                   <p className="text-sm text-gray-600">No hay notificaciones todavía.</p>
                 </div>
               ) : (
-                notifications.map((notification) => (
+                visible.map((notification) => (
                   <div
                     key={notification.id}
                     className={`rounded-xl border px-4 py-3 ${
