@@ -18,7 +18,8 @@
     "db:studio:prod": "node scripts/prod-db.mjs prisma studio",
     "db:reset": "prisma migrate reset",
     "db:seed": "tsx prisma/seed/index.ts",
-    "db:seed:prod": "ALLOW_PROD_SEED=yes node scripts/prod-db.mjs sh -c 'prisma generate && prisma db push && tsx prisma/seed/index.ts'"
+    "db:seed:prod": "ALLOW_PROD_SEED=yes node scripts/prod-db.mjs sh -c 'prisma generate && prisma db push && tsx prisma/seed/index.ts'",
+    "seed:gen": "tsx scripts/gen-seed-from-md.ts"
   },
   "dependencies": {
     "@ariakit/react": "^0.4.32",
