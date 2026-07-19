@@ -1,0 +1,1197 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+// ========================================
+// CONTRACT
+// ========================================
+
+model Contract {
+  id String @id @default(cuid())
+
+  unitId   String
+  tenantId String
+  adminId  String
+
+  // Información financiera con validaciones
+  rent              Float // postgres @db.Decimal(10, 2) // Precisión monetaria
+  deposit           Float // postgres @db.Decimal(10, 2)
+  utilitiesIncluded Boolean @default(false)
+
+  // Campos adicionales importantes
+  securityDeposit Float? // postgres @db.Decimal(10, 2)
+  lateFeePenalty  Float? // postgres @db.Decimal(5, 2) // Porcentaje
+  gracePeriodDays Int    @default(5)
+
+  // Comisión que retiene Properties (%); se fija al firmar, alimenta la liquidación (F0.5)
+  commissionRate Float @default(10) // postgres @db.Decimal(5, 2)
+
+  // Fechas con validación
+  startDate DateTime
+  endDate   DateTime
+
+  // ESTADO EXPANDIDO - Incluye proceso de alquiler
+  status ContractStatus @default(INITIATED) // Cambiado de DRAFT a INITIATED
+
+  notes String?
+  terms String? // postgres @db.Text // Usar Text para contenido largo
+
+  autoRenewal   Boolean @default(false)
+  renewalPeriod Int?
+
+  // Prioridad del proceso
+  priority ContractPriority @default(NORMAL)
+
+  // Fecha estimada de finalización del proceso
+  estimatedCompletionDate DateTime?
+
+  // Información financiera propuesta (puede diferir de la final)
+  proposedRent            Float? // postgres @db.Decimal(10, 2)
+  proposedDeposit         Float? // postgres @db.Decimal(10, 2)
+  proposedSecurityDeposit Float? // postgres @db.Decimal(10, 2)
+
+  // Documentos del proceso almacenados como JSON
+  processDocuments String? // postgres @db.Text
+  // Ejemplo: [{"id": "doc1", "fileName": "income.pdf", "fileType": "application/pdf", "filePath": "...", "fileSize": 1024, "documentType": "INCOME_VERIFICATION", "uploadedAt": "2024-01-01", "uploadedBy": "admin123"}]
+
+  // Motivos de rechazo/cancelación
+  rejectionReason    String?
+  cancellationReason String?
+
+  // Fechas del proceso expandido
+  initiatedAt DateTime  @default(now()) // Cuándo se inició el proceso
+  reviewedAt  DateTime? // Cuándo se revisó la aplicación
+  approvedAt  DateTime? // Cuándo se aprobó para contrato
+  signedAt    DateTime? // Cuándo se firmó el contrato
+  activatedAt DateTime? // Cuándo se activó el contrato
+
+  // Campos de auditoría existentes
+  terminatedAt      DateTime?
+  terminationReason String?
+
+  unit   Unit   @relation(fields: [unitId], references: [id], onDelete: Restrict)
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+
+  admins    Admin[]   @relation("ContractAdmins")
+  processes Process[] @relation("ProcessContract")
+
+  payments    Payment[]
+  documents   ContractDocument[] // Documentos del contrato firmado
+  inspections Inspection[]
+
+  additionalResidents User[] @relation("AdditionalResidents")
+  policies            InsurancePolicy[] // Pólizas ligadas al contrato
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([unitId, startDate])
+  @@index([adminId]) // Buscar contratos por admin (quién los gestiona)
+  @@index([endDate]) // Útil para contratos próximos a vencer
+  @@index([autoRenewal]) // Consultar contratos con renovación automática
+  @@index([tenantId, status]) // Filtrar contratos activos por inquilino
+  @@index([status])
+  @@index([tenantId])
+  @@index([startDate, endDate])
+  @@index([signedAt]) // Nuevo índice
+  @@index([priority]) // Para filtrar por prioridad
+  @@index([initiatedAt]) // Para ordenar por fecha de inicio del proceso
+  @@index([status, initiatedAt]) // Consultas de procesos activos
+  @@map("contracts")
+}
+
+enum ContractStatus {
+  // === FASE DE PROCESO ===
+  INITIATED // Proceso iniciado - unidad reservada
+  UNDER_REVIEW // Aplicación en revisión
+  DOCUMENTATION // Recopilando documentación
+  APPROVED // Aprobado para contrato
+
+  // === FASE DE CONTRATO ===
+  DRAFT // Borrador de contrato
+  PENDING // Pendiente de firma
+  ACTIVE // Contrato activo
+
+  // === ESTADOS FINALES ===
+  EXPIRED // Vencido
+  RENEWED // Renovado
+  TERMINATED // Terminado
+  CANCELLED // Cancelado
+  REJECTED // Rechazado en proceso
+}
+
+model ContractDocument {
+  id         String @id @default(cuid())
+  contractId String
+
+  fileName     String
+  fileType     String
+  filePath     String
+  fileSize     Int
+  documentType DocumentContractType
+
+  uploadedAt DateTime @default(now())
+
+  contract Contract @relation(fields: [contractId], references: [id], onDelete: Cascade)
+
+  @@map("contract_documents")
+}
+
+enum DocumentContractType {
+  // Documentos del proceso
+  TENANT_APPLICATION // Solicitud del inquilino
+  INCOME_VERIFICATION // Verificación de ingresos
+  EMPLOYMENT_LETTER // Carta laboral
+  BANK_STATEMENTS // Extractos bancarios
+  REFERENCES_CHECK // Verificación de referencias
+  CREDIT_REPORT // Reporte crediticio
+  IDENTITY_DOCUMENTS // Documentos de identidad
+  PROPERTY_INSPECTION // Inspección de la propiedad
+  INSURANCE_PROOF // Prueba de seguro
+
+  // Documentos del contrato firmado
+  CONTRACT_SIGNED // Contrato firmado
+  TENANT_ID // ID del inquilino
+  INCOME_PROOF // Comprobante de ingresos
+  REFERENCES // Referencias
+  INVENTORY // Inventario
+  PHOTOS // Fotos
+  OTHER // Otros documentos
+}
+
+// ========================================
+// PAYMENTS
+// ========================================
+
+model Payment {
+  id         String @id @default(cuid())
+  contractId String
+
+  amount      Float // postgres @db.Decimal(10, 2)
+  dueDate     DateTime
+  paidDate    DateTime?
+  paymentType PaymentType
+  status      PaymentStatus @default(PENDING)
+
+  // Campos adicionales
+  paymentMethod PaymentMethod?
+  transactionId String? // ID de transacción bancaria
+  receiptNumber String? // Número de recibo
+
+  // Penalizaciones
+  lateFeeAmount  Float? // postgres @db.Decimal(8, 2)
+  lateFeeApplied Boolean @default(false)
+
+  // Flujo de confirmación (F0.4): tenant reporta → Properties confirma
+  reportedAt    DateTime? // Cuándo el tenant reportó el pago
+  proofUrl      String? // Comprobante subido por el tenant
+  confirmedAt   DateTime? // Cuándo Properties confirmó
+  confirmedById String? // Admin que confirmó (verificadoPor)
+
+  reference String?
+  notes     String?
+
+  contract Contract @relation(fields: [contractId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([contractId])
+  @@index([dueDate])
+  @@index([status])
+  @@index([paymentMethod])
+  @@index([contractId, dueDate]) // Filtrar pagos vencidos por contrato
+  @@index([status, paidDate]) // Consultar pagos pagados/pendientes con fechas
+  @@map("payments")
+}
+
+enum PaymentMethod {
+  CASH
+  BANK_TRANSFER
+  CHECK
+  CREDIT_CARD
+  DEBIT_CARD
+  DIGITAL_WALLET
+  OTHER
+}
+
+enum PaymentType {
+  CANON
+  RENT
+  DEPOSIT
+  UTILITIES
+  MAINTENANCE
+  REPAIR
+  LATE_FEE
+  OTHER
+}
+
+enum PaymentStatus {
+  PENDING // Pendiente, sin reportar
+  REPORTED // Tenant reportó pago, en espera de confirmación
+  PAID // Pagado, confirmado por Properties
+  OVERDUE // Vencido
+  PARTIAL // Parcial
+  CANCELLED // Cancelado
+}
+
+enum ContractPriority {
+  LOW
+  NORMAL
+  HIGH
+  URGENT
+}
+
+// ========================================
+// PROCESS (WIZARD / BORRADOR)
+// ========================================
+
+model Process {
+  id String @id @default(cuid())
+
+  tenantId   String?
+  unitId     String?
+  adminId    String?
+  contractId String?
+
+  status             ProcessStatus @default(IN_PROGRESS)
+  currentStep        Int           @default(1)
+  payload            Json?
+  notes              String?
+  approvalConditions String?
+
+  tenant      Tenant?             @relation("ProcessTenant", fields: [tenantId], references: [id], onDelete: SetNull)
+  unit        Unit?               @relation("ProcessUnit", fields: [unitId], references: [id], onDelete: SetNull)
+  admin       Admin?              @relation("ProcessAdmin", fields: [adminId], references: [id], onDelete: SetNull)
+  contract    Contract?           @relation("ProcessContract", fields: [contractId], references: [id], onDelete: SetNull)
+  documents   ProcessDocument[]   @relation("ProcessDocuments")
+  reviewItems ProcessReviewItem[] @relation("ProcessReviewItems")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status, updatedAt])
+  @@index([tenantId, status])
+  @@index([unitId])
+  @@index([adminId])
+  @@index([contractId])
+  @@map("processes")
+}
+
+enum ProcessStatus {
+  IN_PROGRESS
+  IN_EVALUATION
+  WAITING_FOR_FEEDBACK
+  APPROVED
+  DISAPPROVED
+}
+
+model ProcessDocument {
+  id String @id @default(cuid())
+
+  processId    String
+  // Stable requirement id from profiles/securityOptions, e.g. "rut" or "extractos".
+  documentType String
+  label        String
+
+  fileName String
+  filePath String
+  fileType String?
+  fileSize Int?
+
+  version  Int     @default(1)
+  isLatest Boolean @default(true)
+
+  uploadedByRole   ProcessDocumentUploaderRole @default(TENANT)
+  uploadedByUserId String?
+
+  process     Process             @relation("ProcessDocuments", fields: [processId], references: [id], onDelete: Cascade)
+  uploadedBy  User?               @relation("ProcessDocumentUploader", fields: [uploadedByUserId], references: [id], onDelete: SetNull)
+  reviewItems ProcessReviewItem[] @relation("ProcessDocumentReviewItems")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([processId, documentType])
+  @@index([processId, documentType, isLatest])
+  @@index([uploadedByUserId])
+  @@map("process_documents")
+}
+
+enum ProcessDocumentUploaderRole {
+  TENANT
+  ADMIN
+}
+
+model ProcessReviewItem {
+  id String @id @default(cuid())
+
+  processId  String
+  documentId String?
+
+  targetType ProcessReviewTargetType
+  targetId   String
+  status     ProcessReviewStatus     @default(PENDING)
+
+  adminComment   String?
+  tenantResponse String?
+
+  reviewedByAdminId String?
+  reviewedAt        DateTime?
+
+  process         Process          @relation("ProcessReviewItems", fields: [processId], references: [id], onDelete: Cascade)
+  document        ProcessDocument? @relation("ProcessDocumentReviewItems", fields: [documentId], references: [id], onDelete: SetNull)
+  reviewedByAdmin Admin?           @relation("ProcessReviewAdmin", fields: [reviewedByAdminId], references: [id], onDelete: SetNull)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([processId, targetType, targetId])
+  @@index([processId, status])
+  @@index([documentId])
+  @@index([reviewedByAdminId])
+  @@map("process_review_items")
+}
+
+enum ProcessReviewTargetType {
+  SECTION
+  DOCUMENT
+  FIELD
+}
+
+enum ProcessReviewStatus {
+  PENDING
+  APPROVED
+  NEEDS_FEEDBACK
+  REJECTED
+}
+
+// ========================================
+// PROPERTY
+// ========================================
+
+model Property {
+  id String @id @default(cuid())
+
+  // Basic info
+  name        String
+  description String?
+
+  // Address
+  street         String
+  number         String
+  city           String
+  neighborhood   String
+  state          String
+  postalCode     String
+  gpsCoordinates String? // Format: "lat,lng"
+  country        String  @default("Colombia")
+
+  // Features
+  propertyType  PropertyType
+  totalLandArea Float? // En m²
+  builtArea     Float // En m²
+  floors        Int          @default(1)
+  age           Int
+
+  // Detalle catastral/comercial (opcional)
+  stratum            Int? // Estrato socioeconómico
+  district           String? // Localidad (distinto de barrio)
+  constructionYear   Int? // Año de construcción
+  commercialValue    Float? // Valor comercial
+  cadastralValue     Float? // Valor catastral
+  structuralMaterial String? // Material estructural
+
+  // Estructura multi-torre (opcional; solo conjuntos)
+  complex  String? // Conjunto
+  building String? // Edificio
+
+  // Exterior
+  yardOrGarden         String?
+  parking              Int     @default(0)
+  parkingLocation      String?
+  balconiesAndTerraces String?
+  recreationalAreas    String?
+
+  // Zonas comunes (optimizado como JSON)
+  commonZones String? // JSON string con array de zonas comunes
+  // Ejemplo: [{"name": "Piscina", "description": "...", "capacity": 20, "available": true, "openingTime": "06:00", "closingTime": "22:00", "adminId": "admin123"}]
+
+  // Estado y disponibilidad
+  status PropertyStatus @default(ACTIVE)
+
+  admins Admin[]          @relation("PropertyAdmins")
+  units  Unit[]
+  owners   PropertyOwner[] // Dueños con % de participación
+  taxes    PropertyTax[] // Predial (impuesto anual)
+  policies InsurancePolicy[] // Pólizas de seguro
+  meters   Meter[] // Medidores de servicios
+  devices  SecurityDevice[] // Dispositivos de seguridad
+  documents PropertyDocument[] // Documentación legal
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([city, neighborhood])
+  @@index([propertyType])
+  @@map("properties")
+}
+
+enum PropertyType {
+  HOUSE
+  BUILDING
+  APARTMENT
+  COMMERCIAL_SPACE
+  OFFICE
+  LAND
+}
+
+enum PropertyStatus {
+  ACTIVE
+  INACTIVE
+  MAINTENANCE
+  SOLD
+}
+
+// ========================================
+// UNIT
+// ========================================
+
+model Unit {
+  id String @id @default(cuid())
+
+  propertyId String
+
+  unitNumber   String
+  internalCode String? // Código interno
+  qrCode       String? // Código QR
+  floor        Int?
+  area         Float? // postgres @db.Decimal(8, 2)
+  privateArea  Float? // Área privada (m²)
+  commonArea   Float? // Área común (m²)
+  bedrooms     Int     @default(0)
+  bathrooms  Float   @default(0) // postgres @db.Decimal(3, 1)
+  furnished  Boolean @default(false)
+
+  // Características detalladas
+  balcony        Boolean @default(false)
+  parking        Boolean @default(false)
+  storage        Boolean @default(false)
+  petFriendly    Boolean @default(false)
+  smokingAllowed Boolean @default(false)
+
+  // Servicios incluidos
+  internet      Boolean @default(false)
+  cableTV       Boolean @default(false)
+  waterIncluded Boolean @default(false)
+  gasIncluded   Boolean @default(false)
+
+  // Espacios interiores (privados y compartidos)
+  kitchen                Boolean @default(false)
+  sharedKitchen          Boolean @default(false)
+  bathroom               Boolean @default(false)
+  sharedBathroom         Boolean @default(false)
+  laundry                Boolean @default(false)
+  sharedLaundry          Boolean @default(false)
+  livingRoom             Boolean @default(false)
+  diningRoom             Boolean @default(false)
+  livingDiningRoom       Boolean @default(false)
+  sharedLivingDiningRoom Boolean @default(false)
+
+  status UnitStatus @default(VACANT)
+
+  baseRent Float? // postgres @db.Decimal(10, 2)
+  deposit  Float? // postgres @db.Decimal(10, 2)
+
+  // Información adicional
+  description String? // postgres @db.Text
+  images      String // String[] // URLs de imágenes
+  highlights  Json?
+
+  // Última inspección
+  lastInspectionDate DateTime?
+
+  property  Property   @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  contracts Contract[]
+  processes Process[]  @relation("ProcessUnit")
+
+  inspections  Inspection[]
+  maintenances Maintenance[]
+  meters        Meter[]
+  devices       SecurityDevice[]
+  documents     PropertyDocument[]
+  notifications Notification[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([propertyId, unitNumber])
+  @@index([status])
+  @@index([bedrooms, bathrooms]) // Para búsquedas
+  @@index([baseRent]) // Para filtros de precio
+  @@index([propertyId]) // Consultar unidades por propiedad
+  @@index([floor]) // Consultas por nivel/piso
+  @@index([furnished]) // Buscar amoblados
+  @@index([petFriendly, smokingAllowed]) // Filtros para preferencias
+  @@map("units")
+}
+
+enum UnitStatus {
+  VACANT // Vacante
+  OCCUPIED // Ocupada
+  RESERVED // Reservada
+  MAINTENANCE // En mantenimiento
+  UNAVAILABLE // No disponible
+}
+
+// ========================================
+// USER - (Admin, Tenant)
+// ========================================
+
+model User {
+  id String @id @default(cuid())
+
+  // Autenticación
+  email         String    @unique
+  emailVerified DateTime?
+  phone         String?
+  phoneVerified DateTime?
+  password      String? // Hash de la contraseña (bcrypt)
+
+  resetPasswordToken        String?
+  resetPasswordExpiresAt    DateTime?
+  resetPasswordUsed         Boolean   @default(false)
+  verificationCode          String?
+  verificationCodeExpiresAt DateTime?
+
+  // Información personal  
+  name       String
+  lastName   String
+  birthDate  DateTime?
+  birthPlace String?
+
+  // Dirección 
+  address    String?
+  city       String?
+  state      String?
+  country    String?
+  postalCode String?
+
+  documentType   DocumentType?
+  documentNumber String?       @unique
+
+  gender        Gender?
+  maritalStatus MaritalStatus?
+  profession    String?
+  monthlyIncome Float?
+
+  // Avatar/foto
+  profileImage String?
+
+  // Estado de la cuenta
+  disable  Boolean @default(false)
+  timezone String  @default("America/Bogota")
+  language String  @default("es") // Idioma preferido
+
+  // Configuraciones de notificaciones
+  emailNotifications Boolean @default(true)
+  smsNotifications   Boolean @default(false)
+
+  // Campos de auditoría
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime?
+  lastLoginAt DateTime?
+
+  admin  Admin?
+  tenant Tenant?
+  owner  Owner?
+
+  additionalContracts      Contract[]        @relation("AdditionalResidents") // Contratos donde es residente adicional
+  uploadedProcessDocuments ProcessDocument[] @relation("ProcessDocumentUploader")
+
+  @@index([email])
+  @@index([documentNumber])
+  @@index([deletedAt])
+  @@index([createdAt])
+  @@index([lastLoginAt])
+  @@map("users")
+}
+
+enum DocumentType {
+  CC // Cédula de Ciudadanía
+  CE // Cédula de Extranjería
+  TI // Tarjeta de Identidad
+  PASSPORT // Pasaporte
+  NIT // NIT para personas jurídicas
+  OTHER // Otros documentos
+}
+
+enum Gender {
+  MALE
+  FEMALE
+  OTHER
+  PREFER_NOT_TO_SAY
+}
+
+enum MaritalStatus {
+  SINGLE
+  MARRIED
+  DIVORCED
+  WIDOWED // Viudo
+  SEPARATED
+  COMMON_LAW // Unión libre
+}
+
+enum Profile {
+  EMPLOYED
+  INDEPENDENT
+  RETIRED
+  ENTREPRENEUR
+  INVESTOR
+  STUDENT
+  FOREIGN
+  NOMAD
+  UNEMPLOYED
+}
+
+model Admin {
+  id         String     @id @default(cuid())
+  userId     String     @unique
+  adminLevel AdminLevel @default(STANDARD)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdById String?
+  createdBy   Admin?  @relation("AdminCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+  created     Admin[] @relation("AdminCreatedBy")
+
+  // Relaciones
+  propertiesAssigned   Property[]          @relation("PropertyAdmins")
+  contracts            Contract[]          @relation("ContractAdmins")
+  processes            Process[]           @relation("ProcessAdmin")
+  reviewedProcessItems ProcessReviewItem[] @relation("ProcessReviewAdmin")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  notifications Notification[]
+
+  @@index([adminLevel])
+  @@index([userId]) // Buscar admin por usuario
+  @@index([createdById]) // Jerarquías: admins creados por otros
+  @@map("admins")
+}
+
+enum AdminLevel {
+  SUPER_ADMIN
+  MANAGER
+  STANDARD
+  LIMITED
+}
+
+model Tenant {
+  id     String @id @default(cuid())
+  userId String @unique
+
+  // process
+  profile         Profile?
+  favoriteUnitIds Json?
+
+  // Información específica del inquilino
+  emergencyContact      String?
+  emergencyContactPhone String?
+  monthlyIncome         Float?
+
+  // Datos adicionales (JSON)
+  pets               Json? // Mascotas
+  vehicles           Json? // Vehículos
+  authorizedContacts Json? // Contactos autorizados
+
+  // Referencias
+  references Reference[]
+
+  user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  contracts     Contract[] // Contratos donde es el inquilino
+  processes     Process[]      @relation("ProcessTenant")
+  notifications Notification[]
+
+  registrationToken        String?
+  registrationTokenExpires DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId]) // Relación directa
+  @@index([monthlyIncome]) // Para filtros económicos
+  @@map("tenants")
+}
+
+model Notification {
+  id String @id @default(cuid())
+
+  // Destinatario (quién la ve). Ambos null = notificación de la app (broadcast).
+  tenantId String?
+  adminId  String?
+
+  // Alcance (de qué es). Opcional: null = notificación general/de usuario.
+  unitId String?
+
+  senderRole   NotificationSenderRole @default(SYSTEM)
+  senderUserId String?
+
+  type     NotificationType @default(GENERAL)
+  title    String?
+  body     String
+  link     String?
+  metadata Json?
+
+  readAt DateTime?
+
+  tenant Tenant? @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  admin  Admin?  @relation(fields: [adminId], references: [id], onDelete: SetNull)
+  unit   Unit?   @relation(fields: [unitId], references: [id], onDelete: SetNull)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([tenantId])
+  @@index([adminId])
+  @@index([unitId])
+  @@index([type])
+  @@index([readAt])
+  @@index([createdAt])
+  @@map("notifications")
+}
+
+enum NotificationType {
+  GENERAL
+  APPROVAL
+  REJECTION
+  PAYMENT_OVERDUE
+  REMINDER
+  TENANT_REPORT // Novedad/reporte que el inquilino envía sobre su unidad
+}
+
+enum NotificationSenderRole {
+  TENANT
+  ADMIN
+  SYSTEM
+}
+
+model Reference {
+  id       String @id @default(cuid())
+  tenantId String
+
+  name         String
+  phone        String
+  relationship String
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@map("references")
+}
+
+// ========================================
+// OWNER - Dueño que inscribe su propiedad para gestión
+// ========================================
+
+model Owner {
+  id     String @id @default(cuid())
+  userId String @unique
+
+  // Datos de inscripción
+  enrolledAt DateTime @default(now()) // Cuándo inscribió con Properties
+  active     Boolean  @default(true)
+
+  // Preferencias de pago (cómo se le liquida)
+  payoutMethod String? // BANK_TRANSFER, etc. (enum futuro)
+  bankAccount  String? // Datos de cuenta para el payout
+
+  user       User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  properties PropertyOwner[]
+  payouts    OwnerPayout[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@map("owners")
+}
+
+// Tabla puente: qué dueño posee qué propiedad y con qué % de participación.
+model PropertyOwner {
+  id         String @id @default(cuid())
+  ownerId    String
+  propertyId String
+
+  participation Float     @default(100) // % de participación (copropiedad)
+  startDate     DateTime  @default(now())
+  endDate       DateTime?
+  active        Boolean   @default(true)
+
+  owner    Owner    @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  property Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+  @@unique([ownerId, propertyId])
+  @@index([propertyId])
+  @@index([ownerId])
+  @@map("property_owners")
+}
+
+// Liquidación mensual a un dueño: canon cobrado − comisión = neto (F0.5).
+model OwnerPayout {
+  id      String @id @default(cuid())
+  ownerId String
+
+  period      String // "2026-07" (mes liquidado)
+  grossAmount Float // Canon cobrado atribuible a este dueño
+  commission  Float // Comisión Properties
+  netAmount   Float // Neto a pagar (gross − commission), ajustado por participación
+
+  status    PayoutStatus @default(PENDING)
+  paidDate  DateTime?
+  reference String? // Comprobante/transacción del payout
+  notes     String?
+
+  owner Owner @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([ownerId, period])
+  @@index([ownerId])
+  @@index([period])
+  @@index([status])
+  @@map("owner_payouts")
+}
+
+enum PayoutStatus {
+  PENDING // Por pagar
+  PAID // Pagado al dueño
+  ON_HOLD // Retenido
+}
+
+// Inspección/diagnóstico del estado de una unidad (F1). La de ENTREGA es la
+// referencia del estado en que se entrega vs. cómo se devuelve (disputas de depósito).
+model Inspection {
+  id         String  @id @default(cuid())
+  unitId     String
+  contractId String? // Opcional: la de ENTREGA ancla el inicio del contrato
+
+  type   InspectionType
+  status InspectionStatus @default(SCHEDULED)
+
+  scheduledDate DateTime?
+  performedDate DateTime?
+
+  inspectorId String? // Admin que la realizó (User.id)
+
+  overallCondition InspectionCondition? // Semáforo global del estado
+  score            Float? // % de estado (0-100), opcional
+  criticalFindings Int                  @default(0) // Promovido a columna para filtrar/alertar
+
+  // Árbol de espacios y hallazgos (cuartos → ventanas/puertas/componentes/mediciones).
+  // Se guarda como JSON, no como tablas (micro-detalle sin uso de query directo).
+  payload Json?
+  notes   String?
+
+  unit     Unit      @relation(fields: [unitId], references: [id], onDelete: Cascade)
+  contract Contract? @relation(fields: [contractId], references: [id], onDelete: SetNull)
+
+  maintenances Maintenance[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([unitId])
+  @@index([contractId])
+  @@index([type])
+  @@index([status])
+  @@index([criticalFindings])
+  @@map("inspections")
+}
+
+enum InspectionType {
+  ENTREGA // Antes de entregar al tenant (diagnóstico de referencia)
+  RECEPCION // Al devolver la unidad
+  PERIODICA // Durante el arriendo
+  DIAGNOSTICO // Evaluación general
+}
+
+enum InspectionStatus {
+  SCHEDULED // Programada
+  IN_PROGRESS // En curso
+  COMPLETED // Terminada
+  CANCELLED // Cancelada
+}
+
+enum InspectionCondition {
+  GOOD // Bueno
+  FAIR // Regular
+  POOR // Malo
+}
+
+// Mantenimiento (F2): correctivo, preventivo o incidente. Incluye los datos de la
+// orden de trabajo inline (proveedor/diagnóstico/solución), sin tabla WorkOrder aparte.
+model Maintenance {
+  id           String  @id @default(cuid())
+  unitId       String
+  inspectionId String? // Origen: hallazgo de una inspección (F1)
+
+  type   MaintenanceType
+  status MaintenanceStatus @default(PENDING)
+
+  // Quién asume el costo. OWNER → se descuenta de la liquidación del dueño (§6).
+  costBearer CostResponsibility @default(OWNER)
+
+  title       String
+  description String?
+
+  // Orden de trabajo (inline)
+  provider  String? // Proveedor/técnico
+  diagnosis String?
+  solution  String?
+
+  cost          Float? // Costo real
+  scheduledDate DateTime?
+  completedDate DateTime? // Su mes atribuye el costo al periodo de liquidación
+
+  // Preventivo: recurrencia
+  recurrenceMonths Int? // Cada cuántos meses se repite
+  nextDueDate      DateTime?
+
+  // Incidente: severidad y pérdida estimada
+  severity      String? // LOW/MEDIUM/HIGH/CRITICAL (enum futuro)
+  estimatedLoss Float?
+
+  unit       Unit        @relation(fields: [unitId], references: [id], onDelete: Cascade)
+  inspection Inspection? @relation(fields: [inspectionId], references: [id], onDelete: SetNull)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([unitId])
+  @@index([inspectionId])
+  @@index([type])
+  @@index([status])
+  @@index([costBearer])
+  @@index([completedDate])
+  @@map("maintenances")
+}
+
+enum MaintenanceType {
+  CORRECTIVE // Correctivo (reparación)
+  PREVENTIVE // Preventivo (plan/recurrencia)
+  INCIDENT // Incidente (daño súbito, inundación)
+}
+
+enum MaintenanceStatus {
+  PENDING // Registrado, sin programar
+  SCHEDULED // Programado
+  IN_PROGRESS // En ejecución
+  COMPLETED // Terminado
+  CANCELLED // Cancelado
+}
+
+enum CostResponsibility {
+  OWNER // Lo asume el dueño (se descuenta de la liquidación)
+  TENANT // Lo asume el inquilino (daño que causó)
+  PROPERTIES // Lo asume la inmobiliaria
+}
+
+// Predial (impuesto anual del inmueble). Costo del dueño: se descuenta de la
+// liquidación (§6 paso 4) cuando está PAID y su paidDate cae en el mes liquidado.
+model PropertyTax {
+  id         String @id @default(cuid())
+  propertyId String
+
+  year      Int // Año gravable
+  amount    Float // Valor del predial
+  status    TaxStatus @default(PENDING)
+  dueDate   DateTime? // Fecha límite de pago
+  paidDate  DateTime? // Su mes imputa el descuento al periodo de liquidación
+  reference String? // Recibo/comprobante
+
+  property Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([propertyId])
+  @@index([year])
+  @@index([status])
+  @@index([paidDate])
+  @@map("property_taxes")
+}
+
+enum TaxStatus {
+  PENDING // Sin pagar
+  PAID // Pagado
+  OVERDUE // Vencido
+}
+
+// Póliza de seguro del inmueble (o del contrato). Su vigencia (endDate) alimenta
+// las alertas de vencimiento (F6).
+model InsurancePolicy {
+  id         String  @id @default(cuid())
+  propertyId String
+  contractId String?
+
+  insurer      String // Aseguradora
+  policyNumber String // Número de póliza
+  coverage     String? // Tipo/descripción de cobertura
+  amount       Float? // Valor asegurado
+  premium      Float? // Prima
+  startDate    DateTime
+  endDate      DateTime // Fin de vigencia → alerta (F6)
+  status       PolicyStatus @default(ACTIVE)
+
+  property Property  @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  contract Contract? @relation(fields: [contractId], references: [id], onDelete: SetNull)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([propertyId])
+  @@index([contractId])
+  @@index([endDate])
+  @@index([status])
+  @@map("insurance_policies")
+}
+
+enum PolicyStatus {
+  ACTIVE // Vigente
+  EXPIRED // Vencida
+  CANCELLED // Cancelada
+}
+
+// Medidor de servicio (agua/luz/gas). Ligado a la propiedad; unidad opcional
+// (null = medidor de zona común/general). Las lecturas se guardan en MeterReading.
+model Meter {
+  id         String  @id @default(cuid())
+  propertyId String
+  unitId     String? // null = medidor general/zona común
+
+  type          MeterType
+  serial        String? // Número de serie
+  provider      String? // Empresa de servicios (Codensa, EAB, Vanti...)
+  unitOfMeasure String? // Unidad de medida (m³, kWh)
+  active        Boolean   @default(true)
+
+  property Property       @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  unit     Unit?          @relation(fields: [unitId], references: [id], onDelete: SetNull)
+  readings MeterReading[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([propertyId])
+  @@index([unitId])
+  @@index([type])
+  @@map("meters")
+}
+
+// Lectura de un medidor. `consumption` = value − lectura anterior (calculado al crear).
+model MeterReading {
+  id      String @id @default(cuid())
+  meterId String
+
+  value       Float // Lectura acumulada del medidor
+  readingDate DateTime @default(now())
+  consumption Float? // Consumo desde la lectura anterior (value − previa)
+  notes       String?
+
+  meter Meter @relation(fields: [meterId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@index([meterId])
+  @@index([readingDate])
+  @@map("meter_readings")
+}
+
+enum MeterType {
+  WATER // Agua
+  ELECTRICITY // Luz
+  GAS // Gas
+  OTHER // Otro
+}
+
+// Dispositivo de seguridad (extintor, cámara, alarma, detector). Detalle profundo
+// en `payload Json`. `nextServiceDate` (recarga/mantenimiento) alimenta alertas (F6).
+model SecurityDevice {
+  id         String  @id @default(cuid())
+  propertyId String
+  unitId     String? // null = dispositivo de zona común/general
+
+  type            SecurityDeviceType
+  location        String? // Ubicación física
+  brand           String? // Marca/modelo
+  nextServiceDate DateTime? // Próxima recarga/mantenimiento → alerta (F6)
+  active          Boolean            @default(true)
+  payload         Json? // Detalle (sensores, cobertura, capacidad)
+  notes           String?
+
+  property Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  unit     Unit?    @relation(fields: [unitId], references: [id], onDelete: SetNull)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([propertyId])
+  @@index([unitId])
+  @@index([type])
+  @@index([nextServiceDate])
+  @@map("security_devices")
+}
+
+enum SecurityDeviceType {
+  EXTINGUISHER // Extintor
+  CAMERA // Cámara
+  ALARM // Alarma
+  DETECTOR // Detector (humo/gas)
+  OTHER // Otro
+}
+
+// Documento legal del inmueble (escritura, certificado de tradición, recibos, pólizas).
+// `fileUrl` es una URL pegable (sin storage propio; mismo interino que proofUrl F0.4).
+// `expiryDate` (ej. certificado de tradición) alimenta alertas (F6).
+model PropertyDocument {
+  id         String  @id @default(cuid())
+  propertyId String
+  unitId     String?
+
+  type       PropertyDocumentType
+  name       String // Nombre/título del documento
+  fileUrl    String? // URL del archivo (pegable)
+  issuedDate DateTime? // Fecha de expedición
+  expiryDate DateTime? // Fecha de vencimiento → alerta (F6)
+  notes      String?
+
+  property Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  unit     Unit?    @relation(fields: [unitId], references: [id], onDelete: SetNull)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([propertyId])
+  @@index([unitId])
+  @@index([type])
+  @@index([expiryDate])
+  @@map("property_documents")
+}
+
+enum PropertyDocumentType {
+  DEED // Escritura
+  TRADITION_CERT // Certificado de tradición y libertad
+  TAX_RECEIPT // Recibo de predial/servicios
+  POLICY // Póliza
+  FLOOR_PLAN // Plano
+  OTHER // Otro
+}

@@ -61,7 +61,7 @@ UNIDADES
   deposito: 0
   descripcion: Local comercial con entrada independiente y baño independiente que comparte servicios de agua y luz.
 
-- codigo: CG-01-APST-001
+- codigo: CF-01-APST-001
   piso: 1
   area: [CONSULTAR]
   habitaciones: 1
@@ -73,7 +73,7 @@ UNIDADES
   deposito: No
   descripcion: Aparta estudio con baño y cocina que comparte servicios de agua, luz y gas.
 
-- codigo: CG-01-APST-002
+- codigo: CF-01-APST-002
   piso: 1
   area: [CONSULTAR]
   habitaciones: 1
@@ -85,7 +85,7 @@ UNIDADES
   deposito: No
   descripcion: Aparta estudio con baño y cocina que comparte servicios de agua, luz y gas.
 
-- codigo: CG-01-APST-003
+- codigo: CF-01-APST-003
   piso: 2
   area: [CONSULTAR]
   habitaciones: 1
@@ -97,7 +97,7 @@ UNIDADES
   deposito: No
   descripcion: Aparta estudio con baño y cocina que comparte espacio le lavado, servicios de agua, luz y gas.
 
-- codigo: CG-01-APT-001
+- codigo: CF-01-APT-001
   piso: 1
   area: [CONSULTAR] m2 (est)
   habitaciones: 3
@@ -109,7 +109,7 @@ UNIDADES
   deposito: 0
   descripcion: Apartamento con 3 habitaciones, cocina y baño privado que comparte espacio le lavado, servicios de agua, luz y gas.
 
-- codigo: CG-01-APT-002
+- codigo: CF-01-APT-002
   piso: 1
   area: [CONSULTAR] m2 (est)
   habitaciones: 2
@@ -121,7 +121,7 @@ UNIDADES
   deposito: 0
   descripcion: Apartamento con 2 habitaciones, sala-comedor, cocina, baño, que comparte espacio le lavado, servicios de agua, luz y gas.
 
-- codigo: CG-01-APT-003
+- codigo: CF-01-APT-003
   piso: 2
   area: [CONSULTAR] m2 (est)
   habitaciones: 1
@@ -133,7 +133,7 @@ UNIDADES
   deposito: 0
   descripcion: Apartamento con 1 habitacion, sala-comedor, cocina, baño, que comparte espacio le lavado, servicios de agua, luz y gas.
 
-- codigo: CG-01-APT-004
+- codigo: CF-01-APT-004
   piso: 2
   area: [CONSULTAR] m2 (est)
   habitaciones: 1
@@ -145,7 +145,7 @@ UNIDADES
   deposito: 0
   descripcion: Apartamento con 1 habitacion, sala-comedor, cocina, baño, que comparte espacio le lavado, servicios de agua, luz y gas.
 
-- codigo: CG-01-APT-003
+- codigo: CF-01-APT-005
   piso: 2
   area: [CONSULTAR] m2 (est)
   habitaciones: 2

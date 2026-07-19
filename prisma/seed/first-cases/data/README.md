@@ -29,3 +29,25 @@ sin tener que ir al Studio.
   compartido usa `comparte:` (flags `shared*`). Ver la leyenda en `_PLANTILLA.md`.
 - Tras adoptar (`--write`), corre el seed completo + regresión:
   `npm run db:seed` y `npx tsx scripts/check-phases.ts`.
+
+  Orden recomendado para poner todo a andar
+# 1. Crear schema.prisma
+cp prisma/schema.sqlite.prisma prisma/schema.prisma
+
+# 2. Aplicar fix de imports dinámicos en src/lib/prisma.ts (vos manualmente)
+
+# 3. Generar cliente y sincronizar DB
+pnpm db:generate
+pnpm db:push
+
+# 4. Adoptar seeds de todas las casas
+npm run seed:gen -- puertas-del-sol --write
+npm run seed:gen -- puertas-del-sol-2 --write
+npm run seed:gen -- gaitana --write
+npm run seed:gen -- ferias --write
+npm run seed:gen -- villa-maria --write
+
+# 5. Revisar que index.ts incluya los nuevos seeds
+
+# 6. Ejecutar seed completo
+npm run db:seed

@@ -1,7 +1,10 @@
 import 'dotenv/config'
 import { PrismaClient } from '+/generated/prisma/client'
-import { PrismaLibSql } from '@prisma/adapter-libsql'
-import { PrismaPg } from '@prisma/adapter-pg'
+import type { PrismaLibSql } from '@prisma/adapter-libsql'
+import type { PrismaPg } from '@prisma/adapter-pg'
+import { createRequire } from 'node:module'
+
+const require = createRequire(import.meta.url)
 
 const databaseUrl = process.env.DATABASE_URL
 
@@ -16,10 +19,16 @@ const globalForPrisma = globalThis as unknown as {
 
 const isPostgres = databaseUrl.toLowerCase().startsWith('postgres')
 
-// The prisma-client generator (Prisma 7 queryCompiler) requires a driver adapter.
-const adapter: Adapter =
-  globalForPrisma.prismaAdapter ??
-  (isPostgres ? new PrismaPg({ connectionString: databaseUrl }) : new PrismaLibSql({ url: databaseUrl }))
+function resolveAdapter(): Adapter {
+  if (isPostgres) {
+    const { PrismaPg } = require('@prisma/adapter-pg')
+    return new PrismaPg({ connectionString: databaseUrl })
+  }
+  const { PrismaLibSql } = require('@prisma/adapter-libsql')
+  return new PrismaLibSql({ url: databaseUrl })
+}
+
+const adapter: Adapter = globalForPrisma.prismaAdapter ?? resolveAdapter()
 
 export const prisma =
   globalForPrisma.prisma ??
