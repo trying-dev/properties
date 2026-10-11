@@ -9,6 +9,7 @@ import {
   PaymentType,
   UnitStatus,
 } from '../../../src/generated/prisma/client'
+import { credentialAccount } from '+/lib/credentials'
 import { prisma } from '+/lib/prisma'
 
 const PROPERTY_ID = 'case-casa-tibabuyes'
@@ -65,7 +66,7 @@ const ensureTenant = async (seed: TenantSeed, hashedPassword: string) => {
     (await prisma.user.create({
       data: {
         email,
-        password,
+        ...credentialAccount(password),
         phone: seed.phone,
         name: seed.name,
         lastName: seed.lastName,

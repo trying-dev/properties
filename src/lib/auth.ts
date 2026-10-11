@@ -1,155 +1,109 @@
-import { compare } from 'bcryptjs'
-import NextAuth from 'next-auth'
-import type { NextAuthConfig } from 'next-auth'
-import Credentials from 'next-auth/providers/credentials'
+import { betterAuth } from 'better-auth'
+import { prismaAdapter } from 'better-auth/adapters/prisma'
+import { APIError } from 'better-auth/api'
+import { nextCookies } from 'better-auth/next-js'
+import { headers } from 'next/headers'
+import { cache } from 'react'
 
+import { hashPassword, verifyPassword } from '+/lib/credentials'
 import { prisma } from '+/lib/prisma'
 
-// Cada cuánto se revalida el token contra la base (usuario existe, no deshabilitado, rol/nivel vigentes).
-const REVALIDATE_MS = 60 * 1000
+const SESSION_DAYS = 30
 
-export const authConfig: NextAuthConfig = {
-  pages: { signIn: '/' },
+export type AppRole = 'admin' | 'owner' | 'tenant'
 
-  logger: {
-    error(error) {
-      const err = error as unknown as { code?: string; name?: string; message?: string; cause?: unknown }
-      const code = err?.code || err?.name || 'error'
-      const cause = (err?.cause as { message?: string })?.message || (err?.cause as string) || err?.message || String(error)
-      console.error(`[auth][${code}]`, cause)
-    },
+export type AppSession = {
+  user: {
+    id: string
+    name?: string | null
+    email?: string | null
+    role: AppRole
+    adminLevel?: string
+  }
+  expires: string
+}
+
+const isPostgres = process.env.DATABASE_URL?.toLowerCase().startsWith('postgres') ?? false
+
+export const authServer = betterAuth({
+  database: prismaAdapter(prisma, { provider: isPostgres ? 'postgresql' : 'sqlite' }),
+  secret: process.env.BETTER_AUTH_SECRET,
+  baseURL: process.env.NEXT_PUBLIC_APP_URL,
+
+  emailAndPassword: {
+    enabled: true,
+    disableSignUp: true,
+    autoSignIn: false,
+    password: { hash: hashPassword, verify: verifyPassword },
   },
 
-  providers: [
-    Credentials({
-      name: 'credentials',
-
-      credentials: {
-        email: { label: 'Email', type: 'email' },
-        password: { label: 'Password', type: 'password' },
-      },
-
-      async authorize(credentials) {
-        if (!credentials?.email || !credentials?.password) return null
-
-        try {
-          const user = await prisma.user.findUnique({
-            where: { email: credentials.email as string },
-            select: {
-              id: true,
-              email: true,
-              name: true,
-              password: true,
-              disable: true,
-              admin: { select: { adminLevel: true } },
-              owner: { select: { id: true } },
-            },
-          })
-
-          if (!user || !user.password) return null
-
-          const isPasswordValid = await compare(credentials.password as string, user.password)
-
-          if (!isPasswordValid) return null
-
-          if (user.disable) return null
-
-          await prisma.user.update({ where: { id: user.id }, data: { lastLoginAt: new Date() } })
-
-          return {
-            id: user.id,
-            email: user.email,
-            name: user.name ?? undefined,
-            // Prioridad de rol: admin > owner > tenant
-            role: user.admin ? 'admin' : user.owner ? 'owner' : 'tenant',
-            adminLevel: user.admin?.adminLevel ?? undefined,
-          }
-        } catch (error) {
-          console.error('Error durante la autenticación:', error)
-          return null
-        }
-      },
-    }),
-  ],
-
-  callbacks: {
-    authorized({ auth, request: { nextUrl } }) {
-      const { pathname } = nextUrl
-
-      // Solo proteger dashboard, dejar el resto (incluido "/") accesible aunque haya sesión
-      if (!pathname.startsWith('/dashboard')) return true
-
-      return !!auth?.user // Dashboard requiere login
-    },
-
-    async jwt({ token, user }) {
-      if (user) {
-        const userRole = (user as { role?: 'admin' | 'owner' | 'tenant' }).role
-        const adminLevel = (user as { adminLevel?: string }).adminLevel
-        const email = (user as { email?: string }).email
-        const name = (user as { name?: string }).name
-
-        if (userRole) token.role = userRole
-        if (adminLevel) token.adminLevel = adminLevel
-        if (email) token.email = email
-        if (name) token.name = name
-        token.checkedAt = Date.now()
-        return token
-      }
-
-      const isStale = !token.role || !token.checkedAt || Date.now() - token.checkedAt > REVALIDATE_MS
-
-      if (token.sub && isStale) {
-        try {
-          const dbUser = await prisma.user.findUnique({
-            where: { id: token.sub },
-            select: {
-              disable: true,
-              admin: { select: { adminLevel: true } },
-              owner: { select: { id: true } },
-            },
-          })
-
-          // Usuario borrado o deshabilitado: invalida la sesión.
-          if (!dbUser || dbUser.disable) return null
-
-          token.role = dbUser.admin ? 'admin' : dbUser.owner ? 'owner' : 'tenant'
-          token.adminLevel = dbUser.admin?.adminLevel ?? undefined
-          token.checkedAt = Date.now()
-        } catch (error) {
-          // Si la base no responde conservamos el token actual; se reintenta en el siguiente request.
-          console.error('Error revalidando sesión:', error)
-        }
-      }
-
-      return token
-    },
-
-    async session({ session, token }) {
-      if (token) {
-        session.user.id = token.sub!
-        session.user.role = token.role ?? 'tenant'
-        session.user.adminLevel = token.adminLevel
-        if (token.email) session.user.email = token.email
-        if (token.name) session.user.name = token.name
-      }
-      return session
-    },
+  user: {
+    fields: { emailVerified: 'isEmailVerified', image: 'profileImage' },
   },
 
   session: {
-    strategy: 'jwt',
-    maxAge: 30 * 24 * 60 * 60, // 30 days
+    expiresIn: SESSION_DAYS * 24 * 60 * 60,
+    // Evita consultar la base en cada request; se revalida cada minuto.
+    cookieCache: { enabled: true, maxAge: 60 },
   },
 
-  jwt: {
-    maxAge: 30 * 24 * 60 * 60, // 30 days
-  },
+  plugins: [nextCookies()],
+})
+
+// Sesión de la app: usuario de Better Auth + rol y nivel de admin calculados desde la base.
+export const auth = cache(async (): Promise<AppSession | null> => {
+  const data = await authServer.api.getSession({ headers: await headers() })
+  if (!data?.user?.id) return null
+
+  const account = await prisma.user.findUnique({
+    where: { id: data.user.id },
+    select: {
+      name: true,
+      email: true,
+      disable: true,
+      admin: { select: { adminLevel: true } },
+      owner: { select: { id: true } },
+    },
+  })
+
+  // Usuario borrado o deshabilitado: la sesión deja de ser válida.
+  if (!account || account.disable) return null
+
+  return {
+    user: {
+      id: data.user.id,
+      name: account.name,
+      email: account.email,
+      role: account.admin ? 'admin' : account.owner ? 'owner' : 'tenant',
+      adminLevel: account.admin?.adminLevel ?? undefined,
+    },
+    expires: data.session.expiresAt.toISOString(),
+  }
+})
+
+export type SignInResult = { success: true; userId: string } | { success: false; code: 'INVALID_CREDENTIALS' | 'ACCOUNT_DISABLED' | 'UNKNOWN' }
+
+export const signInWithCredentials = async (email: string, password: string): Promise<SignInResult> => {
+  const normalizedEmail = email.trim().toLowerCase()
+
+  try {
+    const user = await prisma.user.findUnique({ where: { email: normalizedEmail }, select: { disable: true } })
+    if (user?.disable) return { success: false, code: 'ACCOUNT_DISABLED' }
+
+    const result = await authServer.api.signInEmail({
+      body: { email: normalizedEmail, password },
+      headers: await headers(),
+    })
+    return { success: true, userId: result.user.id }
+  } catch (error) {
+    if (error instanceof APIError && error.status === 'UNAUTHORIZED') {
+      return { success: false, code: 'INVALID_CREDENTIALS' }
+    }
+    console.error('Error durante el inicio de sesión:', error)
+    return { success: false, code: 'UNKNOWN' }
+  }
 }
 
-export const {
-  // handlers: { GET, POST },
-  auth,
-  signIn,
-  signOut,
-} = NextAuth(authConfig)
+export const signOut = async () => {
+  await authServer.api.signOut({ headers: await headers() })
+}

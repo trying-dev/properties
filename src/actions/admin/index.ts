@@ -2,7 +2,7 @@
 
 import { revalidatePath } from 'next/cache'
 import { Prisma } from '+/generated/prisma/client'
-import bcrypt from 'bcryptjs'
+import { credentialAccount, hashPassword } from '+/lib/credentials'
 import { prisma } from '+/lib/prisma'
 
 export interface CreateAdminInput {
@@ -33,7 +33,7 @@ export interface CreateAdminInput {
 
 const createAdminCommand = async (data: CreateAdminInput) => {
   try {
-    const hashedPassword = await bcrypt.hash(data.temporaryPassword, 12)
+    const hashedPassword = await hashPassword(data.temporaryPassword)
 
     const result = await prisma.$transaction(async (tx) => {
       const user = await tx.user.create({
@@ -58,7 +58,7 @@ const createAdminCommand = async (data: CreateAdminInput) => {
           language: data.language,
           emailNotifications: data.emailNotifications,
           smsNotifications: data.smsNotifications,
-          password: hashedPassword,
+          ...credentialAccount(hashedPassword),
         },
       })
 

@@ -21,7 +21,7 @@ Browser
   ├─ [Next.js middleware - runs on every route except /api, /_next/*, *.png]
   │    └─ src/proxy.ts:56-115                proxy() exported as default middleware
   │         │
-  │         ├─ src/proxy.ts:57-66             Validate env vars (RESEND_API_KEY, FROM_EMAIL, NEXTAUTH_SECRET, NEXT_PUBLIC_APP_URL)
+  │         ├─ src/proxy.ts:57-66             Validate env vars (RESEND_API_KEY, FROM_EMAIL, BETTER_AUTH_SECRET, NEXT_PUBLIC_APP_URL)
   │         ├─ src/proxy.ts:68               Get session via auth()
   │         ├─ src/proxy.ts:72-74            Skip .well-known and _next paths
   │         ├─ src/proxy.ts:81-84            If no session → redirect to / (for /dashboard/* and /process/*)

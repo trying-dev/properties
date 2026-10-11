@@ -1,8 +1,6 @@
 'use server'
 
-import { AuthError } from 'next-auth'
-
-import { signIn } from '+/lib/auth'
+import { signInWithCredentials } from '+/lib/auth'
 import { prisma } from '+/lib/prisma'
 
 export const authenticate = async (
@@ -41,21 +39,20 @@ export const authenticate = async (
       return { success: false, errors }
     }
 
-    // Intentar login SIN redirección automática
-    const result = await signIn('credentials', {
-      email,
-      password,
-      redirect: false, // ✅ NO redirigir - manejamos desde la página
-    })
+    const result = await signInWithCredentials(email, password)
 
-    // Verificar resultado
-    if (result?.error) {
-      console.log(`❌ Login fallido para ${email}: ${result.error}`)
-      return {
-        success: false,
-        errors: { form: ['Credenciales incorrectas. Verifica tu email y contraseña.'] },
-      }
+    if (!result.success) {
+      console.log(`❌ Login fallido para ${email}: ${result.code}`)
+      const message =
+        result.code === 'ACCOUNT_DISABLED'
+          ? 'Tu cuenta está deshabilitada. Contacta al administrador.'
+          : result.code === 'INVALID_CREDENTIALS'
+            ? 'Credenciales incorrectas. Verifica tu email y contraseña.'
+            : 'Error de autenticación. Intenta de nuevo.'
+      return { success: false, errors: { form: [message] } }
     }
+
+    await prisma.user.update({ where: { id: result.userId }, data: { lastLoginAt: new Date() } })
 
     console.log(`✅ Login exitoso para: ${email}`)
 
@@ -68,31 +65,12 @@ export const authenticate = async (
 
     return { success: true, redirectTo }
   } catch (error) {
-    let message = 'Error interno del servidor'
-
-    if (error instanceof AuthError) {
-      switch (error.type) {
-        case 'CredentialsSignin':
-          message = 'Email o contraseña incorrectos'
-          break
-        case 'AccessDenied':
-          message = 'Tu cuenta está deshabilitada. Contacta al administrador.'
-          break
-        case 'CallbackRouteError':
-          message = 'Error en el proceso de autenticación'
-          break
-        default:
-          message = 'Error de autenticación. Intenta de nuevo.'
-      }
-    }
-
     console.error('❌ Error en authenticate:', {
-      type: error instanceof AuthError ? error.type : 'Unknown',
       message: error instanceof Error ? error.message : 'Unknown error',
       email: formData.get('email'),
       timestamp: new Date().toISOString(),
     })
 
-    return { success: false, errors: { form: [message] } }
+    return { success: false, errors: { form: ['Error interno del servidor'] } }
   }
 }

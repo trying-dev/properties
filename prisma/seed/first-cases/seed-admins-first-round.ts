@@ -1,5 +1,6 @@
 import bcrypt from 'bcryptjs'
 import { AdminLevel, DocumentType, Gender, MaritalStatus } from '../../../src/generated/prisma/client'
+import { credentialAccount } from '+/lib/credentials'
 import { prisma } from '+/lib/prisma'
 
 type AdminSeed = {
@@ -80,7 +81,7 @@ export const seedAdminsFirstRound = async () => {
       (await prisma.user.create({
         data: {
           email,
-          password: hashedPassword,
+          ...credentialAccount(hashedPassword),
           phone: admin.phone,
           name,
           lastName,

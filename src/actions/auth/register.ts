@@ -1,8 +1,8 @@
 'use server'
 
-import { hash } from 'bcryptjs'
 import { Resend } from 'resend'
 
+import { credentialAccount, hashPassword } from '+/lib/credentials'
 import { prisma } from '+/lib/prisma'
 import { resolveEmailTargets } from '+/lib/email'
 import { randomInt } from 'crypto'
@@ -55,14 +55,14 @@ export const registerUser = async (_prevState: RegisterActionState | undefined, 
       }
     }
 
-    const hashedPassword = await hash(password, 10)
+    const hashedPassword = await hashPassword(password)
     const verificationCode = randomInt(100000, 1000000).toString()
     const verificationExpires = new Date(Date.now() + 15 * 60 * 1000)
 
     await prisma.user.create({
       data: {
         email,
-        password: hashedPassword,
+        ...credentialAccount(hashedPassword),
         name: firstName,
         lastName,
         verificationCode,

@@ -86,7 +86,7 @@ export default function RegisterForm({ className = 'transition-opacity duration-
         dispatch(setCodeVerificationState('idle'))
         return
       }
-      // Login via server action to avoid client-side next-auth route dependency
+      // Login via server action (la autenticación no expone rutas HTTP al cliente)
       const loginForm = new FormData()
       loginForm.append('email', emailForVerification)
       loginForm.append('password', password)

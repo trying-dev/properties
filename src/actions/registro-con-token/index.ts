@@ -1,7 +1,7 @@
 'use server'
 
-import bcrypt from 'bcryptjs'
-import { signIn } from '+/lib/auth'
+import { signInWithCredentials } from '+/lib/auth'
+import { hashPassword, setCredentialPassword } from '+/lib/credentials'
 import { prisma } from '+/lib/prisma'
 
 const findTenantByToken = async (token: string) =>
@@ -13,7 +13,7 @@ const findTenantByToken = async (token: string) =>
     select: {
       id: true,
       userId: true,
-      user: { select: { name: true, lastName: true, email: true, password: true } },
+      user: { select: { name: true, lastName: true, email: true } },
     },
   })
 
@@ -106,26 +106,20 @@ export const completeUserRegistration = async ({
       }
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10)
+    const hashedPassword = await hashPassword(password)
 
-    await prisma.tenant.update({
-      where: { id: tenant.id },
-      data: {
-        registrationToken: null,
-        registrationTokenExpires: null,
-        user: { update: { password: hashedPassword } },
-      },
+    await prisma.$transaction(async (tx) => {
+      await setCredentialPassword(tenant.userId, hashedPassword, tx)
+      await tx.tenant.update({
+        where: { id: tenant.id },
+        data: { registrationToken: null, registrationTokenExpires: null },
+      })
     })
 
-    const result = await signIn('credentials', {
-      email: tenant.user.email,
-      password: password,
-      redirect: false,
-    })
+    const result = await signInWithCredentials(tenant.user.email, password)
 
-    // Verificar resultado
-    if (result?.error) {
-      console.log(`❌ Login fallido para ${tenant.user.email}: ${result.error}`)
+    if (!result.success) {
+      console.log(`❌ Login fallido para ${tenant.user.email}: ${result.code}`)
       return {
         success: false,
         error: 'Error en la autenticación después del registro',

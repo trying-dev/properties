@@ -5,7 +5,7 @@
 Properties is a Next.js 16 (App Router) full-stack property management app. Stack: React 19, NextAuth v5 (Credentials/JWT), Redux Toolkit, Prisma (SQLite dev / PostgreSQL prod), Tailwind CSS 4, Resend (email).
 
 ```bash
-cp example.env .env   # fill NEXTAUTH_SECRET, RESEND_API_KEY
+cp example.env .env   # fill BETTER_AUTH_SECRET, RESEND_API_KEY
 pnpm install
 pnpm db:generate && pnpm db:push && pnpm db:seed
 pnpm dev              # http://localhost:3000

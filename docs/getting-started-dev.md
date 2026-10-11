@@ -23,7 +23,7 @@ pnpm install
 
 # Configurar variables de entorno
 cp example.env .env
-# Edita .env con tus valores (minimo: NEXTAUTH_SECRET)
+# Edita .env con tus valores (minimo: BETTER_AUTH_SECRET)
 
 # Inicializar base de datos
 pnpm db:generate   # Genera cliente Prisma
@@ -44,9 +44,9 @@ Archivo: `.env` (copiar de `example.env`)
 # Base de datos (SQLite para desarrollo local)
 DATABASE_URL="file:./dev.db"
 
-# NextAuth
+# Better Auth
 NEXT_PUBLIC_APP_URL="http://localhost:3000"
-NEXTAUTH_SECRET="genera-con: openssl rand -base64 32"
+BETTER_AUTH_SECRET="genera-con: openssl rand -base64 32"
 
 # Email (Resend) - opcional para desarrollo
 RESEND_API_KEY="re_..."
@@ -119,7 +119,7 @@ properties/
 │   │   └── useAppRouter.ts        # Navegacion con fallback
 │   ├── lib/                       # Utilidades y configuracion
 │   │   ├── prisma.ts              # Cliente Prisma singleton
-│   │   ├── auth.ts                # Configuracion NextAuth
+│   │   ├── auth.ts                # Configuracion Better Auth
 │   │   ├── email.ts               # Resolucion de emails
 │   │   └── payments/              # Logica de pagos y alertas
 │   ├── redux/                     # Estado global
@@ -134,7 +134,6 @@ properties/
 │   │       ├── home.ts            # Unidades y filtros
 │   │       └── process.ts         # Wizard de aplicacion
 │   ├── types/                     # Declaraciones TypeScript
-│   │   └── next-auth.d.ts         # Extension de tipos NextAuth
 │   └── utils/                     # Funciones auxiliares
 │       └── index.ts               # capitalize, serializeDate
 ├── public/                        # Assets estaticos
@@ -248,7 +247,7 @@ Despues de ejecutar `pnpm db:seed`, puedes iniciar sesion con (password = valor 
 4. Revisar anotaciones `@db.Decimal` en campos monetarios
 
 ### Checklist de Produccion
-- [ ] Generar `NEXTAUTH_SECRET` fuerte y unico (no usar el de desarrollo)
+- [ ] Generar `BETTER_AUTH_SECRET` fuerte y unico (no usar el de desarrollo)
 - [ ] Configurar `NEXT_PUBLIC_APP_URL` con URL real
 - [ ] Verificar `RESEND_API_KEY` de produccion
 - [ ] Cambiar `isDevMode = false` en `src/app/page.tsx`
@@ -276,7 +275,7 @@ Despues de ejecutar `pnpm db:seed`, puedes iniciar sesion con (password = valor 
 ## 11. Solucion de Problemas
 
 ### Error: "Required environment variables are missing"
-Verifica que `.env` tenga `NEXTAUTH_SECRET` y `DATABASE_URL`.
+Verifica que `.env` tenga `BETTER_AUTH_SECRET` y `DATABASE_URL`.
 
 ### Error de conexion a BD
 - SQLite: Verifica que `prisma/` tenga permisos de escritura

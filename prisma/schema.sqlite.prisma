@@ -84,7 +84,7 @@ model Contract {
   documents   ContractDocument[] // Documentos del contrato firmado
   inspections Inspection[]
 
-  additionalResidents User[] @relation("AdditionalResidents")
+  additionalResidents User[]            @relation("AdditionalResidents")
   policies            InsurancePolicy[] // Pólizas ligadas al contrato
 
   createdAt DateTime @default(now())
@@ -428,13 +428,13 @@ model Property {
   // Estado y disponibilidad
   status PropertyStatus @default(ACTIVE)
 
-  admins Admin[]          @relation("PropertyAdmins")
-  units  Unit[]
-  owners   PropertyOwner[] // Dueños con % de participación
-  taxes    PropertyTax[] // Predial (impuesto anual)
-  policies InsurancePolicy[] // Pólizas de seguro
-  meters   Meter[] // Medidores de servicios
-  devices  SecurityDevice[] // Dispositivos de seguridad
+  admins    Admin[]            @relation("PropertyAdmins")
+  units     Unit[]
+  owners    PropertyOwner[] // Dueños con % de participación
+  taxes     PropertyTax[] // Predial (impuesto anual)
+  policies  InsurancePolicy[] // Pólizas de seguro
+  meters    Meter[] // Medidores de servicios
+  devices   SecurityDevice[] // Dispositivos de seguridad
   documents PropertyDocument[] // Documentación legal
 
   createdAt DateTime @default(now())
@@ -478,8 +478,8 @@ model Unit {
   privateArea  Float? // Área privada (m²)
   commonArea   Float? // Área común (m²)
   bedrooms     Int     @default(0)
-  bathrooms  Float   @default(0) // postgres @db.Decimal(3, 1)
-  furnished  Boolean @default(false)
+  bathrooms    Float   @default(0) // postgres @db.Decimal(3, 1)
+  furnished    Boolean @default(false)
 
   // Características detalladas
   balcony        Boolean @default(false)
@@ -523,8 +523,8 @@ model Unit {
   contracts Contract[]
   processes Process[]  @relation("ProcessUnit")
 
-  inspections  Inspection[]
-  maintenances Maintenance[]
+  inspections   Inspection[]
+  maintenances  Maintenance[]
   meters        Meter[]
   devices       SecurityDevice[]
   documents     PropertyDocument[]
@@ -560,11 +560,12 @@ model User {
   id String @id @default(cuid())
 
   // Autenticación
-  email         String    @unique
-  emailVerified DateTime?
-  phone         String?
-  phoneVerified DateTime?
-  password      String? // Hash de la contraseña (bcrypt)
+  email           String    @unique
+  emailVerified   DateTime?
+  isEmailVerified Boolean   @default(false) // Requerido por Better Auth (emailVerified es booleano)
+  phone           String?
+  phoneVerified   DateTime?
+  password        String? // Hash de la contraseña (bcrypt)
 
   resetPasswordToken        String?
   resetPasswordExpiresAt    DateTime?
@@ -614,6 +615,9 @@ model User {
   admin  Admin?
   tenant Tenant?
   owner  Owner?
+
+  sessions Session[]
+  accounts Account[]
 
   additionalContracts      Contract[]        @relation("AdditionalResidents") // Contratos donde es residente adicional
   uploadedProcessDocuments ProcessDocument[] @relation("ProcessDocumentUploader")
@@ -1197,4 +1201,62 @@ enum PropertyDocumentType {
   POLICY // Póliza
   FLOOR_PLAN // Plano
   OTHER // Otro
+}
+
+// ========================================
+// AUTH (Better Auth)
+// ========================================
+
+model Session {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  expiresAt DateTime
+  ipAddress String?
+  userAgent String?
+  userId    String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("sessions")
+}
+
+// Reservada por Better Auth. Las credenciales viven hoy en User.password.
+model Account {
+  id         String @id @default(cuid())
+  accountId  String
+  providerId String
+  userId     String
+
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("accounts")
+}
+
+model Verification {
+  id         String   @id @default(cuid())
+  identifier String
+  value      String
+  expiresAt  DateTime
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([identifier])
+  @@map("verifications")
 }

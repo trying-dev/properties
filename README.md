@@ -17,7 +17,7 @@ Aplicación completa para administración de propiedades, unidades, contratos de
 
 - Next.js 16 (App Router) + React 19 + TypeScript
 - Prisma ORM + SQLite (desarrollo) / PostgreSQL (producción)
-- NextAuth v5 (autenticación y autorización)
+- Better Auth (autenticación y sesiones; credenciales con bcrypt)
 - Redux Toolkit (gestión de estado global)
 - React Hook Form + Zod (validación de formularios)
 - Tailwind CSS 4 + PostCSS
@@ -47,9 +47,9 @@ Aplicación completa para administración de propiedades, unidades, contratos de
    DATABASE_URL="file:./dev.db"  # SQLite local
    # DATABASE_URL="postgresql://user:password@localhost:5432/properties"  # PostgreSQL
 
-   # NextAuth
+   # Better Auth
    NEXT_PUBLIC_APP_URL="http://localhost:3000"
-   NEXTAUTH_SECRET="tu-secreto-generado-aqui"  # Genera con: openssl rand -base64 32
+   BETTER_AUTH_SECRET="tu-secreto-generado-aqui"  # Genera con: openssl rand -base64 32
 
    # Resend (emails)
    RESEND_API_KEY="re_..."
@@ -267,7 +267,7 @@ El proyecto usa **un solo `.env`** y elige la base según la URL, sin código de
 
 Asegúrate de configurar en producción:
 
-- `NEXTAUTH_SECRET`: Secreto fuerte y único
+- `BETTER_AUTH_SECRET`: Secreto fuerte y único
 - `NEXT_PUBLIC_APP_URL`: URL de producción
 - `RESEND_API_KEY`: API key válida
 - Remover o cambiar `SEED_PASSWORD`

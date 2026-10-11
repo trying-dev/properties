@@ -1,12 +1,12 @@
 'use server'
 
 import { z } from 'zod'
+import { hashPassword, setCredentialPassword } from '+/lib/credentials'
 import { prisma } from '+/lib/prisma'
 import { resolveEmailTargets } from '+/lib/email'
 import type { Prisma } from '+/generated/prisma/client'
 import crypto from 'crypto'
 import { Resend } from 'resend'
-import bcrypt from 'bcryptjs'
 
 const resend = new Resend(process.env.RESEND_API_KEY)
 
@@ -326,26 +326,29 @@ export async function resetPassword(token: string, newPassword: string) {
     // 1. Validar token
     const validation = await validateResetToken(token)
 
-    if (!validation.valid) {
+    if (!validation.valid || !validation.userId) {
       return {
         success: false,
         message: validation.message,
       }
     }
+    const userId = validation.userId
 
     // 2. Hash de la nueva contraseña
 
-    const hashedPassword = await bcrypt.hash(newPassword, 10)
+    const hashedPassword = await hashPassword(newPassword)
 
     // 3. Actualizar contraseña
-    await prisma.user.update({
-      where: { id: validation.userId },
-      data: {
-        password: hashedPassword,
-        resetPasswordToken: null,
-        resetPasswordExpiresAt: null,
-        resetPasswordUsed: true,
-      },
+    await prisma.$transaction(async (tx) => {
+      await setCredentialPassword(userId, hashedPassword, tx)
+      await tx.user.update({
+        where: { id: userId },
+        data: {
+          resetPasswordToken: null,
+          resetPasswordExpiresAt: null,
+          resetPasswordUsed: true,
+        },
+      })
     })
 
     return {

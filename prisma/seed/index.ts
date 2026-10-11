@@ -18,6 +18,7 @@ import {
   PropertyType,
   UnitStatus,
 } from '../../src/generated/prisma/client'
+import { credentialAccount } from '+/lib/credentials'
 import { prisma } from '+/lib/prisma'
 
 type AdditionalResidentSeed = {
@@ -63,7 +64,7 @@ const createAdmins = async (hashedPassword: string) => {
       user: {
         create: {
           email: 'admin1@propiedades.com',
-          password: hashedPassword,
+          ...credentialAccount(hashedPassword),
           phone: '+57 300 111 1111',
           name: 'Carlos',
           lastName: 'Administrador',
@@ -91,7 +92,7 @@ const createAdmins = async (hashedPassword: string) => {
       user: {
         create: {
           email: 'admin2@propiedades.com',
-          password: hashedPassword,
+          ...credentialAccount(hashedPassword),
           phone: '+57 300 222 2222',
           name: 'María',
           lastName: 'Supervisora',
@@ -119,7 +120,7 @@ const createAdmins = async (hashedPassword: string) => {
       user: {
         create: {
           email: 'admin3@propiedades.com',
-          password: hashedPassword,
+          ...credentialAccount(hashedPassword),
           phone: '+57 300 333 3333',
           name: 'Luis',
           lastName: 'Gerente',
@@ -147,7 +148,7 @@ const createAdmins = async (hashedPassword: string) => {
       user: {
         create: {
           email: 'portero@propiedades.com',
-          password: hashedPassword,
+          ...credentialAccount(hashedPassword),
           phone: '+57 300 888 8888',
           name: 'Roberto',
           lastName: 'Portero',
@@ -192,7 +193,7 @@ const createTenants = async (hashedPassword: string) => {
       user: {
         create: {
           email: 'comerciante1@gmail.com',
-          password: hashedPassword,
+          ...credentialAccount(hashedPassword),
           phone: '+57 300 444 4444',
           name: 'Ana',
           lastName: 'Comerciante',
@@ -236,7 +237,7 @@ const createTenants = async (hashedPassword: string) => {
       user: {
         create: {
           email: 'comerciante2@gmail.com',
-          password: hashedPassword,
+          ...credentialAccount(hashedPassword),
           phone: '+57 300 555 5555',
           name: 'Pedro',
           lastName: 'Empresario',
@@ -275,7 +276,7 @@ const createTenants = async (hashedPassword: string) => {
       user: {
         create: {
           email: 'residente1@gmail.com',
-          password: hashedPassword,
+          ...credentialAccount(hashedPassword),
           phone: '+57 300 666 6666',
           name: 'Laura',
           lastName: 'Hernandez',
@@ -314,7 +315,7 @@ const createTenants = async (hashedPassword: string) => {
       user: {
         create: {
           email: 'extranjero1@gmail.com',
-          password: hashedPassword,
+          ...credentialAccount(hashedPassword),
           phone: '+57 300 777 7777',
           name: 'John',
           lastName: 'Smith',
@@ -844,7 +845,7 @@ const createContracts = async (params: {
           name: resident.name,
           lastName: resident.lastName,
           email: resident.email,
-          password: hashedPassword,
+          ...credentialAccount(hashedPassword),
           phone: resident.phone,
           documentNumber: resident.documentNumber,
           birthDate: resident.birthDate,

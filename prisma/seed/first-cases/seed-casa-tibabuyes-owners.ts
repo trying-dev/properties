@@ -1,5 +1,6 @@
 import bcrypt from 'bcryptjs'
 import { DocumentType, Gender, MaritalStatus } from '../../../src/generated/prisma/client'
+import { credentialAccount } from '+/lib/credentials'
 import { prisma } from '+/lib/prisma'
 
 const PROPERTY_ID = 'case-casa-tibabuyes'
@@ -33,7 +34,7 @@ const ensureOwner = async (seed: OwnerSeed, hashedPassword: string) => {
     (await prisma.user.create({
       data: {
         email,
-        password: hashedPassword,
+        ...credentialAccount(hashedPassword),
         phone: seed.phone,
         name: seed.name,
         lastName: seed.lastName,

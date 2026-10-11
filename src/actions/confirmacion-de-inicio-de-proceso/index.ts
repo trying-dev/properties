@@ -12,7 +12,7 @@ export const getProcessDetails = async ({ unitId, tenantId }: { unitId: string; 
 
   const tenant = await prisma.tenant.findUnique({
     where: { id: tenantId },
-    include: { user: true },
+    include: { user: { include: { accounts: { where: { providerId: 'credential' }, select: { id: true } } } } },
   })
 
   if (!unit || !tenant) {
@@ -51,7 +51,7 @@ export const initializeContract = async ({
   const [tenant, userAdmin] = await Promise.all([
     prisma.tenant.findUnique({
       where: { id: tenantId },
-      include: { user: { select: { name: true, lastName: true, email: true, password: true } } },
+      include: { user: { select: { name: true, lastName: true, email: true, accounts: { where: { providerId: 'credential' }, select: { id: true } } } } },
     }),
     prisma.user.findUnique({
       where: { id: adminId },
@@ -80,7 +80,7 @@ export const initializeContract = async ({
     include: {
       unit: { include: { property: { select: { name: true } } } },
       tenant: {
-        include: { user: { select: { name: true, lastName: true, email: true, password: true } } },
+        include: { user: { select: { name: true, lastName: true, email: true, accounts: { where: { providerId: 'credential' }, select: { id: true } } } } },
       },
     },
   })
@@ -149,9 +149,9 @@ export const initializeContractAction = async ({
       tenantId,
     })
 
-    const { name, lastName, email, password } = details.tenant.user
+    const { name, lastName, email, accounts } = details.tenant.user
 
-    const isNewUser = password === null
+    const isNewUser = accounts.length === 0
 
     let emailResult
 

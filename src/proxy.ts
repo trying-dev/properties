@@ -33,7 +33,7 @@ const validateEnvironmentVariables = () => {
     RESEND_API_KEY: process.env.RESEND_API_KEY,
     FROM_EMAIL: process.env.FROM_EMAIL,
     NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,
-    NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET,
+    BETTER_AUTH_SECRET: process.env.BETTER_AUTH_SECRET,
   }
 
   const missingVars = Object.entries(requiredEnvVars)

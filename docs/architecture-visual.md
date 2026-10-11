@@ -428,7 +428,7 @@ Protected by: `proxy.ts` redirect + `ProcessLayout` (`RequireAuth` wrapper)
  │  ┌──────────────────────────────────────────────────────────────────┐ │
  │  │                        Environment Variables                       │ │
  │  │  Required:  RESEND_API_KEY, FROM_EMAIL, NEXT_PUBLIC_APP_URL,      │ │
- │  │             NEXTAUTH_SECRET, DATABASE_URL                         │ │
+ │  │             BETTER_AUTH_SECRET, DATABASE_URL                         │ │
  │  │  Optional:  CRON_SECRET, PRISMA_DATABASE_URL (Accelerate),        │ │
  │  │             USING_TESTING_EMAIL, RESEND_EMAIL_TEST                │ │
  │  └──────────────────────────────────────────────────────────────────┘ │
