@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { ArrowLeft, Building2, FileText } from 'lucide-react'
 
 import Header from '+/components/Header'
+import { LocationMap } from '+/components/Map'
 import { getUnitById } from '+/actions/nuevo-proceso'
 import type { ContractStatus, ContractPriority, UnitStatus } from '+/generated/prisma/client'
 import UnitActions from './_/UnitActions'
@@ -329,6 +330,12 @@ export default async function AdminUnitPage({ params }: { params: Promise<{ id: 
                 </p>
                 <p>{unit.property.state}</p>
               </div>
+              <LocationMap
+                className="mt-4"
+                gpsCoordinates={unit.property.gpsCoordinates}
+                address={`${unit.property.street} ${unit.property.number}, ${unit.property.city}, ${unit.property.country}`}
+                heightClass="h-56"
+              />
             </div>
 
             <div className="rounded-xl border border-gray-200 p-6 bg-white shadow-sm">

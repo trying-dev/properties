@@ -1,11 +1,13 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { ArrowLeft, Building2, Grid3x3, LayoutGrid, Plus, Rows3 } from 'lucide-react'
+import { ArrowLeft, Building2, Grid3x3, LayoutGrid, Map as MapIcon, Plus, Rows3 } from 'lucide-react'
 import Link from 'next/link'
 
 import { getProperties } from '+/actions/property'
 import Header from '+/components/Header'
+import { PropertiesMap, formatAddress, parseGpsCoordinates, type MapPropertyMarker } from '+/components/Map'
+import { parseImages } from '+/app/units/[id]/_/utils'
 import ViewModeToggle from '+/components/ViewModeToggle'
 import CardProperty from '../../fragments/CardProperty'
 import CardPropertyCompact from '../../fragments/CardPropertyCompact'
@@ -15,14 +17,14 @@ import Modal from '+/components/Modal'
 import PropertyForm from './_/PropertyForm'
 import type { PropertyFormState } from './_/propertyFormTypes'
 
-type ViewMode = 'list' | 'mosaic' | 'compact'
+type ViewMode = 'list' | 'mosaic' | 'compact' | 'map'
 
 const VIEW_STORAGE_KEY = 'properties-view'
 
 const readStoredView = (): ViewMode => {
   try {
     const stored = localStorage.getItem(VIEW_STORAGE_KEY)
-    if (stored === 'compact') return 'compact'
+    if (stored === 'compact' || stored === 'map') return stored
     // 'grid' es el valor que guardaba la versión anterior de la vista de tarjetas.
     return stored === 'mosaic' || stored === 'grid' ? 'mosaic' : 'list'
   } catch {
@@ -65,6 +67,22 @@ export default function AdminPropertiesPage() {
       // La preferencia es opcional; si el almacenamiento no está disponible se ignora.
     }
   }
+
+  const mapMarkers: MapPropertyMarker[] = properties.flatMap((property) => {
+    const coords = parseGpsCoordinates(property.gpsCoordinates)
+    if (!coords) return []
+    return [
+      {
+        id: property.id,
+        name: property.name,
+        address: formatAddress(property),
+        lat: coords.lat,
+        lng: coords.lng,
+        imageUrl: parseImages(property.images)[0] ?? null,
+        links: [{ href: `/dashboard/admin/properties/${property.id}`, label: 'Ver propiedad' }],
+      },
+    ]
+  })
 
   if (isLoading) {
     return (
@@ -129,6 +147,7 @@ export default function AdminPropertiesPage() {
                 { mode: 'list', label: 'Listado', Icon: Rows3 },
                 { mode: 'mosaic', label: 'Mosaico', Icon: LayoutGrid },
                 { mode: 'compact', label: 'Mosaico pequeño', Icon: Grid3x3 },
+                { mode: 'map', label: 'Mapa', Icon: MapIcon },
               ]}
             />
             <button
@@ -148,6 +167,15 @@ export default function AdminPropertiesPage() {
               <Building2 className="h-12 w-12 text-gray-400 mx-auto mb-4" />
               <h3 className="text-lg font-medium text-gray-900 mb-2">No hay propiedades</h3>
               <p className="text-gray-600">Aún no tienes propiedades registradas.</p>
+            </div>
+          ) : view === 'map' ? (
+            <div className="space-y-3">
+              {mapMarkers.length < properties.length && (
+                <p className="text-sm text-gray-500">
+                  {properties.length - mapMarkers.length} propiedad(es) sin coordenadas no aparecen en el mapa.
+                </p>
+              )}
+              <PropertiesMap markers={mapMarkers} />
             </div>
           ) : view === 'mosaic' ? (
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">

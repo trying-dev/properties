@@ -21,7 +21,7 @@ export const initialState = {
     properties: [] as PropertyWithOccupancy[],
     showFilters: false,
     searchQuery: '',
-    viewMode: 'units' as 'units' | 'properties',
+    viewMode: 'large' as 'large' | 'small' | 'list' | 'map',
     filters: {
       priceMax: '',
       bedrooms: '',

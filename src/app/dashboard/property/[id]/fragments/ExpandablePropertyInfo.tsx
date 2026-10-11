@@ -2,6 +2,7 @@ import { useState, type ComponentType, type ReactNode, type SVGProps } from 'rea
 import { Building2, Plus, Minus, MapPin, Calendar, Home, Car, Ruler, Users, FileText } from 'lucide-react'
 import { PropertyWithRelations } from '+/actions/property'
 import { PropertyType } from '+/generated/prisma/client'
+import { LocationMap } from '+/components/Map'
 
 type IconType = ComponentType<SVGProps<SVGSVGElement>>
 
@@ -134,6 +135,12 @@ export const ExpandablePropertyInfo = ({ property }: { property: NonNullable<Pro
                 <InfoRow icon={MapPin} label="País" value={property.country} iconColor="text-red-500" />
                 <InfoRow icon={MapPin} label="Código postal" value={property.postalCode} iconColor="text-red-500" />
               </div>
+              <LocationMap
+                className="mt-4"
+                gpsCoordinates={property.gpsCoordinates}
+                address={`${property.street} ${property.number}, ${property.city}, ${property.country}`}
+                heightClass="h-56"
+              />
             </div>
 
             {/* Características Adicionales */}

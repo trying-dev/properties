@@ -17,12 +17,7 @@ export default function SearchSection() {
 
   return (
     <section className="bg-linear-to-b from-gray-50 to-white border-b border-gray-200">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-3">Buscar Propiedad</h1>
-          <p className="text-gray-600">Encuentra tu próximo hogar</p>
-        </div>
-
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-4">
           <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
             <div className="md:col-span-4">

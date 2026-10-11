@@ -9,7 +9,7 @@ export type HomeFilters = {
   city: string
 }
 
-export type HomeViewMode = 'units' | 'properties'
+export type HomeViewMode = 'large' | 'small' | 'list' | 'map'
 
 type HomeState = {
   units: HomeUnit[]

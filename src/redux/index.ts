@@ -7,6 +7,7 @@ import user from './slices/user'
 import property from './slices/property'
 import processSlice from './slices/process'
 import home from './slices/home'
+import { initialState } from './store'
 
 export const REDUX_KEY_LOCAL_STORAGE = 'state'
 
@@ -30,6 +31,8 @@ const loadPersistedState = (): RootState | undefined => {
     if (parsed.home) {
       if (!Array.isArray(parsed.home.units)) parsed.home.units = []
       if (!Array.isArray(parsed.home.properties)) parsed.home.properties = []
+      // La vista se restaura después de hidratar (ver ResultsSection); aquí debe coincidir con el SSR.
+      parsed.home.viewMode = initialState.home.viewMode
     }
     return parsed as RootState
   } catch (error) {

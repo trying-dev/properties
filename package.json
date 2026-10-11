@@ -19,7 +19,8 @@
     "db:reset": "prisma migrate reset",
     "db:seed": "tsx prisma/seed/index.ts",
     "db:seed:prod": "ALLOW_PROD_SEED=yes node scripts/prod-db.mjs sh -c 'prisma generate && prisma db push && tsx prisma/seed/index.ts'",
-    "seed:gen": "tsx scripts/gen-seed-from-md.ts"
+    "seed:gen": "tsx scripts/gen-seed-from-md.ts",
+    "geo:backfill": "tsx scripts/backfill-coords.ts"
   },
   "dependencies": {
     "@ariakit/react": "^0.4.32",
@@ -27,12 +28,13 @@
     "@libsql/client": "0.17.4",
     "@prisma/adapter-libsql": "^7.8.0",
     "@prisma/adapter-pg": "^7.8.0",
-    "@prisma/client": "7.8.0",
+    "@prisma/client": "7.10.0",
     "@reduxjs/toolkit": "^2.12.0",
     "bcryptjs": "^3.0.3",
     "date-fns": "^4.4.0",
     "dotenv": "^17.4.2",
     "jsonwebtoken": "^9.0.3",
+    "leaflet": "^1.9.4",
     "lucide-react": "^1.24.0",
     "next": "16.2.10",
     "next-auth": "5.0.0-beta.30",
@@ -40,6 +42,7 @@
     "react": "19.2.7",
     "react-dom": "19.2.7",
     "react-hook-form": "^7.81.0",
+    "react-leaflet": "^5.0.0",
     "react-redux": "^9.3.0",
     "resend": "^6.17.2",
     "zod": "^4.4.3"
@@ -48,6 +51,7 @@
     "@eslint/eslintrc": "^3.3.6",
     "@tailwindcss/postcss": "^4.3.2",
     "@types/jsonwebtoken": "^9.0.10",
+    "@types/leaflet": "^1.9.22",
     "@types/node": "^22.20.1",
     "@types/react": "^19.2.17",
     "@types/react-dom": "^19.2.3",

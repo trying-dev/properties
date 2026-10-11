@@ -1,0 +1,91 @@
+.app-map-pin {
+  background: none;
+  border: 0;
+}
+
+.leaflet-container .app-map-popup .leaflet-popup-content-wrapper {
+  border-radius: 12px;
+  padding: 0;
+}
+
+.leaflet-container .app-map-popup .leaflet-popup-content {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+/* Atribución compacta */
+.leaflet-container .leaflet-control-attribution {
+  font-size: 9px;
+  line-height: 1.2;
+  padding: 0 4px;
+}
+
+/* Tarjetas de unidades que salen del pin de la propiedad */
+.app-unit-cluster {
+  background: none;
+  border: 0;
+  pointer-events: none !important;
+}
+
+.app-unit-cluster__lines {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 0 !important; /* leaflet.css fuerza z-index en los svg */
+  pointer-events: none;
+}
+
+.app-unit-cluster__lines line {
+  stroke: #111827;
+  stroke-width: 2;
+  stroke-opacity: 0.7;
+}
+
+.app-unit-bubble__body {
+  position: absolute;
+  z-index: 1;
+  pointer-events: auto;
+  width: 156px;
+  height: 128px;
+  overflow: hidden;
+  border: 2px solid #111827;
+  border-radius: 12px;
+  background: #fff;
+  color: #111827;
+  box-shadow: 0 4px 14px rgb(0 0 0 / 0.3);
+  cursor: pointer;
+  transform: scale(var(--s, 1));
+  transition: transform 0.15s ease;
+}
+
+.app-unit-bubble__body:hover {
+  z-index: 2;
+  transform: scale(calc(var(--s, 1) * 1.08));
+}
+
+.app-unit-bubble__img {
+  width: 100%;
+  height: 74px;
+  background: #e5e7eb center / cover no-repeat;
+}
+
+.app-unit-bubble__text {
+  padding: 4px 8px;
+  line-height: 1.25;
+}
+
+.app-unit-bubble__text strong {
+  display: block;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.app-unit-bubble__text span {
+  display: block;
+  overflow: hidden;
+  font-size: 10.5px;
+  color: #4b5563;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}

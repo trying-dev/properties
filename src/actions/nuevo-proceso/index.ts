@@ -77,6 +77,7 @@ export const getAvailableUnitsForHome = async () =>
           number: true,
           city: true,
           propertyType: true,
+          gpsCoordinates: true,
         },
       },
     },

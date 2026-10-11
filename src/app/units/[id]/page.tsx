@@ -3,6 +3,7 @@ import { getUnitByIdAction } from '+/actions/nuevo-proceso'
 import Header from '+/components/Header'
 import Footer from '+/components/Footer'
 import { auth } from '+/lib/auth'
+import { resolveGpsCoordinates } from '+/lib/geocode'
 import Gallery from './_/gallery'
 import HighlightsSection from './_/HighlightsSection'
 import PopularServices from './_/PopularServices'
@@ -30,6 +31,9 @@ export default async function UnitDetailPage({ params }: { params: Promise<{ id:
 
   const isAuthenticated = Boolean(session?.user)
 
+  // Si la propiedad no tiene coordenadas válidas, se ubica por dirección (resultado cacheado).
+  const gpsCoordinates = await resolveGpsCoordinates(unit.property.gpsCoordinates, unit.property)
+
   return (
     <div className="min-h-screen bg-white">
       <Header />
@@ -37,7 +41,12 @@ export default async function UnitDetailPage({ params }: { params: Promise<{ id:
         <UnitHero unit={unit} />
 
         <section className="grid grid-cols-1 lg:grid-cols-3 gap-3">
-          <Gallery images={safeImages} propertyName={unit.property.name} />
+          <Gallery
+            images={safeImages}
+            propertyName={unit.property.name}
+            gpsCoordinates={gpsCoordinates}
+            address={`${unit.property.street} ${unit.property.number}, ${unit.property.city}`}
+          />
           <UnitSummaryAside unit={unit} isAuthenticated={isAuthenticated} />
         </section>
 

@@ -4,6 +4,7 @@ import { Prisma, ProcessStatus, PropertyType, UnitStatus } from '+/generated/pri
 import { auth } from '+/lib/auth'
 import { getAdminScope, getCurrentAdminScope, propertyAccessFilter } from '+/lib/adminScope'
 import { prisma } from '+/lib/prisma'
+import { resolveGpsCoordinates } from '+/lib/geocode'
 
 export const getProperties = async () => {
   try {
@@ -178,7 +179,14 @@ export const createPropertyAction = async (input: CreatePropertyInput) => {
       age: input.age,
       floors: input.floors ?? 1,
       totalLandArea: input.totalLandArea ?? null,
-      gpsCoordinates: input.gpsCoordinates?.trim() || null,
+      gpsCoordinates: await resolveGpsCoordinates(input.gpsCoordinates, {
+        street: input.street,
+        number: input.number,
+        neighborhood: input.neighborhood,
+        city: input.city,
+        state: input.state,
+        country: input.country,
+      }),
       yardOrGarden: input.yardOrGarden?.trim() || null,
       parking: input.parking ?? 0,
       parkingLocation: input.parkingLocation?.trim() || null,
@@ -357,7 +365,14 @@ export const updatePropertyAction = async (propertyId: string, input: CreateProp
       age: input.age,
       floors: input.floors ?? 1,
       totalLandArea: input.totalLandArea ?? null,
-      gpsCoordinates: input.gpsCoordinates?.trim() || null,
+      gpsCoordinates: await resolveGpsCoordinates(input.gpsCoordinates, {
+        street: input.street,
+        number: input.number,
+        neighborhood: input.neighborhood,
+        city: input.city,
+        state: input.state,
+        country: input.country,
+      }),
       yardOrGarden: input.yardOrGarden?.trim() || null,
       parking: input.parking ?? 0,
       parkingLocation: input.parkingLocation?.trim() || null,

@@ -1,12 +1,24 @@
 import { useEffect, useMemo, useState } from 'react'
-import { LayoutGrid, Building2, Search } from 'lucide-react'
+import { LayoutGrid, Grid3x3, List, Map as MapIcon, Search } from 'lucide-react'
 import { useDispatch, useSelector } from '+/redux'
-import { resetFilters, setViewMode } from '+/redux/slices/home'
+import { resetFilters, setViewMode, type HomeViewMode } from '+/redux/slices/home'
 import PropertyCard from './PropertyCard'
-import PropertyGroup from './PropertyGroup'
+import PropertyStack, { UnitRow } from './PropertyStack'
+import { PropertiesMap, formatAddress, parseGpsCoordinates, type MapPropertyMarker } from '+/components/Map'
 import { getTenantFavoriteUnitIdsAction, toggleTenantFavoriteUnitAction } from '+/actions/favorites'
 
+const VIEW_STORAGE_KEY = 'home-view'
+const VIEW_MODES: HomeViewMode[] = ['large', 'small', 'list', 'map']
+
 type AvailabilityFilter = 'all' | 'VACANT' | 'PARTIAL'
+
+function firstImageOf(images?: string | null): string | null {
+  try {
+    return (JSON.parse(images || '[]') as string[])[0] ?? null
+  } catch {
+    return null
+  }
+}
 
 export default function ResultsSection() {
   const dispatch = useDispatch()
@@ -46,6 +58,66 @@ export default function ResultsSection() {
       .map((property) => ({ property, units: unitsByProperty.get(property.id) ?? [] }))
   }, [filteredUnits, properties, availability])
 
+  // Marcadores del mapa: una propiedad por pin (respeta filtros y disponibilidad), con sus unidades como enlaces.
+  const mapMarkers = useMemo<MapPropertyMarker[]>(() => {
+    const markers: MapPropertyMarker[] = []
+    for (const { property, units: propertyUnits } of groupedProperties) {
+      const coords = parseGpsCoordinates(property.gpsCoordinates)
+      if (!coords) continue
+      const prices = propertyUnits.map((u) => u.baseRent).filter((v): v is number => typeof v === 'number' && v > 0)
+      const minPrice = prices.length ? Math.min(...prices) : null
+      let imageUrl: string | null = null
+      for (const unit of propertyUnits) {
+        try {
+          const first = (JSON.parse(unit.images || '[]') as string[])[0]
+          if (first) {
+            imageUrl = first
+            break
+          }
+        } catch {}
+      }
+      markers.push({
+        id: property.id,
+        name: property.name,
+        address: formatAddress(property),
+        lat: coords.lat,
+        lng: coords.lng,
+        imageUrl,
+        subtitle: `${propertyUnits.length} disponible${propertyUnits.length === 1 ? '' : 's'}${
+          minPrice ? ` · desde ${new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(minPrice)}` : ''
+        }`,
+        links: propertyUnits.map((u, i) => ({
+          href: `/units/${u.id}`,
+          label: `Unidad ${i + 1}`,
+          imageUrl: firstImageOf(u.images),
+          detail: u.baseRent
+            ? new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(u.baseRent)
+            : 'Consultar',
+        })),
+      })
+    }
+    return markers
+  }, [groupedProperties])
+
+  // Restaura la vista elegida antes; se hace tras hidratar para no desajustar el HTML del servidor.
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem(VIEW_STORAGE_KEY) as HomeViewMode | null
+      if (stored && VIEW_MODES.includes(stored)) dispatch(setViewMode(stored))
+    } catch {
+      // La preferencia es opcional.
+    }
+  }, [dispatch])
+
+  const changeViewMode = (mode: HomeViewMode) => {
+    dispatch(setViewMode(mode))
+    try {
+      localStorage.setItem(VIEW_STORAGE_KEY, mode)
+    } catch {
+      // La preferencia es opcional.
+    }
+  }
+
   useEffect(() => {
     let isMounted = true
 
@@ -78,76 +150,108 @@ export default function ResultsSection() {
     }
   }
 
-  const isPropertiesView = viewMode === 'properties'
-  const resultCount = isPropertiesView ? groupedProperties.length : filteredUnits.length
-  const resultLabel = isPropertiesView ? 'propiedades' : 'unidades'
+  const isMapView = viewMode === 'map'
+  const resultCount = groupedProperties.length
   const isEmpty = resultCount === 0
+
+  const viewOptions = [
+    { mode: 'large', label: 'Mosaico grande', Icon: LayoutGrid },
+    { mode: 'small', label: 'Mosaico pequeño', Icon: Grid3x3 },
+    { mode: 'list', label: 'Lista', Icon: List },
+    { mode: 'map', label: 'Mapa', Icon: MapIcon },
+  ] as const
+
+  const renderCard = (entry: (typeof groupedProperties)[number], index: number, compact: boolean) => {
+    const { property, units: propertyUnits } = entry
+    // Una sola unidad disponible: se muestra la unidad directamente, sin envoltorio de propiedad.
+    if (propertyUnits.length === 1) {
+      const unit = propertyUnits[0]
+      return (
+        <PropertyCard
+          key={property.id}
+          unit={unit}
+          index={index}
+          compact={compact}
+          isAuthenticated={isAuthenticated}
+          role={role}
+          isFavorite={favoriteUnitIds.includes(unit.id)}
+          isFavoritesLoading={isLoadingFavorites}
+          onToggleFavorite={handleToggleFavorite}
+        />
+      )
+    }
+    return <PropertyStack key={property.id} property={property} units={propertyUnits} variant="card" compact={compact} />
+  }
 
   return (
     <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
       <div className="flex flex-wrap items-center justify-between gap-4 mb-8">
         <p className="text-gray-600">
-          <span className="font-semibold text-gray-900">{resultCount}</span> {resultLabel} disponibles
+          <span className="font-semibold text-gray-900">{resultCount}</span> {resultCount === 1 ? 'propiedad disponible' : 'propiedades disponibles'}
         </p>
 
         <div className="flex items-center gap-3">
-          {isPropertiesView && (
-            <select
-              value={availability}
-              onChange={(event) => setAvailability(event.target.value as AvailabilityFilter)}
-              className="px-4 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-gray-900"
-            >
-              <option value="all">Toda disponibilidad</option>
-              <option value="VACANT">Totalmente disponible</option>
-              <option value="PARTIAL">Parcialmente disponible</option>
-            </select>
-          )}
+          <select
+            value={availability}
+            onChange={(event) => setAvailability(event.target.value as AvailabilityFilter)}
+            className="px-4 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-gray-900"
+          >
+            <option value="all">Toda disponibilidad</option>
+            <option value="VACANT">Totalmente disponible</option>
+            <option value="PARTIAL">Parcialmente disponible</option>
+          </select>
 
           <div className="inline-flex rounded-lg border border-gray-200 p-0.5">
-            <button
-              onClick={() => dispatch(setViewMode('units'))}
-              className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
-                !isPropertiesView ? 'bg-gray-900 text-white' : 'text-gray-600 hover:text-gray-900'
-              }`}
-            >
-              <LayoutGrid className="h-4 w-4" />
-              Unidades
-            </button>
-            <button
-              onClick={() => dispatch(setViewMode('properties'))}
-              className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
-                isPropertiesView ? 'bg-gray-900 text-white' : 'text-gray-600 hover:text-gray-900'
-              }`}
-            >
-              <Building2 className="h-4 w-4" />
-              Propiedades
-            </button>
+            {viewOptions.map(({ mode, label, Icon }) => (
+              <button
+                key={mode}
+                onClick={() => changeViewMode(mode)}
+                aria-pressed={viewMode === mode}
+                aria-label={label}
+                title={label}
+                className={`inline-flex items-center p-2 rounded-md transition-colors cursor-pointer ${
+                  viewMode === mode ? 'bg-gray-900 text-white' : 'text-gray-600 hover:text-gray-900'
+                }`}
+              >
+                <Icon className="h-5 w-5" />
+              </button>
+            ))}
           </div>
         </div>
       </div>
 
-      {!isEmpty && isPropertiesView && (
-        <div className="space-y-6">
-          {groupedProperties.map(({ property, units: groupUnits }) => (
-            <PropertyGroup key={property.id} property={property} units={groupUnits} />
-          ))}
+      {!isEmpty && isMapView && (
+        <div className="space-y-3">
+          {mapMarkers.length < groupedProperties.length && (
+            <p className="text-sm text-gray-500">
+              {groupedProperties.length - mapMarkers.length} propiedad(es) sin coordenadas no aparecen en el mapa.
+            </p>
+          )}
+          <PropertiesMap markers={mapMarkers} />
         </div>
       )}
 
-      {!isEmpty && !isPropertiesView && (
+      {!isEmpty && viewMode === 'large' && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredUnits.map((unit, index) => (
-            <PropertyCard
-              key={unit.id}
-              unit={unit}
-              index={index}
-              isAuthenticated={isAuthenticated}
-              role={role}
-              isFavorite={favoriteUnitIds.includes(unit.id)}
-              isFavoritesLoading={isLoadingFavorites}
-              onToggleFavorite={handleToggleFavorite}
-            />
-          ))}
+          {groupedProperties.map((entry, index) => renderCard(entry, index, false))}
+        </div>
+      )}
+
+      {!isEmpty && viewMode === 'small' && (
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
+          {groupedProperties.map((entry, index) => renderCard(entry, index, true))}
+        </div>
+      )}
+
+      {!isEmpty && viewMode === 'list' && (
+        <div className="rounded-2xl border border-gray-200 divide-y divide-gray-100">
+          {groupedProperties.map(({ property, units: propertyUnits }) =>
+            propertyUnits.length === 1 ? (
+              <UnitRow key={property.id} property={property} unit={propertyUnits[0]} />
+            ) : (
+              <PropertyStack key={property.id} property={property} units={propertyUnits} variant="row" />
+            ),
+          )}
         </div>
       )}
 

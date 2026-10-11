@@ -3,6 +3,7 @@ import { ArrowLeft, Building2, MapPin } from 'lucide-react'
 import Link from 'next/link'
 
 import Header from '+/components/Header'
+import { LocationMap } from '+/components/Map'
 import { getPropertyWithUnits } from '+/actions/property'
 import PropertyActions from './_/PropertyActions'
 import PropertyUnits from './_/PropertyUnits'
@@ -148,6 +149,11 @@ export default async function AdminPropertyPage({ params }: { params: Promise<{ 
                   <p className="font-medium text-gray-900">{property.gpsCoordinates || '-'}</p>
                 </div>
               </div>
+              <LocationMap
+                className="mt-4"
+                gpsCoordinates={property.gpsCoordinates}
+                address={`${property.street} ${property.number}, ${property.city}, ${property.country}`}
+              />
             </div>
 
             <PropertyUnits propertyId={property.id} units={property.units} />

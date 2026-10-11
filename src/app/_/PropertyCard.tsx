@@ -26,6 +26,8 @@ interface PropertyCardProps {
   isFavorite?: boolean
   isFavoritesLoading?: boolean
   onToggleFavorite?: (unitId: string) => Promise<void> | void
+  /** Mosaico pequeño: tarjeta más baja y con menos texto. */
+  compact?: boolean
 }
 
 export default function PropertyCard({
@@ -36,6 +38,7 @@ export default function PropertyCard({
   isFavorite = false,
   isFavoritesLoading = false,
   onToggleFavorite,
+  compact = false,
 }: PropertyCardProps) {
   const [activeImage, setActiveImage] = useState(0)
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false)
@@ -101,7 +104,7 @@ export default function PropertyCard({
         href={`/units/${unit.id}`}
         className="bg-white border border-gray-200 rounded-2xl overflow-hidden hover:shadow-xl transition-all"
       >
-        <div className="relative h-56 bg-gray-100">
+        <div className={`relative bg-gray-100 ${compact ? 'h-36' : 'h-56'}`}>
           <Image
             src={currentImage}
             alt={unit.property.name}
@@ -152,21 +155,23 @@ export default function PropertyCard({
           )}
         </div>
 
-        <div className="p-4 space-y-2">
-          <h3 className="text-base font-semibold text-gray-900 leading-tight line-clamp-2">
+        <div className={compact ? 'p-3 space-y-1' : 'p-4 space-y-2'}>
+          <h3 className={`font-semibold text-gray-900 leading-tight line-clamp-2 ${compact ? 'text-sm' : 'text-base'}`}>
             {unit.property.name} | {unit.property.neighborhood}
           </h3>
-          <div className="flex items-center space-x-3 text-sm text-gray-800 font-semibold">
+          <div className={`flex items-center text-gray-800 font-semibold ${compact ? 'space-x-2 text-xs' : 'space-x-3 text-sm'}`}>
             <span>{priceLabel}</span>
             <span className="text-gray-400">•</span>
             <span>{areaLabel}</span>
             <span className="text-gray-400">•</span>
             <span>{bedroomsLabel}</span>
           </div>
-          <p className="text-sm text-gray-600 flex items-center">
-            <MapPin className="h-4 w-4 mr-1" />
-            {unit.property.street} {unit.property.number}, {unit.property.city}
-          </p>
+          {!compact && (
+            <p className="text-sm text-gray-600 flex items-center">
+              <MapPin className="h-4 w-4 mr-1" />
+              {unit.property.street} {unit.property.number}, {unit.property.city}
+            </p>
+          )}
         </div>
       </Link>
 

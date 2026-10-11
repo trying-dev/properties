@@ -2,26 +2,28 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
-import { ArrowLeft, Grid3x3, LayoutGrid, Rows3 } from 'lucide-react'
+import { ArrowLeft, Grid3x3, LayoutGrid, Map as MapIcon, Rows3 } from 'lucide-react'
 import { UnitStatus } from '+/generated/prisma/enums'
 import type { Property } from '+/generated/prisma/client'
 
 import FilterSelect from '+/components/FilterSelect'
 import Header from '+/components/Header'
 import ViewModeToggle from '+/components/ViewModeToggle'
+import { PropertiesMap, formatAddress, parseGpsCoordinates, type MapPropertyMarker } from '+/components/Map'
+import { parseImages } from '+/app/units/[id]/_/utils'
 import { getAdminUnitsAction } from '+/actions/units'
 import { getProperties } from '+/actions/property'
 import type { AdminUnitRow } from '+/actions/units'
 import { UnitCompactCard, UnitListRow, UnitMosaicCard, unitStatusLabel as statusLabel } from './_/UnitViews'
 
-type ViewMode = 'list' | 'mosaic' | 'compact'
+type ViewMode = 'list' | 'mosaic' | 'compact' | 'map'
 
 const VIEW_STORAGE_KEY = 'units-view'
 
 const readStoredView = (): ViewMode => {
   try {
     const stored = localStorage.getItem(VIEW_STORAGE_KEY)
-    return stored === 'mosaic' || stored === 'compact' ? stored : 'list'
+    return stored === 'mosaic' || stored === 'compact' || stored === 'map' ? stored : 'list'
   } catch {
     return 'list'
   }
@@ -46,6 +48,44 @@ export default function AdminUnitsPage() {
     })
     return Array.from(values).sort()
   }, [properties])
+
+  // Un pin por propiedad con sus unidades (según los filtros activos) como enlaces.
+  const { mapMarkers, unmappedCount } = useMemo(() => {
+    const byProperty = new Map<string, MapPropertyMarker>()
+    let unmapped = 0
+    for (const unit of units) {
+      const coords = parseGpsCoordinates(unit.property.gpsCoordinates)
+      if (!coords) {
+        unmapped += 1
+        continue
+      }
+      const existing = byProperty.get(unit.propertyId)
+      const link = {
+        href: `/dashboard/admin/units/${unit.id}`,
+        label: `Unidad ${unit.unitNumber}`,
+        imageUrl: parseImages(unit.images)[0] ?? null,
+        detail: unit.baseRent ? `$ ${unit.baseRent.toLocaleString('es-CO')}` : statusLabel[unit.status],
+      }
+      if (existing) {
+        existing.links = [...(existing.links ?? []), link]
+        continue
+      }
+      byProperty.set(unit.propertyId, {
+        id: unit.propertyId,
+        name: unit.property.name,
+        address: formatAddress(unit.property),
+        lat: coords.lat,
+        lng: coords.lng,
+        imageUrl: parseImages(unit.images)[0] ?? parseImages(unit.property.images)[0] ?? null,
+        links: [link],
+      })
+    }
+    const markers = [...byProperty.values()].map((marker) => ({
+      ...marker,
+      subtitle: `${marker.links?.length ?? 0} unidad${marker.links?.length === 1 ? '' : 'es'}`,
+    }))
+    return { mapMarkers: markers, unmappedCount: unmapped }
+  }, [units])
 
   useEffect(() => {
     const loadProperties = async () => {
@@ -145,6 +185,7 @@ export default function AdminUnitsPage() {
                 { mode: 'list', label: 'Listado', Icon: Rows3 },
                 { mode: 'mosaic', label: 'Mosaico', Icon: LayoutGrid },
                 { mode: 'compact', label: 'Mosaico pequeño', Icon: Grid3x3 },
+                { mode: 'map', label: 'Mapa', Icon: MapIcon },
               ]}
             />
           </div>
@@ -188,6 +229,14 @@ export default function AdminUnitsPage() {
           <div className="text-center py-12 text-gray-600">No hay unidades para los filtros seleccionados.</div>
         ) : (
           <>
+            {view === 'map' && (
+              <div className="space-y-3">
+                {unmappedCount > 0 && (
+                  <p className="text-sm text-gray-500">{unmappedCount} unidad(es) sin coordenadas en su propiedad no aparecen en el mapa.</p>
+                )}
+                <PropertiesMap markers={mapMarkers} />
+              </div>
+            )}
             {view === 'list' && (
               <div className="bg-white rounded-lg border border-gray-200 divide-y divide-gray-200 overflow-hidden">
                 {pagedUnits.map((unit) => (

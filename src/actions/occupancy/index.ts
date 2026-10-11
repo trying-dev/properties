@@ -44,6 +44,7 @@ export const getPropertiesWithOccupancy = async ({ onlyAvailable = false }: { on
       street: true,
       number: true,
       propertyType: true,
+      gpsCoordinates: true,
       status: true,
       units: { select: { status: true } },
     },
