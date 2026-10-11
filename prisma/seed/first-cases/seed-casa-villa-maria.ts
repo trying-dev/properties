@@ -5,7 +5,7 @@ const PROPERTY_ID = 'case-casa-villa-maria'
 
 const units = [
     {
-      unitNumber: "CVLL-01-APT-001",
+      unitNumber: "101",
       floor: 1,
       area: 6,
       bedrooms: 1,
@@ -17,7 +17,7 @@ const units = [
       baseRent: 0,
       deposit: 0,
       description: "Apartamento con 1 habitacion en L con closet y baño privado, cocina, sala, comedor, punnto de lavanderia, patio de ropas, parqueadero independiente.",
-      images: JSON.stringify(['https://picsum.photos/seed/cvll01apt0011/800/600', 'https://picsum.photos/seed/cvll01apt0012/800/600', 'https://picsum.photos/seed/cvll01apt0013/800/600']),
+      images: JSON.stringify(['https://picsum.photos/seed/1011/800/600', 'https://picsum.photos/seed/1012/800/600', 'https://picsum.photos/seed/1013/800/600']),
     },
 ]
 

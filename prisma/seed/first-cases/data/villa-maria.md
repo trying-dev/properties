@@ -50,7 +50,7 @@ zonas_comunes: No
 
 UNIDADES
 
-- codigo: CVLL-01-APT-001
+- codigo: 101
   piso: 1
   area: 6 m2 \* 12 m2 (est)
   habitaciones: 1

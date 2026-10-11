@@ -50,7 +50,7 @@ zonas_comunes: escaleras, pasillo primer piso, pasillo segundo piso
 
 UNIDADES
 
-- codigo: CPS-01-CS-001
+- codigo: 101
   piso: 1-4
   area: 3 m2 \* 12 m2 (est)
   habitaciones: 5

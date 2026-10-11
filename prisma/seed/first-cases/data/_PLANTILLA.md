@@ -75,7 +75,7 @@ PROPIEDAD
   zonas_comunes:   ???            # escaleras, patio, terraza, portería, piscina…
 
 UNIDADES                          # una por espacio ARRENDABLE
-  - codigo:*     ???              # ej. C1-LOCAL-A, APTO-201, HAB-1
+  - codigo:*     ???              # solo número: <piso><nn> → 204 = piso 2, unidad 04 (nn lo define cada propiedad, 01-99). Casa de una sola unidad: 101
     codigo_interno: ???           # opcional
     piso:        ???
     area:        ??? m2

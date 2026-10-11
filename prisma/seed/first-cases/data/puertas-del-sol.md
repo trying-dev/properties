@@ -45,7 +45,7 @@ PROPIEDAD
 
 UNIDADES
   # Opción A (COMPLETA) — toda la casa a un inquilino:
-  - codigo:      PDS-CASA
+  - codigo:      101
     piso:        1
     area:        ??? m2 (est ~70)
     habitaciones: 2
@@ -57,8 +57,8 @@ UNIDADES
     descripcion: Casa completa de 2 pisos.
 
   # Opción B (POR_HABITACION) — borrar la de arriba y usar estas si se arrienda por cuarto:
-  # - codigo: PDS-HAB-1  (piso 2; comparte: cocina, baño, lavado)
-  # - codigo: PDS-HAB-2  (piso 2; comparte: cocina, baño, lavado)
+  # - codigo: 201  (piso 2; comparte: cocina, baño, lavado)
+  # - codigo: 202  (piso 2; comparte: cocina, baño, lavado)
 
 ---
 

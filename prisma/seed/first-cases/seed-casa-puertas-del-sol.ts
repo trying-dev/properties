@@ -5,7 +5,7 @@ const PROPERTY_ID = 'case-casa-puertas-del-sol'
 
 const units = [
     {
-      unitNumber: "PDS-CASA",
+      unitNumber: "101",
       floor: 1,
       area: 2,
       bedrooms: 2,
@@ -16,7 +16,7 @@ const units = [
       laundry: true,
       status: "VACANT",
       description: "Casa completa de 2 pisos.",
-      images: JSON.stringify(['https://picsum.photos/seed/pdscasa1/800/600', 'https://picsum.photos/seed/pdscasa2/800/600', 'https://picsum.photos/seed/pdscasa3/800/600']),
+      images: JSON.stringify(['https://picsum.photos/seed/1011/800/600', 'https://picsum.photos/seed/1012/800/600', 'https://picsum.photos/seed/1013/800/600']),
     },
 ]
 

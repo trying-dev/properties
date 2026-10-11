@@ -197,7 +197,7 @@ El modelo de datos usa **Prisma ORM** con 11 modelos/entidades. Soporta dos prov
 |-------|------|-----------|-------|
 | `id` | String | Si | `@id @default(cuid())` |
 | `propertyId` | String | Si | FK a Property |
-| `unitNumber` | String | Si | Numero de unidad |
+| `unitNumber` | String | Si | Número de la unidad: `<piso><nn>` (`204` = piso 2, unidad 04; el orden de `nn` lo define cada propiedad). Único por propiedad |
 | `floor` | Int? | No | Piso |
 | `area` | Float? | No | Area en m² |
 | `bedrooms` | Int | Si | `@default(0)`, habitaciones |

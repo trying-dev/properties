@@ -5,7 +5,7 @@ const PROPERTY_ID = 'case-casa-puertas-del-sol-2'
 
 const units = [
     {
-      unitNumber: "CPS-01-CS-001",
+      unitNumber: "101",
       floor: 1,
       area: 3,
       bedrooms: 5,
@@ -17,7 +17,7 @@ const units = [
       baseRent: 1800000,
       deposit: 0,
       description: "Casa con 5 habitacion, sala, comedor, cocina, baño, espacio le lavado y soilar amplio en el 4 piso con servicios independientes.",
-      images: JSON.stringify(['https://picsum.photos/seed/cps01cs0011/800/600', 'https://picsum.photos/seed/cps01cs0012/800/600', 'https://picsum.photos/seed/cps01cs0013/800/600']),
+      images: JSON.stringify(['https://picsum.photos/seed/1011/800/600', 'https://picsum.photos/seed/1012/800/600', 'https://picsum.photos/seed/1013/800/600']),
     },
 ]
 

@@ -5,7 +5,7 @@ const PROPERTY_ID = 'case-casa-gaitana'
 
 const units = [
     {
-      unitNumber: "CG-01-LOCAL-001",
+      unitNumber: "101",
       floor: 1,
       area: 2,
       bedrooms: 0,
@@ -15,10 +15,10 @@ const units = [
       baseRent: 800000,
       deposit: 0,
       description: "Local comercial en L con entrada independiente y bañoindependiente que comparte servicios de agua y luz.",
-      images: JSON.stringify(['https://picsum.photos/seed/cg01local0011/800/600', 'https://picsum.photos/seed/cg01local0012/800/600', 'https://picsum.photos/seed/cg01local0013/800/600']),
+      images: JSON.stringify(['https://picsum.photos/seed/1011/800/600', 'https://picsum.photos/seed/1012/800/600', 'https://picsum.photos/seed/1013/800/600']),
     },
     {
-      unitNumber: "CG-01-APT-001",
+      unitNumber: "102",
       floor: 1,
       bedrooms: 2,
       bathrooms: 1,
@@ -30,10 +30,10 @@ const units = [
       baseRent: 700000,
       deposit: 700000,
       description: "Unidad con cocina y baño privado.",
-      images: JSON.stringify(['https://picsum.photos/seed/cg01apt0011/800/600', 'https://picsum.photos/seed/cg01apt0012/800/600', 'https://picsum.photos/seed/cg01apt0013/800/600']),
+      images: JSON.stringify(['https://picsum.photos/seed/1021/800/600', 'https://picsum.photos/seed/1022/800/600', 'https://picsum.photos/seed/1023/800/600']),
     },
     {
-      unitNumber: "CG-01-APT-002",
+      unitNumber: "201",
       floor: 2,
       area: 2,
       bedrooms: 2,
@@ -46,10 +46,10 @@ const units = [
       baseRent: 750000,
       deposit: 0,
       description: "Apartamento con 2 habitaciones, cocina, sala-comedor y baño privado que comparte servicios de agua, luz y gas.",
-      images: JSON.stringify(['https://picsum.photos/seed/cg01apt0021/800/600', 'https://picsum.photos/seed/cg01apt0022/800/600', 'https://picsum.photos/seed/cg01apt0023/800/600']),
+      images: JSON.stringify(['https://picsum.photos/seed/2011/800/600', 'https://picsum.photos/seed/2012/800/600', 'https://picsum.photos/seed/2013/800/600']),
     },
     {
-      unitNumber: "CG-01-APT-003",
+      unitNumber: "202",
       floor: 2,
       area: 2,
       bedrooms: 2,
@@ -63,10 +63,10 @@ const units = [
       baseRent: 800000,
       deposit: 0,
       description: "Apartamento con 2 habitaciones, sala-comedor, cocina, baño y área de lavado, que comparte servicios de agua, luz y gas.",
-      images: JSON.stringify(['https://picsum.photos/seed/cg01apt0031/800/600', 'https://picsum.photos/seed/cg01apt0032/800/600', 'https://picsum.photos/seed/cg01apt0033/800/600']),
+      images: JSON.stringify(['https://picsum.photos/seed/2021/800/600', 'https://picsum.photos/seed/2022/800/600', 'https://picsum.photos/seed/2023/800/600']),
     },
     {
-      unitNumber: "CG-01-APT-004",
+      unitNumber: "301",
       floor: 3,
       area: 2,
       bedrooms: 2,
@@ -78,7 +78,7 @@ const units = [
       baseRent: 700000,
       deposit: 0,
       description: "Habitación en piso compartido.",
-      images: JSON.stringify(['https://picsum.photos/seed/cg01apt0041/800/600', 'https://picsum.photos/seed/cg01apt0042/800/600', 'https://picsum.photos/seed/cg01apt0043/800/600']),
+      images: JSON.stringify(['https://picsum.photos/seed/3011/800/600', 'https://picsum.photos/seed/3012/800/600', 'https://picsum.photos/seed/3013/800/600']),
     },
 ]
 

@@ -50,7 +50,7 @@ zonas_comunes: escaleras, pasillo primer piso, pasillo segundo piso
 
 UNIDADES
 
-- codigo: CG-01-LOCAL-001
+- codigo: 101
   piso: 1
   area: [CONSULTAR] m2 (est)
   habitaciones: 0
@@ -61,7 +61,7 @@ UNIDADES
   deposito: 0
   descripcion: Local comercial en L con entrada independiente y bañoindependiente que comparte servicios de agua y luz.
 
-- codigo: CG-01-APT-001
+- codigo: 102
   piso: 1
   area: [CONSULTAR]
   habitaciones: 2
@@ -73,7 +73,7 @@ UNIDADES
   deposito: No
   descripcion: Unidad con cocina y baño privado.
 
-- codigo: CG-01-APT-002
+- codigo: 201
   piso: 2
   area: [CONSULTAR] m2 (est)
   habitaciones: 2
@@ -85,7 +85,7 @@ UNIDADES
   deposito: 0
   descripcion: Apartamento con 2 habitaciones, cocina, sala-comedor y baño privado que comparte servicios de agua, luz y gas.
 
-- codigo: CG-01-APT-003
+- codigo: 202
   piso: 2
   area: [CONSULTAR] m2 (est)
   habitaciones: 2
@@ -97,7 +97,7 @@ UNIDADES
   deposito: 0
   descripcion: Apartamento con 2 habitaciones, sala-comedor, cocina, baño y área de lavado, que comparte servicios de agua, luz y gas.
 
-- codigo: CG-01-APT-004
+- codigo: 301
   piso: 3
   area: [CONSULTAR] m2 (est)
   habitaciones: 2

@@ -6,7 +6,9 @@ import Link from 'next/link'
 import type { UnitStatus } from '+/generated/prisma/client'
 import type { PropertyUnitWithProcesses } from '+/actions/property'
 import { processStatusConfig } from '+/lib/processStatus'
+import { parseImages } from '+/app/units/[id]/_/utils'
 import CreateUnitModal from './CreateUnitModal'
+import UnitImageCarousel from './UnitImageCarousel'
 
 const unitStatusLabel: Record<UnitStatus, string> = {
   VACANT: 'Vacante',
@@ -54,9 +56,10 @@ export default function PropertyUnits({ propertyId, units }: PropertyUnitsProps)
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {units.map((unit) => (
             <div key={unit.id} className="rounded-lg border border-gray-100 p-4">
+              <UnitImageCarousel images={parseImages(unit.images)} alt={unit.unitNumber} />
               <Link href={`/dashboard/admin/units/${unit.id}`} className="block group">
                 <div className="flex items-center justify-between">
-                  <p className="font-semibold text-gray-900 group-hover:text-blue-700">Unidad {unit.unitNumber}</p>
+                  <p className="font-semibold text-gray-900 group-hover:text-blue-700">{unit.unitNumber}</p>
                   <span className="text-xs font-semibold px-2 py-1 rounded-full bg-gray-100 text-gray-700">{unitStatusLabel[unit.status]}</span>
                 </div>
                 <div className="mt-3 grid grid-cols-2 gap-2 text-xs text-gray-600">
