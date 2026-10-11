@@ -841,7 +841,6 @@ const createContracts = async (params: {
       tenant: { connect: { id: tenant3.id } },
       additionalResidents: {
         create: additionalResidentsTenant1.map((resident) => ({
-          id: resident.id,
           name: resident.name,
           lastName: resident.lastName,
           email: resident.email,

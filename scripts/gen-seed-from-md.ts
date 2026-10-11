@@ -88,7 +88,7 @@ function parse(md: string): { prop: KV; units: Unit[] } {
     if (/^PROPIEDAD\b/.test(t)) { section = 'prop'; continue }
     if (/^UNIDADES\b/.test(t)) { section = 'units'; continue }
     if (/^PENDIENTES/.test(t)) { section = 'end'; break }
-    if (section === 'end' || section === 'none') continue
+    if (section === 'none') continue
 
     if (section === 'prop') {
       const p = kv(line); if (p) prop[p[0]] = p[1]
@@ -136,7 +136,7 @@ function buildUnit(u: Unit, index: number, slug: string): string {
   if (yesNo(u['mascotas'] || '')) put('petFriendly', true)
   if (yesNo(u['fumar'] || '')) put('smokingAllowed', true)
 
-  put('status', JSON.stringify(USTATUS[clean(u['estado'] || 'LIBRE')] || 'VACANT'))
+  put('status', JSON.stringify(USTATUS[clean(u['estado'] || 'LIBRE')] || 'VACANT') + ' as const')
   const rent = num(u['renta'] || '')
   put('baseRent', rent)
   put('deposit', num(u['deposito'] || '') ?? rent) // depósito por defecto = 1 mes
@@ -164,8 +164,8 @@ function build(slug: string, prop: KV, units: Unit[]): string {
   put('postalCode', JSON.stringify(isEmpty(clean(prop['codigo_postal'] || '')) ? '00000' : clean(prop['codigo_postal'])))
   put('country', JSON.stringify(clean(prop['pais'] || 'Colombia')))
   str('gpsCoordinates', prop['gps'])
-  put('propertyType', JSON.stringify(TYPE[clean(prop['tipo'] || '')] || 'HOUSE'))
-  put('status', JSON.stringify(PSTATUS[clean(prop['estado'] || 'ACTIVA')] || 'ACTIVE'))
+  put('propertyType', JSON.stringify(TYPE[clean(prop['tipo'] || '')] || 'HOUSE') + ' as const')
+  put('status', JSON.stringify(PSTATUS[clean(prop['estado'] || 'ACTIVA')] || 'ACTIVE') + ' as const')
   put('images', images(slug, units.length))
   put('totalLandArea', num(prop['area_lote'] || ''))
   put('builtArea', num(prop['area_construida'] || '') ?? 0)
