@@ -4,9 +4,37 @@ import { Prisma, ProcessStatus, PropertyType, UnitStatus } from '+/generated/pri
 import { auth } from '+/lib/auth'
 import { prisma } from '+/lib/prisma'
 
+// SUPER_ADMIN accede a todas las propiedades; el resto solo a las que administra.
+const getAdminScope = async (userId: string) => {
+  const admin = await prisma.admin.findFirst({
+    where: { userId },
+    select: { id: true, adminLevel: true },
+  })
+  if (!admin) return null
+
+  return { adminId: admin.id, isSuperAdmin: admin.adminLevel === 'SUPER_ADMIN' }
+}
+
+type AdminScope = NonNullable<Awaited<ReturnType<typeof getAdminScope>>>
+
+const propertyAccessFilter = (scope: AdminScope): Prisma.PropertyWhereInput =>
+  scope.isSuperAdmin ? {} : { admins: { some: { id: scope.adminId } } }
+
+const getCurrentAdminScope = async () => {
+  const session = await auth()
+  const userId = session?.user?.id
+  if (!userId) return null
+
+  return getAdminScope(userId)
+}
+
 export const getProperties = async () => {
   try {
+    const scope = await getCurrentAdminScope()
+    if (!scope) return []
+
     return await prisma.property.findMany({
+      where: propertyAccessFilter(scope),
       orderBy: [{ city: 'asc' }, { neighborhood: 'asc' }, { name: 'asc' }],
     })
   } catch (error) {
@@ -17,8 +45,11 @@ export const getProperties = async () => {
 
 export const getProperty = async ({ id }: { id: string }) => {
   try {
-    return prisma.property.findUnique({
-      where: { id },
+    const scope = await getCurrentAdminScope()
+    if (!scope) return null
+
+    return prisma.property.findFirst({
+      where: { id, ...propertyAccessFilter(scope) },
       include: {
         admins: { include: { user: true } },
         units: {
@@ -45,8 +76,11 @@ export type PropertyWithRelations = Awaited<ReturnType<typeof getProperty>>
 
 export const getPropertyLite = async ({ id }: { id: string }) => {
   try {
-    return prisma.property.findUnique({
-      where: { id },
+    const scope = await getCurrentAdminScope()
+    if (!scope) return null
+
+    return prisma.property.findFirst({
+      where: { id, ...propertyAccessFilter(scope) },
     })
   } catch (error) {
     console.error('Error fetching property by ID:', error)
@@ -61,8 +95,11 @@ const OPEN_PROCESS_STATUSES = [ProcessStatus.IN_PROGRESS, ProcessStatus.IN_EVALU
 
 export const getPropertyWithUnits = async ({ id }: { id: string }) => {
   try {
-    return prisma.property.findUnique({
-      where: { id },
+    const scope = await getCurrentAdminScope()
+    if (!scope) return null
+
+    return prisma.property.findFirst({
+      where: { id, ...propertyAccessFilter(scope) },
       include: {
         units: {
           include: {
@@ -146,11 +183,8 @@ export const createPropertyAction = async (input: CreatePropertyInput) => {
   if (!userId) return { success: false, error: 'No autenticado' }
 
   try {
-    const admin = await prisma.admin.findFirst({
-      where: { userId },
-      select: { id: true },
-    })
-    if (!admin?.id) return { success: false, error: 'No se encontró administrador' }
+    const admin = await getAdminScope(userId)
+    if (!admin) return { success: false, error: 'No se encontró administrador' }
 
     const data: Prisma.PropertyCreateInput = {
       name: input.name.trim(),
@@ -174,7 +208,7 @@ export const createPropertyAction = async (input: CreatePropertyInput) => {
       balconiesAndTerraces: input.balconiesAndTerraces?.trim() || null,
       recreationalAreas: input.recreationalAreas?.trim() || null,
       commonZones: input.commonZones?.trim() || null,
-      admins: { connect: { id: admin.id } },
+      admins: { connect: { id: admin.adminId } },
     }
 
     const property = await prisma.property.create({
@@ -195,14 +229,11 @@ export const createUnitAction = async (input: CreateUnitInput) => {
   if (!userId) return { success: false, error: 'No autenticado' }
 
   try {
-    const admin = await prisma.admin.findFirst({
-      where: { userId },
-      select: { id: true },
-    })
-    if (!admin?.id) return { success: false, error: 'No se encontró administrador' }
+    const admin = await getAdminScope(userId)
+    if (!admin) return { success: false, error: 'No se encontró administrador' }
 
     const property = await prisma.property.findFirst({
-      where: { id: input.propertyId, admins: { some: { id: admin.id } } },
+      where: { id: input.propertyId, ...propertyAccessFilter(admin) },
       select: { id: true },
     })
     if (!property) return { success: false, error: 'Propiedad no encontrada' }
@@ -248,14 +279,11 @@ export const updateUnitAction = async (unitId: string, input: Omit<CreateUnitInp
   if (!userId) return { success: false, error: 'No autenticado' }
 
   try {
-    const admin = await prisma.admin.findFirst({
-      where: { userId },
-      select: { id: true },
-    })
-    if (!admin?.id) return { success: false, error: 'No se encontró administrador' }
+    const admin = await getAdminScope(userId)
+    if (!admin) return { success: false, error: 'No se encontró administrador' }
 
     const unit = await prisma.unit.findFirst({
-      where: { id: unitId, property: { admins: { some: { id: admin.id } } } },
+      where: { id: unitId, property: propertyAccessFilter(admin) },
       select: { id: true },
     })
     if (!unit) return { success: false, error: 'Unidad no encontrada' }
@@ -302,14 +330,11 @@ export const deleteUnitAction = async (unitId: string) => {
   if (!userId) return { success: false, error: 'No autenticado' }
 
   try {
-    const admin = await prisma.admin.findFirst({
-      where: { userId },
-      select: { id: true },
-    })
-    if (!admin?.id) return { success: false, error: 'No se encontró administrador' }
+    const admin = await getAdminScope(userId)
+    if (!admin) return { success: false, error: 'No se encontró administrador' }
 
     const unit = await prisma.unit.findFirst({
-      where: { id: unitId, property: { admins: { some: { id: admin.id } } } },
+      where: { id: unitId, property: propertyAccessFilter(admin) },
       select: { id: true },
     })
     if (!unit) return { success: false, error: 'Unidad no encontrada' }
@@ -331,14 +356,11 @@ export const updatePropertyAction = async (propertyId: string, input: CreateProp
   if (!userId) return { success: false, error: 'No autenticado' }
 
   try {
-    const admin = await prisma.admin.findFirst({
-      where: { userId },
-      select: { id: true },
-    })
-    if (!admin?.id) return { success: false, error: 'No se encontró administrador' }
+    const admin = await getAdminScope(userId)
+    if (!admin) return { success: false, error: 'No se encontró administrador' }
 
     const property = await prisma.property.findFirst({
-      where: { id: propertyId, admins: { some: { id: admin.id } } },
+      where: { id: propertyId, ...propertyAccessFilter(admin) },
       select: { id: true },
     })
     if (!property) return { success: false, error: 'Propiedad no encontrada' }
@@ -385,14 +407,11 @@ export const deletePropertyAction = async (propertyId: string) => {
   if (!userId) return { success: false, error: 'No autenticado' }
 
   try {
-    const admin = await prisma.admin.findFirst({
-      where: { userId },
-      select: { id: true },
-    })
-    if (!admin?.id) return { success: false, error: 'No se encontró administrador' }
+    const admin = await getAdminScope(userId)
+    if (!admin) return { success: false, error: 'No se encontró administrador' }
 
     const property = await prisma.property.findFirst({
-      where: { id: propertyId, admins: { some: { id: admin.id } } },
+      where: { id: propertyId, ...propertyAccessFilter(admin) },
       select: { id: true },
     })
     if (!property) return { success: false, error: 'Propiedad no encontrada' }

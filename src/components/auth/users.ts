@@ -4,17 +4,22 @@ const passwordDemo = process.env.NEXT_PUBLIC_PASSWORD_DEMO || 'password123'
 
 const adminUsers = [
   {
+    role: 'Super Admin — Revione',
+    email: 'revione@propiedades.com',
+    password: passwordDemo,
+  },
+  {
     role: 'Super Admin — Maria Garcia',
     email: 'm.garciamontejo@propiedades.com',
     password: passwordDemo,
   },
   {
-    role: 'Admin — Carlos',
+    role: 'Super Admin — Carlos',
     email: 'admin1@propiedades.com',
     password: passwordDemo,
   },
   {
-    role: 'Admin — Luis Gerente',
+    role: 'Admin Standard — Luis',
     email: 'admin3@propiedades.com',
     password: passwordDemo,
   },

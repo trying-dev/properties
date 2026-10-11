@@ -5,6 +5,9 @@ import Credentials from 'next-auth/providers/credentials'
 
 import { prisma } from '+/lib/prisma'
 
+// Cada cuánto se revalida el token contra la base (usuario existe, no deshabilitado, rol/nivel vigentes).
+const REVALIDATE_MS = 60 * 1000
+
 export const authConfig: NextAuthConfig = {
   pages: { signIn: '/' },
 
@@ -90,21 +93,32 @@ export const authConfig: NextAuthConfig = {
         if (adminLevel) token.adminLevel = adminLevel
         if (email) token.email = email
         if (name) token.name = name
+        token.checkedAt = Date.now()
         return token
       }
 
-      if (!token.role && token.sub) {
-        const dbUser = await prisma.user.findUnique({
-          where: { id: token.sub },
-          select: {
-            admin: { select: { adminLevel: true } },
-            owner: { select: { id: true } },
-          },
-        })
+      const isStale = !token.role || !token.checkedAt || Date.now() - token.checkedAt > REVALIDATE_MS
 
-        if (dbUser) {
+      if (token.sub && isStale) {
+        try {
+          const dbUser = await prisma.user.findUnique({
+            where: { id: token.sub },
+            select: {
+              disable: true,
+              admin: { select: { adminLevel: true } },
+              owner: { select: { id: true } },
+            },
+          })
+
+          // Usuario borrado o deshabilitado: invalida la sesión.
+          if (!dbUser || dbUser.disable) return null
+
           token.role = dbUser.admin ? 'admin' : dbUser.owner ? 'owner' : 'tenant'
           token.adminLevel = dbUser.admin?.adminLevel ?? undefined
+          token.checkedAt = Date.now()
+        } catch (error) {
+          // Si la base no responde conservamos el token actual; se reintenta en el siguiente request.
+          console.error('Error revalidando sesión:', error)
         }
       }
 

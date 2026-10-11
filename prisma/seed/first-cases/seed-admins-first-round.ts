@@ -7,6 +7,7 @@ type AdminSeed = {
   adminLevel: AdminLevel
   documentNumber: string
   phone: string
+  email?: string
 }
 
 const buildEmail = (fullName: string) => {
@@ -28,7 +29,7 @@ const splitName = (fullName: string) => {
 const admins: AdminSeed[] = [
   {
     fullName: 'Maria Celina Garcia Montejo',
-    adminLevel: AdminLevel.STANDARD,
+    adminLevel: AdminLevel.SUPER_ADMIN,
     documentNumber: '000000001',
     phone: '+57 300 000 0001',
   },
@@ -56,6 +57,13 @@ const admins: AdminSeed[] = [
     documentNumber: '000000005',
     phone: '+57 300 000 0005',
   },
+  {
+    fullName: 'Revione',
+    adminLevel: AdminLevel.SUPER_ADMIN,
+    documentNumber: '000000006',
+    phone: '+57 300 000 0006',
+    email: 'revione@propiedades.com',
+  },
 ]
 
 export const seedAdminsFirstRound = async () => {
@@ -63,7 +71,7 @@ export const seedAdminsFirstRound = async () => {
   const hashedPassword = await bcrypt.hash(seedPassword, 10)
 
   for (const admin of admins) {
-    const email = buildEmail(admin.fullName)
+    const email = admin.email ?? buildEmail(admin.fullName)
     const { name, lastName } = splitName(admin.fullName)
 
     const existingUser = await prisma.user.findUnique({ where: { email } })

@@ -29,6 +29,7 @@ declare module 'next-auth/jwt' {
   interface JWT {
     role?: UserRoleForAuth
     adminLevel?: string
+    checkedAt?: number
     // emailVerified: Date | null
     // phoneVerified: Date | null
   }
