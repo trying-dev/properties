@@ -49,6 +49,11 @@ export default function Footer() {
                   Política de privacidad
                 </Link>
               </li>
+              <li>
+                <Link href="/manual" className={styles.link}>
+                  Manual de convivencia
+                </Link>
+              </li>
             </ul>
           </div>
           <div>

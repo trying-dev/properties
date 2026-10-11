@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { AlertTriangle, BellRing, Building2, ClipboardCheck, CreditCard, FilePlus, FileText, FolderArchive, Gauge, Layers, MessageCircle, Receipt, ShieldAlert, ShieldCheck, UserCog, Users, Wallet, Wrench } from 'lucide-react'
+import { AlertTriangle, BellRing, BookOpenCheck, Building2, ClipboardCheck, CreditCard, FilePlus, FileText, FolderArchive, Gauge, Layers, MessageCircle, Receipt, ShieldAlert, ShieldCheck, UserCog, Users, Wallet, Wrench } from 'lucide-react'
 
 import { getProperties } from '+/actions/property'
 import { getPendingPaymentsCount } from '+/actions/payments'
@@ -183,6 +183,15 @@ export default function AdminDashboard() {
       title: 'Seguridad',
       description: 'Extintores, cámaras, alarmas y su próxima recarga/servicio',
       href: '/dashboard/admin/security',
+      badge: null,
+      hasBadge: false,
+    },
+    {
+      id: 'manual',
+      icon: BookOpenCheck,
+      title: 'Manual de convivencia',
+      description: 'Quién ha aceptado la versión vigente del manual',
+      href: '/dashboard/admin/manual',
       badge: null,
       hasBadge: false,
     },

@@ -621,6 +621,7 @@ model User {
 
   additionalContracts      Contract[]        @relation("AdditionalResidents") // Contratos donde es residente adicional
   uploadedProcessDocuments ProcessDocument[] @relation("ProcessDocumentUploader")
+  manualAcceptances        ManualAcceptance[]
 
   @@index([email])
   @@index([documentNumber])
@@ -1259,4 +1260,30 @@ model Verification {
 
   @@index([identifier])
   @@map("verifications")
+}
+
+// ========================================
+// MANUAL DE CONVIVENCIA: aceptación por usuario y versión (MC-001)
+// ========================================
+
+// Evidencia de que un usuario leyó y aceptó una versión concreta del manual.
+// La versión viva está en src/lib/manual.ts (MANUAL_VERSION); al subirla, todos
+// deben aceptar de nuevo. No se borra: es trazabilidad.
+model ManualAcceptance {
+  id String @id @default(cuid())
+
+  userId String
+  manualCode    String // "MC-001"
+  manualVersion String // "1.0"
+
+  acceptedAt DateTime @default(now())
+  ipAddress  String?
+  userAgent  String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, manualCode, manualVersion])
+  @@index([userId])
+  @@index([manualCode, manualVersion])
+  @@map("manual_acceptances")
 }

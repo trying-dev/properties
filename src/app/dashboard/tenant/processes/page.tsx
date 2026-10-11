@@ -15,6 +15,7 @@ import type { TenantProcessItem } from '+/actions/processes'
 import { setProcessState } from '+/redux/slices/process'
 
 import { getUserTenant } from '+/actions/user'
+import { getManualAcceptanceAction } from '+/actions/manual'
 
 import { useSession } from '+/hooks/useSession'
 
@@ -74,6 +75,13 @@ export default function TenantProcessesPage() {
   const [reviewPayload, setReviewPayload] = useState<ProcessPayload | null>(null)
   const [isReviewOpen, setIsReviewOpen] = useState(false)
   const [isReviewLoading, setIsReviewLoading] = useState(false)
+  const [manualPending, setManualPending] = useState(false)
+
+  useEffect(() => {
+    getManualAcceptanceAction().then((res) => {
+      if (res.success && res.data) setManualPending(res.data.authenticated && !res.data.accepted)
+    })
+  }, [])
 
   useEffect(() => {
     if (!isAuthenticated) return
@@ -194,6 +202,16 @@ export default function TenantProcessesPage() {
           </button>
           <h1 className="text-2xl font-bold text-gray-900">Mis Procesos</h1>
         </div>
+
+        {manualPending && (
+          <div className="mb-6 rounded-lg border border-amber-300 bg-amber-50 p-4 text-sm text-amber-900">
+            Para que tu solicitud pueda ser aprobada debes leer y aceptar el{' '}
+            <a href="/manual" className="font-semibold underline">
+              Manual de Convivencia
+            </a>
+            .
+          </div>
+        )}
 
         {loading || isLoading ? (
           <div className="text-center py-12">

@@ -8,6 +8,7 @@ import { seedCasaTibabuyesModules } from './seed-casa-tibabuyes-modules'
 import { seedCasaTibabuyesOwners } from './seed-casa-tibabuyes-owners'
 import { seedCasaTibabuyesRentals } from './seed-casa-tibabuyes-rentals'
 import { seedCasaVillaMaria } from './seed-casa-villa-maria'
+import { seedProcesosDemo } from './seed-procesos-demo'
 
 export const runFirstCasesSeeds = async () => {
   await seedAdminsFirstRound()
@@ -20,6 +21,7 @@ export const runFirstCasesSeeds = async () => {
   await seedCasaPuertasDelSol()
   await seedCasaPuertasDelSol2()
   await seedCasaVillaMaria()
+  await seedProcesosDemo()
 }
 
 if (process.argv[1]?.includes('seed/first-cases/index.ts')) {

@@ -2,10 +2,11 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { Home, Search, Heart, User, Building2, MessageSquare, FileText } from 'lucide-react'
+import { Home, Search, Heart, User, Building2, MessageSquare, FileText, BookOpenCheck } from 'lucide-react'
 
 import { getUserTenant, type UserTenant } from '+/actions/user'
 import { getTenantProcessesAction } from '+/actions/processes'
+import { getManualAcceptanceAction } from '+/actions/manual'
 import Footer from '+/components/Footer'
 import Header from '+/components/Header'
 
@@ -14,9 +15,12 @@ export default function TenantDashboard() {
   const [user, setUser] = useState<UserTenant>()
   const [loading, setLoading] = useState(true)
   const [processesCount, setProcessesCount] = useState(0)
+  const [manualAccepted, setManualAccepted] = useState<boolean | null>(null)
 
   useEffect(() => {
     const fetchData = async () => {
+      const manual = await getManualAcceptanceAction()
+      if (manual.success && manual.data) setManualAccepted(manual.data.accepted)
       const userData = await getUserTenant()
       if (userData) {
         setUser(userData)
@@ -58,6 +62,14 @@ export default function TenantDashboard() {
       description: 'Propiedades que te interesan',
       onClick: () => router.push('/dashboard/tenant/favoritos'),
       badge: null,
+    },
+    {
+      id: 'manual',
+      icon: BookOpenCheck,
+      title: 'Manual de convivencia',
+      description: manualAccepted === false ? 'Pendiente de aceptar' : 'Normas de uso y convivencia',
+      onClick: () => router.push('/manual'),
+      badge: manualAccepted === false ? '!' : null,
     },
     {
       id: 'profile',
