@@ -11,11 +11,11 @@ import { getPropertiesWithOccupancy } from '+/actions/occupancy'
 const availableUnitsTag = 'available-units'
 const getCachedUnits = cache(() => getAvailableUnitsForHome(), [availableUnitsTag], {
   tags: [availableUnitsTag],
-  revalidate: 300, // refresca al siguiente request luego de 5 minutos o antes si se invalida la tag
+  revalidate: 60, // refresca al siguiente request luego de 1 minuto o antes si se invalida la tag
 })
 const getCachedProperties = cache(() => getPropertiesWithOccupancy({ onlyAvailable: true }), ['available-properties'], {
   tags: [availableUnitsTag],
-  revalidate: 300,
+  revalidate: 60,
 })
 
 export default async function HomePage() {

@@ -151,8 +151,11 @@ export default function ResultsSection() {
   }
 
   const isMapView = viewMode === 'map'
-  const resultCount = groupedProperties.length
-  const isEmpty = resultCount === 0
+  const isMosaic = viewMode === 'large' || viewMode === 'small'
+  // En mosaico se listan unidades; en lista y mapa se agrupan por propiedad.
+  const mosaicUnits = useMemo(() => groupedProperties.flatMap((entry) => entry.units), [groupedProperties])
+  const resultCount = isMosaic ? mosaicUnits.length : groupedProperties.length
+  const isEmpty = groupedProperties.length === 0
 
   const viewOptions = [
     { mode: 'large', label: 'Mosaico grande', Icon: LayoutGrid },
@@ -161,33 +164,31 @@ export default function ResultsSection() {
     { mode: 'map', label: 'Mapa', Icon: MapIcon },
   ] as const
 
-  const renderCard = (entry: (typeof groupedProperties)[number], index: number, compact: boolean) => {
-    const { property, units: propertyUnits } = entry
-    // Una sola unidad disponible: se muestra la unidad directamente, sin envoltorio de propiedad.
-    if (propertyUnits.length === 1) {
-      const unit = propertyUnits[0]
-      return (
-        <PropertyCard
-          key={property.id}
-          unit={unit}
-          index={index}
-          compact={compact}
-          isAuthenticated={isAuthenticated}
-          role={role}
-          isFavorite={favoriteUnitIds.includes(unit.id)}
-          isFavoritesLoading={isLoadingFavorites}
-          onToggleFavorite={handleToggleFavorite}
-        />
-      )
-    }
-    return <PropertyStack key={property.id} property={property} units={propertyUnits} variant="card" compact={compact} />
-  }
+  const renderUnitCard = (unit: (typeof mosaicUnits)[number], index: number, compact: boolean) => (
+    <PropertyCard
+      key={unit.id}
+      unit={unit}
+      index={index}
+      compact={compact}
+      isAuthenticated={isAuthenticated}
+      role={role}
+      isFavorite={favoriteUnitIds.includes(unit.id)}
+      isFavoritesLoading={isLoadingFavorites}
+      onToggleFavorite={handleToggleFavorite}
+    />
+  )
 
   return (
     <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
       <div className="flex flex-wrap items-center justify-between gap-4 mb-8">
         <p className="text-gray-600">
-          <span className="font-semibold text-gray-900">{resultCount}</span> {resultCount === 1 ? 'propiedad disponible' : 'propiedades disponibles'}
+          <span className="font-semibold text-gray-900">{resultCount}</span> {isMosaic
+            ? resultCount === 1
+              ? 'unidad disponible'
+              : 'unidades disponibles'
+            : resultCount === 1
+              ? 'propiedad disponible'
+              : 'propiedades disponibles'}
         </p>
 
         <div className="flex items-center gap-3">
@@ -233,13 +234,13 @@ export default function ResultsSection() {
 
       {!isEmpty && viewMode === 'large' && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {groupedProperties.map((entry, index) => renderCard(entry, index, false))}
+          {mosaicUnits.map((unit, index) => renderUnitCard(unit, index, false))}
         </div>
       )}
 
       {!isEmpty && viewMode === 'small' && (
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
-          {groupedProperties.map((entry, index) => renderCard(entry, index, true))}
+          {mosaicUnits.map((unit, index) => renderUnitCard(unit, index, true))}
         </div>
       )}
 
