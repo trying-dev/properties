@@ -14,7 +14,7 @@ const units = [
       baseRent: 800000,
       deposit: 0,
       description: "Local comercial con entrada independiente y baño independiente que comparte servicios de agua y luz.",
-      images: JSON.stringify(['https://picsum.photos/seed/1011/800/600', 'https://picsum.photos/seed/1012/800/600', 'https://picsum.photos/seed/1013/800/600']),
+      images: JSON.stringify(['https://picsum.photos/id/49/800/600', 'https://picsum.photos/id/57/800/600', 'https://picsum.photos/id/78/800/600']),
     },
     {
       unitNumber: "102",
@@ -28,7 +28,7 @@ const units = [
       baseRent: 500000,
       deposit: 500000,
       description: "Aparta estudio con baño y cocina que comparte servicios de agua, luz y gas.",
-      images: JSON.stringify(['https://picsum.photos/seed/1021/800/600', 'https://picsum.photos/seed/1022/800/600', 'https://picsum.photos/seed/1023/800/600']),
+      images: JSON.stringify(['https://picsum.photos/id/121/800/600', 'https://picsum.photos/id/122/800/600', 'https://picsum.photos/id/142/800/600']),
     },
     {
       unitNumber: "103",
@@ -42,7 +42,7 @@ const units = [
       baseRent: 500000,
       deposit: 500000,
       description: "Aparta estudio con baño y cocina que comparte servicios de agua, luz y gas.",
-      images: JSON.stringify(['https://picsum.photos/seed/1031/800/600', 'https://picsum.photos/seed/1032/800/600', 'https://picsum.photos/seed/1033/800/600']),
+      images: JSON.stringify(['https://picsum.photos/id/193/800/600', 'https://picsum.photos/id/214/800/600', 'https://picsum.photos/id/232/800/600']),
     },
     {
       unitNumber: "201",
@@ -56,7 +56,7 @@ const units = [
       baseRent: 600000,
       deposit: 600000,
       description: "Aparta estudio con baño y cocina que comparte espacio le lavado, servicios de agua, luz y gas.",
-      images: JSON.stringify(['https://picsum.photos/seed/2011/800/600', 'https://picsum.photos/seed/2012/800/600', 'https://picsum.photos/seed/2013/800/600']),
+      images: JSON.stringify(['https://picsum.photos/id/249/800/600', 'https://picsum.photos/id/257/800/600', 'https://picsum.photos/id/265/800/600']),
     },
     {
       unitNumber: "104",
@@ -71,7 +71,7 @@ const units = [
       baseRent: 900000,
       deposit: 0,
       description: "Apartamento con 3 habitaciones, cocina y baño privado que comparte espacio le lavado, servicios de agua, luz y gas.",
-      images: JSON.stringify(['https://picsum.photos/seed/1041/800/600', 'https://picsum.photos/seed/1042/800/600', 'https://picsum.photos/seed/1043/800/600']),
+      images: JSON.stringify(['https://picsum.photos/id/288/800/600', 'https://picsum.photos/id/299/800/600', 'https://picsum.photos/id/10/800/600']),
     },
     {
       unitNumber: "105",
@@ -87,7 +87,7 @@ const units = [
       baseRent: 800000,
       deposit: 0,
       description: "Apartamento con 2 habitaciones, sala-comedor, cocina, baño, que comparte espacio le lavado, servicios de agua, luz y gas.",
-      images: JSON.stringify(['https://picsum.photos/seed/1051/800/600', 'https://picsum.photos/seed/1052/800/600', 'https://picsum.photos/seed/1053/800/600']),
+      images: JSON.stringify(['https://picsum.photos/id/13/800/600', 'https://picsum.photos/id/17/800/600', 'https://picsum.photos/id/18/800/600']),
     },
     {
       unitNumber: "202",
@@ -102,7 +102,7 @@ const units = [
       baseRent: 700000,
       deposit: 0,
       description: "Apartamento con 1 habitacion, sala-comedor, cocina, baño, que comparte espacio le lavado, servicios de agua, luz y gas.",
-      images: JSON.stringify(['https://picsum.photos/seed/2021/800/600', 'https://picsum.photos/seed/2022/800/600', 'https://picsum.photos/seed/2023/800/600']),
+      images: JSON.stringify(['https://picsum.photos/id/19/800/600', 'https://picsum.photos/id/20/800/600', 'https://picsum.photos/id/27/800/600']),
     },
     {
       unitNumber: "203",
@@ -117,7 +117,7 @@ const units = [
       baseRent: 700000,
       deposit: 0,
       description: "Apartamento con 1 habitacion, sala-comedor, cocina, baño, que comparte espacio le lavado, servicios de agua, luz y gas.",
-      images: JSON.stringify(['https://picsum.photos/seed/2031/800/600', 'https://picsum.photos/seed/2032/800/600', 'https://picsum.photos/seed/2033/800/600']),
+      images: JSON.stringify(['https://picsum.photos/id/28/800/600', 'https://picsum.photos/id/30/800/600', 'https://picsum.photos/id/42/800/600']),
     },
     {
       unitNumber: "204",
@@ -133,7 +133,7 @@ const units = [
       baseRent: 800000,
       deposit: 0,
       description: "Apartamento con 2 habitacion, sala-comedor, cocina, baño, espacio le lavado, que comparte servicios de agua, luz y gas.",
-      images: JSON.stringify(['https://picsum.photos/seed/2041/800/600', 'https://picsum.photos/seed/2042/800/600', 'https://picsum.photos/seed/2043/800/600']),
+      images: JSON.stringify(['https://picsum.photos/id/49/800/600', 'https://picsum.photos/id/57/800/600', 'https://picsum.photos/id/78/800/600']),
     },
 ]
 

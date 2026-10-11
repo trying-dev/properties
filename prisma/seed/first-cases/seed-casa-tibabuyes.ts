@@ -16,7 +16,7 @@ const units = [
       baseRent: 1800000,
       deposit: 1800000,
       description: "Local comercial con cocina y baño privado.",
-      images: JSON.stringify(['https://picsum.photos/seed/c1locala1/800/600', 'https://picsum.photos/seed/c1locala2/800/600', 'https://picsum.photos/seed/c1locala3/800/600']),
+      images: JSON.stringify(['https://picsum.photos/id/30/800/600', 'https://picsum.photos/id/42/800/600', 'https://picsum.photos/id/49/800/600']),
     },
     {
       unitNumber: "C1-LOCAL-B",
@@ -28,7 +28,7 @@ const units = [
       baseRent: 1200000,
       deposit: 1200000,
       description: "Local comercial tipo open space.",
-      images: JSON.stringify(['https://picsum.photos/seed/c1localb1/800/600', 'https://picsum.photos/seed/c1localb2/800/600', 'https://picsum.photos/seed/c1localb3/800/600']),
+      images: JSON.stringify(['https://picsum.photos/id/57/800/600', 'https://picsum.photos/id/78/800/600', 'https://picsum.photos/id/121/800/600']),
     },
     {
       unitNumber: "C2-201",
@@ -43,7 +43,7 @@ const units = [
       baseRent: 1300000,
       deposit: 1300000,
       description: "Unidad con cocina y baño privado.",
-      images: JSON.stringify(['https://picsum.photos/seed/c22011/800/600', 'https://picsum.photos/seed/c22012/800/600', 'https://picsum.photos/seed/c22013/800/600']),
+      images: JSON.stringify(['https://picsum.photos/id/122/800/600', 'https://picsum.photos/id/142/800/600', 'https://picsum.photos/id/193/800/600']),
     },
     {
       unitNumber: "C2-202",
@@ -58,7 +58,7 @@ const units = [
       baseRent: 1350000,
       deposit: 1350000,
       description: "Unidad con cocina y baño privado.",
-      images: JSON.stringify(['https://picsum.photos/seed/c22021/800/600', 'https://picsum.photos/seed/c22022/800/600', 'https://picsum.photos/seed/c22023/800/600']),
+      images: JSON.stringify(['https://picsum.photos/id/214/800/600', 'https://picsum.photos/id/232/800/600', 'https://picsum.photos/id/249/800/600']),
     },
     {
       unitNumber: "C3-301",
@@ -76,7 +76,7 @@ const units = [
       baseRent: 3500000,
       deposit: 3500000,
       description: "Apartamento completo con 3 habitaciones, sala-comedor, cocina, baño y área de lavado.",
-      images: JSON.stringify(['https://picsum.photos/seed/c33011/800/600', 'https://picsum.photos/seed/c33012/800/600', 'https://picsum.photos/seed/c33013/800/600']),
+      images: JSON.stringify(['https://picsum.photos/id/257/800/600', 'https://picsum.photos/id/265/800/600', 'https://picsum.photos/id/288/800/600']),
     },
     {
       unitNumber: "C4-401",
@@ -91,7 +91,7 @@ const units = [
       baseRent: 650000,
       deposit: 650000,
       description: "Habitación en piso compartido.",
-      images: JSON.stringify(['https://picsum.photos/seed/c44011/800/600', 'https://picsum.photos/seed/c44012/800/600', 'https://picsum.photos/seed/c44013/800/600']),
+      images: JSON.stringify(['https://picsum.photos/id/299/800/600', 'https://picsum.photos/id/10/800/600', 'https://picsum.photos/id/13/800/600']),
     },
     {
       unitNumber: "C4-402",
@@ -106,7 +106,7 @@ const units = [
       baseRent: 680000,
       deposit: 680000,
       description: "Habitación en piso compartido.",
-      images: JSON.stringify(['https://picsum.photos/seed/c44021/800/600', 'https://picsum.photos/seed/c44022/800/600', 'https://picsum.photos/seed/c44023/800/600']),
+      images: JSON.stringify(['https://picsum.photos/id/17/800/600', 'https://picsum.photos/id/18/800/600', 'https://picsum.photos/id/19/800/600']),
     },
     {
       unitNumber: "C4-403",
@@ -121,7 +121,7 @@ const units = [
       baseRent: 670000,
       deposit: 670000,
       description: "Habitación en piso compartido.",
-      images: JSON.stringify(['https://picsum.photos/seed/c44031/800/600', 'https://picsum.photos/seed/c44032/800/600', 'https://picsum.photos/seed/c44033/800/600']),
+      images: JSON.stringify(['https://picsum.photos/id/20/800/600', 'https://picsum.photos/id/27/800/600', 'https://picsum.photos/id/28/800/600']),
     },
     {
       unitNumber: "C4-404",
@@ -136,7 +136,7 @@ const units = [
       baseRent: 690000,
       deposit: 690000,
       description: "Habitación en piso compartido.",
-      images: JSON.stringify(['https://picsum.photos/seed/c44041/800/600', 'https://picsum.photos/seed/c44042/800/600', 'https://picsum.photos/seed/c44043/800/600']),
+      images: JSON.stringify(['https://picsum.photos/id/30/800/600', 'https://picsum.photos/id/42/800/600', 'https://picsum.photos/id/49/800/600']),
     },
     {
       unitNumber: "C5-501",
@@ -152,7 +152,7 @@ const units = [
       baseRent: 2400000,
       deposit: 2400000,
       description: "Unidad con 2 habitaciones, sala-comedor, cocina y baño.",
-      images: JSON.stringify(['https://picsum.photos/seed/c55011/800/600', 'https://picsum.photos/seed/c55012/800/600', 'https://picsum.photos/seed/c55013/800/600']),
+      images: JSON.stringify(['https://picsum.photos/id/57/800/600', 'https://picsum.photos/id/78/800/600', 'https://picsum.photos/id/121/800/600']),
     },
     {
       unitNumber: "C5-502",
@@ -166,7 +166,7 @@ const units = [
       baseRent: 1700000,
       deposit: 1700000,
       description: "Unidad con 1 habitación, cocina y baño.",
-      images: JSON.stringify(['https://picsum.photos/seed/c55021/800/600', 'https://picsum.photos/seed/c55022/800/600', 'https://picsum.photos/seed/c55023/800/600']),
+      images: JSON.stringify(['https://picsum.photos/id/122/800/600', 'https://picsum.photos/id/142/800/600', 'https://picsum.photos/id/193/800/600']),
     },
 ]
 

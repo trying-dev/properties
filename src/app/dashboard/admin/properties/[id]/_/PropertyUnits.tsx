@@ -55,9 +55,9 @@ export default function PropertyUnits({ propertyId, units }: PropertyUnitsProps)
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {units.map((unit) => (
-            <div key={unit.id} className="rounded-lg border border-gray-100 p-4">
+            <div key={unit.id} className="relative rounded-lg border border-gray-100 p-4 transition hover:border-gray-300">
               <UnitImageCarousel images={parseImages(unit.images)} alt={unit.unitNumber} />
-              <Link href={`/dashboard/admin/units/${unit.id}`} className="block group">
+              <Link href={`/dashboard/admin/units/${unit.id}`} className="block group after:absolute after:inset-0 after:content-['']">
                 <div className="flex items-center justify-between">
                   <p className="font-semibold text-gray-900 group-hover:text-blue-700">{unit.unitNumber}</p>
                   <span className="text-xs font-semibold px-2 py-1 rounded-full bg-gray-100 text-gray-700">{unitStatusLabel[unit.status]}</span>
@@ -91,7 +91,7 @@ export default function PropertyUnits({ propertyId, units }: PropertyUnitsProps)
               </Link>
 
               {unit.processes.length > 0 && (
-                <div className="mt-4 border-t border-gray-100 pt-3 space-y-2">
+                <div className="relative z-10 mt-4 border-t border-gray-100 pt-3 space-y-2">
                   <p className="flex items-center gap-1.5 text-xs font-semibold text-gray-500">
                     <FileText className="h-3.5 w-3.5" />
                     {unit.processes.length === 1 ? 'Proceso de alquiler' : `${unit.processes.length} procesos de alquiler`}

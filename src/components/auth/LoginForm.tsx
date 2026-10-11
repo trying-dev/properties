@@ -28,22 +28,32 @@ export default function LoginForm({ className = 'transition-opacity duration-500
   useEffect(() => {
     if (!state?.success) return
 
+    // Navega de inmediato al destino por rol; la sincronización del usuario sigue en segundo plano.
+    if (state.redirectTo) router.push(state.redirectTo)
+
     dispatch(setAuthVerificationExpires(null))
     dispatch(setLoginState('success'))
     dispatch(setIsAuthenticated(true))
 
     const syncUser = async () => {
-      const user = await getUserAfterLogin({ email })
-      dispatch(setUser(user))
-      dispatch(setLoginState('idle'))
-      dispatch(setAuthModalOpen({ open: false }))
+      try {
+        const user = await getUserAfterLogin({ email })
+        dispatch(setUser(user))
+        dispatch(setLoginState('idle'))
+        dispatch(setAuthModalOpen({ open: false }))
 
-      const dashboardPath = user?.role === 'admin' ? '/dashboard/admin' : user?.role === 'tenant' ? '/dashboard/tenant' : '/dashboard'
-      router.push(dashboardPath)
+        if (!state.redirectTo) {
+          router.push(user?.role === 'admin' ? '/dashboard/admin' : user?.role === 'tenant' ? '/dashboard/tenant' : '/dashboard')
+        }
+      } catch (error) {
+        console.error('Error sincronizando usuario tras el login:', error)
+        dispatch(setLoginState('idle'))
+        dispatch(setAuthModalOpen({ open: false }))
+      }
     }
 
     void syncUser()
-  }, [state?.success, dispatch, email, router])
+  }, [state?.success, state?.redirectTo, dispatch, email, router])
 
   useEffect(() => {
     if (!state?.errors) return

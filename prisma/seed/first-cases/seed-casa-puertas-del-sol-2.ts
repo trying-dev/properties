@@ -17,7 +17,7 @@ const units = [
       baseRent: 1800000,
       deposit: 0,
       description: "Casa con 5 habitacion, sala, comedor, cocina, baño, espacio le lavado y soilar amplio en el 4 piso con servicios independientes.",
-      images: JSON.stringify(['https://picsum.photos/seed/1011/800/600', 'https://picsum.photos/seed/1012/800/600', 'https://picsum.photos/seed/1013/800/600']),
+      images: JSON.stringify(['https://picsum.photos/id/193/800/600', 'https://picsum.photos/id/214/800/600', 'https://picsum.photos/id/232/800/600']),
     },
 ]
 

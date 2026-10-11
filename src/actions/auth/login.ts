@@ -3,12 +3,14 @@
 import { AuthError } from 'next-auth'
 
 import { signIn } from '+/lib/auth'
+import { prisma } from '+/lib/prisma'
 
 export const authenticate = async (
   prevState:
     | {
         success: boolean
         errors?: Record<string, string[]>
+        redirectTo?: string
       }
     | undefined,
   formData: FormData
@@ -57,7 +59,14 @@ export const authenticate = async (
 
     console.log(`✅ Login exitoso para: ${email}`)
 
-    return { success: true }
+    // Destino según el rol, para navegar sin depender de una segunda consulta en el cliente.
+    const account = await prisma.user.findUnique({
+      where: { email: email.trim().toLowerCase() },
+      select: { admin: { select: { id: true } }, owner: { select: { id: true } } },
+    })
+    const redirectTo = account?.admin ? '/dashboard/admin' : account?.owner ? '/dashboard/owner' : '/dashboard/tenant'
+
+    return { success: true, redirectTo }
   } catch (error) {
     let message = 'Error interno del servidor'
 

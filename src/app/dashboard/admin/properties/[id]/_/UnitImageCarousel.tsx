@@ -25,7 +25,7 @@ export default function UnitImageCarousel({ images, alt }: UnitImageCarouselProp
             type="button"
             aria-label="Imagen anterior"
             onClick={() => go(-1)}
-            className="absolute left-2 top-1/2 -translate-y-1/2 rounded-full bg-white/80 p-1 text-gray-900 shadow hover:bg-white"
+            className="absolute z-10 left-2 top-1/2 -translate-y-1/2 rounded-full bg-white/80 p-1 text-gray-900 shadow hover:bg-white"
           >
             <ChevronLeft className="h-4 w-4" />
           </button>
@@ -33,11 +33,11 @@ export default function UnitImageCarousel({ images, alt }: UnitImageCarouselProp
             type="button"
             aria-label="Imagen siguiente"
             onClick={() => go(1)}
-            className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full bg-white/80 p-1 text-gray-900 shadow hover:bg-white"
+            className="absolute z-10 right-2 top-1/2 -translate-y-1/2 rounded-full bg-white/80 p-1 text-gray-900 shadow hover:bg-white"
           >
             <ChevronRight className="h-4 w-4" />
           </button>
-          <div className="absolute bottom-2 left-1/2 flex -translate-x-1/2 gap-1">
+          <div className="absolute z-10 bottom-2 left-1/2 flex -translate-x-1/2 gap-1">
             {images.map((_, dot) => (
               <button
                 key={dot}

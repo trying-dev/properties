@@ -101,10 +101,19 @@ function parse(md: string): { prop: KV; units: Unit[] } {
 }
 
 // ---- construcción de objetos --------------------------------------------------
-const images = (seed: string) =>
-  `JSON.stringify([${[1, 2, 3].map((i) => `'https://picsum.photos/seed/${seed}${i}/800/600'`).join(', ')}])`
+// IDs de picsum.photos elegidos a mano (scripts/image-picker.html). Cada unidad toma 3 en rotación.
+const PICSUM_IDS = [10, 13, 17, 18, 19, 20, 27, 28, 30, 42, 49, 57, 78, 121, 122, 142, 193, 214, 232, 249, 257, 265, 288, 299]
 
-function buildUnit(u: Unit): string {
+const images = (slug: string, index: number) => {
+  const offset = [...slug].reduce((sum, ch) => sum + ch.charCodeAt(0), 0)
+  const urls = [0, 1, 2].map((i) => {
+    const id = PICSUM_IDS[(offset + index * 3 + i) % PICSUM_IDS.length]
+    return `'https://picsum.photos/id/${id}/800/600'`
+  })
+  return `JSON.stringify([${urls.join(', ')}])`
+}
+
+function buildUnit(u: Unit, index: number, slug: string): string {
   const code = clean(u['codigo'] || '')
   const o: string[] = []
   const put = (k: string, v: unknown) => { if (v !== undefined) o.push(`      ${k}: ${v},`) }
@@ -134,7 +143,7 @@ function buildUnit(u: Unit): string {
   str('description', u['descripcion'])
   const dest = u['destacados'] ? clean(u['destacados']) : ''
   if (dest && !isEmpty(dest)) put('highlights', `JSON.stringify(${JSON.stringify(dest.split(',').map((s) => s.trim()))})`)
-  put('images', images(code.toLowerCase().replace(/[^a-z0-9]/g, '')))
+  put('images', images(slug, index))
   return `    {\n${o.join('\n')}\n    },`
 }
 
@@ -177,7 +186,7 @@ function build(slug: string, prop: KV, units: Unit[]): string {
   const zonas = list(prop['zonas_comunes'] || '')
   if (zonas.length) put('commonZones', `JSON.stringify(${JSON.stringify(zonas.map((z) => ({ name: z })))})`)
 
-  const unitsSrc = units.filter((u) => !isEmpty(clean(u['codigo'] || ''))).map(buildUnit).join('\n')
+  const unitsSrc = units.filter((u) => !isEmpty(clean(u['codigo'] || ''))).map((u, index) => buildUnit(u, index, slug)).join('\n')
   const fn = `seedCasa${slug.split('-').map((s) => s[0].toUpperCase() + s.slice(1)).join('')}`
 
   return `// GENERADO por scripts/gen-seed-from-md.ts desde data/${slug}.md — no editar a mano.
