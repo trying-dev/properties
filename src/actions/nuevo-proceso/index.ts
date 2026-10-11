@@ -198,6 +198,7 @@ export const getUnitByIdAction = async (unitId: string) => {
     const unit = await getUnitById({ id: unitId })
 
     if (!unit) {
+      console.warn(`[getUnitByIdAction] id inexistente en la base: ${unitId}`)
       return { success: false, error: 'Unidad no encontrada' }
     }
 

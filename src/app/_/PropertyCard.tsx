@@ -102,6 +102,7 @@ export default function PropertyCard({
       <Link
         key={unit.id}
         href={`/units/${unit.id}`}
+        onClick={() => console.info(`[home] click unidad ${unit.id} (${unit.property.name})`)}
         className="bg-white border border-gray-200 rounded-2xl overflow-hidden hover:shadow-xl transition-all"
       >
         <div className={`relative bg-gray-100 ${compact ? 'h-36' : 'h-56'}`}>

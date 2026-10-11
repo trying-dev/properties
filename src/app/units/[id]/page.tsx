@@ -19,11 +19,15 @@ export default async function UnitDetailPage({ params }: { params: Promise<{ id:
     notFound()
   }
 
+  const startedAt = Date.now()
   const [result, session] = await Promise.all([getUnitByIdAction(id), auth()])
+  const elapsedMs = Date.now() - startedAt
 
   if (!result.success || !result.data) {
+    console.warn(`[units/${id}] no cargó: ${result.error ?? 'sin datos'} (${elapsedMs}ms, sesión: ${session?.user ? 'sí' : 'no'})`)
     notFound()
   }
+  console.info(`[units/${id}] ok (${elapsedMs}ms)`)
 
   const unit = result.data
   const images = parseImages(unit.images)
