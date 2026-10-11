@@ -81,7 +81,7 @@ export const seedCasaTibabuyesModules = async () => {
     })
   }
 
-  const demoUnit = juanUnits[0] // C1-LOCAL-A: unidad con todos los módulos + estado "Esperando confirmación"
+  const demoUnit = juanUnits[0] // 101: unidad con todos los módulos + estado "Esperando confirmación"
   const demoContract = demoUnit.contracts[0]
 
   await resetModules()

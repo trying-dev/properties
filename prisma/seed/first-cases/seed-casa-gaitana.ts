@@ -103,6 +103,7 @@ export const seedCasaGaitana = async () => {
       gpsCoordinates: "4.739513400735189, -74.10871951331606 #  confirmar",
       propertyType: "BUILDING",
       status: "ACTIVE",
+      images: JSON.stringify(['https://picsum.photos/id/257/800/600', 'https://picsum.photos/id/265/800/600', 'https://picsum.photos/id/288/800/600']),
       totalLandArea: 6,
       builtArea: 2,
       floors: 3,

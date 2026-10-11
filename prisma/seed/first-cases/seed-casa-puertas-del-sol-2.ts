@@ -42,6 +42,7 @@ export const seedCasaPuertasDelSol2 = async () => {
       gpsCoordinates: "4.7453508666160085, -74.10525170582646 #  confirmar",
       propertyType: "HOUSE",
       status: "ACTIVE",
+      images: JSON.stringify(['https://picsum.photos/id/249/800/600', 'https://picsum.photos/id/257/800/600', 'https://picsum.photos/id/265/800/600']),
       totalLandArea: 3,
       builtArea: 2,
       floors: 4,

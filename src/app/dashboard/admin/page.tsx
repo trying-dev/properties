@@ -6,9 +6,9 @@ import { AlertTriangle, BellRing, Building2, ClipboardCheck, CreditCard, FilePlu
 
 import { getProperties } from '+/actions/property'
 import { getPendingPaymentsCount } from '+/actions/payments'
+import { getUnitsCount } from '+/actions/units'
 import { getPendingApplicationsCount } from '+/actions/processes'
 import Header from '+/components/Header'
-import OccupancyOverview from './_/OccupancyOverview'
 
 type MenuOption = {
   id: string
@@ -23,6 +23,7 @@ type MenuOption = {
 export default function AdminDashboard() {
   const router = useRouter()
   const [propertiesCount, setPropertiesCount] = useState<number | null>(null)
+  const [unitsCount, setUnitsCount] = useState<number | null>(null)
   const [pendingPaymentsCount, setPendingPaymentsCount] = useState<number | null>(null)
   const [pendingApplicationsCount, setPendingApplicationsCount] = useState<number | null>(null)
   const [loading, setLoading] = useState(true)
@@ -30,13 +31,15 @@ export default function AdminDashboard() {
   useEffect(() => {
     let mounted = true
     const load = async () => {
-      const [properties, payments, applications] = await Promise.allSettled([
+      const [properties, units, payments, applications] = await Promise.allSettled([
         getProperties(),
+        getUnitsCount(),
         getPendingPaymentsCount(),
         getPendingApplicationsCount(),
       ])
       if (!mounted) return
       if (properties.status === 'fulfilled') setPropertiesCount(properties.value.length)
+      if (units.status === 'fulfilled') setUnitsCount(units.value)
       if (payments.status === 'fulfilled') setPendingPaymentsCount(payments.value)
       if (applications.status === 'fulfilled') setPendingApplicationsCount(applications.value)
       setLoading(false)
@@ -63,8 +66,8 @@ export default function AdminDashboard() {
       title: 'Unidades',
       description: 'Revisa la disponibilidad de unidades',
       href: '/dashboard/admin/units',
-      badge: null,
-      hasBadge: false,
+      badge: unitsCount,
+      hasBadge: true,
     },
     {
       id: 'applications',
@@ -217,19 +220,12 @@ export default function AdminDashboard() {
       <Header />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 flex-1 w-full">
-        <div className="mb-12">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Panel de administración</h1>
-          <p className="text-gray-600">Accede rápido a las áreas principales del dashboard.</p>
-        </div>
-
-        <OccupancyOverview />
-
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {menuOptions.map((option) => (
             <button
               key={option.id}
               onClick={() => router.push(option.href)}
-              className="bg-white border border-gray-200 rounded-lg p-6 hover:border-gray-400 hover:shadow-md transition-all text-left group"
+              className="bg-white border border-gray-200 rounded-lg p-6 hover:border-gray-400 hover:shadow-md transition-all text-left group cursor-pointer"
             >
               <div className="flex items-start justify-between mb-4">
                 <div className="w-12 h-12 flex items-center justify-center">

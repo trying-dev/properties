@@ -40,6 +40,7 @@ export const seedCasaPuertasDelSol = async () => {
       country: "Colombia",
       propertyType: "HOUSE",
       status: "ACTIVE",
+      images: JSON.stringify(['https://picsum.photos/id/257/800/600', 'https://picsum.photos/id/265/800/600', 'https://picsum.photos/id/288/800/600']),
       totalLandArea: 2,
       builtArea: 2,
       floors: 2,

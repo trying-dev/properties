@@ -3,6 +3,7 @@ import { Property } from '+/generated/prisma/client'
 import { useRouter } from 'next/navigation'
 import { MapPin } from 'lucide-react'
 import { useState } from 'react'
+import { parseImages } from '+/app/units/[id]/_/utils'
 
 export default function CardProperty({ property }: { property: Property }) {
   const router = useRouter()
@@ -10,7 +11,8 @@ export default function CardProperty({ property }: { property: Property }) {
 
   const { name = 'Nombre de Propiedad', street = 'Calle', number = '000', neighborhood = 'Colonia' } = property
 
-  const fullAddress = `${street} ${number}, ${neighborhood}`
+  const fullAddress = [[street, number].filter((part) => part && part !== '???').join(' '), neighborhood].filter(Boolean).join(', ') || 'Sin dirección'
+  const cover = parseImages(property.images)[0] ?? '/images/img1.png'
 
 
 
@@ -28,15 +30,15 @@ export default function CardProperty({ property }: { property: Property }) {
     >
       <div
         className={`
-        grid grid-cols-1 md:grid-cols-[2fr_2fr_1fr_160px] items-center gap-3 rounded-lg border px-4 py-3 transition-all duration-200
-        ${isHovered ? 'border-blue-300 shadow-sm bg-blue-50/50' : 'border-gray-200 hover:border-gray-300'}
+        grid grid-cols-1 md:grid-cols-[2fr_2fr] items-center gap-3 px-4 py-3 transition-colors duration-150
+        ${isHovered ? 'bg-gray-50' : ''}
       `}
       >
         <div className="flex items-center gap-3 min-w-0">
           <div className="relative shrink-0">
             <div className="w-12 h-12 rounded-lg overflow-hidden bg-gray-100">
               <Image
-                src="/images/img1.png"
+                src={cover}
                 alt={`Imagen de ${name}`}
                 width={48}
                 height={48}
@@ -46,7 +48,6 @@ export default function CardProperty({ property }: { property: Property }) {
           </div>
           <div className="min-w-0">
             <h3 className="font-semibold text-gray-900 truncate group-hover:text-blue-700 transition-colors">{name}</h3>
-            <p className="text-xs text-gray-500 truncate">ID: {property.id.slice(0, 8)}...</p>
           </div>
         </div>
 
@@ -54,12 +55,6 @@ export default function CardProperty({ property }: { property: Property }) {
           <MapPin className="h-4 w-4 mr-1 text-gray-400 shrink-0" />
           <span className="truncate">{fullAddress}</span>
         </div>
-
-        <div>
-          <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-700">Activa</span>
-        </div>
-
-        <div className="text-xs text-gray-500">Ver detalle</div>
       </div>
     </div>
   )

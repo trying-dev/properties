@@ -47,7 +47,7 @@ PROPIEDAD
   zonas_comunes:   escaleras, cocina compartida piso 4, baño compartido piso 4, lavado compartido piso 4
 
 UNIDADES
-  - codigo:      C1-LOCAL-A
+  - codigo:      101
     piso:        1
     area:        40 m2 (est)
     habitaciones: 0
@@ -58,7 +58,7 @@ UNIDADES
     deposito:    1.800.000 (est)
     descripcion: Local comercial con cocina y baño privado.
 
-  - codigo:      C1-LOCAL-B
+  - codigo:      102
     piso:        1
     area:        30 m2 (est)
     habitaciones: 0
@@ -69,7 +69,7 @@ UNIDADES
     deposito:    1.200.000 (est)
     descripcion: Local comercial tipo open space.
 
-  - codigo:      C2-201
+  - codigo:      201
     piso:        2
     area:        45 m2 (est)
     habitaciones: 1
@@ -81,7 +81,7 @@ UNIDADES
     deposito:    1.300.000 (est)
     descripcion: Unidad con cocina y baño privado.
 
-  - codigo:      C2-202
+  - codigo:      202
     piso:        2
     area:        48 m2 (est)
     habitaciones: 1
@@ -93,7 +93,7 @@ UNIDADES
     deposito:    1.350.000 (est)
     descripcion: Unidad con cocina y baño privado.
 
-  - codigo:      C3-301
+  - codigo:      301
     piso:        3
     area:        120 m2 (est)
     habitaciones: 3
@@ -105,7 +105,7 @@ UNIDADES
     deposito:    3.500.000 (est)
     descripcion: Apartamento completo con 3 habitaciones, sala-comedor, cocina, baño y área de lavado.
 
-  - codigo:      C4-401
+  - codigo:      401
     piso:        4
     area:        18 m2 (est)
     habitaciones: 1
@@ -117,7 +117,7 @@ UNIDADES
     deposito:    650.000 (est)
     descripcion: Habitación en piso compartido.
 
-  - codigo:      C4-402
+  - codigo:      402
     piso:        4
     area:        20 m2 (est)
     habitaciones: 1
@@ -129,7 +129,7 @@ UNIDADES
     deposito:    680.000 (est)
     descripcion: Habitación en piso compartido.
 
-  - codigo:      C4-403
+  - codigo:      403
     piso:        4
     area:        19 m2 (est)
     habitaciones: 1
@@ -141,7 +141,7 @@ UNIDADES
     deposito:    670.000 (est)
     descripcion: Habitación en piso compartido.
 
-  - codigo:      C4-404
+  - codigo:      404
     piso:        4
     area:        21 m2 (est)
     habitaciones: 1
@@ -153,7 +153,7 @@ UNIDADES
     deposito:    690.000 (est)
     descripcion: Habitación en piso compartido.
 
-  - codigo:      C5-501
+  - codigo:      501
     piso:        5
     area:        85 m2 (est)
     habitaciones: 2
@@ -164,7 +164,7 @@ UNIDADES
     deposito:    2.400.000 (est)
     descripcion: Unidad con 2 habitaciones, sala-comedor, cocina y baño.
 
-  - codigo:      C5-502
+  - codigo:      502
     piso:        5
     area:        55 m2 (est)
     habitaciones: 1

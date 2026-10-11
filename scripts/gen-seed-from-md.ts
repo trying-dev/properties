@@ -166,6 +166,7 @@ function build(slug: string, prop: KV, units: Unit[]): string {
   str('gpsCoordinates', prop['gps'])
   put('propertyType', JSON.stringify(TYPE[clean(prop['tipo'] || '')] || 'HOUSE'))
   put('status', JSON.stringify(PSTATUS[clean(prop['estado'] || 'ACTIVA')] || 'ACTIVE'))
+  put('images', images(slug, units.length))
   put('totalLandArea', num(prop['area_lote'] || ''))
   put('builtArea', num(prop['area_construida'] || '') ?? 0)
   put('floors', int(prop['pisos'] || '1') ?? 1)

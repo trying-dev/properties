@@ -5,7 +5,7 @@ const PROPERTY_ID = 'case-casa-tibabuyes'
 
 const units = [
     {
-      unitNumber: "C1-LOCAL-A",
+      unitNumber: "101",
       floor: 1,
       area: 40,
       bedrooms: 0,
@@ -19,7 +19,7 @@ const units = [
       images: JSON.stringify(['https://picsum.photos/id/30/800/600', 'https://picsum.photos/id/42/800/600', 'https://picsum.photos/id/49/800/600']),
     },
     {
-      unitNumber: "C1-LOCAL-B",
+      unitNumber: "102",
       floor: 1,
       area: 30,
       bedrooms: 0,
@@ -31,7 +31,7 @@ const units = [
       images: JSON.stringify(['https://picsum.photos/id/57/800/600', 'https://picsum.photos/id/78/800/600', 'https://picsum.photos/id/121/800/600']),
     },
     {
-      unitNumber: "C2-201",
+      unitNumber: "201",
       floor: 2,
       area: 45,
       bedrooms: 1,
@@ -46,7 +46,7 @@ const units = [
       images: JSON.stringify(['https://picsum.photos/id/122/800/600', 'https://picsum.photos/id/142/800/600', 'https://picsum.photos/id/193/800/600']),
     },
     {
-      unitNumber: "C2-202",
+      unitNumber: "202",
       floor: 2,
       area: 48,
       bedrooms: 1,
@@ -61,7 +61,7 @@ const units = [
       images: JSON.stringify(['https://picsum.photos/id/214/800/600', 'https://picsum.photos/id/232/800/600', 'https://picsum.photos/id/249/800/600']),
     },
     {
-      unitNumber: "C3-301",
+      unitNumber: "301",
       floor: 3,
       area: 120,
       bedrooms: 3,
@@ -79,7 +79,7 @@ const units = [
       images: JSON.stringify(['https://picsum.photos/id/257/800/600', 'https://picsum.photos/id/265/800/600', 'https://picsum.photos/id/288/800/600']),
     },
     {
-      unitNumber: "C4-401",
+      unitNumber: "401",
       floor: 4,
       area: 18,
       bedrooms: 1,
@@ -94,7 +94,7 @@ const units = [
       images: JSON.stringify(['https://picsum.photos/id/299/800/600', 'https://picsum.photos/id/10/800/600', 'https://picsum.photos/id/13/800/600']),
     },
     {
-      unitNumber: "C4-402",
+      unitNumber: "402",
       floor: 4,
       area: 20,
       bedrooms: 1,
@@ -109,7 +109,7 @@ const units = [
       images: JSON.stringify(['https://picsum.photos/id/17/800/600', 'https://picsum.photos/id/18/800/600', 'https://picsum.photos/id/19/800/600']),
     },
     {
-      unitNumber: "C4-403",
+      unitNumber: "403",
       floor: 4,
       area: 19,
       bedrooms: 1,
@@ -124,7 +124,7 @@ const units = [
       images: JSON.stringify(['https://picsum.photos/id/20/800/600', 'https://picsum.photos/id/27/800/600', 'https://picsum.photos/id/28/800/600']),
     },
     {
-      unitNumber: "C4-404",
+      unitNumber: "404",
       floor: 4,
       area: 21,
       bedrooms: 1,
@@ -139,7 +139,7 @@ const units = [
       images: JSON.stringify(['https://picsum.photos/id/30/800/600', 'https://picsum.photos/id/42/800/600', 'https://picsum.photos/id/49/800/600']),
     },
     {
-      unitNumber: "C5-501",
+      unitNumber: "501",
       floor: 5,
       area: 85,
       bedrooms: 2,
@@ -155,7 +155,7 @@ const units = [
       images: JSON.stringify(['https://picsum.photos/id/57/800/600', 'https://picsum.photos/id/78/800/600', 'https://picsum.photos/id/121/800/600']),
     },
     {
-      unitNumber: "C5-502",
+      unitNumber: "502",
       floor: 5,
       area: 55,
       bedrooms: 1,
@@ -191,6 +191,7 @@ export const seedCasaTibabuyes = async () => {
       gpsCoordinates: "4.74097,-74.09929",
       propertyType: "BUILDING",
       status: "ACTIVE",
+      images: JSON.stringify(['https://picsum.photos/id/214/800/600', 'https://picsum.photos/id/232/800/600', 'https://picsum.photos/id/249/800/600']),
       totalLandArea: 160,
       builtArea: 420,
       floors: 5,

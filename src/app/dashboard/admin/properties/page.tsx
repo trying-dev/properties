@@ -1,18 +1,37 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { ArrowLeft, Building2, Plus } from 'lucide-react'
+import { ArrowLeft, Building2, Grid3x3, LayoutGrid, Plus, Rows3 } from 'lucide-react'
 import Link from 'next/link'
 
 import { getProperties } from '+/actions/property'
 import Header from '+/components/Header'
+import ViewModeToggle from '+/components/ViewModeToggle'
 import CardProperty from '../../fragments/CardProperty'
+import CardPropertyCompact from '../../fragments/CardPropertyCompact'
+import CardPropertyGrid from '../../fragments/CardPropertyGrid'
 import type { Property } from '+/generated/prisma/client'
 import Modal from '+/components/Modal'
 import PropertyForm from './_/PropertyForm'
 import type { PropertyFormState } from './_/propertyFormTypes'
 
+type ViewMode = 'list' | 'mosaic' | 'compact'
+
+const VIEW_STORAGE_KEY = 'properties-view'
+
+const readStoredView = (): ViewMode => {
+  try {
+    const stored = localStorage.getItem(VIEW_STORAGE_KEY)
+    if (stored === 'compact') return 'compact'
+    // 'grid' es el valor que guardaba la versión anterior de la vista de tarjetas.
+    return stored === 'mosaic' || stored === 'grid' ? 'mosaic' : 'list'
+  } catch {
+    return 'list'
+  }
+}
+
 export default function AdminPropertiesPage() {
+  const [view, setView] = useState<ViewMode>('list')
   const [properties, setProperties] = useState<Property[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -35,7 +54,17 @@ export default function AdminPropertiesPage() {
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect -- fetch inicial de datos
     loadProperties()
+    setView(readStoredView())
   }, [])
+
+  const changeView = (next: ViewMode) => {
+    setView(next)
+    try {
+      localStorage.setItem(VIEW_STORAGE_KEY, next)
+    } catch {
+      // La preferencia es opcional; si el almacenamiento no está disponible se ignora.
+    }
+  }
 
   if (isLoading) {
     return (
@@ -93,6 +122,15 @@ export default function AdminPropertiesPage() {
           </div>
           <div className="flex items-center gap-3">
             <span className="bg-gray-900 text-white text-sm font-semibold px-3 py-1 rounded-full">{properties.length}</span>
+            <ViewModeToggle
+              value={view}
+              onChange={changeView}
+              options={[
+                { mode: 'list', label: 'Listado', Icon: Rows3 },
+                { mode: 'mosaic', label: 'Mosaico', Icon: LayoutGrid },
+                { mode: 'compact', label: 'Mosaico pequeño', Icon: Grid3x3 },
+              ]}
+            />
             <button
               type="button"
               onClick={() => setIsCreateOpen(true)}
@@ -111,18 +149,26 @@ export default function AdminPropertiesPage() {
               <h3 className="text-lg font-medium text-gray-900 mb-2">No hay propiedades</h3>
               <p className="text-gray-600">Aún no tienes propiedades registradas.</p>
             </div>
+          ) : view === 'mosaic' ? (
+            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {properties.map((property) => (
+                <CardPropertyGrid key={property.id} property={property} />
+              ))}
+            </div>
+          ) : view === 'compact' ? (
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6">
+              {properties.map((property) => (
+                <CardPropertyCompact key={property.id} property={property} />
+              ))}
+            </div>
           ) : (
             <div className="divide-y divide-gray-200">
-              <div className="hidden md:grid grid-cols-[2fr_2fr_1fr_160px] gap-4 px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide bg-gray-50">
+              <div className="hidden md:grid grid-cols-[2fr_2fr] gap-4 px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide bg-gray-50">
                 <span>Propiedad</span>
                 <span>Dirección</span>
-                <span>Estado</span>
-                <span>ID</span>
               </div>
               {properties.map((property) => (
-                <div key={property.id} className="px-4 py-3 hover:bg-gray-50 transition-colors">
-                  <CardProperty property={property} />
-                </div>
+                <CardProperty key={property.id} property={property} />
               ))}
             </div>
           )}

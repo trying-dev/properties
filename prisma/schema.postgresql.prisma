@@ -418,6 +418,9 @@ model Property {
   balconiesAndTerraces String?
   recreationalAreas    String?
 
+  // Imágenes de la propiedad (JSON string con array de URLs; la primera es la portada)
+  images String?
+
   // Zonas comunes (optimizado como JSON)
   commonZones String? // JSON string con array de zonas comunes
   // Ejemplo: [{"name": "Piscina", "description": "...", "capacity": 20, "available": true, "openingTime": "06:00", "closingTime": "22:00", "adminId": "admin123"}]

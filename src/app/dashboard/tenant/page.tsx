@@ -103,7 +103,7 @@ export default function TenantDashboard() {
             <button
               key={option.id}
               onClick={option.onClick}
-              className="bg-white border border-gray-200 rounded-lg p-6 hover:border-gray-400 hover:shadow-md transition-all text-left group"
+              className="bg-white border border-gray-200 rounded-lg p-6 hover:border-gray-400 hover:shadow-md transition-all text-left group cursor-pointer"
             >
               <div className="flex items-start justify-between mb-4">
                 <div className="w-12 h-12 flex items-center justify-center">

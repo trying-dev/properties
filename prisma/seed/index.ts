@@ -380,6 +380,7 @@ const createPropertyAndUnits = async (adminId: string) => {
     data: {
       admins: { connect: [{ id: adminId }] },
       name: 'Edificio Plaza Central',
+      images: JSON.stringify(['https://picsum.photos/id/42/800/600', 'https://picsum.photos/id/49/800/600', 'https://picsum.photos/id/57/800/600']),
       description: 'Edificio mixto de 2 pisos con locales comerciales y apartamentos',
       street: 'Carrera 92',
       number: '147-50',
@@ -404,7 +405,7 @@ const createPropertyAndUnits = async (adminId: string) => {
   const local1 = await prisma.unit.create({
     data: {
       property: { connect: { id: property.id } },
-      unitNumber: 'L-101',
+      unitNumber: '101',
       floor: 1,
       area: 45.5,
       bedrooms: 0,
@@ -446,7 +447,7 @@ const createPropertyAndUnits = async (adminId: string) => {
   const local2 = await prisma.unit.create({
     data: {
       property: { connect: { id: property.id } },
-      unitNumber: 'L-102',
+      unitNumber: '102',
       floor: 1,
       area: 60.0,
       bedrooms: 0,
@@ -481,7 +482,7 @@ const createPropertyAndUnits = async (adminId: string) => {
   const apartamento1 = await prisma.unit.create({
     data: {
       property: { connect: { id: property.id } },
-      unitNumber: 'A-201',
+      unitNumber: '201',
       floor: 2,
       area: 70.0,
       bedrooms: 2,
@@ -519,7 +520,7 @@ const createPropertyAndUnits = async (adminId: string) => {
   const apartamento2 = await prisma.unit.create({
     data: {
       property: { connect: { id: property.id } },
-      unitNumber: 'A-202',
+      unitNumber: '202',
       floor: 2,
       area: 75.0,
       bedrooms: 2,
@@ -575,7 +576,7 @@ const createExtraProperties = async (adminId: string) => {
       propertyType: PropertyType.BUILDING,
       units: [
         {
-          unitNumber: 'E1-101',
+          unitNumber: '101',
           floor: 1,
           area: 55,
           bedrooms: 1,
@@ -604,7 +605,7 @@ const createExtraProperties = async (adminId: string) => {
           }),
         },
         {
-          unitNumber: 'E1-201',
+          unitNumber: '201',
           floor: 2,
           area: 65,
           bedrooms: 2,
@@ -644,7 +645,7 @@ const createExtraProperties = async (adminId: string) => {
       propertyType: PropertyType.BUILDING,
       units: [
         {
-          unitNumber: 'E2-101',
+          unitNumber: '101',
           floor: 1,
           area: 60,
           bedrooms: 2,
@@ -673,7 +674,7 @@ const createExtraProperties = async (adminId: string) => {
           }),
         },
         {
-          unitNumber: 'E2-201',
+          unitNumber: '201',
           floor: 2,
           area: 75,
           bedrooms: 3,
@@ -720,6 +721,7 @@ const createExtraProperties = async (adminId: string) => {
         id: extra.id,
         admins: { connect: [{ id: adminId }] },
         name: extra.name,
+        images: JSON.stringify(['https://picsum.photos/id/78/800/600', 'https://picsum.photos/id/121/800/600', 'https://picsum.photos/id/142/800/600']),
         description: 'Propiedad demo para unidades disponibles',
         street: 'Demo St',
         number: '123',

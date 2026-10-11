@@ -2,27 +2,33 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
-import { ArrowLeft } from 'lucide-react'
+import { ArrowLeft, Grid3x3, LayoutGrid, Rows3 } from 'lucide-react'
 import { UnitStatus } from '+/generated/prisma/enums'
 import type { Property } from '+/generated/prisma/client'
 
+import FilterSelect from '+/components/FilterSelect'
 import Header from '+/components/Header'
+import ViewModeToggle from '+/components/ViewModeToggle'
 import { getAdminUnitsAction } from '+/actions/units'
 import { getProperties } from '+/actions/property'
 import type { AdminUnitRow } from '+/actions/units'
+import { UnitCompactCard, UnitListRow, UnitMosaicCard, unitStatusLabel as statusLabel } from './_/UnitViews'
 
-const statusLabel: Record<UnitStatus, string> = {
-  VACANT: 'Vacante',
-  OCCUPIED: 'Ocupada',
-  RESERVED: 'Reservada',
-  MAINTENANCE: 'Mantenimiento',
-  UNAVAILABLE: 'No disponible',
+type ViewMode = 'list' | 'mosaic' | 'compact'
+
+const VIEW_STORAGE_KEY = 'units-view'
+
+const readStoredView = (): ViewMode => {
+  try {
+    const stored = localStorage.getItem(VIEW_STORAGE_KEY)
+    return stored === 'mosaic' || stored === 'compact' ? stored : 'list'
+  } catch {
+    return 'list'
+  }
 }
 
-const formatAddress = (property: Property) =>
-  `${property.street} ${property.number}, ${property.neighborhood}, ${property.city}`
-
 export default function AdminUnitsPage() {
+  const [view, setView] = useState<ViewMode>('list')
   const [units, setUnits] = useState<AdminUnitRow[]>([])
   const [properties, setProperties] = useState<Property[]>([])
   const [status, setStatus] = useState<UnitStatus | ''>('')
@@ -51,7 +57,18 @@ export default function AdminUnitsPage() {
       }
     }
     loadProperties()
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- preferencia guardada, solo disponible en el cliente
+    setView(readStoredView())
   }, [])
+
+  const changeView = (next: ViewMode) => {
+    setView(next)
+    try {
+      localStorage.setItem(VIEW_STORAGE_KEY, next)
+    } catch {
+      // La preferencia es opcional; si el almacenamiento no está disponible se ignora.
+    }
+  }
 
   const loadUnits = async (filters?: { status?: UnitStatus; propertyId?: string; city?: string }) => {
     try {
@@ -119,45 +136,45 @@ export default function AdminUnitsPage() {
             <h1 className="text-3xl font-bold text-gray-900">Unidades</h1>
             <p className="text-gray-600">Listado completo de unidades y sus contratos.</p>
           </div>
-          <span className="bg-gray-900 text-white text-sm font-semibold px-3 py-1 rounded-full">{units.length}</span>
+          <div className="flex items-center gap-3">
+            <span className="bg-gray-900 text-white text-sm font-semibold px-3 py-1 rounded-full">{units.length}</span>
+            <ViewModeToggle
+              value={view}
+              onChange={changeView}
+              options={[
+                { mode: 'list', label: 'Listado', Icon: Rows3 },
+                { mode: 'mosaic', label: 'Mosaico', Icon: LayoutGrid },
+                { mode: 'compact', label: 'Mosaico pequeño', Icon: Grid3x3 },
+              ]}
+            />
+          </div>
         </div>
 
-        <div className="bg-white rounded-lg border border-gray-200 p-4 mb-6">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <label className="flex flex-col gap-2 text-sm text-gray-700">
-              Estado
-              <select className="border rounded-lg px-3 py-2" value={status} onChange={(e) => handleStatusChange(e.target.value as UnitStatus | '')}>
-                <option value="">Todos</option>
-                {Object.values(UnitStatus).map((value) => (
-                  <option key={value} value={value}>
-                    {statusLabel[value]}
-                  </option>
-                ))}
-              </select>
-            </label>
-            <label className="flex flex-col gap-2 text-sm text-gray-700">
-              Propiedad
-              <select className="border rounded-lg px-3 py-2" value={propertyId} onChange={(e) => handlePropertyChange(e.target.value)}>
-                <option value="">Todas</option>
-                {properties.map((property) => (
-                  <option key={property.id} value={property.id}>
-                    {property.name}
-                  </option>
-                ))}
-              </select>
-            </label>
-            <label className="flex flex-col gap-2 text-sm text-gray-700">
-              Ciudad
-              <select className="border rounded-lg px-3 py-2" value={city} onChange={(e) => handleCityChange(e.target.value)}>
-                <option value="">Todas</option>
-                {cities.map((value) => (
-                  <option key={value} value={value}>
-                    {value}
-                  </option>
-                ))}
-              </select>
-            </label>
-          </div>
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-3 mb-6">
+          <FilterSelect label="Estado" value={status} onChange={(e) => handleStatusChange(e.target.value as UnitStatus | '')}>
+            <option value="">Todos</option>
+            {Object.values(UnitStatus).map((value) => (
+              <option key={value} value={value}>
+                {statusLabel[value]}
+              </option>
+            ))}
+          </FilterSelect>
+          <FilterSelect label="Propiedad" value={propertyId} onChange={(e) => handlePropertyChange(e.target.value)}>
+            <option value="">Todas</option>
+            {properties.map((property) => (
+              <option key={property.id} value={property.id}>
+                {property.name}
+              </option>
+            ))}
+          </FilterSelect>
+          <FilterSelect label="Ciudad" value={city} onChange={(e) => handleCityChange(e.target.value)}>
+            <option value="">Todas</option>
+            {cities.map((value) => (
+              <option key={value} value={value}>
+                {value}
+              </option>
+            ))}
+          </FilterSelect>
         </div>
 
         {isLoading ? (
@@ -170,40 +187,29 @@ export default function AdminUnitsPage() {
         ) : units.length === 0 ? (
           <div className="text-center py-12 text-gray-600">No hay unidades para los filtros seleccionados.</div>
         ) : (
-          <div className="bg-white rounded-lg border border-gray-200 divide-y">
-            {pagedUnits.map((unit) => {
-              const latestContract = unit.contracts[0]
-              const tenantName = latestContract?.tenant?.user
-                ? `${latestContract.tenant.user.name} ${latestContract.tenant.user.lastName}`
-                : '-'
-
-              return (
-                <div key={unit.id} className="p-4 hover:bg-gray-50 transition-colors">
-                  <div className="grid grid-cols-1 md:grid-cols-[160px_1fr_200px_160px] gap-4 items-center">
-                    <Link href={`/dashboard/admin/units/${unit.id}`} className="text-sm font-semibold text-gray-900 hover:text-blue-700">
-                      Unidad {unit.unitNumber}
-                    </Link>
-                    <div className="text-sm text-gray-600">
-                      <p className="font-medium text-gray-900">{unit.property.name}</p>
-                      <p className="text-xs text-gray-500">{formatAddress(unit.property)}</p>
-                    </div>
-                    <div className="text-sm text-gray-600">
-                      <p className="text-xs text-gray-500">Contrato</p>
-                      <p className="font-medium text-gray-900">{unit._count.contracts > 0 ? 'Sí' : 'No'}</p>
-                      {unit._count.contracts > 0 && <p className="text-xs text-gray-500">Inquilino: {tenantName}</p>}
-                    </div>
-                    <div className="text-sm text-gray-600">
-                      <p className="text-xs text-gray-500">Estado</p>
-                      <p className="font-medium text-gray-900">{statusLabel[unit.status]}</p>
-                      <Link href={`/dashboard/admin/properties/${unit.propertyId}`} className="text-xs text-blue-600 hover:text-blue-700">
-                        Ver propiedad
-                      </Link>
-                    </div>
-                  </div>
-                </div>
-              )
-            })}
-          </div>
+          <>
+            {view === 'list' && (
+              <div className="bg-white rounded-lg border border-gray-200 divide-y divide-gray-200 overflow-hidden">
+                {pagedUnits.map((unit) => (
+                  <UnitListRow key={unit.id} unit={unit} />
+                ))}
+              </div>
+            )}
+            {view === 'mosaic' && (
+              <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                {pagedUnits.map((unit) => (
+                  <UnitMosaicCard key={unit.id} unit={unit} />
+                ))}
+              </div>
+            )}
+            {view === 'compact' && (
+              <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6">
+                {pagedUnits.map((unit) => (
+                  <UnitCompactCard key={unit.id} unit={unit} />
+                ))}
+              </div>
+            )}
+          </>
         )}
 
         {!isLoading && !error && units.length > pageSize && (

@@ -42,6 +42,7 @@ export const seedCasaVillaMaria = async () => {
       gpsCoordinates: "4.743183458406693, -74.10431807664398 #  confirmar",
       propertyType: "APARTMENT",
       status: "ACTIVE",
+      images: JSON.stringify(['https://picsum.photos/id/17/800/600', 'https://picsum.photos/id/18/800/600', 'https://picsum.photos/id/19/800/600']),
       totalLandArea: 6,
       builtArea: 2,
       floors: 1,

@@ -40,7 +40,7 @@ const ownerUsers = [
 
 const tenantUsers = [
   {
-    role: 'Inquilino Tibabuyes C1-LOCAL-A — Juan',
+    role: 'Inquilino Tibabuyes 101 — Juan',
     email: 'j.perezgomez@tenant-properties.com',
     password: passwordDemo,
   },

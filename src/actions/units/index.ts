@@ -1,14 +1,19 @@
 'use server'
 
 import { Prisma, UnitStatus } from '+/generated/prisma/client'
+import { getCurrentAdminScope, propertyAccessFilter } from '+/lib/adminScope'
 import { prisma } from '+/lib/prisma'
 
 export const getAdminUnits = async (filters?: { status?: UnitStatus; propertyId?: string; city?: string }) => {
-  const where: Prisma.UnitWhereInput = {}
+  const scope = await getCurrentAdminScope()
+  if (!scope) return []
+
+  const where: Prisma.UnitWhereInput = {
+    property: { is: { ...propertyAccessFilter(scope), ...(filters?.city ? { city: filters.city } : {}) } },
+  }
 
   if (filters?.status) where.status = filters.status
   if (filters?.propertyId) where.propertyId = filters.propertyId
-  if (filters?.city) where.property = { is: { city: filters.city } }
 
   return prisma.unit.findMany({
     where,
@@ -40,4 +45,11 @@ export const getAdminUnitsAction = async (filters?: { status?: UnitStatus; prope
       error: error instanceof Error ? error.message : 'Error al obtener unidades',
     }
   }
+}
+
+export const getUnitsCount = async () => {
+  const scope = await getCurrentAdminScope()
+  if (!scope) return 0
+
+  return prisma.unit.count({ where: { property: { is: propertyAccessFilter(scope) } } })
 }

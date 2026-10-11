@@ -158,6 +158,7 @@ export const seedCasaFerias = async () => {
       gpsCoordinates: "4.686104904869476, -74.08861814559945 #  confirmar",
       propertyType: "BUILDING",
       status: "ACTIVE",
+      images: JSON.stringify(['https://picsum.photos/id/121/800/600', 'https://picsum.photos/id/122/800/600', 'https://picsum.photos/id/142/800/600']),
       totalLandArea: 8,
       builtArea: 2,
       floors: 2,

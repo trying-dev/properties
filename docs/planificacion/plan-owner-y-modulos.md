@@ -58,7 +58,7 @@ La **pierna 1** hoy solo tiene estados (`PENDING`/`PAID`); no hay flujo de "el t
 Ejemplo (dueño único):
 
 ```
-Unidad C3-301 · canon cobrado al tenant: 3.500.000
+Unidad 301 · canon cobrado al tenant: 3.500.000
 comisión Properties (10%):                  350.000
 neto a liquidar al dueño:                  3.150.000
 Owner único Juan (100%)  →  pagar 3.150.000
