@@ -189,6 +189,14 @@ Despues de ejecutar `pnpm db:seed`, puedes iniciar sesion con (password = valor 
 | Inquilino | residente1@gmail.com | TENANT |
 | Inquilino | extranjero1@gmail.com | TENANT |
 
+### Procesos de demostracion
+
+`prisma/seed/first-cases/seed-procesos-demo.ts` crea 6 inquilinos con procesos de arriendo en *Casa Ferias* (mismo password). Detalle de cada caso y de la prueba de la regla del manual en `manual-convivencia.md` §8.
+
+```bash
+npx tsx prisma/seed/first-cases/seed-procesos-demo.ts   # idempotente
+```
+
 ---
 
 ## 7. Convenciones de Codigo

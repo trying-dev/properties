@@ -31,6 +31,8 @@ Este documento describe el estado actual del proyecto: que esta completo, que es
 | Cron de alertas | `/api/cron/alerts` | Marca pagos vencidos, genera alertas |
 | Landing page publica | `/` | Busqueda de unidades, modal de auth |
 | Detalle publico de unidad | `/units/[id]` | Galeria, informacion |
+| Manual de Convivencia (publicar + aceptar + bloquear aprobacion) | `src/actions/manual/`, `/manual`, `/dashboard/admin/manual` | Ver `manual-convivencia.md`. Prod (postgres) sin migrar |
+| Seed de procesos de demostracion | `prisma/seed/first-cases/seed-procesos-demo.ts` | 6 casos: en progreso, bloqueado por manual, aprobable, feedback, rechazado, aprobado |
 
 ### Features Parcialmente Implementadas
 
@@ -38,6 +40,7 @@ Este documento describe el estado actual del proyecto: que esta completo, que es
 |---------|------------|-----------|
 | **Revision de aplicaciones** | Schema (`ProcessDocument`, `ProcessReviewItem`), server actions en `application-review/index.ts` | UI admin, UI tenant, upload de archivos, auto-generacion de review items |
 | **Perfil de tenant** | Vista y edicion basica | Preferencias de notificacion (toggle email/sms) |
+| **Ciclo del contrato** | Creacion `INITIATED`, reserva de unidad, pagos del cron para `ACTIVE` | Condiciones (fechas/canon/comision), `DRAFT`→`PENDING`→`ACTIVE`, firma, subir contrato, liberar unidad al cancelar. Ver `flows.md` 2.3 |
 | **Dashboard admin home** | 8 cards con contadores | Sin datos reales de procesos pendientes (no hay seed) |
 
 ### Features No Implementadas

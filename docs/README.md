@@ -8,6 +8,7 @@
 - `data-model.md`: modelo de datos, entidades y relaciones
 - `data-flow-map.md`: mapa de flujo de datos entre capas
 - `flows.md`: flujos de negocio principales (aplicación, contratos, pagos)
+- `manual-convivencia.md`: manual de convivencia (MC-001): publicación, aceptación, bloqueo de aprobación, pasos por rol y datos de prueba
 - `components.md`: inventario de componentes React
 - `component-connectivity.md`: conectividad entre componentes
 - `conventions-patterns-cheatsheet.md`: convenciones de código y patrones

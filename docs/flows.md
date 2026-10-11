@@ -42,7 +42,7 @@ PROCESO DE APLICACION (Wizard 4 pasos)
     │
     ▼
 ENVIADO A REVISION
-    │
+    │                         [Inquilino lee y ACEPTA el Manual de Convivencia (/manual)]
     ▼
 [Admin revisa aplicacion]
     │
@@ -52,8 +52,10 @@ ENVIADO A REVISION
     │
     ├── RECHAZADO → Notificacion al inquilino con motivo (FIN)
     │
-    ▼ APROBADO
-CONTRATO GENERADO (DRAFT)
+    ├── APROBAR sin manual aceptado → BLOQUEADO + recordatorio al inquilino
+    │                                 (ver manual-convivencia.md)
+    ▼ APROBADO (manual aceptado)
+CONTRATO GENERADO (DRAFT)   ← pendiente de implementar, ver 2.3
     │
     ├── Admin configura terminos (canon, deposito, fechas)
     └── Contrato pasa a PENDING
@@ -138,8 +140,10 @@ El inquilino completa un wizard de 4 pasos. El estado se persiste en Redux (`pro
 1. Admin ve lista de aplicaciones pendientes
 2. Revisa cada aplicacion: datos personales, documentos, perfil
 3. Puede aprobar o rechazar:
-   - **Aprobar**: Genera contrato en estado DRAFT
-   - **Rechazar**: Notifica al inquilino con motivo
+   - **Aprobar**: marca el proceso `APPROVED` y notifica al inquilino. **Requiere que el inquilino haya aceptado la versión vigente del Manual de Convivencia**; si no, la acción se rechaza y se le envía un recordatorio.
+   - **Rechazar**: Notifica al inquilino con motivo (no exige el manual)
+
+> **Estado real del código:** aprobar el proceso **no** mueve ni crea el contrato. El contrato nace en `INITIATED` al confirmar el inicio del proceso y ahí se queda. Ver 2.3.
 
 **Server Actions involucradas**:
 - `processes/getAdminProcessesAction`
@@ -180,6 +184,25 @@ INITIATED → UNDER_REVIEW → DOCUMENTATION → APPROVED
 3. Al activar (`ACTIVE`):
    - Unidad cambia a `OCCUPIED`
    - Se generan los pagos mensuales automaticamente
+
+### 2.3 Estado de implementacion del tramo contractual
+
+La descripción 2.1 y 2.2 es el **diseño objetivo**. Hoy en el código:
+
+| Paso | Estado |
+|---|---|
+| Crear contrato `INITIATED` y reservar unidad (`initializeContract`) | Implementado. `startDate`/`endDate` quedan como placeholder (hoy). |
+| Aprobar proceso (`setProcessDecisionAction`) | Implementado, con regla del manual. No toca el contrato. |
+| Pasar a `APPROVED` → `DRAFT` y fijar condiciones (fechas, canon, depósito, comisión) | **Falta** (sin pantalla ni acción). |
+| Pasar a `PENDING` (pendiente de firma) | **Falta**. Debe volver a verificar `hasAcceptedManual()`. |
+| Registrar firma (`signedAt`) y activar (`activatedAt`, `ACTIVE`, unidad `OCCUPIED`) | **Falta**. Hoy solo los seeds crean contratos `ACTIVE`. |
+| Subir contrato firmado (`ContractDocument`) | **Falta** (tabla existe; sin UI ni storage de archivos). |
+| Cancelar/rechazar contrato y liberar la unidad | **Falta**. |
+
+Consecuencia: sin este tramo, un contrato real nunca llega a `ACTIVE`, así que el cron no genera pagos y no hay liquidaciones al propietario.
+
+**Propuesta acordada (pendiente de construir):** sección "Contrato" en el detalle de la solicitud del admin:
+`APPROVED → DRAFT (admin fija condiciones) → PENDING (exige manual aceptado) → ACTIVE (registra firma, unidad OCCUPIED, empiezan los pagos)`, con cancelación que libera la unidad. Decisión abierta: firma en papel (admin marca "firmado") o digital.
 
 ---
 

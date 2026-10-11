@@ -802,6 +802,31 @@ Obtiene estadisticas de inquilinos.
 
 ---
 
+## Modulo: manual/
+
+Manual de Convivencia (MC-001). Ver `manual-convivencia.md`.
+
+### `getManualAcceptanceAction()`
+Indica si el usuario en sesión aceptó la versión vigente.
+
+**Retorna**: `{ success, data: { authenticated, accepted, acceptedAt } }`  
+Sin sesión devuelve `authenticated: false, accepted: false` (no es error).
+
+### `acceptManualAction()`
+Registra la aceptación de la versión vigente del usuario en sesión, con IP y navegador. Idempotente: conserva la fecha original si ya aceptó.
+
+**Retorna**: `{ success, data?: { acceptedAt }, error? }`
+
+### `getManualAcceptanceReportAction()`
+Solo admin. Lista los inquilinos activos y si aceptaron la versión vigente.
+
+**Retorna**: `{ success, data?: { version, rows: [{ tenantId, name, email, acceptedAt }] }, error? }`
+
+### Efecto en otros módulos
+`application-review/setProcessDecisionAction` rechaza `APPROVED` con `success: false` si el inquilino no aceptó el manual, y le envía una notificación `REMINDER` con enlace a `/manual`.
+
+---
+
 ## API Routes (REST)
 
 Ademas de las Server Actions, existen dos endpoints REST para cron jobs:

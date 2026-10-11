@@ -2,7 +2,7 @@
 
 ## Resumen
 
-El modelo de datos usa **Prisma ORM** con 11 modelos/entidades. Soporta dos proveedores de base de datos seleccionados dinamicamente: SQLite (desarrollo) y PostgreSQL (produccion). El archivo de configuracion `prisma.config.ts` selecciona el schema apropiado segun el prefijo de `DATABASE_URL`.
+El modelo de datos usa **Prisma ORM** con 12 modelos/entidades principales (ver también `ManualAcceptance`). Soporta dos proveedores de base de datos seleccionados dinamicamente: SQLite (desarrollo) y PostgreSQL (produccion). El archivo de configuracion `prisma.config.ts` selecciona el schema apropiado segun el prefijo de `DATABASE_URL`.
 
 ---
 
@@ -413,6 +413,27 @@ El modelo de datos usa **Prisma ORM** con 11 modelos/entidades. Soporta dos prov
 | `relationship` | String | Si | Relacion con el inquilino |
 
 **Relacion**: `tenant`: Tenant (Cascade delete)
+
+---
+
+## 12. ManualAcceptance
+
+**Tabla**: `manual_acceptances`  
+**Descripcion**: Evidencia de que un usuario aceptó una versión concreta del Manual de Convivencia (MC-001). Ver `manual-convivencia.md`.
+
+| Campo | Tipo | Requerido | Notas |
+|-------|------|-----------|-------|
+| `id` | String | Si | `@id @default(cuid())` |
+| `userId` | String | Si | FK a User (Cascade delete) |
+| `manualCode` | String | Si | Código del manual, ej. `MC-001` |
+| `manualVersion` | String | Si | Versión aceptada, ej. `1.0` |
+| `acceptedAt` | DateTime | Si | `@default(now())` |
+| `ipAddress` | String? | No | IP de quien aceptó (x-forwarded-for / x-real-ip) |
+| `userAgent` | String? | No | Navegador |
+
+**Restricciones**: `@@unique([userId, manualCode, manualVersion])` (una aceptación por usuario y versión). Índices en `userId` y `[manualCode, manualVersion]`.
+
+**Nota**: la versión vigente no está en base de datos; es la constante `MANUAL_VERSION` en `src/lib/manual.ts`. El texto vive en `src/content/manual/manual.json`.
 
 ---
 
