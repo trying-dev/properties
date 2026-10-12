@@ -132,6 +132,55 @@ export const markNotificationReadAction = async (notificationId: string) => {
   }
 }
 
+// Notificaciones de cambio de estado de solicitud (aprobada, denegada, requiere ajustes) sin leer.
+// Se identifican por su enlace: /dashboard/tenant/processes?proceso=<id>.
+const PROCESS_LINK_PREFIX = '/dashboard/tenant/processes'
+
+export const getUnseenProcessUpdatesAction = async () => {
+  try {
+    const tenant = await getTenantContext()
+    if (!tenant) return { success: true, data: [] as UnseenProcessUpdate[] }
+
+    const items = await prisma.notification.findMany({
+      where: { tenantId: tenant.id, readAt: null, link: { startsWith: PROCESS_LINK_PREFIX } },
+      orderBy: { createdAt: 'desc' },
+      take: 5,
+      select: { id: true, type: true, title: true, body: true, link: true, createdAt: true },
+    })
+    return { success: true, data: items as UnseenProcessUpdate[] }
+  } catch (error) {
+    console.error('Error en getUnseenProcessUpdatesAction:', error)
+    return { success: false, error: 'No se pudieron cargar los avisos de solicitudes' }
+  }
+}
+
+export type UnseenProcessUpdate = {
+  id: string
+  type: NotificationType
+  title: string | null
+  body: string
+  link: string | null
+  createdAt: Date
+}
+
+// Marca como leídos los avisos de una solicitud (o todos los de solicitudes si no se indica).
+export const markProcessUpdatesReadAction = async (processId?: string) => {
+  try {
+    const tenant = await getTenantContext()
+    if (!tenant) return { success: false, error: 'Usuario no autenticado' }
+
+    const prefix = processId ? `${PROCESS_LINK_PREFIX}?proceso=${encodeURIComponent(processId)}` : PROCESS_LINK_PREFIX
+    await prisma.notification.updateMany({
+      where: { tenantId: tenant.id, readAt: null, link: { startsWith: prefix } },
+      data: { readAt: new Date() },
+    })
+    return { success: true }
+  } catch (error) {
+    console.error('Error en markProcessUpdatesReadAction:', error)
+    return { success: false, error: 'No se pudieron marcar como leídos' }
+  }
+}
+
 type SendNotificationInput = {
   tenantId?: string
   unitId?: string

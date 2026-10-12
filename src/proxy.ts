@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '+/lib/auth'
+import { buildLoginUrl } from '+/lib/postLoginRedirect'
 
 type UserRole = 'admin' | 'tenant'
 type AdminLevel = 'SUPER_ADMIN' | 'MANAGER' | 'STANDARD' | 'LIMITED'
@@ -79,8 +80,8 @@ export default async function proxy(request: NextRequest) {
 
   // 🚫 Proteger rutas de dashboard y aplicación
   if (!session && (pathname.startsWith('/dashboard') || pathname.startsWith('/process'))) {
-    // console.log(`❌ No autenticado, redirigiendo a login`)
-    return NextResponse.redirect(new URL('/', request.url))
+    // Se recuerda el destino para volver ahí después de iniciar sesión (p. ej. enlace de un correo).
+    return NextResponse.redirect(new URL(buildLoginUrl(`${pathname}${request.nextUrl.search}`), request.url))
   }
 
   // 🔐 Verificar acceso granular dentro del dashboard

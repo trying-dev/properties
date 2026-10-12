@@ -93,6 +93,19 @@ export default function ProcessReviewModal({ isOpen, onClose, process, payload, 
           </div>
         </div>
 
+        {process.status === 'APPROVED' && (
+          <div className="mt-4 rounded-lg border border-emerald-200 bg-emerald-50 p-4">
+            <p className="text-sm font-semibold text-emerald-800">Tu solicitud fue aprobada</p>
+            {process.approvalConditions && <p className="mt-1 text-sm text-emerald-700">Condiciones: {process.approvalConditions}</p>}
+          </div>
+        )}
+        {process.status === 'DISAPPROVED' && (
+          <div className="mt-4 rounded-lg border border-rose-200 bg-rose-50 p-4">
+            <p className="text-sm font-semibold text-rose-800">Tu solicitud no fue aprobada</p>
+            {process.notes && <p className="mt-1 text-sm text-rose-700">Motivo: {process.notes}</p>}
+          </div>
+        )}
+
         {isLoading ? (
           <div className="py-12 text-center text-sm text-gray-500">Cargando solicitud...</div>
         ) : (

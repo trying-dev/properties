@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { FileText, ArrowLeft } from 'lucide-react'
 
@@ -16,6 +16,7 @@ import { setProcessState } from '+/redux/slices/process'
 
 import { getUserTenant } from '+/actions/user'
 import { getManualAcceptanceAction } from '+/actions/manual'
+import { markProcessUpdatesReadAction } from '+/actions/notifications'
 
 import { useSession } from '+/hooks/useSession'
 
@@ -189,6 +190,22 @@ export default function TenantProcessesPage() {
     setIsReviewOpen(false)
     setReviewProcess(null)
   }
+
+  // Enlace directo (?proceso=<id>, p. ej. desde el correo): abre el resultado de esa solicitud
+  // y deja sus avisos como leídos para que no salte el pop-up.
+  const deepLinkHandled = useRef(false)
+  useEffect(() => {
+    if (deepLinkHandled.current || processes.length === 0) return
+    const processId = new URLSearchParams(window.location.search).get('proceso')
+    if (!processId) return
+    const target = processes.find((p) => p.id === processId)
+    deepLinkHandled.current = true
+    if (!target) return
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- apertura única a partir del enlace
+    void openReview(target)
+    void markProcessUpdatesReadAction(processId)
+    window.history.replaceState(null, '', window.location.pathname)
+  }, [processes])
 
   return (
     <div className="min-h-screen bg-white flex flex-col">

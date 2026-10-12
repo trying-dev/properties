@@ -4,6 +4,7 @@ import { useEffect, type ReactNode } from 'react'
 import { useRouter } from 'next/navigation'
 import { useSession } from '+/hooks/useSession'
 import { useSelector } from '+/redux'
+import { buildLoginUrl } from '+/lib/postLoginRedirect'
 
 type RequireAuthProps = {
   children: ReactNode
@@ -17,7 +18,7 @@ export default function RequireAuth({ children }: RequireAuthProps) {
   useEffect(() => {
     if (status === 'loading') return
     if (status === 'unauthenticated' || !isAuthenticated) {
-      router.replace('/')
+      router.replace(buildLoginUrl(`${window.location.pathname}${window.location.search}`))
     }
   }, [isAuthenticated, router, status])
 

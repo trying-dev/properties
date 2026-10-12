@@ -10,6 +10,7 @@ import { useDispatch } from '+/redux'
 import { setAuthModalOpen, setAuthVerificationExpires, setIsAuthenticated, setLoginState, setResetPasswordModalOpen } from '+/redux/slices/auth'
 import { setUser } from '+/redux/slices/user'
 import { getUserAfterLogin } from '+/actions/user'
+import { peekPostLoginRedirect } from '+/lib/postLoginRedirect'
 
 type LoginFormProps = {
   className?: string
@@ -29,7 +30,9 @@ export default function LoginForm({ className = 'transition-opacity duration-500
     if (!state?.success) return
 
     // Navega de inmediato al destino por rol; la sincronización del usuario sigue en segundo plano.
-    if (state.redirectTo) router.push(state.redirectTo)
+    // Si venía de un enlace protegido (p. ej. el correo de la solicitud), se le lleva ahí.
+    const target = peekPostLoginRedirect() ?? state.redirectTo
+    if (target) router.push(target)
 
     dispatch(setAuthVerificationExpires(null))
     dispatch(setLoginState('success'))
@@ -42,7 +45,7 @@ export default function LoginForm({ className = 'transition-opacity duration-500
         dispatch(setLoginState('idle'))
         dispatch(setAuthModalOpen({ open: false }))
 
-        if (!state.redirectTo) {
+        if (!target) {
           router.push(user?.role === 'admin' ? '/dashboard/admin' : user?.role === 'tenant' ? '/dashboard/tenant' : '/dashboard')
         }
       } catch (error) {

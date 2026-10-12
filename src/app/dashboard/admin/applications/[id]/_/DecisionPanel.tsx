@@ -119,6 +119,9 @@ export default function DecisionPanel({ processId, status, counts, approvalCondi
         setError(result.error ?? 'No se pudo completar la acción')
         return
       }
+      if (result.data && !result.data.emailSent) {
+        setWarning(result.data.emailError ?? 'Decisión guardada, pero no se pudo enviar el correo al inquilino.')
+      }
     }
 
     setOpenModal(null)

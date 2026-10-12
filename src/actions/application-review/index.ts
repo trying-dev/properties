@@ -131,6 +131,67 @@ const getAccessibleProcess = async (
   return { success: false, error: 'Sin acceso a este proceso' }
 }
 
+// Enlace al resultado de la solicitud. Si no hay sesión, el login lo lleva de vuelta aquí.
+const buildProcessLink = (processId: string) => `/dashboard/tenant/processes?proceso=${encodeURIComponent(processId)}`
+
+const sendDecisionEmail = async ({
+  tenantEmail,
+  tenantName,
+  processId,
+  approved,
+  detail,
+  propertyLabel,
+}: {
+  tenantEmail?: string | null
+  tenantName: string
+  processId: string
+  approved: boolean
+  detail?: string | null
+  propertyLabel: string
+}) => {
+  const emailTarget = resolveEmailTargets(tenantEmail)
+  if (!emailTarget.ok) return { sent: false, error: emailTarget.error }
+
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL
+  const processUrl = appUrl ? `${appUrl}${buildProcessLink(processId)}` : null
+  const safeName = escapeHtml(tenantName || 'Hola')
+  const safeDetail = detail ? escapeHtml(detail) : null
+  const statusLabel = approved ? 'Aprobada' : 'Denegada'
+  const statusColor = approved ? '#047857' : '#b91c1c'
+  const intro = approved
+    ? `Tu solicitud de arriendo para <strong>${escapeHtml(propertyLabel)}</strong> fue aprobada.`
+    : `Tu solicitud de arriendo para <strong>${escapeHtml(propertyLabel)}</strong> no fue aprobada.`
+
+  await resend.emails.send({
+    from: emailTarget.from,
+    to: emailTarget.to,
+    subject: approved ? 'Tu solicitud de arriendo fue aprobada' : 'Actualización sobre tu solicitud de arriendo',
+    html: `
+      <div style="font-family: Arial, sans-serif; color: #111827; background: #f9fafb; padding: 24px;">
+        <div style="max-width: 600px; margin: 0 auto; background: #ffffff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 28px;">
+          <h1 style="font-size: 22px; margin: 0 0 12px;">${safeName}</h1>
+          <p style="font-size: 13px; margin: 0 0 12px;">Estado de tu solicitud: <strong style="color: ${statusColor};">${statusLabel}</strong></p>
+          <p style="font-size: 14px; line-height: 1.6; margin: 0 0 14px;">${intro}</p>
+          ${
+            safeDetail
+              ? `<p style="font-size: 14px; line-height: 1.6; background: #f3f4f6; border-radius: 8px; padding: 12px; margin: 0 0 16px;">${safeDetail}</p>`
+              : ''
+          }
+          ${
+            processUrl
+              ? `<p style="margin: 18px 0;"><a href="${processUrl}" style="display: inline-block; background: #111827; color: #ffffff; text-decoration: none; padding: 11px 16px; border-radius: 8px; font-size: 14px;">Ver el resultado</a></p>
+                 <p style="font-size: 12px; color: #6b7280; margin: 0;">Si aún no has iniciado sesión, te la pediremos y te llevaremos directo a tu solicitud.</p>`
+              : ''
+          }
+          <p style="font-size: 12px; color: #6b7280; margin: 18px 0 0;">Proceso ${escapeHtml(processId)}</p>
+        </div>
+      </div>
+    `,
+  })
+
+  return { sent: true, error: null }
+}
+
 const sendFeedbackEmail = async ({
   tenantEmail,
   tenantName,
@@ -146,7 +207,7 @@ const sendFeedbackEmail = async ({
   if (!emailTarget.ok) return { sent: false, error: emailTarget.error }
 
   const appUrl = process.env.NEXT_PUBLIC_APP_URL
-  const processUrl = appUrl ? `${appUrl}/dashboard/tenant/processes` : null
+  const processUrl = appUrl ? `${appUrl}${buildProcessLink(processId)}` : null
   const safeName = escapeHtml(tenantName || 'Hola')
   const safeMessage = message ? escapeHtml(message) : null
 
@@ -460,7 +521,7 @@ export const requestProcessFeedbackAction = async (input: RequestProcessFeedback
         type: NotificationType.REMINDER,
         title: 'Tu solicitud requiere ajustes',
         body: message,
-        link: '/dashboard/tenant/processes',
+        link: buildProcessLink(processId),
       })
     }
 
@@ -507,7 +568,7 @@ export const setProcessDecisionAction = async (input: SetProcessDecisionInput) =
       select: {
         id: true,
         tenantId: true,
-        tenant: { select: { userId: true } },
+        tenant: { select: { userId: true, user: { select: { email: true, name: true, lastName: true } } } },
         unit: { select: { unitNumber: true, property: { select: { name: true } } } },
       },
     })
@@ -543,6 +604,9 @@ export const setProcessDecisionAction = async (input: SetProcessDecisionInput) =
       } satisfies Prisma.ProcessUpdateInput,
     })
 
+    let emailSent = false
+    let emailError: string | null = null
+
     if (process.tenantId) {
       const propertyName = process.unit?.property?.name ?? 'la propiedad'
       const unitLabel = process.unit?.unitNumber ? `Unidad ${process.unit.unitNumber}` : 'la unidad'
@@ -556,15 +620,33 @@ export const setProcessDecisionAction = async (input: SetProcessDecisionInput) =
         type: isApproved ? NotificationType.APPROVAL : NotificationType.REJECTION,
         title: isApproved ? 'Solicitud aprobada' : 'Solicitud denegada',
         body: conditions ? `${body} Condiciones: ${conditions}` : body,
-        link: '/dashboard/tenant/processes',
+        link: buildProcessLink(processId),
       })
+
+      // Correo con el estado y enlace directo al resultado. Si falla, la decisión ya quedó guardada.
+      try {
+        const tenantName = [process.tenant?.user.name, process.tenant?.user.lastName].filter(Boolean).join(' ')
+        const emailResult = await sendDecisionEmail({
+          tenantEmail: process.tenant?.user.email,
+          tenantName,
+          processId,
+          approved: isApproved,
+          detail: isApproved ? conditions : trimOrNull(input.message),
+          propertyLabel: `${propertyName} (${unitLabel})`,
+        })
+        emailSent = emailResult.sent
+        emailError = emailResult.error
+      } catch (emailException) {
+        console.error('Error enviando email de decisión:', emailException)
+        emailError = 'No se pudo enviar el correo de la decisión'
+      }
     }
 
     revalidatePath(`/dashboard/admin/applications/${processId}`)
     revalidatePath('/dashboard/admin/applications')
     revalidatePath('/dashboard/tenant/processes')
 
-    return { success: true }
+    return { success: true, data: { emailSent, emailError } }
   } catch (error) {
     console.error('Error en setProcessDecisionAction:', error)
     return { success: false, error: 'No se pudo guardar la decisión' }

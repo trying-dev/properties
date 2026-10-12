@@ -246,6 +246,8 @@ export const getTenantProcessesAction = async (tenantId: string) => {
         currentStep: true,
         updatedAt: true,
         unitId: true,
+        notes: true,
+        approvalConditions: true,
         unit: {
           select: {
             id: true,

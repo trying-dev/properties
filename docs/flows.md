@@ -143,6 +143,24 @@ El inquilino completa un wizard de 4 pasos. El estado se persiste en Redux (`pro
    - **Aprobar**: marca el proceso `APPROVED` y notifica al inquilino. **Requiere que el inquilino haya aceptado la versión vigente del Manual de Convivencia**; si no, la acción se rechaza y se le envía un recordatorio.
    - **Rechazar**: Notifica al inquilino con motivo (no exige el manual)
 
+#### Aviso de la decisión al inquilino
+
+Al aprobar o rechazar, el inquilino se entera por tres vías, todas con el mismo enlace directo `/dashboard/tenant/processes?proceso=<id>`:
+
+1. **Correo** con el estado (Aprobada / Denegada), las condiciones o el motivo, y el botón *Ver el resultado*. Si el correo falla, la decisión queda guardada y el admin ve una advertencia.
+2. **Notificación en la app** (bandeja del inquilino), con el mismo enlace.
+3. **Pop-up al iniciar sesión** ("Tu solicitud tiene un nuevo estado") si hay avisos de solicitudes sin leer. Aparece una vez por sesión del navegador; "Revisar solicitud" lo marca como leído.
+
+Comportamiento del enlace:
+
+| Situación | Qué pasa |
+|---|---|
+| Abre el enlace **sin sesión** | Se le pide iniciar sesión y, al entrar, va directo a ese resultado (`/?login=1&next=...`; el destino se valida: solo rutas `/dashboard` y `/process`) |
+| Abre el enlace **con sesión** | Va directo al resultado, que se abre automáticamente; no sale el pop-up |
+| Entra por la app, sin pasar por el correo | Tras iniciar sesión sale el pop-up y desde ahí revisa la solicitud |
+
+El estado "no visto" se deriva de `Notification.readAt` (sin cambios de esquema).
+
 > **Estado real del código:** aprobar el proceso **no** mueve ni crea el contrato. El contrato nace en `INITIATED` al confirmar el inicio del proceso y ahí se queda. Ver 2.3.
 
 **Server Actions involucradas**:
