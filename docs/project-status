@@ -425,3 +425,55 @@ ARCHIVOS CLAVE
   prisma/schema.sqlite.prisma                                        |  Schema para desarrollo local
 
   prisma/schema.postgresql.prisma                                    |  Schema para produccion
+
+
+TRABAJO DERIVADO DEL MANUAL DE CONVIVENCIA
+------------------------------------------
+
+El documento fuente completo está en docs/manual-convivencia-fuente. Los puntos siguientes salen de ese documento y quedan como trabajo por hacer. Ninguno está construido todavía, salvo la publicación y la aceptación del manual.
+
+Sobre el documento mismo
+
+  Pendiente                                  |  Detalle
+  -------------------------------------------+----------------------------------------------------------------
+  Completar el Tomo II                       |  Derechos y obligaciones está vacío en el PDF.
+  Limpiar marcas de borrador                 |  Aparecen "Mensaje 2", "Mensaje 8", "Mensaje 10", "Mensaje 12",
+                                             |  "Mensaje 14", "Mensaje 16" y "Mensaje 18", y una lista de
+                                             |  definiciones que termina en "etc.".
+  Corregir la numeración                     |  Los títulos saltan del XIV al XVI y los capítulos reinician
+                                             |  dentro de un mismo título.
+  Cerrar el anexo de tipificación de faltas  |  El manual habla de más de 250 ejemplos y solo lista unos
+                                             |  cuantos por gravedad.
+  Completar firmas y aprobaciones            |  La portada y el control documental tienen los campos en
+                                             |  blanco.
+  Revisión jurídica                          |  Sanciones y terminación contractual, con la Ley 820 de 2003
+                                             |  como marco del arrendamiento.
+
+Sobre la app
+
+  Pendiente                                  |  Origen en el manual                 |  Qué implica
+  -------------------------------------------+--------------------------------------+--------------------------------------
+  Flujo de contrato                          |  Tomo III y artículo 31              |  Borrador, firma y activo, con el
+                                             |                                      |  manual aceptado como requisito.
+  PQRS con radicado                          |  Tomo VIII, artículos 180 a 188      |  Peticiones, quejas y reclamos con
+                                             |                                      |  número, estado y seguimiento.
+  Autorizaciones                             |  Tomo VI y formatos F-041 a F-048    |  Remodelación, mudanza, evento y
+                                             |                                      |  contratista, con aprobación del
+                                             |                                      |  administrador.
+  Visitantes, llaves y paquetería            |  Tomo V, artículos 73 a 90           |  Registros de ingreso y entrega.
+  Régimen disciplinario                      |  Tomo IX                             |  Notificación, descargos, decisión
+                                             |                                      |  motivada y recursos.
+  Control de emergencias                     |  Tomo VII y formatos F-067 a F-073   |  Extintores, botiquines, simulacros
+                                             |                                      |  y rutas de evacuación.
+  Formatos F-001 a F-120                     |  Tomo X                              |  Exportes de datos que ya existen,
+                                             |                                      |  empezando por acta de entrega y
+                                             |                                      |  reporte de daños.
+  Manual por propiedad                       |  Alcance                             |  Decidir si cada propiedad puede
+                                             |                                      |  tener horarios y reglas propias.
+
+Ya construido a partir del manual
+
+  Publicación en /manual con índice por tomo.
+  Aceptación por usuario y versión, con reporte para el administrador.
+  Aprobación de solicitudes que exige el manual aceptado.
+  Datos de demostración en prisma/seed/first-cases/seed-procesos-demo.ts.

@@ -1,0 +1,4917 @@
+MANUAL DE CONVIVENCIA Y USO DE INMUEBLES ADMINISTRADOS (MC-001)
+Documento fuente en texto plano, tal como llegó en el PDF "manual v1 completo".
+No es la versión publicada en la app. Esa vive en src/content/manual/manual.json.
+Los pendientes de este documento están en project-status, sección "Trabajo derivado del manual".
+============================================================
+
+MANUAL DE CONVIVENCIA Y USO DE
+INMUEBLES ADMINISTRADOS
+PORTADA
+Nombre del documento: Manual de Convivencia y Uso de Inmuebles Administrados
+
+Código: MC-001
+
+Versión: 1.0
+
+Clasificación: Documento Interno de Administración
+
+Estado: Vigente
+
+Proceso: Administración Inmobiliaria
+
+Aplica para:
+
+- Apartamentos
+- Habitaciones
+- Apartaestudios
+- Casas
+- Locales Comerciales
+- Oficinas
+- Consultorios
+- Bodegas
+- Edificios de uso mixto
+- Espacios compartidos
+- Áreas comunes
+- Parqueaderos
+- Depósitos
+
+Propietario del Documento: Administración Inmobiliaria
+
+Elaborado por: _______________________
+
+Revisado por: _______________________
+
+Aprobado por: _______________________
+
+Fecha de emisión: ____ / ____ / ______
+
+Próxima revisión: ____ / ____ / ______
+
+CONTROL DOCUMENTAL
+Objetivo del Documento
+Garantizar que el presente Manual de Convivencia sea administrado, actualizado y aplicado
+bajo criterios de control documental, asegurando que todas las personas vinculadas al
+inmueble consulten únicamente la versión vigente y autorizada.
+
+Identificación
+Campo                                  Información
+Código                    MC-001
+Nombre                    Manual de Convivencia y Uso de Inmuebles Administrados
+Tipo                      Reglamento Interno
+Clasificación             Uso Administrativo
+Nivel de Confidencialidad Interno
+Versión Inicial           1.0
+Estado                    Vigente
+
+CONTROL DE VERSIONES
+Versión Fecha             Descripción            Responsable
+1.0    Pendiente Creación inicial del documento Administración
+
+APROBACIONES
+El presente Manual deberá ser aprobado por:
+
+Cargo               Nombre Firma Fecha
+Representante Legal
+Administrador
+Director Jurídico (si aplica)
+
+Ninguna modificación podrá entrar en vigencia sin la correspondiente aprobación.
+
+HISTORIAL DEL DOCUMENTO
+Toda modificación deberá registrarse para mantener la trazabilidad documental.
+
+Cada actualización indicará:
+
+- Fecha
+- Responsable
+- Motivo del cambio
+- Capítulo afectado
+- Tipo de modificación
+- Versión
+
+CONTROL DE CAMBIOS
+Las modificaciones podrán originarse por:
+
+- Cambios en la legislación colombiana.
+- Cambios en los contratos de administración.
+- Cambios operativos.
+- Nuevos riesgos identificados.
+- Mejoras del sistema de gestión.
+- Decisiones administrativas.
+- Cambios en la estructura física del inmueble.
+- Recomendaciones jurídicas.
+- Auditorías.
+- Hallazgos internos.
+
+Toda modificación deberá comunicarse oficialmente a los propietarios, arrendatarios y
+ocupantes cuando corresponda.
+
+DISTRIBUCIÓN DEL DOCUMENTO
+La versión vigente podrá ser entregada mediante:
+
+- Plataforma web.
+- Correo electrónico.
+- Portal del propietario.
+- Portal del arrendatario.
+- Aplicación móvil.
+- Medio físico.
+- Carpeta documental del inmueble.
+
+Solo existirá una versión oficial.
+
+Las copias impresas serán consideradas "Copias No Controladas", salvo que indiquen
+expresamente lo contrario.
+
+VIGENCIA
+El presente Manual entra en vigencia a partir de su aprobación y permanecerá vigente hasta
+que sea sustituido por una nueva versión.
+
+Se recomienda su revisión:
+
+- Cada doce (12) meses.
+- Cuando exista modificación legal.
+- Cuando cambie la administración.
+- Cuando cambie la destinación del inmueble.
+- Cuando existan riesgos no contemplados.
+- Cuando se presenten cambios importantes en la infraestructura.
+
+PRESENTACIÓN
+La convivencia constituye uno de los pilares fundamentales para la adecuada
+administración de cualquier inmueble, independientemente de que se trate de un edificio
+residencial, un inmueble de uso mixto o una edificación destinada a actividades
+comerciales, empresariales o de servicios.
+
+El presente Manual ha sido elaborado con el propósito de establecer reglas claras de
+comportamiento, derechos, obligaciones, procedimientos y responsabilidades que permitan
+garantizar un ambiente seguro, organizado, respetuoso y armónico para propietarios,
+arrendatarios, ocupantes, visitantes, proveedores y personal administrativo.
+
+Este documento adopta como fundamento la legislación colombiana vigente y toma como
+referencia las mejores prácticas administrativas utilizadas en la gestión inmobiliaria,
+incluso aquellas derivadas del régimen de propiedad horizontal, cuando resultan
+compatibles con inmuebles administrados por un único propietario.
+
+Su contenido busca prevenir conflictos, proteger el patrimonio inmobiliario, promover el
+uso adecuado de las instalaciones y facilitar una administración transparente, eficiente y
+documentada.
+
+INTRODUCCIÓN
+La administración de inmuebles modernos requiere mucho más que la simple gestión de
+contratos de arrendamiento. Implica coordinar personas, bienes, servicios, seguridad,
+mantenimiento, convivencia, protección de datos, prevención de riesgos y cumplimiento
+normativo.
+
+Por esta razón, el presente Manual integra disposiciones legales, criterios técnicos y
+procedimientos administrativos que permiten regular el uso de las unidades privadas y de
+los espacios compartidos, garantizando el respeto de los derechos individuales sin
+desconocer los deberes que toda persona adquiere al hacer uso del inmueble.
+
+Este Manual deberá interpretarse siempre bajo los principios de buena fe, legalidad,
+igualdad, solidaridad, respeto mutuo y debido proceso.
+
+OBJETIVOS
+Objetivo General
+Establecer las normas de convivencia, uso, administración, seguridad, mantenimiento y
+protección del inmueble, definiendo los derechos, deberes y procedimientos aplicables a
+propietarios, arrendatarios, ocupantes, visitantes y administración, con el fin de garantizar
+una convivencia pacífica, la conservación del patrimonio inmobiliario y el cumplimiento de
+la legislación colombiana vigente.
+
+Objetivos Específicos
+1. Promover el respeto entre todos los usuarios del inmueble.
+
+2. Garantizar el uso adecuado de las unidades privadas y de las áreas comunes.
+3. Proteger la integridad física de las personas.
+4. Preservar el estado de conservación del inmueble.
+5. Establecer procedimientos claros para la administración.
+6. Definir responsabilidades de propietarios y arrendatarios.
+7. Regular el manejo de visitantes y proveedores.
+8. Garantizar la protección de datos personales.
+9. Implementar mecanismos de prevención y resolución de conflictos.
+10. Establecer procedimientos disciplinarios respetando el debido proceso.
+11. Promover una cultura de prevención del riesgo.
+12. Fomentar el uso responsable de los servicios públicos.
+13. Regular el manejo de residuos y el cuidado ambiental.
+14. Proteger los derechos de niños, adultos mayores, personas con discapacidad y
+demás poblaciones con protección especial.
+15. Facilitar la trazabilidad documental de todas las actuaciones administrativas.
+
+ALCANCE
+El presente Manual aplica a todas las personas que ingresen, residan, ocupen, administren,
+trabajen o desarrollen actividades dentro del inmueble, incluyendo:
+
+- Propietarios.
+- Arrendatarios.
+- Subarrendatarios autorizados.
+- Ocupantes.
+- Visitantes.
+- Empleados.
+- Contratistas.
+- Proveedores.
+- Personal de aseo.
+- Personal de mantenimiento.
+- Personal de vigilancia.
+- Empresas prestadoras de servicios.
+- Comerciantes.
+- Usuarios de oficinas.
+- Clientes de locales comerciales.
+
+Aplica igualmente para todas las unidades privadas y espacios comunes del inmueble.
+
+MARCO JURÍDICO
+
+El presente Manual se fundamenta en la Constitución Política de Colombia, la legislación
+nacional vigente, normas técnicas aplicables y reglamentaciones municipales. Cada
+disposición del Manual deberá interpretarse conforme a estas normas y, en caso de
+conflicto, prevalecerá la legislación colombiana.
+
+1. Constitución Política de Colombia
+Es el fundamento principal del Manual y orienta todas las reglas de convivencia mediante
+principios como la dignidad humana (art. 1), la protección de los derechos (art. 2), la
+igualdad (art. 13), la privacidad y protección de datos (art. 15), el libre desarrollo de la
+personalidad (art. 16), la libertad de expresión (art. 20), la libertad de locomoción (art. 24),
+el derecho al trabajo (art. 25), la salud pública (art. 49), la vivienda digna (art. 51), la
+propiedad privada (art. 58), el derecho a un ambiente sano (art. 79), la protección del
+espacio (art. 82) y los deberes de solidaridad y respeto por los derechos ajenos (art. 95).
+
+2. Código Civil Colombiano
+Regula la propiedad, la posesión, las obligaciones entre particulares, la responsabilidad
+civil por daños, el uso adecuado de los bienes, las servidumbres y los efectos jurídicos
+derivados del incumplimiento de obligaciones relacionadas con el inmueble.
+
+3. Ley 1801 de 2016 – Código Nacional de Seguridad y
+Convivencia Ciudadana
+Constituye la principal referencia para las normas de convivencia. Sustenta las
+disposiciones sobre control del ruido, fiestas, mascotas, residuos, respeto entre vecinos, uso
+de zonas comunes, seguridad, consumo de alcohol y sustancias, comportamientos
+contrarios a la convivencia y medidas de prevención de conflictos.
+
+4. Ley 675 de 2001 – Régimen de Propiedad Horizontal
+Aunque el inmueble no esté sometido a este régimen, sus principios sirven como referencia
+técnica para estructurar reglas sobre convivencia, administración, derechos y deberes de los
+usuarios, manejo de zonas comunes, procedimientos internos y criterios de resolución de
+conflictos.
+
+5. Código Sustantivo del Trabajo
+Aplica respecto del personal vinculado al inmueble (administración, vigilancia, aseo,
+mantenimiento y recepción), garantizando el respeto de sus derechos laborales y
+condiciones seguras de trabajo.
+
+6. Ley 1564 de 2012 – Código General del Proceso
+
+Respalda los procedimientos internos relacionados con la conservación de pruebas,
+elaboración de actas, registros fotográficos y de video, notificaciones y documentación de
+actuaciones administrativas.
+
+7. Ley 599 de 2000 – Código Penal
+Sirve de fundamento para las reglas relacionadas con daños en bien ajeno, hurto, amenazas,
+violencia, lesiones personales, fraude, invasión, manipulación indebida de sistemas y
+cualquier conducta que pueda constituir un delito.
+
+8. Ley 1581 de 2012 y Decreto 1377 de 2013
+Regulan el tratamiento de datos personales de propietarios, arrendatarios, visitantes,
+empleados y proveedores, así como el uso de sistemas de videovigilancia y registros
+administrativos.
+
+9. Ley 1712 de 2014
+Establece criterios de transparencia, gestión documental y conservación de la información
+administrativa cuando sean aplicables.
+
+10. Ley 527 de 1999
+Reconoce la validez jurídica de documentos electrónicos, firmas digitales y
+comunicaciones electrónicas utilizadas en la administración del inmueble.
+
+11. Ley 1480 de 2011 – Estatuto del Consumidor
+Aplica cuando el inmueble ofrece servicios adicionales, tales como parqueaderos,
+coworking, alquiler de espacios u otros servicios sujetos a relaciones de consumo.
+
+12. Ley 594 de 2000 – Ley General de Archivos
+Regula la organización, conservación y disposición de expedientes, contratos, inventarios,
+actas e información administrativa.
+
+13. Ley 1562 de 2012 y Decreto 1072 de 2015
+Conforman el marco del Sistema de Gestión de Seguridad y Salud en el Trabajo para el
+personal vinculado al inmueble y respaldan las disposiciones sobre prevención de riesgos
+laborales.
+
+14. Ley 1523 de 2012
+Establece el Sistema Nacional de Gestión del Riesgo de Desastres y fundamenta la
+elaboración de planes de emergencia, evacuación y respuesta ante eventos como incendios,
+sismos e inundaciones.
+
+15. Ley 1575 de 2012
+Regula el servicio público de bomberos y sirve de base para las disposiciones sobre
+extintores, gabinetes contra incendios, simulacros y equipos de emergencia.
+
+16. Ley 99 de 1993
+Promueve la protección ambiental mediante normas sobre manejo de residuos, ahorro de
+recursos, control del ruido y prevención de la contaminación.
+
+17. Ley 9 de 1979 – Código Sanitario Nacional
+Fundamenta las disposiciones relacionadas con limpieza, control de plagas, salubridad,
+almacenamiento de residuos, condiciones higiénicas y prevención de riesgos para la salud.
+
+18. Ley 142 de 1994
+Regula la prestación de los servicios públicos domiciliarios y respalda las normas sobre uso
+responsable de agua, energía, gas y demás servicios.
+
+19. Ley 1774 de 2016
+Reconoce a los animales como seres sintientes y orienta las reglas sobre tenencia
+responsable de mascotas y prevención del maltrato animal.
+
+20. Código Nacional de Policía – Animales
+Potencialmente Peligrosos
+Establece obligaciones especiales sobre registro, uso de bozal, correa y medidas de
+seguridad para este tipo de animales.
+
+21. Ley 1618 de 2013
+Garantiza la accesibilidad y los derechos de las personas con discapacidad, promoviendo el
+uso preferencial y la eliminación de barreras físicas.
+
+22. Ley 1251 de 2008
+Protege los derechos de las personas mayores y promueve su trato digno y prioritario dentro
+del inmueble.
+
+23. Ley 1257 de 2008
+Establece medidas para prevenir, sancionar y erradicar todas las formas de violencia contra
+la mujer, promoviendo ambientes seguros y libres de violencia.
+
+24. Ley 1098 de 2006
+Código de Infancia y Adolescencia que orienta la protección integral de niños, niñas y
+adolescentes presentes en el inmueble.
+
+25. Ley 1482 de 2011
+Prohíbe toda forma de discriminación por razones de raza, origen, religión, sexo,
+orientación sexual, discapacidad u otras condiciones protegidas.
+
+26. Ley 1335 de 2009
+Regula los espacios libres de humo de tabaco y sustenta las restricciones relacionadas con
+el consumo de cigarrillos y vapeadores en las áreas donde la ley lo exige.
+
+27. Decreto 1077 de 2015
+Compila la normativa del sector vivienda, ciudad y territorio, incluyendo disposiciones
+relacionadas con servicios públicos, construcción y manejo urbano.
+
+28. Resoluciones Técnicas Aplicables
+Se incorporan, entre otras, la Resolución 627 de 2006 (control del ruido), la Resolución
+2184 de 2019 (código de colores para separación de residuos) y la Resolución 2254 de
+2017 (calidad del aire), así como aquellas que las modifiquen o sustituyan.
+
+29. NSR-10
+El Reglamento Colombiano de Construcción Sismo Resistente orienta las disposiciones
+sobre protección estructural, capacidad de carga, intervenciones constructivas y planes de
+evacuación.
+
+30. Normas Técnicas Colombianas (NTC)
+Se adoptan como referencia técnica las normas aplicables sobre señalización de seguridad,
+medios de evacuación, extintores, accesibilidad y demás estándares que contribuyan a la
+seguridad y operación del inmueble.
+
+31. Reglamentos de Empresas Prestadoras de Servicios
+Públicos
+Las disposiciones de las empresas prestadoras de agua, energía, gas, telecomunicaciones y
+demás servicios serán de obligatorio cumplimiento respecto al uso de medidores, redes,
+acometidas e infraestructura.
+
+32. Reglamentos del Cuerpo Oficial de Bomberos
+Las inspecciones, recomendaciones y requerimientos emitidos por la autoridad competente
+en materia de prevención y atención de incendios serán de obligatorio cumplimiento.
+
+33. Normativa Municipal
+Además de la legislación nacional, deberán observarse los acuerdos, decretos y reglamentos
+expedidos por el municipio o distrito donde se ubique el inmueble, especialmente aquellos
+relacionados con uso del suelo, horarios de funcionamiento, control del ruido, gestión
+ambiental, manejo de residuos, publicidad exterior, espacio público, seguridad y
+ordenamiento territorial.
+
+Parágrafo. Todas las referencias normativas contenidas en este Manual se entenderán
+incorporadas con sus modificaciones, adiciones, reglamentaciones o normas que las
+sustituyan, garantizando que el documento permanezca actualizado frente a los cambios del
+ordenamiento jurídico colombiano.
+
+Mensaje 2
+
+Definiciones
+
+Más de 200 definiciones:
+
+Administrador
+
+Propietario
+
+Arrendatario
+
+Unidad
+
+Apartamento
+
+Habitación
+
+Apartaestudio
+
+Local
+
+Oficina
+
+Consultorio
+
+Bodega
+
+Espacio común
+
+Visitante
+
+Proveedor
+
+Contratista
+
+Inventario
+
+Mantenimiento
+
+Inspección
+
+Incidente
+
+Emergencia
+
+Daño
+
+etc.
+
+TÍTULO I
+
+DEFINICIONES Y PRINCIPIOS RECTORES
+
+CAPÍTULO I
+
+DEFINICIONES
+
+Artículo 1. Objeto de las definiciones
+
+Las siguientes definiciones tienen como finalidad establecer un lenguaje uniforme para la
+interpretación y aplicación del presente Manual. Cuando un término no se encuentre
+definido, se interpretará conforme a la legislación colombiana vigente, los contratos
+suscritos entre las partes y las buenas prácticas de administración inmobiliaria.
+
+A
+
+Acceso
+
+Ingreso autorizado de personas, vehículos, animales o bienes al inmueble.
+
+Acceso Restringido
+
+Área cuyo ingreso solo está permitido a personas previamente autorizadas por la
+administración.
+
+Acta
+
+Documento mediante el cual se deja constancia escrita de hechos, decisiones,
+inspecciones, reuniones, entregas, devoluciones o actuaciones administrativas.
+
+Acta de Entrega
+
+Documento que formaliza la entrega material de una unidad privada al arrendatario u
+ocupante.
+
+Acta de Restitución
+
+Documento mediante el cual se recibe nuevamente el inmueble al finalizar el contrato.
+
+Actividad Comercial
+
+Actividad económica desarrollada en una unidad autorizada para dicho uso.
+
+Actividad Prohibida
+
+Toda conducta expresamente restringida por la ley, el contrato o este Manual.
+
+Administración
+
+Conjunto de actividades destinadas a gestionar, conservar, controlar y supervisar el
+inmueble.
+
+Administrador
+
+Persona natural o jurídica responsable de la administración integral del inmueble.
+
+Advertencia
+
+Comunicación preventiva emitida por la administración antes de iniciar un procedimiento
+correctivo.
+
+Aforo
+
+Número máximo de personas permitido en un espacio.
+
+Área Común
+
+Espacio destinado al uso compartido de los ocupantes del inmueble.
+
+Área Privada
+
+Espacio exclusivo asignado a una unidad determinada.
+
+Arrendador
+
+Propietario o persona autorizada para entregar una unidad en arrendamiento.
+
+Arrendatario
+
+Persona natural o jurídica que ocupa una unidad mediante contrato de arrendamiento.
+
+Auditoría
+
+Proceso de verificación del cumplimiento de normas, procedimientos y registros.
+
+Autorización
+
+Permiso expreso otorgado por quien tiene competencia para ello.
+
+B
+
+Bien Común
+
+Elemento destinado al uso colectivo.
+
+Bien Privado
+
+Elemento perteneciente exclusivamente a una unidad.
+
+Bodega
+
+Unidad destinada al almacenamiento de bienes.
+
+Botiquín
+
+Equipo básico para la atención inicial de emergencias.
+
+Brigada de Emergencias
+
+Grupo encargado de apoyar la atención de emergencias.
+
+C
+
+Canon de Arrendamiento
+
+Valor periódico pagado por el uso de una unidad.
+
+Canal Oficial
+
+Medio autorizado para comunicaciones con la administración.
+
+CCTV
+
+Sistema cerrado de televisión destinado a fines de seguridad.
+
+Circulación
+
+Desplazamiento de personas o vehículos dentro del inmueble.
+
+Cliente
+
+Persona que recibe servicios prestados por establecimientos ubicados en el inmueble.
+
+Comité
+
+Grupo designado para apoyar procesos específicos cuando la administración lo considere
+necesario.
+
+Contratista
+
+Persona natural o jurídica contratada para ejecutar obras o prestar servicios.
+
+Contrato
+
+Acuerdo legal entre dos o más partes.
+
+Control de Acceso
+
+Sistema destinado a regular el ingreso y salida.
+
+Correspondencia
+
+Documentos físicos o electrónicos dirigidos a los ocupantes.
+
+Coworking
+
+Espacio compartido destinado al trabajo colaborativo.
+
+D
+
+Daño
+
+Afectación física, funcional o estética ocasionada a bienes o instalaciones.
+
+Daño Locativo
+
+Deterioro derivado del uso normal del inmueble.
+
+Daño Estructural
+
+Afectación que compromete la estabilidad de la edificación.
+
+Descargos
+
+Manifestación realizada por una persona respecto de un hecho investigado.
+
+Depósito
+
+Espacio destinado al almacenamiento autorizado.
+
+Documento
+
+Información registrada en cualquier medio físico o digital.
+
+Domicilio
+
+Entrega de bienes o servicios solicitados por un ocupante.
+
+E
+
+Edificio
+
+Construcción conformada por una o varias unidades independientes.
+
+Emergencia
+
+Evento inesperado que pone en riesgo personas o bienes.
+
+Empresa Prestadora de Servicios Públicos
+
+Entidad encargada del suministro de agua, energía, gas u otros servicios.
+
+Espacio Compartido
+
+Lugar destinado al uso común de los ocupantes.
+
+Evidencia
+
+Elemento material, documental o digital utilizado para demostrar un hecho.
+
+Evacuación
+
+Salida organizada de personas hacia un lugar seguro.
+
+Extintor
+
+Equipo destinado a controlar incendios incipientes.
+
+F
+
+Falta
+
+Conducta que incumple este Manual.
+
+Fotografía de Evidencia
+
+Registro gráfico utilizado para documentar el estado de un bien o una actuación.
+
+Fuerza Mayor
+
+Hecho imprevisible e irresistible que exonera responsabilidades cuando la ley así lo
+determine.
+
+G
+
+Garantía
+
+Obligación de responder por la calidad de un trabajo o servicio.
+
+Gas Natural
+
+Servicio público sujeto a normas especiales de seguridad.
+
+Gestión Documental
+
+Administración organizada de los documentos del inmueble.
+
+H
+
+Habitación
+
+Unidad destinada al alojamiento de una persona o grupo familiar.
+
+Habitabilidad
+
+Condiciones mínimas que permiten el uso seguro y digno de una unidad.
+
+Hurto
+
+Apropiación ilegal de bienes ajenos.
+
+I
+
+Incidente
+
+Situación que afecta la convivencia, seguridad o funcionamiento del inmueble sin generar
+necesariamente daños graves.
+
+Inmueble
+
+Bien raíz objeto de administración.
+
+Inspección
+
+Verificación técnica, administrativa o física de una unidad o área común.
+
+Inventario
+
+Relación detallada de bienes, equipos y estado físico del inmueble.
+
+Invitado
+
+Persona autorizada temporalmente por un ocupante.
+
+J
+
+Jardín
+
+Área verde del inmueble.
+
+Jornada de Mantenimiento
+
+Periodo programado para ejecutar actividades preventivas o correctivas.
+
+L
+
+Lavandería Comunal
+
+Espacio compartido destinado al lavado de prendas.
+
+Local Comercial
+
+Unidad destinada al desarrollo de actividades comerciales autorizadas.
+
+Lobby
+
+Área principal de recepción.
+
+M
+
+Mantenimiento Correctivo
+
+Actividad destinada a reparar una falla.
+
+Mantenimiento Preventivo
+
+Actividad programada para evitar fallas.
+
+Mantenimiento Predictivo
+
+Actividad basada en inspecciones y análisis técnicos.
+
+Mascota
+
+Animal doméstico autorizado para permanecer con su propietario.
+
+Material Peligroso
+
+Sustancia que representa riesgo para personas o bienes.
+
+Medidor
+
+Equipo utilizado para registrar consumos de servicios públicos.
+
+Modificación Estructural
+
+Intervención que afecta elementos portantes de la edificación.
+
+Mudanza
+
+Traslado de bienes hacia o desde una unidad.
+
+N
+
+Novedad
+
+Hecho relevante que requiere atención administrativa.
+
+Notificación
+
+Comunicación formal dirigida a una persona.
+
+O
+
+Obra
+
+Intervención física realizada en una unidad.
+
+Ocupante
+
+Persona autorizada para habitar o utilizar una unidad.
+
+Oficina
+
+Unidad destinada al desarrollo de actividades administrativas o profesionales.
+
+Orden de Trabajo
+
+Documento que autoriza la ejecución de una actividad de mantenimiento.
+
+P
+
+Paquete
+
+Bien recibido mediante servicios de mensajería.
+
+Parqueadero
+
+Espacio destinado al estacionamiento de vehículos.
+
+Pasillo
+
+Área de circulación peatonal.
+
+Permiso
+
+Autorización temporal para desarrollar una actividad.
+
+Personal de Aseo
+
+Trabajadores encargados de limpieza.
+
+Personal de Mantenimiento
+
+Trabajadores responsables de conservar el inmueble.
+
+Personal de Vigilancia
+
+Trabajadores responsables del control de acceso y seguridad.
+
+Plan de Emergencias
+
+Documento que establece procedimientos de respuesta ante emergencias.
+
+Plaga
+
+Presencia de organismos nocivos.
+
+Propietario
+
+Persona natural o jurídica titular del derecho de dominio sobre una unidad o el inmueble.
+
+Proveedor
+
+Persona o empresa que suministra bienes o servicios.
+
+PQRS
+
+Sistema para gestionar Peticiones, Quejas, Reclamos, Sugerencias y Felicitaciones.
+
+Q
+
+Queja
+
+Manifestación relacionada con un incumplimiento o inconformidad.
+
+R
+
+Reciclaje
+
+Proceso de separación y aprovechamiento de residuos.
+
+Recepción
+
+Área destinada al control de ingreso.
+
+Reclamo
+
+Solicitud presentada por inconformidad frente a un servicio o actuación.
+
+Registro
+
+Documento o sistema donde se almacena información.
+
+Reglamento
+
+Conjunto de normas aplicables al inmueble.
+
+Reparación
+
+Actividad destinada a restablecer el funcionamiento de un bien.
+
+Residuo
+
+Material descartado generado por una actividad.
+
+Riesgo
+
+Probabilidad de ocurrencia de un evento que afecte personas o bienes.
+
+Ruido
+
+Sonido que puede alterar la convivencia.
+
+S
+
+Salida de Emergencia
+
+Ruta destinada a la evacuación.
+
+Sanción
+
+Medida adoptada conforme al procedimiento establecido en este Manual frente al
+incumplimiento de sus disposiciones.
+
+Seguridad Física
+
+Conjunto de medidas destinadas a proteger personas y bienes.
+
+Señalización
+
+Elementos gráficos destinados a orientar o advertir.
+
+Servicio Público
+
+Servicio esencial prestado por empresas autorizadas.
+
+Sistema Eléctrico
+
+Infraestructura destinada al suministro de energía.
+
+Sistema Hidráulico
+
+Infraestructura destinada al suministro y evacuación de agua.
+
+Subarrendamiento
+
+Cesión del uso de una unidad por parte del arrendatario a un tercero con autorización cuando
+sea requerida.
+
+T
+
+Terraza
+
+Área descubierta destinada a usos autorizados.
+
+Trabajador
+
+Persona vinculada laboralmente a la administración o a un contratista.
+
+Tratamiento de Datos
+
+Operaciones realizadas sobre información personal conforme a la Ley 1581 de 2012.
+
+U
+
+Unidad
+
+Espacio físico independiente destinado a vivienda, comercio, oficina, consultorio,
+almacenamiento u otros usos autorizados.
+
+Unidad Habitacional
+
+Unidad destinada exclusivamente para vivienda.
+
+Unidad Comercial
+
+Unidad destinada a actividades comerciales.
+
+Unidad de Oficina
+
+Unidad destinada al desarrollo de actividades administrativas.
+
+Uso Autorizado
+
+Destino permitido para una unidad.
+
+Usuario
+
+Persona que utiliza una unidad o servicio del inmueble.
+
+V
+
+Vehículo
+
+Medio de transporte autorizado para ingresar al inmueble.
+
+Videovigilancia
+
+Sistema de cámaras destinado a la protección de personas y bienes.
+
+Visitante
+
+Persona que ingresa temporalmente al inmueble con autorización.
+
+Z
+
+Zona Común
+
+Espacio de uso compartido por los usuarios del inmueble.
+
+Zona Técnica
+
+Espacio reservado para equipos e instalaciones.
+
+Definiciones complementarias
+
+Además de las anteriores, para efectos de interpretación del presente Manual también se
+entenderán incorporadas las definiciones contenidas en la Constitución Política de
+Colombia, el Código Civil Colombiano, la Ley 1801 de 2016, la Ley 675 de 2001 como
+referencia técnica, la Ley 1581 de 2012, la Ley 9 de 1979, la Ley 99 de 1993, la Ley 142 de
+1994, la Ley 1523 de 2012, la Ley 1575 de 2012, la Ley 1774 de 2016, la Ley 1098 de 2006, la
+Ley 1257 de 2008, la Ley 1482 de 2011, la Ley 1335 de 2009, el Decreto 1072 de 2015, el
+Decreto 1077 de 2015, la NSR-10, las Normas Técnicas Colombianas (NTC) aplicables y las
+demás normas que las modifiquen o sustituyan.
+
+CAPÍTULO II
+
+PRINCIPIOS RECTORES
+
+Artículo 2. Finalidad
+
+Todas las actuaciones de propietarios, arrendatarios, ocupantes, visitantes, proveedores,
+contratistas y administración deberán regirse por los siguientes principios, los cuales
+orientan la interpretación y aplicación del presente Manual.
+
+1. Respeto
+
+Toda persona deberá reconocer y proteger la dignidad, integridad y derechos de los demás,
+evitando conductas ofensivas, intimidatorias, discriminatorias o que perturben la
+convivencia.
+
+2. Solidaridad
+
+Los usuarios colaborarán entre sí y con la administración para preservar la seguridad, atender
+emergencias, proteger el inmueble y promover el bienestar colectivo.
+
+3. Igualdad
+
+Ninguna persona podrá recibir un trato discriminatorio por motivos de sexo, género,
+orientación sexual, identidad de género, raza, origen étnico, nacionalidad, religión,
+discapacidad, condición económica, edad o cualquier otra circunstancia protegida por la ley.
+
+4. Legalidad
+
+Las decisiones y actuaciones relacionadas con la administración del inmueble deberán
+ajustarse a la Constitución Política, la legislación colombiana vigente, los contratos suscritos
+y este Manual.
+
+5. Debido Proceso
+
+Antes de imponer cualquier medida correctiva o sanción, se garantizará el derecho de la
+persona involucrada a ser informada de los hechos, presentar pruebas, formular descargos y
+obtener una decisión motivada.
+
+6. Transparencia
+
+La administración actuará de forma objetiva, documentada y verificable, manteniendo
+registros de las actuaciones que afecten los derechos u obligaciones de los usuarios.
+
+7. Confidencialidad
+
+La información personal, contractual, financiera y administrativa será tratada conforme a la
+normativa de protección de datos personales y únicamente podrá utilizarse para los fines
+autorizados.
+
+8. Seguridad
+
+Todas las personas deberán contribuir a prevenir riesgos, proteger la vida, la integridad física,
+el patrimonio y las instalaciones, observando las medidas de prevención y atención de
+emergencias.
+
+9. Convivencia
+
+El uso del inmueble deberá realizarse de forma armónica, respetando los derechos
+individuales sin afectar los derechos de los demás usuarios ni el adecuado funcionamiento
+del edificio.
+
+10. Buena Fe
+
+Se presume que todas las actuaciones de propietarios, arrendatarios, ocupantes, visitantes y
+administración se realizan con honestidad, lealtad, cooperación y respeto por las
+obligaciones asumidas, sin perjuicio de las verificaciones que correspondan conforme a la
+ley y a este Manual.
+
+TOMO 2
+
+DERECHOS Y OBLIGACIONES
+
+TOMO III
+
+USO DE LOS INMUEBLES Y DE LOS ESPACIOS COMUNES
+
+TÍTULO III
+
+USO DE LOS INMUEBLES
+
+CAPÍTULO I
+
+Disposiciones Generales
+
+Artículo 1. Finalidad
+
+El presente capítulo establece las condiciones para el uso adecuado de las unidades
+privadas y de los espacios comunes del inmueble, con el propósito de garantizar la
+seguridad, la convivencia, la conservación de las instalaciones, la protección del patrimonio
+y el respeto por los derechos de todos los usuarios.
+
+Artículo 2. Principios de uso
+
+Toda unidad deberá utilizarse conforme a:
+
+- Su destinación autorizada.
+- El contrato de arrendamiento o administración.
+- La normatividad urbanística vigente.
+- El presente Manual.
+- Las normas de seguridad y salubridad.
+- El respeto por los demás ocupantes.
+
+Ninguna actividad podrá poner en riesgo la integridad de las personas, afectar la tranquilidad,
+deteriorar las instalaciones o modificar el uso autorizado del inmueble.
+
+CAPÍTULO II
+
+USO DE LAS UNIDADES PRIVADAS
+
+Artículo 3. Apartamentos
+
+Uso permitido
+
+Los apartamentos deberán destinarse principalmente a vivienda y actividades compatibles
+con este uso, tales como:
+
+- Habitación permanente o temporal autorizada.
+- Teletrabajo o trabajo remoto que no genere atención masiva al público ni altere la
+  convivencia.
+- Actividades domésticas.
+- Recepción ocasional de visitas.
+- Uso normal de electrodomésticos y mobiliario.
+
+Uso prohibido
+
+Se prohíbe:
+
+- Operar establecimientos abiertos al público sin autorización.
+- Fabricación o almacenamiento de sustancias peligrosas.
+- Actividades industriales o de alto impacto.
+- Subarrendar total o parcialmente cuando el contrato lo prohíba.
+- Hospedaje turístico o alquiler por plataformas digitales sin autorización del
+  propietario y cumplimiento de la normativa aplicable.
+- Alterar la estructura del inmueble.
+- Generar ruidos excesivos o actividades que afecten a terceros.
+- Mantener condiciones insalubres o acumulación de residuos.
+
+Requiere autorización
+
+- Remodelaciones.
+- Instalación de equipos de alto consumo.
+- Instalación de aires acondicionados con intervención de fachada.
+- Cerramientos.
+- Cambios de acabados que afecten elementos comunes.
+- Antenas o equipos exteriores.
+
+Artículo 4. Habitaciones
+
+Uso permitido
+
+- Descanso y alojamiento.
+- Estudio.
+- Trabajo remoto individual.
+- Permanencia del ocupante autorizado.
+
+Uso prohibido
+
+- Subarrendar sin autorización.
+- Actividades comerciales.
+- Cocinas improvisadas cuando no estén permitidas.
+- Fumar donde exista restricción.
+- Almacenar materiales peligrosos.
+
+Requiere autorización
+
+- Cambio de ocupantes.
+- Permanencia de huéspedes por tiempos superiores a los definidos por la
+  administración.
+- Instalación de equipos adicionales.
+
+Artículo 5. Apartaestudios
+
+Uso permitido
+
+- Vivienda individual o familiar.
+- Actividades compatibles con vivienda.
+- Teletrabajo.
+
+Uso prohibido
+
+- Conversión en oficinas abiertas al público.
+- Actividades industriales.
+- Eventos sociales que excedan la capacidad del inmueble.
+- Hospedaje no autorizado.
+
+Requiere autorización
+
+- Remodelaciones.
+- Cambio de uso.
+- Instalaciones especiales.
+
+Artículo 6. Casas
+
+Uso permitido
+
+- Vivienda.
+- Actividades domésticas.
+- Teletrabajo.
+- Reuniones familiares moderadas.
+
+Uso prohibido
+
+- Negocios de alto impacto.
+- Talleres industriales.
+- Almacenamiento de materiales inflamables.
+- Actividades que generen contaminación.
+
+Requiere autorización
+
+- Construcciones.
+- Ampliaciones.
+- Cambios estructurales.
+- Instalación de equipos pesados.
+
+Artículo 7. Locales Comerciales
+
+Uso permitido
+
+- Actividades comerciales compatibles con la licencia y el uso del suelo.
+- Atención al público.
+- Venta de bienes o prestación de servicios autorizados.
+
+Uso prohibido
+
+- Actividades ilícitas.
+- Comercio de productos prohibidos.
+- Manipulación insegura de combustibles.
+- Actividades que excedan los niveles permitidos de ruido, olores o emisiones.
+- Uso distinto al autorizado.
+
+Requiere autorización
+
+- Avisos exteriores.
+- Remodelaciones.
+- Equipos especiales.
+- Instalaciones eléctricas adicionales.
+- Sistemas de extracción o ventilación.
+
+Artículo 8. Oficinas
+
+Uso permitido
+
+- Actividades administrativas.
+- Profesionales.
+- Empresariales.
+- Consultorías.
+
+Uso prohibido
+
+- Manufactura.
+- Actividades industriales.
+- Almacenamiento masivo.
+- Eventos públicos sin autorización.
+
+Requiere autorización
+
+- Adecuaciones.
+- Instalación de servidores o equipos de alta demanda eléctrica.
+- Cambios de distribución que afecten elementos comunes.
+
+Artículo 9. Consultorios
+
+Uso permitido
+
+- Prestación de servicios profesionales autorizados.
+- Atención programada de usuarios.
+
+Uso prohibido
+
+- Procedimientos para los cuales no exista habilitación legal.
+- Manejo inadecuado de residuos biosanitarios.
+- Actividades diferentes al uso autorizado.
+
+Requiere autorización
+
+- Equipos médicos especiales.
+- Adecuaciones técnicas.
+- Sistemas de extracción o instalaciones especiales.
+
+Artículo 10. Bodegas
+
+Uso permitido
+
+- Almacenamiento de bienes autorizados.
+
+Uso prohibido
+
+- Permanencia de personas como vivienda.
+- Material explosivo.
+- Sustancias tóxicas.
+- Alimentos perecederos cuando no existan condiciones sanitarias.
+
+Requiere autorización
+
+- Sistemas especiales de almacenamiento.
+- Estanterías ancladas a elementos estructurales.
+- Equipos eléctricos adicionales.
+
+Artículo 11. Parqueaderos
+
+Uso permitido
+
+- Estacionamiento de vehículos autorizados.
+- Bicicletas y motocicletas en espacios destinados para ello.
+- Carga y descarga temporal autorizada.
+
+Uso prohibido
+
+- Reparaciones mecánicas mayores.
+- Lavado de vehículos.
+- Almacenamiento permanente de muebles o mercancías.
+- Permanecer en ralentí innecesariamente.
+- Parqueo en zonas de circulación o emergencia.
+
+Requiere autorización
+
+- Instalación de cargadores para vehículos eléctricos.
+- Espacios exclusivos.
+- Uso temporal para mudanzas o mantenimiento.
+
+Artículo 12. Depósitos
+
+Uso permitido
+
+- Almacenamiento de bienes personales o institucionales autorizados.
+
+Uso prohibido
+
+- Habitar el depósito.
+- Almacenar combustibles, pólvora, explosivos o sustancias peligrosas.
+- Almacenar alimentos perecederos sin autorización.
+
+Requiere autorización
+
+- Adecuaciones internas.
+- Instalaciones eléctricas.
+- Estanterías fijas que impliquen perforaciones.
+
+CAPÍTULO III
+
+NORMAS PARA ESPACIOS COMUNES
+
+Artículo 13. Disposiciones Generales
+
+Las áreas comunes están destinadas al beneficio colectivo y deberán utilizarse de forma
+responsable, respetando su capacidad, destinación y las instrucciones de la administración.
+
+Queda prohibido apropiarse de manera permanente de cualquier espacio común.
+
+Artículo 14. Recepción
+
+La recepción constituye el principal punto de control y atención del inmueble.
+
+Se permite
+
+- Registro de visitantes.
+- Recepción de correspondencia y paquetería.
+- Atención de usuarios.
+- Espera temporal.
+
+Se prohíbe
+
+- Permanecer sin justificación.
+- Consumir bebidas alcohólicas.
+- Generar aglomeraciones.
+- Obstaculizar el trabajo del personal.
+- Manipular equipos administrativos.
+
+Artículo 15. Lobby
+
+Debe mantenerse libre de obstáculos y utilizarse exclusivamente como área de circulación o
+espera.
+
+No se permite realizar reuniones, consumir alimentos, fumar o almacenar objetos.
+
+Artículo 16. Pasillos
+
+Los pasillos son rutas permanentes de circulación y evacuación.
+
+Está prohibido:
+
+- Dejar bicicletas.
+- Muebles.
+- Basuras.
+- Materas.
+- Cajas.
+- Mercancías.
+- Cualquier objeto que reduzca la circulación.
+
+Artículo 17. Ascensores
+
+Se deberán respetar:
+
+- La capacidad máxima.
+- La prioridad para personas con discapacidad, adultos mayores y mujeres
+  embarazadas.
+- Las instrucciones de seguridad.
+
+No se permite:
+
+- Saltar.
+- Manipular botones de emergencia sin causa.
+- Transportar materiales peligrosos sin autorización.
+- Sobrecargar el equipo.
+
+Artículo 18. Escaleras
+
+Las escaleras deberán permanecer despejadas en todo momento.
+
+No podrán utilizarse para almacenamiento, reuniones o actividades recreativas.
+
+Artículo 19. Terrazas
+
+Las terrazas deberán utilizarse únicamente para las actividades autorizadas por la
+administración.
+
+Está prohibido:
+
+- Instalar estructuras permanentes.
+- Encender fogatas.
+- Arrojar objetos.
+- Alterar impermeabilizaciones.
+
+Artículo 20. Cubiertas
+
+Las cubiertas son zonas técnicas de acceso restringido.
+
+Solo podrá ingresar personal autorizado.
+
+Artículo 21. Patios
+
+Los patios deberán mantenerse limpios y libres de acumulación de materiales.
+
+No podrán utilizarse para almacenamiento permanente.
+
+Artículo 22. Lavandería Comunal
+
+El uso deberá realizarse respetando:
+
+- Turnos.
+- Horarios.
+- Limpieza de equipos.
+- Uso racional del agua.
+
+Se prohíbe dejar prendas abandonadas.
+
+Artículo 23. Cocinas Compartidas
+
+Después de cada uso será obligatorio:
+
+- Limpiar superficies.
+- Retirar residuos.
+- Apagar equipos.
+- Verificar el cierre del gas cuando aplique.
+
+No se podrán almacenar alimentos en estado de descomposición.
+
+Artículo 24. Coworking
+
+Destinado exclusivamente para actividades laborales, académicas o reuniones autorizadas.
+
+No se permite:
+
+- Dormir.
+- Consumir alcohol.
+- Reproducir música a alto volumen.
+- Realizar actividades recreativas incompatibles con el espacio.
+
+Artículo 25. Salones
+
+Los salones podrán utilizarse para reuniones, capacitaciones o eventos autorizados.
+
+Toda reserva deberá realizarse previamente y el responsable responderá por cualquier daño
+ocasionado.
+
+Artículo 26. Jardines
+
+Los jardines constituyen áreas de protección ambiental.
+
+Se prohíbe:
+
+- Cortar plantas.
+- Extraer especies.
+- Arrojar residuos.
+- Circular con vehículos.
+- Dañar el mobiliario urbano.
+
+Artículo 27. Cuartos Técnicos
+
+Son áreas de acceso exclusivo para personal autorizado.
+
+Está prohibido el ingreso de ocupantes, visitantes o menores de edad.
+
+Artículo 28. Cuartos de Basuras
+
+Los residuos deberán depositarse debidamente separados conforme al código de colores
+vigente.
+
+Se prohíbe:
+
+- Depositar escombros sin autorización.
+- Dejar residuos fuera de los recipientes.
+- Abandonar muebles o electrodomésticos sin coordinación previa.
+
+Artículo 29. Cuartos Eléctricos
+
+Solo podrán ser intervenidos por personal calificado y autorizado.
+
+Está prohibido almacenar materiales o manipular tableros eléctricos.
+
+Artículo 30. Cuarto de Bombas
+
+El acceso estará restringido al personal de mantenimiento o contratistas autorizados.
+
+No se permitirá el almacenamiento de elementos ajenos al funcionamiento del sistema
+hidráulico o contra incendios.
+
+CAPÍTULO IV
+
+DISPOSICIONES FINALES SOBRE EL USO DEL INMUEBLE
+
+Artículo 31. Interpretación
+
+En caso de duda sobre el uso permitido de una unidad o de un espacio común, prevalecerán:
+
+1. La legislación colombiana vigente.
+
+2. La licencia urbanística y el uso del suelo autorizado.
+
+3. El contrato de arrendamiento o administración.
+
+4. El presente Manual.
+
+5. Las instrucciones emitidas por la administración dentro del marco de la ley.
+
+Artículo 32. Responsabilidad por daños
+
+Toda persona que, por acción u omisión, cause daños a las unidades privadas, áreas
+comunes, equipos o instalaciones del inmueble será responsable de su reparación o del
+pago de los costos correspondientes, sin perjuicio de las acciones civiles, administrativas o
+penales que puedan derivarse conforme a la legislación colombiana.
+
+TOMO IV
+
+NORMAS DE CONVIVENCIA, RESPETO Y COMPORTAMIENTO
+
+TÍTULO IV
+
+CONVIVENCIA GENERAL
+
+CAPÍTULO I
+
+PRINCIPIOS GENERALES DE CONVIVENCIA
+
+Artículo 33. Finalidad
+
+Las normas de convivencia tienen como propósito garantizar un ambiente seguro,
+respetuoso, saludable y armónico para propietarios, arrendatarios, ocupantes, visitantes,
+proveedores, contratistas y personal administrativo.
+
+Todas las personas deberán actuar bajo los principios de respeto, solidaridad, tolerancia,
+buena fe, responsabilidad y consideración hacia los demás usuarios del inmueble.
+
+Artículo 34. Respeto entre las personas
+
+Toda persona tiene derecho a disfrutar del inmueble sin ser objeto de:
+
+- Agresiones físicas.
+- Amenazas.
+- Intimidaciones.
+- Acoso.
+- Discriminación.
+- Hostigamiento.
+- Burlas ofensivas.
+- Comentarios degradantes.
+- Actos de violencia verbal.
+- Violencia psicológica.
+- Violencia de género.
+- Actitudes xenófobas o discriminatorias.
+
+Se deberá mantener un trato cordial y respetuoso en todas las interacciones.
+
+Artículo 35. Prohibición de discriminación
+
+Ninguna persona podrá ser discriminada por razones de:
+
+- Sexo.
+- Género.
+- Orientación sexual.
+- Identidad de género.
+- Raza.
+- Etnia.
+- Nacionalidad.
+- Religión.
+- Edad.
+- Discapacidad.
+- Estado civil.
+- Condición económica.
+- Ideología.
+- Profesión.
+
+Toda conducta discriminatoria podrá dar lugar a la aplicación de medidas correctivas y a las
+acciones legales correspondientes.
+
+Artículo 36. Protección de la tranquilidad
+
+Toda persona deberá evitar conductas que perturben la tranquilidad y el descanso de los
+demás ocupantes.
+
+La convivencia exige compatibilizar el ejercicio de los derechos individuales con el respeto de
+los derechos de terceros.
+
+CAPÍTULO II
+
+RUIDO Y CONTROL DE SONIDO
+
+Artículo 37. Normas generales de ruido
+
+Los ocupantes deberán mantener niveles razonables de ruido dentro de sus unidades y en las
+áreas comunes.
+
+Ninguna actividad podrá generar perturbaciones permanentes o reiteradas que afecten el
+descanso, trabajo o bienestar de otras personas.
+
+Artículo 38. Horarios de convivencia
+
+Se establecen los siguientes horarios generales:
+
+Horario Diurno
+
+Desde las 6:00 a.m. hasta las 9:00 p.m.
+
+Horario Nocturno
+
+Desde las 9:00 p.m. hasta las 6:00 a.m.
+
+Durante el horario nocturno deberán minimizarse los ruidos que puedan afectar a terceros.
+
+La administración podrá establecer horarios especiales según las características del
+inmueble.
+
+Artículo 39. Música
+
+Se permite escuchar música dentro de las unidades siempre que:
+
+- No trascienda de manera excesiva a otras unidades.
+- No altere el descanso de terceros.
+- No genere quejas reiteradas.
+
+Se prohíbe:
+
+- Utilizar equipos de sonido de alta potencia sin autorización.
+- Generar vibraciones excesivas.
+- Utilizar parlantes en zonas comunes sin autorización.
+
+Artículo 40. Instrumentos musicales
+
+Se permite la práctica de instrumentos musicales siempre que:
+
+- Se realice en horarios razonables.
+- No afecte la tranquilidad de terceros.
+- Se adopten medidas de insonorización cuando sea necesario.
+
+La administración podrá solicitar ajustes cuando existan afectaciones demostradas.
+
+CAPÍTULO III
+
+REUNIONES Y EVENTOS
+
+Artículo 41. Fiestas y reuniones sociales
+
+Las reuniones sociales deberán desarrollarse respetando:
+
+- La capacidad de la unidad.
+- Las normas de seguridad.
+- Los horarios establecidos.
+- La tranquilidad de los vecinos.
+
+Los organizadores serán responsables por:
+
+- Daños.
+- Conductas de invitados.
+- Exceso de ruido.
+- Consumo indebido de alcohol.
+- Alteraciones de la convivencia.
+
+Artículo 42. Eventos especiales
+
+Cuando la magnitud del evento pueda afectar las áreas comunes o generar alta afluencia de
+visitantes, deberá informarse previamente a la administración.
+
+CAPÍTULO IV
+
+MUDANZAS Y OBRAS
+
+Artículo 43. Mudanzas
+
+Las mudanzas deberán realizarse:
+
+- En horarios autorizados por la administración.
+- Utilizando rutas designadas.
+- Protegiendo ascensores y áreas comunes.
+- Sin afectar la seguridad de los demás usuarios.
+
+La administración podrá exigir programación previa.
+
+Artículo 44. Obras y remodelaciones
+
+Toda obra deberá:
+
+- Contar con las autorizaciones requeridas.
+- Cumplir las normas de seguridad.
+- Respetar horarios establecidos.
+- Mantener las áreas comunes limpias.
+
+Artículo 45. Horarios para obras
+
+Salvo disposición diferente de la administración:
+
+Lunes a Viernes
+
+8:00 a.m. a 5:00 p.m.
+
+Sábados
+
+8:00 a.m. a 1:00 p.m.
+
+Domingos y Festivos
+
+Prohibidas, salvo emergencia.
+
+Artículo 46. Responsabilidad por obras
+
+Quien autorice o ejecute una obra responderá por:
+
+- Daños.
+- Escombros.
+- Afectaciones a terceros.
+- Incumplimientos normativos.
+- Riesgos generados.
+
+CAPÍTULO V
+
+PROTECCIÓN DE POBLACIONES ESPECIALES
+
+Artículo 47. Protección de niños, niñas y adolescentes
+
+Los menores de edad deberán recibir un trato digno y respetuoso.
+
+Se prohíbe:
+
+- Exponerlos a riesgos innecesarios.
+- Permitir actividades peligrosas sin supervisión.
+- Realizar conductas que vulneren sus derechos.
+
+Los padres o responsables serán responsables de su supervisión.
+
+Artículo 48. Uso de áreas comunes por menores
+
+Los menores deberán utilizar las áreas comunes bajo la vigilancia de sus responsables
+cuando las condiciones lo requieran.
+
+Artículo 49. Protección de personas mayores
+
+Las personas mayores tendrán derecho a:
+
+- Trato preferente.
+- Respeto.
+- Acceso seguro.
+- Prioridad razonable en ascensores y áreas de circulación.
+
+Se prohíbe cualquier conducta que implique maltrato o discriminación.
+
+Artículo 50. Personas con discapacidad
+
+La administración y los usuarios deberán respetar:
+
+- Accesibilidad.
+- Movilidad.
+- Prioridad de uso.
+- Espacios adaptados.
+
+Ninguna persona podrá obstaculizar rampas, ascensores, senderos o elementos destinados
+a facilitar la movilidad.
+
+Artículo 51. Violencia y acoso
+
+Se prohíbe cualquier forma de:
+
+- Violencia física.
+- Violencia psicológica.
+- Violencia económica.
+- Violencia sexual.
+- Acoso.
+- Intimidación.
+- Hostigamiento.
+
+La administración podrá remitir los casos a las autoridades competentes cuando
+corresponda.
+
+CAPÍTULO VI
+
+DISPOSICIONES GENERALES DE COMPORTAMIENTO
+
+Artículo 52. Conducta esperada
+
+Todos los usuarios deberán:
+
+- Mantener relaciones respetuosas.
+- Cumplir este Manual.
+- Cuidar las instalaciones.
+- Colaborar en situaciones de emergencia.
+- Respetar la autoridad legítima de la administración.
+
+Artículo 53. Conductas contrarias a la convivencia
+
+Se consideran contrarias a la convivencia:
+
+- Generar escándalos.
+- Provocar riñas.
+- Alterar el orden.
+- Obstaculizar el acceso.
+- Perturbar la tranquilidad.
+- Generar daños.
+- Incumplir instrucciones de seguridad.
+- Realizar actos peligrosos.
+
+MENSAJE 8
+
+MASCOTAS, SUSTANCIAS Y ELEMENTOS DE RIESGO
+
+CAPÍTULO VII
+
+TENENCIA RESPONSABLE DE MASCOTAS
+
+Artículo 54. Tenencia responsable
+
+Se permite la permanencia de mascotas siempre que:
+
+- Se encuentren bajo control permanente.
+- No representen riesgos para terceros.
+- Se respeten las normas sanitarias.
+- Se garantice su bienestar.
+
+Artículo 55. Obligaciones de los responsables
+
+Los propietarios o tenedores deberán:
+
+- Mantener vacunación vigente.
+- Recoger excrementos.
+- Controlar comportamientos agresivos.
+- Responder por daños ocasionados.
+- Cumplir la normativa aplicable.
+
+Artículo 56. Mascotas potencialmente peligrosas
+
+Deberán cumplir los requisitos legales vigentes respecto a:
+
+- Registro.
+- Correa.
+- Bozal.
+- Medidas de seguridad.
+
+Artículo 57. Conductas prohibidas
+
+Se prohíbe:
+
+- Maltrato animal.
+- Abandono.
+- Mantener animales en condiciones insalubres.
+- Permitir agresiones a personas o animales.
+
+CAPÍTULO VIII
+
+ALCOHOL Y SUSTANCIAS
+
+Artículo 58. Consumo de alcohol
+
+El consumo de alcohol deberá realizarse de manera responsable y sin afectar la convivencia.
+
+Se prohíbe:
+
+- Generar escándalos.
+- Riñas.
+- Alteraciones del orden.
+- Daños a las instalaciones.
+
+Artículo 59. Sustancias psicoactivas
+
+Se prohíben las actividades relacionadas con:
+
+- Producción.
+- Distribución.
+- Comercialización.
+- Almacenamiento ilegal.
+- Consumo en áreas donde la ley o la administración lo prohíban.
+
+Sin perjuicio de las actuaciones de las autoridades competentes.
+
+CAPÍTULO IX
+
+TABACO Y VAPEADORES
+
+Artículo 60. Espacios libres de humo
+
+Se respetarán las restricciones establecidas por la legislación colombiana.
+
+Artículo 61. Vapeadores
+
+Las disposiciones aplicables al cigarrillo podrán extenderse al uso de vapeadores cuando su
+utilización afecte a terceros o contravenga las normas vigentes.
+
+CAPÍTULO X
+
+OBJETOS Y ACTIVIDADES DE RIESGO
+
+Artículo 62. Objetos peligrosos
+
+Se prohíbe almacenar o manipular elementos que representen riesgo para las personas o el
+inmueble sin autorización expresa.
+
+Artículo 63. Armas
+
+El porte y tenencia de armas deberá ajustarse a la legislación colombiana.
+
+Se prohíbe:
+
+- Manipular armas en áreas comunes.
+- Exhibirlas de forma intimidatoria.
+- Utilizarlas de manera irresponsable.
+
+Artículo 64. Pólvora
+
+Se prohíbe:
+
+- Almacenar pólvora.
+- Comercializar pólvora.
+- Manipular pólvora dentro del inmueble.
+
+Salvo autorizaciones expresamente permitidas por la ley.
+
+Artículo 65. Fogatas
+
+Se prohíbe encender fogatas dentro del inmueble.
+
+Artículo 66. BBQ y equipos de cocción
+
+Su uso deberá:
+
+- Realizarse únicamente en áreas autorizadas.
+- Cumplir las medidas de seguridad.
+- Evitar riesgos de incendio.
+- Respetar la convivencia.
+
+La administración podrá restringir o suspender su uso cuando existan riesgos.
+
+Artículo 67. Velas y elementos de combustión
+
+El uso de velas, antorchas o elementos similares deberá realizarse bajo condiciones seguras.
+
+Está prohibido dejarlos encendidos sin supervisión.
+
+Artículo 68. Gas y combustibles
+
+Toda instalación o manipulación de gas deberá:
+
+- Cumplir la normativa técnica vigente.
+- Ser realizada por personal autorizado.
+- Mantener las condiciones de seguridad exigidas por la ley.
+
+Se prohíben conexiones improvisadas o modificaciones no autorizadas.
+
+CAPÍTULO XI
+
+DISPOSICIONES FINALES
+
+Artículo 69. Deber de prevención
+
+Todos los usuarios deberán actuar diligentemente para prevenir riesgos que puedan afectar
+la vida, la salud, la integridad física, la convivencia o el patrimonio del inmueble.
+
+Artículo 70. Responsabilidad por incumplimientos
+
+Las conductas que contravengan las disposiciones de este Título podrán dar lugar a medidas
+correctivas, procedimientos administrativos internos, cobro de daños y demás actuaciones
+previstas en el régimen sancionatorio del presente Manual, sin perjuicio de las acciones
+civiles, administrativas o penales que correspondan.
+
+TOMO V
+
+SEGURIDAD FÍSICA, CONTROL DE ACCESO Y PROTECCIÓN DE LA INFORMACIÓN
+
+TÍTULO V
+
+SEGURIDAD DEL INMUEBLE
+
+CAPÍTULO I
+
+DISPOSICIONES GENERALES
+
+Artículo 71. Objeto
+
+El presente título establece las políticas, procedimientos y controles destinados a garantizar
+la seguridad física del inmueble, la protección de las personas, el adecuado control de
+acceso, la custodia de bienes e información y la correcta gestión de visitantes, proveedores,
+contratistas y servicios de mensajería.
+
+Todas las personas que ingresen al inmueble deberán cumplir las disposiciones aquí
+establecidas, sin perjuicio de las medidas adicionales que la administración adopte
+conforme a la ley.
+
+Artículo 72. Principios de seguridad
+
+Las medidas de seguridad se fundamentan en los siguientes principios:
+
+- Prevención del riesgo.
+- Protección de la vida e integridad de las personas.
+- Protección del patrimonio.
+- Control de acceso.
+- Trazabilidad de los ingresos y salidas.
+- Protección de la información.
+- Proporcionalidad de las medidas.
+- Confidencialidad.
+- Cumplimiento de la legislación vigente.
+
+CAPÍTULO II
+
+CONTROL DE ACCESO
+
+Artículo 73. Control de ingreso
+
+El ingreso al inmueble podrá estar sujeto a mecanismos de verificación establecidos por la
+administración, tales como:
+
+- Registro de identidad.
+- Confirmación con el residente o responsable.
+- Registro de vehículos.
+- Registro de visitantes.
+- Tarjetas o dispositivos electrónicos.
+- Códigos de acceso.
+- Biometría, cuando exista.
+- Otros sistemas tecnológicos autorizados.
+
+La administración podrá negar el ingreso cuando existan razones objetivas de seguridad,
+incumplimiento de los protocolos o cuando no se obtenga la autorización correspondiente.
+
+Artículo 74. Personas autorizadas para ingresar
+
+Podrán ingresar:
+
+- Propietarios.
+- Arrendatarios.
+- Ocupantes registrados.
+- Visitantes autorizados.
+- Personal administrativo.
+- Personal de vigilancia.
+- Personal de aseo.
+- Personal de mantenimiento.
+- Proveedores.
+- Contratistas.
+- Funcionarios públicos en ejercicio de sus funciones, conforme a la ley.
+- Organismos de socorro y emergencia.
+
+Artículo 75. Personas no autorizadas
+
+Se podrá restringir el ingreso de personas cuando:
+
+- No exista autorización.
+- Se nieguen a cumplir el protocolo de registro.
+- Representen un riesgo para la seguridad o convivencia.
+- Intenten ingresar con información falsa.
+- Porten objetos prohibidos o peligrosos sin autorización.
+- Existan decisiones administrativas o judiciales que lo justifiquen.
+
+CAPÍTULO III
+
+LLAVES, CONTROLES Y DISPOSITIVOS DE ACCESO
+
+Artículo 76. Llaves
+
+Las llaves entregadas por la administración deberán utilizarse exclusivamente para el acceso
+autorizado.
+
+Está prohibido:
+
+- Prestarlas sin autorización.
+- Duplicarlas sin autorización del propietario o la administración cuando corresponda.
+- Entregarlas a terceros no autorizados.
+- Alterar cerraduras comunes.
+
+En caso de pérdida, el usuario deberá informar inmediatamente a la administración.
+
+Artículo 77. Tarjetas, controles remotos y dispositivos electrónicos
+
+Los dispositivos electrónicos de acceso son de uso personal e intransferible.
+
+Su titular será responsable por:
+
+- Uso indebido.
+- Pérdida.
+- Daños ocasionados por terceros cuando exista negligencia.
+
+La administración podrá desactivar los dispositivos extraviados, vencidos o utilizados de
+manera irregular.
+
+Artículo 78. Reposición de dispositivos
+
+La reposición podrá generar costos cuando la pérdida sea atribuible al usuario, de acuerdo
+con las políticas de la administración.
+
+CAPÍTULO IV
+
+VISITANTES
+
+Artículo 79. Registro de visitantes
+
+Cuando exista sistema de control, los visitantes deberán suministrar la información
+necesaria para su identificación, la cual podrá incluir:
+
+- Nombre completo.
+- Documento de identidad.
+- Unidad visitada.
+- Persona a visitar.
+- Hora de ingreso.
+- Hora de salida.
+- Placa del vehículo, si aplica.
+
+El tratamiento de estos datos se realizará conforme a la legislación sobre protección de datos
+personales.
+
+Artículo 80. Responsabilidad del residente
+
+El propietario, arrendatario u ocupante que autorice el ingreso de un visitante responderá por
+el comportamiento de este dentro del inmueble, así como por los daños que pueda
+ocasionar.
+
+Artículo 81. Permanencia
+
+Los visitantes deberán permanecer únicamente en los lugares autorizados y respetar todas
+las disposiciones del presente Manual.
+
+CAPÍTULO V
+
+PROVEEDORES Y CONTRATISTAS
+
+Artículo 82. Ingreso de proveedores
+
+Los proveedores deberán cumplir los protocolos de ingreso establecidos por la
+administración.
+
+Podrá exigirse:
+
+- Identificación.
+- Registro.
+- Orden de trabajo.
+- Autorización del residente o de la administración.
+- Elementos de protección personal cuando corresponda.
+
+Artículo 83. Contratistas
+
+Los contratistas deberán:
+
+- Cumplir las normas de seguridad.
+- Utilizar los elementos de protección requeridos.
+- Respetar los horarios autorizados.
+- Mantener las áreas limpias.
+- Evitar afectar la convivencia.
+
+Serán responsables por los daños ocasionados durante la ejecución de sus actividades.
+
+Artículo 84. Supervisión
+
+La administración podrá supervisar los trabajos realizados dentro del inmueble y exigir la
+suspensión inmediata de aquellos que representen riesgos o incumplan este Manual.
+
+CAPÍTULO VI
+
+CORRESPONDENCIA, PAQUETERÍA Y MENSAJERÍA
+
+Artículo 85. Recepción de correspondencia
+
+La administración podrá recibir correspondencia y paquetería cuando exista un sistema
+destinado para ello.
+
+La recepción no implicará responsabilidad por el contenido de los envíos.
+
+Artículo 86. Entrega
+
+La entrega se realizará al destinatario o a la persona autorizada, dejando el registro
+correspondiente cuando sea aplicable.
+
+Artículo 87. Paquetería
+
+Los paquetes permanecerán bajo custodia únicamente durante el tiempo definido por la
+administración.
+
+Los usuarios deberán retirarlos oportunamente.
+
+Artículo 88. Domicilios
+
+Los servicios de domicilio deberán respetar:
+
+- Protocolos de ingreso.
+- Horarios establecidos.
+- Áreas autorizadas.
+- Medidas de seguridad.
+
+Los domiciliarios no podrán circular libremente por áreas restringidas sin autorización.
+
+Artículo 89. Mensajería
+
+Los servicios de mensajería deberán cumplir el mismo procedimiento establecido para
+visitantes o proveedores, según corresponda.
+
+Artículo 90. Objetos de alto valor
+
+Cuando se trate de bienes de alto valor económico o especial sensibilidad, la administración
+podrá establecer protocolos adicionales de entrega, verificación o autorización.
+
+MENSAJE 10
+
+TÍTULO VI
+
+VIDEOVIGILANCIA Y PROTECCIÓN DE LA INFORMACIÓN
+
+CAPÍTULO VII
+
+VIDEOVIGILANCIA
+
+Artículo 91. Finalidad
+
+El sistema de videovigilancia tiene como finalidad:
+
+- Proteger la vida e integridad de las personas.
+- Prevenir actos delictivos.
+- Proteger los bienes del inmueble.
+- Apoyar investigaciones administrativas o judiciales.
+- Facilitar la atención de incidentes.
+
+No podrá utilizarse para vulnerar la intimidad o realizar vigilancia arbitraria.
+
+Artículo 92. Ubicación de cámaras
+
+Las cámaras podrán instalarse en:
+
+- Accesos.
+- Recepción.
+- Lobby.
+- Pasillos.
+- Ascensores.
+- Escaleras.
+- Parqueaderos.
+- Áreas comunes.
+- Perímetros del inmueble.
+- Zonas técnicas.
+
+No podrán instalarse en lugares que afecten la privacidad, tales como baños, vestidores u
+otros espacios protegidos por la ley.
+
+Artículo 93. Uso de las imágenes
+
+Las imágenes obtenidas únicamente podrán utilizarse para:
+
+- Seguridad.
+- Atención de incidentes.
+- Investigaciones internas.
+- Cumplimiento de requerimientos de autoridades competentes.
+- Protección del patrimonio.
+
+Se prohíbe su utilización con fines personales, comerciales o de divulgación no autorizada.
+
+CAPÍTULO VIII
+
+PROTECCIÓN DE DATOS PERSONALES
+
+Artículo 94. Tratamiento de datos
+
+La administración realizará el tratamiento de los datos personales conforme a:
+
+- Ley 1581 de 2012.
+- Decreto 1377 de 2013.
+- Demás normas que regulen la materia.
+
+Los datos se utilizarán exclusivamente para los fines relacionados con la administración y
+seguridad del inmueble.
+
+Artículo 95. Derechos del titular
+
+Los titulares podrán ejercer los derechos de:
+
+- Conocer.
+- Actualizar.
+- Rectificar.
+- Solicitar prueba de autorización cuando corresponda.
+- Solicitar la supresión de los datos cuando sea procedente.
+- Presentar consultas y reclamos.
+
+Artículo 96. Autorización
+
+Cuando la ley lo exija, la administración obtendrá la autorización para el tratamiento de datos
+personales mediante los mecanismos permitidos por la legislación vigente.
+
+CAPÍTULO IX
+
+REGISTROS FOTOGRÁFICOS Y AUDIOVISUALES
+
+Artículo 97. Registro fotográfico
+
+La administración podrá realizar registros fotográficos para:
+
+- Inventarios.
+- Entregas.
+- Devoluciones.
+- Inspecciones.
+- Daños.
+- Emergencias.
+- Mantenimientos.
+- Evidencias administrativas.
+
+Artículo 98. Valor probatorio
+
+Las fotografías y videos podrán formar parte de los expedientes administrativos y servir como
+evidencia en procedimientos internos o ante las autoridades competentes, respetando las
+normas sobre autenticidad, integridad y debido proceso.
+
+CAPÍTULO X
+
+GRABACIONES Y CUSTODIA
+
+Artículo 99. Conservación
+
+Las grabaciones de videovigilancia serán conservadas durante el tiempo definido por la
+administración, atendiendo los principios de necesidad, finalidad y proporcionalidad, así
+como la capacidad técnica del sistema y la normativa aplicable.
+
+Una vez vencido dicho término, podrán ser eliminadas, salvo que exista un requerimiento
+legal o una investigación que justifique su conservación.
+
+Artículo 100. Acceso a las grabaciones
+
+Las grabaciones únicamente podrán ser consultadas por:
+
+- Representante legal.
+- Administrador.
+- Personal expresamente autorizado.
+- Autoridades competentes.
+- Titulares de datos cuando la ley lo permita.
+
+Artículo 101. Solicitudes de información
+
+Toda solicitud relacionada con registros de seguridad deberá presentarse por escrito,
+indicando:
+
+- Motivo.
+- Fecha aproximada.
+- Lugar.
+- Información requerida.
+
+La administración responderá conforme a la legislación vigente y a la disponibilidad de la
+información.
+
+CAPÍTULO XI
+
+CADENA DE CUSTODIA
+
+Artículo 102. Conservación de evidencias
+
+Cuando un registro pueda constituir prueba dentro de un procedimiento administrativo,
+disciplinario, civil o penal, la administración deberá garantizar su integridad, evitando
+alteraciones, pérdidas o manipulaciones indebidas.
+
+Artículo 103. Entrega a autoridades
+
+Las evidencias podrán entregarse exclusivamente a las autoridades competentes o a quienes
+acrediten un derecho legal para acceder a ellas, dejando constancia de:
+
+- Fecha.
+- Hora.
+- Responsable de la entrega.
+- Responsable de la recepción.
+- Medio utilizado.
+- Identificación del archivo o elemento entregado.
+
+Artículo 104. Confidencialidad
+
+Toda persona que tenga acceso a información, registros, fotografías, videos o datos
+personales deberá mantener absoluta reserva sobre su contenido.
+
+El uso indebido de esta información podrá dar lugar a medidas disciplinarias, civiles,
+administrativas o penales, según corresponda.
+
+CAPÍTULO XII
+
+DISPOSICIONES FINALES
+
+Artículo 105. Cooperación
+
+Todos los propietarios, arrendatarios, ocupantes, visitantes, proveedores y contratistas
+deberán colaborar con las medidas de seguridad adoptadas por la administración y
+suministrar la información necesaria cuando sea requerida para proteger la integridad de las
+personas, los bienes y el inmueble.
+
+Artículo 106. Interpretación
+
+Las disposiciones del presente título se interpretarán conforme a la Constitución Política de
+Colombia, la Ley 1581 de 2012, el Decreto 1377 de 2013, la Ley 1801 de 2016, la Ley 1712 de
+2014, la Ley 527 de 1999 y las demás normas que regulen la seguridad, la protección de
+datos personales y el tratamiento de la información.
+
+TOMO VI
+
+MANTENIMIENTO, CONSERVACIÓN E INTERVENCIONES DEL INMUEBLE
+
+TÍTULO VII
+
+MANTENIMIENTO Y CONSERVACIÓN DEL INMUEBLE
+
+CAPÍTULO I
+
+DISPOSICIONES GENERALES
+
+Artículo 107. Objeto
+
+El presente Título tiene como finalidad establecer las normas para la conservación,
+inspección, mantenimiento, reparación e intervención de las unidades privadas, las áreas
+comunes, las instalaciones técnicas y los equipos del inmueble, garantizando la seguridad
+de las personas, la continuidad de los servicios, la protección del patrimonio y el
+cumplimiento de la normatividad vigente.
+
+Las disposiciones aquí contenidas son de obligatorio cumplimiento para propietarios,
+arrendatarios, ocupantes, administradores, proveedores, contratistas y cualquier persona
+que intervenga las instalaciones del inmueble.
+
+Artículo 108. Principios del mantenimiento
+
+Toda actividad de mantenimiento deberá desarrollarse bajo los siguientes principios:
+
+- Seguridad.
+- Prevención.
+- Conservación del patrimonio.
+- Continuidad del servicio.
+- Calidad técnica.
+- Legalidad.
+- Responsabilidad.
+- Planeación.
+- Trazabilidad.
+- Protección ambiental.
+
+CAPÍTULO II
+
+TIPOS DE MANTENIMIENTO
+
+Artículo 109. Mantenimiento Preventivo
+
+Corresponde al conjunto de actividades programadas destinadas a conservar las
+instalaciones y evitar la ocurrencia de fallas.
+
+Podrá comprender, entre otras:
+
+- Limpieza técnica.
+- Lubricación.
+- Ajustes.
+- Calibraciones.
+- Pintura preventiva.
+- Reemplazo programado de componentes.
+- Pruebas funcionales.
+- Revisión de equipos.
+- Mantenimiento de cubiertas.
+- Revisión de drenajes.
+
+Su ejecución estará sujeta al cronograma definido por la administración.
+
+Artículo 110. Mantenimiento Correctivo
+
+Comprende las actividades destinadas a reparar daños o restablecer el funcionamiento de
+un elemento que haya presentado fallas.
+
+Podrá ejecutarse como consecuencia de:
+
+- Reportes de usuarios.
+- Inspecciones.
+- Emergencias.
+- Desgaste.
+- Accidentes.
+- Eventos naturales.
+
+Artículo 111. Mantenimiento Predictivo
+
+Consiste en el seguimiento periódico del estado de las instalaciones mediante inspecciones,
+mediciones, análisis técnicos y monitoreo, con el propósito de anticipar fallas antes de que
+ocurran.
+
+Podrán utilizarse:
+
+- Termografía.
+- Medición eléctrica.
+- Inspecciones visuales.
+- Medición de vibraciones.
+- Evaluaciones estructurales.
+- Diagnósticos especializados.
+
+Artículo 112. Mantenimiento Locativo
+
+Corresponde a las actividades relacionadas con la conservación de acabados y elementos
+no estructurales.
+
+Incluye, entre otras:
+
+- Pintura.
+- Resane.
+- Reparación de enchapes.
+- Cambio de cerraduras.
+- Ajuste de puertas.
+- Reparación de ventanas.
+- Cambio de griferías.
+- Reparación de sanitarios.
+- Reparación de carpintería.
+- Mantenimiento de mobiliario.
+
+Artículo 113. Mantenimiento Urgente
+
+Es aquel que debe ejecutarse de manera inmediata cuando exista riesgo para:
+
+- La vida.
+- La integridad de las personas.
+- La estabilidad del inmueble.
+- La continuidad de los servicios.
+- La seguridad.
+
+En estos casos la administración podrá intervenir inmediatamente, incluso sin autorización
+previa del ocupante cuando exista peligro inminente.
+
+CAPÍTULO III
+
+CRONOGRAMAS E INSPECCIONES
+
+Artículo 114. Cronograma anual de mantenimiento
+
+La administración elaborará un cronograma anual que podrá incluir, entre otros:
+
+- Instalaciones eléctricas.
+- Redes hidráulicas.
+- Redes sanitarias.
+- Redes de gas.
+- Cubiertas.
+- Fachadas.
+- Impermeabilización.
+- Ascensores.
+- Equipos de bombeo.
+- Sistemas contra incendio.
+- CCTV.
+- Iluminación.
+- Señalización.
+- Jardines.
+- Áreas comunes.
+- Equipos de emergencia.
+
+Artículo 115. Programación
+
+Las actividades programadas deberán informarse previamente cuando impliquen:
+
+- Suspensión temporal de servicios.
+- Restricción de acceso.
+- Intervención de áreas comunes.
+- Ingreso de contratistas.
+
+Artículo 116. Inspecciones
+
+La administración podrá realizar inspecciones:
+
+- Programadas.
+- Preventivas.
+- Correctivas.
+- Extraordinarias.
+- Técnicas.
+- De seguridad.
+- De entrega y restitución de inmuebles.
+
+Las inspecciones podrán documentarse mediante:
+
+- Actas.
+- Fotografías.
+- Videos.
+- Listas de chequeo.
+- Informes técnicos.
+
+Artículo 117. Acceso para mantenimiento
+
+Los propietarios y ocupantes deberán facilitar el ingreso del personal autorizado cuando
+resulte necesario para:
+
+- Atender emergencias.
+- Realizar mantenimientos programados.
+- Verificar riesgos.
+- Inspeccionar redes comunes.
+
+La administración procurará informar previamente, salvo situaciones de urgencia.
+
+CAPÍTULO IV
+
+GARANTÍAS
+
+Artículo 118. Garantías de trabajos
+
+Todo mantenimiento realizado por terceros deberá cumplir las garantías ofrecidas por el
+contratista o proveedor.
+
+La administración conservará los soportes cuando correspondan.
+
+Artículo 119. Garantías de equipos
+
+Las intervenciones realizadas sobre equipos bajo garantía deberán ejecutarse conforme a las
+instrucciones del fabricante o proveedor autorizado, evitando acciones que puedan
+ocasionar su pérdida.
+
+MENSAJE 12
+
+TÍTULO VIII
+
+DAÑOS, INTERVENCIONES Y MODIFICACIONES
+
+CAPÍTULO V
+
+DAÑOS Y REPORTES
+
+Artículo 120. Reporte de daños
+
+Toda persona que detecte daños, fallas, fugas o condiciones inseguras deberá informar
+oportunamente a la administración mediante los canales establecidos.
+
+Los reportes podrán realizarse por:
+
+- Plataforma tecnológica.
+- Correo electrónico.
+- Aplicación móvil.
+- Formulario.
+- Línea telefónica.
+- Atención presencial.
+
+Artículo 121. Contenido del reporte
+
+Siempre que sea posible, el reporte deberá indicar:
+
+- Fecha.
+- Hora.
+- Lugar.
+- Descripción del daño.
+- Fotografías o videos.
+- Datos del reportante.
+- Nivel de urgencia.
+
+Artículo 122. Atención de reportes
+
+La administración evaluará cada reporte y determinará:
+
+- Prioridad.
+- Riesgo.
+- Responsable.
+- Tipo de mantenimiento requerido.
+- Tiempo estimado de atención.
+
+CAPÍTULO VI
+
+INSPECCIONES TÉCNICAS
+
+Artículo 123. Inspecciones extraordinarias
+
+Podrán realizarse inspecciones extraordinarias cuando exista:
+
+- Riesgo estructural.
+- Daños por agua.
+- Daños eléctricos.
+- Riesgo sanitario.
+- Quejas reiteradas.
+- Emergencias.
+- Solicitudes debidamente justificadas.
+
+Artículo 124. Registro de inspecciones
+
+Toda inspección podrá quedar documentada mediante:
+
+- Acta.
+- Registro fotográfico.
+- Registro audiovisual.
+- Informe técnico.
+- Concepto profesional.
+
+Estos documentos harán parte del expediente administrativo del inmueble.
+
+CAPÍTULO VII
+
+REMODELACIONES Y OBRAS
+
+Artículo 125. Remodelaciones
+
+Toda remodelación deberá ejecutarse respetando:
+
+- La normatividad vigente.
+- El uso autorizado del inmueble.
+- La seguridad estructural.
+- Las instalaciones comunes.
+- Los horarios establecidos.
+
+Artículo 126. Autorización
+
+Requerirán autorización previa de la administración, y cuando corresponda del propietario o
+de la autoridad competente:
+
+- Remodelaciones.
+- Demoliciones parciales.
+- Cambios de distribución.
+- Instalación de equipos especiales.
+- Intervenciones en fachadas.
+- Intervenciones sobre áreas comunes.
+
+La administración podrá solicitar planos, memorias técnicas, permisos o licencias cuando
+sean exigibles.
+
+Artículo 127. Responsabilidad
+
+Quien ejecute una obra responderá por:
+
+- Daños ocasionados.
+- Afectación a terceros.
+- Escombros.
+- Limpieza.
+- Seguridad.
+- Cumplimiento de la normativa aplicable.
+
+CAPÍTULO VIII
+
+CAMBIOS ESTRUCTURALES
+
+Artículo 128. Prohibición general
+
+Se prohíbe intervenir elementos estructurales del edificio sin los permisos legales y las
+autorizaciones correspondientes.
+
+En particular, no podrán modificarse sin autorización:
+
+- Columnas.
+- Vigas.
+- Placas.
+- Muros estructurales.
+- Cimentaciones.
+- Elementos sismorresistentes.
+
+Artículo 129. Estudios técnicos
+
+Cuando una intervención pueda afectar la estabilidad del inmueble, deberá estar respaldada
+por los estudios y diseños elaborados por profesionales competentes, conforme a la NSR-10
+y demás normas aplicables.
+
+CAPÍTULO IX
+
+INTERVENCIONES SOBRE REDES
+
+Artículo 130. Disposiciones generales
+
+Toda intervención sobre redes deberá ser realizada por personal competente y autorizado,
+utilizando materiales certificados y cumpliendo la normativa técnica vigente.
+
+Artículo 131. Redes eléctricas
+
+Está prohibido:
+
+- Alterar tableros eléctricos.
+- Manipular medidores.
+- Sobrecargar circuitos.
+- Instalar conexiones improvisadas.
+- Intervenir redes comunes sin autorización.
+
+Toda instalación deberá cumplir el Reglamento Técnico de Instalaciones Eléctricas (RETIE), el
+Reglamento Técnico de Iluminación y Alumbrado Público (RETILAP), cuando aplique, y las
+normas técnicas vigentes.
+
+Artículo 132. Redes de gas
+
+Las instalaciones de gas deberán ser intervenidas únicamente por personal autorizado y
+conforme a la reglamentación técnica vigente.
+
+Se prohíbe:
+
+- Modificar tuberías sin autorización.
+- Realizar conexiones informales.
+- Utilizar materiales no certificados.
+- Manipular medidores o reguladores.
+
+Ante cualquier olor a gas, deberá suspenderse el uso del servicio, evacuar el área cuando
+exista riesgo y dar aviso inmediato a la administración y a la empresa prestadora.
+
+Artículo 133. Redes de acueducto y alcantarillado
+
+Se prohíbe:
+
+- Alterar redes comunes.
+- Manipular medidores.
+- Conectar equipos sin autorización cuando puedan afectar la red.
+- Arrojar elementos que obstruyan tuberías o drenajes.
+
+Toda fuga deberá reportarse inmediatamente.
+
+Artículo 134. Redes de telecomunicaciones
+
+La instalación de redes de internet, telefonía, televisión o sistemas tecnológicos deberá
+realizarse utilizando las canalizaciones autorizadas y evitando afectar elementos
+estructurales, fachadas o áreas comunes.
+
+CAPÍTULO X
+
+RESPONSABILIDADES
+
+Artículo 135. Responsabilidad de propietarios y ocupantes
+
+Corresponde a los propietarios y ocupantes:
+
+- Conservar adecuadamente las unidades privadas.
+- Permitir las inspecciones autorizadas.
+- Reportar oportunamente daños.
+- No realizar intervenciones prohibidas.
+- Responder por los daños ocasionados por acción u omisión.
+
+Artículo 136. Responsabilidad de la administración
+
+Corresponde a la administración:
+
+- Planificar el mantenimiento de las áreas comunes.
+- Llevar registros técnicos.
+- Contratar personal competente cuando corresponda.
+- Supervisar las intervenciones autorizadas.
+- Conservar la documentación relacionada con el mantenimiento.
+
+CAPÍTULO XI
+
+DISPOSICIONES FINALES
+
+Artículo 137. Conservación del inmueble
+
+Todas las personas deberán contribuir a la adecuada conservación del inmueble, evitando
+acciones que deterioren las instalaciones, disminuyan su vida útil o comprometan la
+seguridad de las personas.
+
+Artículo 138. Incumplimientos
+
+El incumplimiento de las disposiciones contenidas en este Título podrá dar lugar a la
+aplicación del procedimiento previsto en el régimen disciplinario del presente Manual, sin
+perjuicio de la obligación de reparar los daños causados y de las acciones civiles,
+administrativas o penales a que haya lugar.
+
+TOMO VII
+
+SALUD, MEDIO AMBIENTE Y GESTIÓN DEL RIESGO
+
+TÍTULO IX
+
+SALUD PÚBLICA, SANEAMIENTO Y GESTIÓN AMBIENTAL
+
+CAPÍTULO I
+
+DISPOSICIONES GENERALES
+
+Artículo 139. Objeto
+
+El presente Título establece las normas orientadas a proteger la salud pública, promover un
+ambiente sano, garantizar el adecuado manejo de residuos, prevenir riesgos sanitarios y
+ambientales, fomentar el uso eficiente de los recursos naturales y asegurar el cumplimiento
+de la normativa ambiental y sanitaria aplicable.
+
+Las disposiciones aquí contenidas son de obligatorio cumplimiento para propietarios,
+arrendatarios, ocupantes, visitantes, contratistas, proveedores y personal de la
+administración.
+
+Artículo 140. Principios
+
+Toda actuación deberá regirse por los principios de:
+
+- Protección de la vida.
+- Salud pública.
+- Prevención.
+- Desarrollo sostenible.
+- Responsabilidad ambiental.
+- Uso eficiente de los recursos.
+- Conservación del patrimonio.
+- Participación ciudadana.
+- Precaución.
+- Mejoramiento continuo.
+
+CAPÍTULO II
+
+MANEJO DE RESIDUOS
+
+Artículo 141. Gestión integral de residuos
+
+Todos los usuarios deberán realizar una adecuada separación, almacenamiento y
+disposición de los residuos generados dentro del inmueble, conforme a la legislación vigente
+y a los programas establecidos por la administración.
+
+Artículo 142. Separación en la fuente
+
+Los residuos deberán clasificarse utilizando el código de colores establecido por la normativa
+colombiana.
+
+Como regla general:
+
+- Caneca blanca: residuos aprovechables o reciclables.
+- Caneca negra: residuos no aprovechables.
+- Caneca verde: residuos orgánicos aprovechables.
+
+Cuando existan residuos especiales o peligrosos, estos deberán disponerse conforme a los
+procedimientos definidos por la autoridad competente.
+
+Artículo 143. Residuos especiales
+
+No podrán depositarse en los recipientes convencionales:
+
+- Escombros.
+- Electrodomésticos.
+- Muebles.
+- Llantas.
+- Aceites.
+- Pinturas.
+- Solventes.
+- Medicamentos vencidos.
+- Pilas.
+- Baterías.
+- Equipos electrónicos.
+- Lámparas.
+- Residuos biosanitarios.
+
+La administración establecerá los procedimientos para su disposición cuando corresponda.
+
+Artículo 144. Horarios de disposición
+
+Los residuos deberán sacarse únicamente en los horarios definidos por la administración o
+por el prestador del servicio público.
+
+Queda prohibido abandonar bolsas de basura en pasillos, escaleras, parqueaderos o
+cualquier otra área común.
+
+CAPÍTULO III
+
+RECICLAJE
+
+Artículo 145. Aprovechamiento de residuos
+
+La administración promoverá programas de reciclaje y economía circular.
+
+Los usuarios deberán colaborar con los procesos de clasificación y entrega de materiales
+reciclables.
+
+Artículo 146. Material reciclable
+
+Podrán separarse, entre otros:
+
+- Papel.
+- Cartón.
+- Plástico.
+- Vidrio.
+- Metales.
+- Envases.
+- Empaques limpios.
+
+Los materiales deberán entregarse limpios y, cuando sea posible, compactados.
+
+CAPÍTULO IV
+
+CANECAS Y PUNTOS ECOLÓGICOS
+
+Artículo 147. Uso adecuado
+
+Las canecas deberán utilizarse únicamente para el tipo de residuo correspondiente.
+
+Se prohíbe:
+
+- Depositar líquidos.
+- Arrojar residuos fuera de los recipientes.
+- Mezclar residuos incompatibles.
+- Dañar los contenedores.
+
+CAPÍTULO V
+
+CONTROL SANITARIO
+
+Artículo 148. Prevención de plagas
+
+Todos los ocupantes deberán adoptar medidas para evitar la aparición de:
+
+- Roedores.
+- Cucarachas.
+- Mosquitos.
+- Hormigas.
+- Palomas.
+- Insectos.
+- Otros vectores.
+
+La administración podrá contratar programas periódicos de control integrado de plagas.
+
+Artículo 149. Limpieza
+
+Las unidades privadas deberán mantenerse en condiciones adecuadas de higiene.
+
+Los ocupantes serán responsables de evitar:
+
+- Acumulación de basura.
+- Malos olores.
+- Materia orgánica en descomposición.
+- Condiciones insalubres.
+
+Artículo 150. Vectores
+
+Se deberán eliminar las condiciones que favorezcan la proliferación de vectores transmisores
+de enfermedades, tales como aguas estancadas, residuos expuestos o acumulaciones de
+humedad.
+
+Artículo 151. Humedades
+
+Toda filtración, fuga o humedad deberá reportarse inmediatamente a la administración
+cuando pueda afectar áreas comunes o unidades vecinas.
+
+Los responsables deberán adelantar las reparaciones correspondientes para evitar
+deterioros mayores.
+
+CAPÍTULO VI
+
+CALIDAD AMBIENTAL
+
+Artículo 152. Calidad del aire
+
+Los ocupantes deberán evitar actividades que deterioren la calidad del aire dentro del
+inmueble.
+
+Se prohíbe:
+
+- Emitir humos excesivos.
+- Generar olores ofensivos de manera permanente.
+- Utilizar equipos que produzcan emisiones contaminantes sin los controles
+  requeridos.
+
+Artículo 153. Control del ruido
+
+Todas las personas deberán respetar los niveles de ruido permitidos y las disposiciones
+establecidas en el Tomo IV del presente Manual.
+
+Cuando una actividad genere ruido extraordinario autorizado, deberán adoptarse medidas
+para minimizar su impacto sobre los demás ocupantes.
+
+CAPÍTULO VII
+
+USO EFICIENTE DE LOS RECURSOS
+
+Artículo 154. Ahorro de agua
+
+Todos los usuarios deberán hacer un uso racional del agua.
+
+Se recomienda:
+
+- Reportar fugas inmediatamente.
+- Cerrar llaves cuando no estén en uso.
+- Utilizar equipos ahorradores.
+- Evitar desperdicios.
+
+Artículo 155. Ahorro de energía
+
+Los ocupantes deberán contribuir al uso eficiente de la energía mediante acciones como:
+
+- Apagar equipos que no se utilicen.
+- Desconectar cargadores innecesarios.
+- Utilizar iluminación eficiente.
+- Evitar sobrecargas eléctricas.
+
+Artículo 156. Protección ambiental
+
+Toda persona deberá contribuir a la conservación del entorno evitando acciones que generen
+contaminación del suelo, agua o aire.
+
+MENSAJE 14
+
+TÍTULO X
+
+GESTIÓN DEL RIESGO Y ATENCIÓN DE EMERGENCIAS
+
+CAPÍTULO VIII
+
+DISPOSICIONES GENERALES
+
+Artículo 157. Finalidad
+
+La gestión del riesgo tiene como finalidad proteger la vida, la integridad física, el patrimonio y
+la continuidad de las operaciones del inmueble mediante la prevención, preparación,
+respuesta y recuperación frente a situaciones de emergencia.
+
+Artículo 158. Responsabilidad
+
+Todos los ocupantes deberán colaborar con la administración durante la atención de
+cualquier emergencia y cumplir las instrucciones impartidas por el personal autorizado y los
+organismos de socorro.
+
+CAPÍTULO IX
+
+INCENDIOS
+
+Artículo 159. Prevención
+
+Los usuarios deberán evitar cualquier conducta que incremente el riesgo de incendio.
+
+Se prohíbe:
+
+- Sobrecargar instalaciones eléctricas.
+- Manipular instalaciones sin autorización.
+- Almacenar materiales inflamables en condiciones inseguras.
+- Bloquear equipos contra incendio.
+- Alterar sistemas de detección o alarma.
+
+Artículo 160. Actuación inicial
+
+Ante un conato de incendio deberá:
+
+1. Conservar la calma.
+
+2. Activar el sistema de alerta cuando exista.
+
+3. Informar inmediatamente a la administración o a la línea de emergencias.
+
+4. Utilizar un extintor únicamente si conoce su manejo y las condiciones lo permiten.
+
+5. Evacuar cuando exista riesgo para la vida.
+
+CAPÍTULO X
+
+SISMOS
+
+Artículo 161. Medidas durante un sismo
+
+Durante un movimiento sísmico se deberá:
+
+- Mantener la calma.
+- Alejarse de ventanas u objetos que puedan caer.
+- Proteger la cabeza y el cuerpo.
+- No utilizar ascensores.
+- Esperar las instrucciones de evacuación cuando corresponda.
+
+Artículo 162. Después del sismo
+
+Finalizado el evento deberán verificarse posibles daños, fugas, incendios o riesgos
+estructurales antes de reingresar a las áreas afectadas.
+
+CAPÍTULO XI
+
+INUNDACIONES
+
+Artículo 163. Prevención
+
+Los ocupantes deberán colaborar evitando obstrucciones en drenajes, canales, sifones y
+redes hidráulicas.
+
+Artículo 164. Actuación
+
+Cuando exista riesgo de inundación deberá:
+
+- Protegerse la integridad de las personas.
+- Suspender el suministro eléctrico cuando resulte necesario y sea seguro hacerlo.
+- Informar inmediatamente a la administración.
+- Seguir las rutas de evacuación establecidas.
+
+CAPÍTULO XII
+
+PRIMEROS AUXILIOS
+
+Artículo 165. Atención inicial
+
+Los primeros auxilios deberán limitarse a las acciones básicas de atención inmediata
+mientras llegan los organismos competentes o el personal capacitado.
+
+Ninguna persona deberá realizar procedimientos para los cuales no esté entrenada.
+
+CAPÍTULO XIII
+
+EVACUACIÓN
+
+Artículo 166. Rutas de evacuación
+
+Todos los usuarios deberán conocer las rutas de evacuación, salidas de emergencia y puntos
+de encuentro definidos para el inmueble.
+
+Estas rutas deberán permanecer libres de obstáculos en todo momento.
+
+Artículo 167. Procedimiento
+
+Durante una evacuación será obligatorio:
+
+- Conservar la calma.
+- Atender las instrucciones de los brigadistas.
+- No utilizar ascensores.
+- Ayudar a personas con movilidad reducida cuando sea posible y seguro.
+- Dirigirse al punto de encuentro.
+
+CAPÍTULO XIV
+
+BRIGADAS DE EMERGENCIA
+
+Artículo 168. Brigadas
+
+Cuando el inmueble cuente con brigadas de emergencia, estas actuarán conforme al Plan de
+Emergencias y Contingencias, apoyando las labores de prevención, evacuación y atención
+inicial.
+
+Artículo 169. Colaboración
+
+Todos los usuarios deberán facilitar el trabajo de los brigadistas y abstenerse de obstaculizar
+las actividades de respuesta.
+
+CAPÍTULO XV
+
+EXTINTORES
+
+Artículo 170. Conservación
+
+Los extintores deberán permanecer:
+
+- Señalizados.
+- Accesibles.
+- Libres de obstáculos.
+- Dentro de su periodo de mantenimiento y recarga.
+
+Artículo 171. Uso
+
+Los extintores únicamente deberán utilizarse para controlar incendios incipientes y por
+personas que conozcan su funcionamiento.
+
+Su utilización indebida podrá generar responsabilidad por los daños ocasionados.
+
+CAPÍTULO XVI
+
+BOTIQUINES
+
+Artículo 172. Disponibilidad
+
+Cuando el inmueble disponga de botiquines, estos deberán mantenerse:
+
+- Identificados.
+- Dotados.
+- En condiciones adecuadas.
+- Accesibles para atención de emergencias.
+
+Artículo 173. Uso
+
+Los elementos del botiquín deberán emplearse exclusivamente para atención inicial de
+emergencias.
+
+La administración llevará el control de su reposición cuando corresponda.
+
+CAPÍTULO XVII
+
+SIMULACROS
+
+Artículo 174. Participación
+
+La administración podrá programar simulacros de evacuación y respuesta ante emergencias.
+
+Todos los ocupantes deberán participar cuando sean convocados, salvo causa debidamente
+justificada.
+
+Artículo 175. Evaluación
+
+Finalizado cada simulacro podrán documentarse:
+
+- Tiempo de evacuación.
+- Cumplimiento de procedimientos.
+- Hallazgos.
+- Oportunidades de mejora.
+- Planes de acción.
+
+CAPÍTULO XVIII
+
+DISPOSICIONES FINALES
+
+Artículo 176. Plan de Emergencias
+
+El inmueble deberá contar con un Plan de Emergencias y Contingencias acorde con sus
+características, el cual será actualizado periódicamente conforme a la legislación vigente y
+servirá como documento complementario del presente Manual.
+
+Artículo 177. Responsabilidad
+
+El incumplimiento de las normas ambientales, sanitarias o de gestión del riesgo previstas en
+este Título podrá dar lugar a la aplicación de medidas correctivas y sanciones establecidas
+en el régimen disciplinario del presente Manual, sin perjuicio de las acciones civiles,
+administrativas o penales que correspondan.
+
+TOMO VIII
+
+PROCEDIMIENTOS ADMINISTRATIVOS, ATENCIÓN DE NOVEDADES Y GESTIÓN DE
+CONFLICTOS
+
+TÍTULO XI
+
+PROCEDIMIENTOS DE ATENCIÓN Y GESTIÓN ADMINISTRATIVA
+
+CAPÍTULO I
+
+DISPOSICIONES GENERALES
+
+Artículo 178. Objeto
+
+El presente Título establece los procedimientos administrativos internos para la recepción,
+trámite, seguimiento y cierre de peticiones, quejas, reclamos, sugerencias, novedades,
+reportes de daños, conflictos y demás actuaciones relacionadas con la administración del
+inmueble, garantizando los principios de legalidad, imparcialidad, transparencia,
+confidencialidad, trazabilidad y debido proceso.
+
+Artículo 179. Principios
+
+Todo procedimiento administrativo interno se desarrollará bajo los principios de:
+
+- Legalidad.
+- Debido proceso.
+- Imparcialidad.
+- Buena fe.
+- Confidencialidad.
+- Transparencia.
+- Celeridad.
+- Economía.
+- Trazabilidad.
+- Respeto.
+- Objetividad.
+- Protección de datos personales.
+
+CAPÍTULO II
+
+SISTEMA PQRS
+
+Artículo 180. Definición
+
+La administración dispondrá de un sistema para la gestión de:
+
+- Peticiones.
+- Quejas.
+- Reclamos.
+- Solicitudes.
+- Sugerencias.
+- Felicitaciones.
+
+Cuando sea pertinente, también podrán tramitarse denuncias administrativas relacionadas
+con el cumplimiento del presente Manual.
+
+Artículo 181. Canales de atención
+
+Las solicitudes podrán presentarse por cualquiera de los siguientes medios autorizados:
+
+- Plataforma tecnológica.
+- Correo electrónico.
+- Formulario web.
+- Aplicación móvil.
+- Atención presencial.
+- Línea telefónica.
+- Documento físico radicado.
+
+La administración podrá implementar nuevos canales cuando lo considere conveniente.
+
+Artículo 182. Información mínima
+
+Toda solicitud deberá contener, cuando sea posible:
+
+- Nombre del solicitante.
+- Documento de identificación.
+- Calidad en la que actúa.
+- Unidad relacionada.
+- Datos de contacto.
+- Descripción clara de los hechos.
+- Fecha aproximada.
+- Evidencias disponibles.
+- Solicitud concreta.
+
+Artículo 183. Radicación
+
+Toda solicitud recibirá un número único de radicado que permitirá realizar su seguimiento
+hasta el cierre del procedimiento.
+
+CAPÍTULO III
+
+NOVEDADES
+
+Artículo 184. Registro de novedades
+
+La administración llevará un registro de todas las novedades relevantes relacionadas con:
+
+- Seguridad.
+- Convivencia.
+- Mantenimiento.
+- Servicios públicos.
+- Accidentes.
+- Emergencias.
+- Incidentes.
+- Visitantes.
+- Equipos.
+- Instalaciones.
+
+Artículo 185. Clasificación
+
+Las novedades podrán clasificarse según:
+
+- Tipo.
+- Nivel de riesgo.
+- Prioridad.
+- Responsable.
+- Estado.
+- Fecha de atención.
+- Fecha de cierre.
+
+CAPÍTULO IV
+
+REPORTE DE DAÑOS
+
+Artículo 186. Reportes
+
+Toda persona podrá reportar daños observados en:
+
+- Unidades privadas.
+- Áreas comunes.
+- Equipos.
+- Redes.
+- Mobiliario.
+- Instalaciones.
+
+Artículo 187. Evaluación
+
+Una vez recibido el reporte, la administración determinará:
+
+- Riesgo.
+- Prioridad.
+- Responsable.
+- Tipo de intervención.
+- Tiempo estimado de respuesta.
+
+Artículo 188. Seguimiento
+
+La administración realizará seguimiento hasta la atención o cierre del reporte, dejando
+evidencia documental de las actuaciones realizadas.
+
+CAPÍTULO V
+
+CONFLICTOS ENTRE USUARIOS
+
+Artículo 189. Conflictos de convivencia
+
+Cuando existan diferencias entre propietarios, arrendatarios, ocupantes, visitantes o
+usuarios del inmueble, se privilegiarán mecanismos de solución pacífica antes de acudir a
+instancias judiciales o administrativas.
+
+Artículo 190. Deber de colaboración
+
+Las personas involucradas deberán colaborar con la administración suministrando la
+información necesaria para el análisis del caso.
+
+CAPÍTULO VI
+
+MEDIACIÓN
+
+Artículo 191. Procedencia
+
+La administración podrá promover procesos de mediación cuando el conflicto sea
+susceptible de resolverse mediante diálogo entre las partes.
+
+Artículo 192. Desarrollo
+
+La mediación tendrá como finalidad:
+
+- Restablecer la convivencia.
+- Buscar acuerdos.
+- Evitar la escalada del conflicto.
+- Prevenir nuevos incidentes.
+
+La participación será voluntaria, salvo disposición contractual diferente.
+
+CAPÍTULO VII
+
+CONCILIACIÓN
+
+Artículo 193. Remisión
+
+Cuando la naturaleza del conflicto lo permita, la administración podrá recomendar a las
+partes acudir a mecanismos de conciliación previstos en la legislación colombiana.
+
+Artículo 194. Acuerdos
+
+Los acuerdos logrados deberán respetar la ley, el presente Manual y los derechos de terceros.
+
+CAPÍTULO VIII
+
+EVIDENCIAS
+
+Artículo 195. Medios de prueba
+
+Dentro de los procedimientos internos podrán utilizarse, entre otros:
+
+- Actas.
+- Fotografías.
+- Videos.
+- Documentos.
+- Correos electrónicos.
+- Mensajes electrónicos.
+- Registros de acceso.
+- Informes técnicos.
+- Grabaciones de CCTV.
+- Declaraciones.
+- Conceptos profesionales.
+
+Artículo 196. Integridad
+
+Toda evidencia deberá conservarse en condiciones que garanticen su autenticidad,
+integridad y disponibilidad.
+
+Artículo 197. Protección de la información
+
+Las evidencias serán tratadas conforme a las normas de protección de datos personales y
+únicamente podrán utilizarse para los fines del procedimiento correspondiente.
+
+Artículo 198. Fotografías y videos
+
+Los registros fotográficos y audiovisuales podrán emplearse para:
+
+- Inventarios.
+- Inspecciones.
+- Reportes.
+- Emergencias.
+- Daños.
+- Procedimientos administrativos.
+- Seguimiento de reparaciones.
+- Evidencia de incumplimientos.
+
+Su utilización deberá respetar la legislación vigente sobre privacidad y protección de datos.
+
+MENSAJE 16
+
+TÍTULO XII
+
+PROCEDIMIENTO ADMINISTRATIVO INTERNO
+
+CAPÍTULO IX
+
+ETAPAS DEL PROCEDIMIENTO
+
+Artículo 199. Inicio
+
+El procedimiento podrá iniciarse por:
+
+- Solicitud de un usuario.
+- Reporte interno.
+- Acta de inspección.
+- Informe del personal.
+- Queja.
+- Evidencia documental.
+- Hallazgo administrativo.
+
+CAPÍTULO X
+
+RECEPCIÓN
+
+Artículo 200. Recepción de la actuación
+
+La administración verificará:
+
+- Competencia.
+- Información mínima.
+- Evidencias disponibles.
+- Riesgo.
+- Urgencia.
+
+Cuando sea necesario podrá solicitar información adicional.
+
+CAPÍTULO XI
+
+INVESTIGACIÓN
+
+Artículo 201. Verificación de hechos
+
+La administración adelantará las actuaciones necesarias para establecer los hechos,
+pudiendo realizar:
+
+- Inspecciones.
+- Entrevistas.
+- Revisión documental.
+- Consulta de registros.
+- Análisis de videos.
+- Verificación técnica.
+- Solicitud de conceptos especializados.
+
+CAPÍTULO XII
+
+PRUEBAS
+
+Artículo 202. Recolección
+
+Podrán practicarse todas las pruebas lícitas y pertinentes que contribuyan al esclarecimiento
+de los hechos.
+
+Artículo 203. Valoración
+
+Las pruebas serán valoradas objetivamente, atendiendo su pertinencia, autenticidad,
+confiabilidad y relación con el procedimiento.
+
+CAPÍTULO XIII
+
+DESCARGOS
+
+Artículo 204. Derecho de defensa
+
+Antes de adoptar cualquier decisión que pueda afectar derechos de una persona, la
+administración garantizará la oportunidad de presentar explicaciones, pruebas y
+observaciones.
+
+Artículo 205. Presentación
+
+Los descargos podrán presentarse:
+
+- Por escrito.
+- Mediante correo electrónico.
+- A través de la plataforma autorizada.
+- En diligencia presencial cuando sea convocada.
+
+CAPÍTULO XIV
+
+INFORME
+
+Artículo 206. Informe técnico o administrativo
+
+Concluida la etapa de verificación, la administración elaborará un informe que contendrá,
+como mínimo:
+
+- Identificación del procedimiento.
+- Antecedentes.
+- Relación de hechos.
+- Actuaciones realizadas.
+- Evidencias analizadas.
+- Normas aplicables.
+- Conclusiones.
+- Recomendaciones.
+
+CAPÍTULO XV
+
+DECISIÓN
+
+Artículo 207. Decisión administrativa
+
+La administración adoptará una decisión motivada con fundamento en:
+
+- Los hechos demostrados.
+- Las pruebas recaudadas.
+- El presente Manual.
+- Los contratos aplicables.
+- La legislación vigente.
+
+La decisión podrá disponer, según corresponda:
+
+- Archivo.
+- Recomendaciones.
+- Medidas preventivas.
+- Correctivos.
+- Reparación de daños.
+- Remisión al procedimiento sancionatorio.
+- Remisión a la autoridad competente.
+
+Artículo 208. Notificación
+
+La decisión será comunicada a las personas interesadas mediante los canales autorizados.
+
+CAPÍTULO XVI
+
+SEGUIMIENTO
+
+Artículo 209. Cumplimiento
+
+La administración verificará el cumplimiento de las medidas adoptadas y realizará el
+seguimiento hasta su ejecución o cierre.
+
+Artículo 210. Reapertura
+
+Cuando aparezcan nuevos hechos o pruebas relevantes, la administración podrá reabrir el
+procedimiento dejando constancia de las razones que lo justifican.
+
+CAPÍTULO XVII
+
+ARCHIVO
+
+Artículo 211. Expediente
+
+Todo procedimiento contará con un expediente físico o digital que contendrá la totalidad de
+las actuaciones realizadas.
+
+Artículo 212. Conservación documental
+
+Los expedientes deberán conservarse conforme a la Ley General de Archivos, las tablas de
+retención documental adoptadas por la administración y la legislación vigente sobre
+protección de datos personales.
+
+Artículo 213. Reserva
+
+Los expedientes tendrán carácter reservado cuando contengan información protegida por la
+ley, datos personales o información sensible.
+
+Únicamente podrán acceder a ellos las personas autorizadas o quienes acrediten un interés
+legítimo conforme a la legislación vigente.
+
+CAPÍTULO XVIII
+
+DISPOSICIONES FINALES
+
+Artículo 214. Complementariedad
+
+Los procedimientos previstos en este Título complementan las disposiciones sobre
+convivencia, seguridad, mantenimiento y gestión del riesgo contenidas en los demás Tomos
+del presente Manual y constituyen el mecanismo oficial para la atención de novedades y
+conflictos administrativos.
+
+Artículo 215. Remisión al régimen sancionatorio
+
+Cuando durante el desarrollo de un procedimiento se evidencie el incumplimiento de las
+obligaciones previstas en este Manual, la administración podrá remitir el caso al
+procedimiento disciplinario y sancionatorio establecido en el Tomo IX, garantizando en todo
+momento el debido proceso, el derecho de defensa y la contradicción de las pruebas.
+
+TOMO IX
+
+RÉGIMEN DISCIPLINARIO, MEDIDAS CORRECTIVAS Y GARANTÍAS DEL DEBIDO PROCESO
+
+TÍTULO XIII
+
+RÉGIMEN DISCIPLINARIO
+
+CAPÍTULO I
+
+DISPOSICIONES GENERALES
+
+Artículo 216. Objeto
+
+El presente Título establece el régimen disciplinario interno aplicable a propietarios,
+arrendatarios, ocupantes, visitantes, proveedores, contratistas y demás personas que hagan
+uso del inmueble, con el propósito de garantizar la convivencia, la seguridad, la adecuada
+conservación de las instalaciones y el cumplimiento del presente Manual.
+
+Las medidas aquí previstas tienen naturaleza administrativa y contractual, y no sustituyen las
+acciones civiles, penales, policivas o administrativas que puedan corresponder ante las
+autoridades competentes.
+
+Artículo 217. Principios
+
+Toda actuación disciplinaria deberá respetar los siguientes principios:
+
+- Legalidad.
+- Debido proceso.
+- Presunción de buena fe.
+- Proporcionalidad.
+- Igualdad.
+- Imparcialidad.
+- Contradicción.
+- Derecho de defensa.
+- Motivación.
+- Publicidad restringida.
+- Confidencialidad.
+- Favorabilidad cuando resulte procedente.
+
+Artículo 218. Sujetos disciplinables
+
+Podrán ser objeto del presente régimen:
+
+- Propietarios.
+- Arrendatarios.
+- Ocupantes.
+- Residentes.
+- Usuarios.
+- Visitantes.
+- Proveedores.
+- Contratistas.
+- Personal autorizado que desarrolle actividades dentro del inmueble.
+
+CAPÍTULO II
+
+CLASIFICACIÓN DE LAS FALTAS
+
+Las faltas disciplinarias se clasifican según su gravedad, reincidencia, impacto sobre la
+convivencia, afectación a la seguridad, daños ocasionados y riesgo generado.
+
+Artículo 219. Faltas Muy Leves
+
+Son aquellas conductas que generan molestias menores, fácilmente corregibles y que no
+producen daños relevantes.
+
+Ejemplos
+
+1. No saludar al personal de recepción.
+
+2. Dejar una puerta abierta accidentalmente.
+
+3. Depositar residuos en horario diferente sin afectar terceros.
+
+4. Ocupar temporalmente un pasillo con objetos.
+
+5. No retirar la correspondencia oportunamente.
+
+6. Generar ruido ocasional de corta duración.
+
+7. No registrar un pequeño mantenimiento informado posteriormente.
+
+8. Estacionar una bicicleta fuera del espacio designado.
+
+9. Dejar luces encendidas en áreas comunes por descuido.
+
+10. Utilizar de manera inadecuada un ascensor sin ocasionar daños.
+
+...
+
+La administración podrá clasificar como muy leves todas aquellas conductas de escasa
+afectación que puedan corregirse mediante orientación o advertencia.
+
+Artículo 220. Faltas Leves
+
+Son aquellas conductas que afectan la convivencia o el funcionamiento normal del inmueble
+sin poner en riesgo grave a las personas o las instalaciones.
+
+Ejemplos
+
+- Incumplir horarios de mudanza.
+- Omitir el registro de visitantes.
+- Generar ruido reiterado.
+- Utilizar zonas comunes para almacenamiento temporal.
+- No reportar daños menores.
+- Depositar residuos sin clasificación.
+- Alimentar animales en zonas comunes.
+- Ocupar parqueaderos ajenos temporalmente.
+- Instalar avisos sin autorización.
+- Obstruir parcialmente rutas de circulación.
+- Permitir el ingreso de visitantes sin cumplir protocolos.
+- Fumar en áreas no autorizadas.
+- Utilizar equipos de sonido a volumen superior al permitido.
+- Utilizar áreas comunes para actividades no autorizadas.
+- Incumplir instrucciones administrativas.
+
+La presente categoría comprende aproximadamente cien (100) conductas de naturaleza
+similar, incluyendo cualquier incumplimiento menor de las obligaciones previstas en este
+Manual.
+
+Artículo 221. Faltas Moderadas
+
+Corresponden a conductas que afectan significativamente la convivencia, generan perjuicios
+económicos o incrementan los riesgos del inmueble.
+
+Ejemplos
+
+- Reincidir en faltas leves.
+- Alterar cerraduras comunes.
+- Permitir el ingreso de personas no autorizadas.
+- Negarse injustificadamente a una inspección autorizada.
+- Ejecutar remodelaciones sin autorización administrativa.
+- Generar daños a bienes comunes.
+- Manipular equipos contra incendio.
+- Manipular cámaras de seguridad.
+- Arrojar residuos peligrosos.
+- Omitir el reporte de fugas.
+- Utilizar parqueaderos para almacenamiento.
+- Obstruir salidas de emergencia.
+- Alterar señalización.
+- Utilizar instalaciones comunes para actividades comerciales no autorizadas.
+- Dañar jardines o mobiliario.
+
+Esta categoría comprende alrededor de sesenta (60) conductas equivalentes.
+
+Artículo 222. Faltas Graves
+
+Son aquellas conductas que ponen en riesgo la seguridad, afectan de forma importante el
+patrimonio o vulneran gravemente la convivencia.
+
+Ejemplos
+
+- Manipular redes eléctricas.
+- Manipular redes de gas.
+- Alterar instalaciones hidráulicas comunes.
+- Instalar conexiones clandestinas.
+- Dañar ascensores.
+- Bloquear rutas de evacuación.
+- Manipular extintores.
+- Realizar obras estructurales.
+- Generar incendios por negligencia.
+- Agredir verbalmente al personal.
+- Amenazar a otros ocupantes.
+- Sustraer bienes comunes.
+- Ocultar información relevante durante investigaciones.
+- Falsificar autorizaciones.
+- Realizar actividades económicas prohibidas.
+- Utilizar el inmueble para actividades ilícitas.
+- Ingresar armas sin autorización legal.
+- Alterar sistemas de seguridad.
+
+Esta categoría comprende aproximadamente cincuenta (50) conductas similares.
+
+Artículo 223. Faltas Muy Graves
+
+Son aquellas conductas que comprometen gravemente la seguridad, la integridad de las
+personas o el patrimonio del inmueble.
+
+Ejemplos
+
+- Agresiones físicas.
+- Violencia intrafamiliar cuando afecte la convivencia del inmueble.
+- Amenazas graves.
+- Hurto.
+- Daño intencional a bienes comunes.
+- Sabotaje a sistemas contra incendio.
+- Destrucción de cámaras.
+- Manipulación fraudulenta de medidores.
+- Fraude documental.
+- Uso del inmueble para actividades criminales.
+- Comercialización de sustancias ilícitas.
+- Porte ilegal de armas.
+- Incendio doloso.
+- Alteración de estructuras portantes.
+- Sabotaje de sistemas eléctricos.
+- Violación de sellos de seguridad.
+- Invasión de áreas restringidas con riesgo para terceros.
+- Difusión ilegal de grabaciones de CCTV.
+- Discriminación grave.
+- Acoso reiterado.
+- Violencia contra mujeres, niños o adultos mayores.
+- Maltrato animal.
+- Obstaculizar deliberadamente una evacuación.
+
+La presente categoría comprende más de treinta (30) conductas equivalentes.
+
+Artículo 224. Cláusula General
+
+Además de los ejemplos anteriores, constituirá falta disciplinaria cualquier incumplimiento
+de las obligaciones previstas en este Manual cuya gravedad sea valorada conforme a:
+
+- Riesgo generado.
+- Daño ocasionado.
+- Intencionalidad.
+- Reincidencia.
+- Beneficio obtenido.
+- Afectación a terceros.
+- Impacto sobre la convivencia.
+
+Nota técnica: El conjunto de ejemplos descritos en este Manual constituye una guía de
+clasificación. La administración podrá incorporar un Anexo de Tipificación de Faltas con
+más de 250 ejemplos específicos, organizados por categorías (seguridad, convivencia,
+mantenimiento, mascotas, parqueaderos, residuos, remodelaciones, áreas comunes,
+oficinas, locales comerciales, apartamentos y habitaciones), sin necesidad de modificar el
+cuerpo principal del Manual.
+
+CAPÍTULO III
+
+MEDIDAS CORRECTIVAS
+
+Artículo 225. Finalidad
+
+Las medidas correctivas tienen carácter preventivo y buscan restablecer la convivencia antes
+de acudir a sanciones más severas.
+
+Podrán consistir en:
+
+- Orientación verbal.
+- Llamado de atención escrito.
+- Requerimiento de corrección.
+- Compromiso de cumplimiento.
+- Reparación del daño.
+- Capacitación o inducción sobre normas del Manual.
+- Restricciones temporales sobre el uso de determinadas áreas o servicios, cuando
+  contractualmente proceda.
+
+CAPÍTULO IV
+
+SANCIONES
+
+Artículo 226. Tipos de sanciones
+
+Dependiendo de la gravedad de la conducta, podrán imponerse, respetando el debido
+proceso:
+
+- Amonestación escrita.
+- Requerimiento formal de cumplimiento.
+- Obligación de reparar los daños ocasionados.
+- Pago de los perjuicios cuando corresponda.
+- Suspensión temporal de autorizaciones otorgadas por la administración (por ejemplo,
+  remodelaciones o uso de espacios administrados).
+- Restricción temporal de reservas de áreas comunes de uso programado, cuando
+  aplique.
+- Terminación del contrato de arrendamiento o de prestación de servicios, cuando
+  exista fundamento contractual y legal.
+- Remisión del caso a las autoridades competentes.
+
+En ningún caso podrán imponerse sanciones contrarias a la Constitución, a la ley o que
+vulneren derechos fundamentales.
+
+MENSAJE 18
+
+TÍTULO XIV
+
+PROCEDIMIENTO DISCIPLINARIO
+
+CAPÍTULO V
+
+DEBIDO PROCESO
+
+Artículo 227. Garantías
+
+Toda actuación disciplinaria respetará:
+
+- Derecho de defensa.
+- Contradicción de pruebas.
+- Imparcialidad.
+- Motivación.
+- Presunción de buena fe.
+- Igualdad.
+- Debido proceso.
+
+Ninguna sanción podrá imponerse sin que el presunto responsable haya tenido la
+oportunidad de conocer los hechos y ejercer su defensa.
+
+CAPÍTULO VI
+
+NOTIFICACIÓN
+
+Artículo 228. Inicio del procedimiento
+
+Cuando existan elementos suficientes que indiquen la posible comisión de una falta, la
+administración notificará al presunto responsable mediante los canales autorizados,
+indicando:
+
+- Los hechos investigados.
+- Las normas presuntamente incumplidas.
+- Las pruebas iniciales.
+- El término para presentar descargos.
+
+CAPÍTULO VII
+
+DESCARGOS
+
+Artículo 229. Derecho de defensa
+
+El presunto responsable podrá presentar:
+
+- Explicaciones.
+- Documentos.
+- Testigos.
+- Fotografías.
+- Videos.
+- Informes técnicos.
+- Cualquier otra prueba lícita que considere pertinente.
+
+CAPÍTULO VIII
+
+PRUEBAS
+
+Artículo 230. Valoración
+
+La administración practicará y valorará las pruebas con objetividad, pertinencia y respeto por
+la legalidad, garantizando que las decisiones se adopten con fundamento en los hechos
+acreditados.
+
+CAPÍTULO IX
+
+DECISIÓN
+
+Artículo 231. Acto administrativo interno
+
+Concluida la investigación, la administración emitirá una decisión motivada que podrá:
+
+- Archivar el procedimiento.
+- Formular recomendaciones.
+- Imponer medidas correctivas.
+- Imponer sanciones.
+- Ordenar la reparación de daños.
+- Remitir el caso a las autoridades competentes.
+
+CAPÍTULO X
+
+RECURSOS
+
+Artículo 232. Reposición
+
+El interesado podrá solicitar la revisión de la decisión ante la misma autoridad que la emitió,
+aportando los argumentos o pruebas que considere pertinentes.
+
+Artículo 233. Apelación
+
+Cuando la estructura administrativa del inmueble lo permita (por ejemplo, representante
+legal, comité o junta administradora), el interesado podrá presentar recurso de apelación
+para que una autoridad superior revise la decisión.
+
+Si no existe un superior jerárquico, únicamente procederá el recurso de reposición.
+
+CAPÍTULO XI
+
+SEGUIMIENTO Y CUMPLIMIENTO
+
+Artículo 234. Verificación
+
+La administración verificará el cumplimiento de las medidas correctivas o sanciones
+impuestas y dejará constancia de las actuaciones realizadas.
+
+CAPÍTULO XII
+
+ARCHIVO
+
+Artículo 235. Cierre del expediente
+
+Una vez finalizado el procedimiento y ejecutoriada la decisión, el expediente será archivado
+conforme a la Ley General de Archivos y a las políticas de gestión documental del inmueble.
+
+CAPÍTULO XIII
+
+PRESCRIPCIÓN
+
+Artículo 236. Prescripción de la actuación disciplinaria
+
+La administración procurará iniciar los procedimientos disciplinarios dentro de un plazo
+razonable contado desde el conocimiento de los hechos.
+
+La prescripción específica podrá definirse en el reglamento interno o en los contratos
+aplicables, siempre que no contravenga la legislación vigente.
+
+Artículo 237. Conservación de antecedentes
+
+Las decisiones disciplinarias podrán conservarse en el expediente administrativo durante los
+términos establecidos en las políticas de gestión documental y la normativa aplicable,
+respetando la protección de datos personales y el principio de finalidad.
+
+CAPÍTULO XIV
+
+DISPOSICIONES FINALES
+
+Artículo 238. Complementariedad
+
+El presente régimen disciplinario complementa los procedimientos administrativos
+establecidos en el Tomo VIII y será interpretado conforme a la Constitución Política de
+Colombia, el Código Civil, la Ley 1801 de 2016, la Ley 675 de 2001 (como referencia técnica
+cuando aplique), la Ley 1581 de 2012 y las demás normas concordantes.
+
+Artículo 239. Aplicación
+
+Las decisiones adoptadas en virtud de este régimen buscarán siempre privilegiar la
+prevención, la corrección de las conductas y la conservación de una convivencia armónica,
+reservando las sanciones más severas para los incumplimientos graves o reiterados.
+
+CAPÍTULO XV
+
+DISPOSICIONES GENERALES
+
+Artículo 240. Finalidad de las sanciones
+
+Las sanciones previstas en el presente Manual tienen como finalidad:
+
+- Restablecer la convivencia.
+- Corregir conductas contrarias al presente Manual.
+- Proteger la seguridad de las personas.
+- Preservar el patrimonio del inmueble.
+- Garantizar el cumplimiento de las obligaciones contractuales.
+- Prevenir la reincidencia.
+- Reparar los daños ocasionados.
+
+Las sanciones deberán imponerse respetando siempre el debido proceso, el principio de
+proporcionalidad y el derecho de defensa.
+
+Artículo 241. Criterios para graduar las sanciones
+
+Para determinar la medida aplicable, la administración tendrá en cuenta, entre otros, los
+siguientes criterios:
+
+- Naturaleza de la conducta.
+- Gravedad del hecho.
+- Riesgo generado.
+- Daño ocasionado.
+- Afectación a terceros.
+- Reincidencia.
+- Intencionalidad.
+- Negligencia.
+- Beneficio obtenido.
+- Colaboración durante la investigación.
+- Reparación voluntaria del daño.
+- Circunstancias atenuantes o agravantes.
+
+Podrán imponerse una o varias medidas cuando la naturaleza de la conducta así lo justifique.
+
+CAPÍTULO XVI
+
+TIPOS DE SANCIONES
+
+Artículo 242. Llamado de atención verbal
+
+Constituye la medida preventiva de menor gravedad.
+
+Procederá cuando:
+
+- Se trate de una primera falta muy leve.
+- Exista un incumplimiento menor fácilmente corregible.
+- No se hayan ocasionado daños.
+- No exista reincidencia.
+
+El administrador dejará constancia interna del llamado cuando lo considere necesario.
+
+Artículo 243. Llamado de atención escrito
+
+Procederá cuando:
+
+- Exista reincidencia en faltas muy leves.
+- Se configure una falta leve.
+- Sea necesario dejar constancia formal del incumplimiento.
+
+El documento deberá contener:
+
+- Fecha.
+- Descripción de los hechos.
+- Norma incumplida.
+- Recomendaciones.
+- Plazo para corregir la conducta.
+- Consecuencias de una nueva reincidencia.
+
+El llamado escrito hará parte del expediente administrativo.
+
+Artículo 244. Acta de compromiso
+
+Cuando la administración considere posible corregir la conducta mediante acuerdos, podrá
+suscribirse un Acta de Compromiso.
+
+Esta podrá contener:
+
+- Descripción de los hechos.
+- Obligaciones asumidas.
+- Plan de mejoramiento.
+- Cronograma de cumplimiento.
+- Responsable.
+- Seguimiento.
+- Consecuencias del incumplimiento.
+
+El incumplimiento injustificado del Acta podrá constituir un agravante dentro de un
+procedimiento disciplinario posterior.
+
+Artículo 245. Reposición o restitución
+
+Cuando una conducta genere pérdida, destrucción o deterioro de bienes, el responsable
+deberá realizar la reposición del elemento afectado o restituirlo en condiciones equivalentes,
+sin perjuicio de las demás sanciones que correspondan.
+
+La reposición podrá consistir en:
+
+- Sustitución por un bien de iguales o superiores características.
+- Reparación certificada.
+- Pago del valor comercial.
+- Restitución mediante proveedor autorizado.
+
+Artículo 246. Reparación del daño
+
+Toda persona que cause daños al inmueble, sus instalaciones, equipos, mobiliario o bienes
+de terceros deberá asumir los costos de reparación integral.
+
+La reparación podrá comprender:
+
+- Mano de obra.
+- Materiales.
+- Honorarios técnicos.
+- Inspecciones.
+- Limpieza.
+- Adecuaciones.
+- Costos administrativos derivados de la intervención.
+
+Cuando existan varios responsables, la administración podrá distribuir la responsabilidad
+conforme a las pruebas recaudadas.
+
+Artículo 247. Cobro de daños y perjuicios
+
+Cuando la reparación genere costos económicos, la administración podrá efectuar el cobro
+correspondiente al responsable, de conformidad con:
+
+- El contrato aplicable.
+- El inventario del inmueble.
+- Las cotizaciones o facturas respectivas.
+- Los informes técnicos.
+- Las normas civiles vigentes.
+
+Este cobro no limita el ejercicio de acciones judiciales para obtener la indemnización de
+perjuicios adicionales.
+
+Artículo 248. Restricciones administrativas
+
+Dependiendo de la gravedad de la conducta y siempre que exista fundamento contractual o
+reglamentario, la administración podrá imponer restricciones temporales relacionadas con:
+
+- Reserva de salones comunales.
+- Uso de terrazas.
+- Uso de coworking.
+- Uso de cocinas comunes.
+- Uso de lavanderías compartidas.
+- Acceso a áreas recreativas.
+- Autorizaciones para remodelaciones.
+- Ingreso de contratistas particulares.
+- Uso de parqueaderos de visitantes.
+- Otros servicios administrados por el inmueble.
+
+En ningún caso podrán restringirse derechos fundamentales, servicios públicos esenciales o
+el acceso a la vivienda o unidad privada.
+
+Artículo 249. Suspensión o cancelación de autorizaciones
+
+La administración podrá suspender o cancelar autorizaciones previamente otorgadas
+cuando:
+
+- Se incumplan las condiciones bajo las cuales fueron concedidas.
+- Exista riesgo para la seguridad.
+- Se presenten falsedades.
+- Se incumpla el presente Manual.
+- Se vulneren normas legales.
+
+Artículo 250. Terminación contractual
+
+Cuando el incumplimiento sea grave o reiterado y exista fundamento legal o contractual, la
+administración podrá recomendar o iniciar, según corresponda:
+
+- Terminación del contrato de arrendamiento.
+- Terminación de contratos de prestación de servicios.
+- Terminación de autorizaciones de uso.
+- Terminación de convenios celebrados con terceros.
+
+La terminación contractual deberá adelantarse conforme al contrato respectivo y a la
+legislación colombiana.
+
+Artículo 251. Remisión a la Policía Nacional
+
+La administración dará traslado inmediato a la Policía Nacional cuando los hechos puedan
+constituir comportamientos contrarios a la convivencia previstos en la Ley 1801 de 2016,
+entre ellos:
+
+- Alteración del orden.
+- Riñas.
+- Amenazas.
+- Consumo prohibido de sustancias.
+- Porte de armas cuando corresponda.
+- Daños a bienes.
+- Incumplimiento de medidas policivas.
+- Perturbación de la tranquilidad.
+- Violencia.
+
+La actuación administrativa será independiente de las actuaciones de la autoridad de policía.
+
+Artículo 252. Remisión a la Fiscalía General de la Nación
+
+Cuando existan indicios de la posible comisión de un delito, la administración podrá poner
+los hechos en conocimiento de la Fiscalía General de la Nación o de la autoridad
+competente.
+
+Entre otros casos:
+
+- Hurto.
+- Fraude.
+- Estafa.
+- Falsedad documental.
+- Daño en bien ajeno.
+- Violencia intrafamiliar.
+- Lesiones personales.
+- Amenazas.
+- Acceso abusivo a sistemas.
+- Extorsión.
+- Incendio.
+- Delitos ambientales.
+- Maltrato animal.
+- Delitos relacionados con sustancias ilícitas.
+
+La remisión no implica prejuzgamiento sobre la responsabilidad penal del involucrado.
+
+Artículo 253. Remisión al propietario
+
+Cuando el responsable sea un arrendatario, ocupante, subarrendatario, visitante o cualquier
+tercero vinculado a una unidad privada, la administración podrá informar formalmente al
+propietario sobre:
+
+- Incumplimientos del Manual.
+- Reincidencias.
+- Daños ocasionados.
+- Procesos disciplinarios.
+- Incumplimientos contractuales.
+- Riesgos generados para el inmueble.
+
+El propietario podrá adoptar las medidas contractuales que considere procedentes conforme
+a la ley y al contrato de arrendamiento.
+
+CAPÍTULO XVII
+
+REINCIDENCIA
+
+Artículo 254. Reincidencia
+
+Existe reincidencia cuando una persona incurra nuevamente en una conducta igual o similar
+dentro del término establecido por la administración o durante la vigencia del contrato.
+
+La reincidencia podrá generar:
+
+- Incremento de la gravedad de la falta.
+- Imposición de medidas adicionales.
+- Mayor seguimiento administrativo.
+- Recomendación de terminación contractual cuando corresponda.
+
+CAPÍTULO XVIII
+
+CIRCUNSTANCIAS ATENUANTES Y AGRAVANTES
+
+Artículo 255. Circunstancias atenuantes
+
+Podrán considerarse atenuantes, entre otras:
+
+- Reconocimiento voluntario de la falta.
+- Reparación inmediata del daño.
+- Colaboración con la investigación.
+- Ausencia de antecedentes disciplinarios.
+- Actuación bajo error excusable.
+- Cumplimiento oportuno del Acta de Compromiso.
+
+Artículo 256. Circunstancias agravantes
+
+Podrán considerarse agravantes:
+
+- Reincidencia.
+- Ocultamiento de información.
+- Falsedad.
+- Destrucción de pruebas.
+- Intimidación a testigos.
+- Actuar con dolo.
+- Generar riesgos para la vida o la integridad.
+- Afectar bienes comunes de alto valor.
+- Utilizar menores de edad para cometer la conducta.
+- Incumplir órdenes impartidas por autoridades competentes.
+
+CAPÍTULO XIX
+
+EJECUCIÓN Y CUMPLIMIENTO
+
+Artículo 257. Ejecución de las sanciones
+
+Las sanciones quedarán en firme una vez finalice el procedimiento disciplinario y se hayan
+resuelto los recursos que procedan.
+
+La administración realizará seguimiento a su cumplimiento y dejará constancia en el
+expediente correspondiente.
+
+Artículo 258. Registro de antecedentes administrativos
+
+Las actuaciones disciplinarias podrán registrarse en el expediente administrativo de la unidad
+o del usuario, respetando la legislación sobre protección de datos personales, gestión
+documental y los principios de finalidad y confidencialidad.
+
+CAPÍTULO XX
+
+DISPOSICIONES FINALES
+
+Artículo 259. Independencia de responsabilidades
+
+La imposición de una medida disciplinaria no exonera al responsable de:
+
+- Reparar los daños ocasionados.
+- Cumplir las obligaciones contractuales.
+- Atender requerimientos de autoridades administrativas.
+- Responder civil o penalmente cuando corresponda.
+
+Artículo 260. Interpretación
+
+Las disposiciones del presente Título se interpretarán de conformidad con la Constitución
+Política de Colombia, el Código Civil, la Ley 1801 de 2016, la Ley 675 de 2001 (como referente
+técnico cuando resulte aplicable), la Ley 1564 de 2012, la Ley 1581 de 2012 y las demás
+normas concordantes.
+
+Las sanciones deberán aplicarse con criterios de razonabilidad, proporcionalidad y respeto
+por los derechos fundamentales, privilegiando la prevención y la solución pacífica de los
+conflictos antes que la imposición de medidas restrictivas.
+
+TOMO X
+
+ANEXOS, FORMATOS, REGISTROS Y HERRAMIENTAS DE GESTIÓN
+
+TÍTULO XVI
+
+ANEXOS DEL MANUAL
+
+CAPÍTULO I
+
+DISPOSICIONES GENERALES
+
+Artículo 261. Objeto
+
+Los anexos hacen parte integral del presente Manual y tienen como finalidad estandarizar los
+procesos administrativos, operativos, técnicos, jurídicos y documentales relacionados con la
+administración del inmueble.
+
+Estos formatos podrán diligenciarse en medio físico o electrónico y tendrán la misma validez
+cuando cumplan los requisitos legales y contractuales correspondientes.
+
+Artículo 262. Actualización
+
+La administración podrá actualizar, mejorar o incorporar nuevos formatos sin modificar el
+contenido normativo del Manual, siempre que dichos cambios no alteren los derechos y
+obligaciones establecidos en el mismo.
+
+Artículo 263. Conservación documental
+
+Todos los registros deberán conservarse conforme a:
+
+- Ley 594 de 2000 (Archivo General de la Nación).
+- Ley 1581 de 2012 (Protección de Datos Personales).
+- Ley 527 de 1999 (Mensajes de Datos y Firma Electrónica).
+- Código General del Proceso.
+- Políticas internas de gestión documental.
+
+CAPÍTULO II
+
+CATÁLOGO GENERAL DE FORMATOS
+
+Los siguientes anexos constituyen la documentación oficial del sistema de administración
+del inmueble.
+
+SECCIÓN A
+
+FORMATOS DE INVENTARIOS
+
+F-001 Inventario general del inmueble.
+
+F-002 Inventario por unidad privada.
+
+F-003 Inventario de apartamento.
+
+F-004 Inventario de habitación.
+
+F-005 Inventario de apartaestudio.
+
+F-006 Inventario de local comercial.
+
+F-007 Inventario de oficina.
+
+F-008 Inventario de consultorio.
+
+F-009 Inventario de parqueadero.
+
+F-010 Inventario de depósito o bodega.
+
+F-011 Inventario de mobiliario.
+
+F-012 Inventario fotográfico.
+
+F-013 Inventario audiovisual.
+
+F-014 Entrega de llaves, tarjetas y controles.
+
+F-015 Inventario de equipos y electrodomésticos.
+
+SECCIÓN B
+
+ACTAS
+
+F-016 Acta de entrega.
+
+F-017 Acta de devolución.
+
+F-018 Acta de inspección.
+
+F-019 Acta de compromiso.
+
+F-020 Acta de mediación.
+
+F-021 Acta de conciliación.
+
+F-022 Acta de reunión.
+
+F-023 Acta de novedades.
+
+F-024 Acta de mantenimiento.
+
+F-025 Acta de incidentes.
+
+F-026 Acta de emergencia.
+
+F-027 Acta de daños.
+
+SECCIÓN C
+
+REGISTROS
+
+F-028 Registro de propietarios.
+
+F-029 Registro de arrendatarios.
+
+F-030 Registro de ocupantes.
+
+F-031 Registro de visitantes.
+
+F-032 Registro de proveedores.
+
+F-033 Registro de contratistas.
+
+F-034 Registro de vehículos.
+
+F-035 Registro de motocicletas.
+
+F-036 Registro de bicicletas.
+
+F-037 Registro de parqueaderos.
+
+F-038 Registro de correspondencia.
+
+F-039 Registro de paquetería.
+
+F-040 Registro de novedades.
+
+SECCIÓN D
+
+AUTORIZACIONES
+
+F-041 Autorización de remodelación.
+
+F-042 Autorización de obras menores.
+
+F-043 Autorización de mudanza.
+
+F-044 Autorización para contratistas.
+
+F-045 Autorización de ingreso de materiales.
+
+F-046 Autorización para eventos.
+
+F-047 Autorización de uso de zonas comunes.
+
+F-048 Autorización para publicidad.
+
+SECCIÓN E
+
+MASCOTAS
+
+F-049 Registro de mascotas.
+
+F-050 Declaración de tenencia responsable.
+
+F-051 Control de vacunación.
+
+F-052 Registro de incidentes con mascotas.
+
+SECCIÓN F
+
+VISITANTES
+
+F-053 Registro de visitantes.
+
+F-054 Registro de visitantes frecuentes.
+
+F-055 Registro de visitantes temporales.
+
+F-056 Registro de personal doméstico.
+
+F-057 Registro de mensajería y domicilios.
+
+SECCIÓN G
+
+DAÑOS Y MANTENIMIENTO
+
+F-058 Reporte de daños.
+
+F-059 Solicitud de mantenimiento.
+
+F-060 Orden de trabajo.
+
+F-061 Inspección técnica.
+
+F-062 Seguimiento de reparaciones.
+
+F-063 Control de garantías.
+
+F-064 Cronograma de mantenimiento preventivo.
+
+F-065 Cronograma de mantenimiento correctivo.
+
+F-066 Historial de mantenimiento.
+
+SECCIÓN H
+
+EMERGENCIAS
+
+F-067 Reporte de emergencia.
+
+F-068 Registro de evacuación.
+
+F-069 Registro de brigadistas.
+
+F-070 Control de extintores.
+
+F-071 Inspección de botiquines.
+
+F-072 Simulacros.
+
+F-073 Inspección de rutas de evacuación.
+
+SECCIÓN I
+
+PROTECCIÓN DE DATOS
+
+F-074 Autorización para tratamiento de datos personales.
+
+F-075 Autorización para uso de imágenes.
+
+F-076 Consentimiento para videovigilancia.
+
+F-077 Solicitud de acceso a datos personales.
+
+F-078 Solicitud de actualización de datos.
+
+F-079 Solicitud de supresión de datos.
+
+SECCIÓN J
+
+INSPECCIONES
+
+F-080 Inspección general del inmueble.
+
+F-081 Inspección de unidades privadas.
+
+F-082 Inspección de zonas comunes.
+
+F-083 Inspección de ascensores.
+
+F-084 Inspección eléctrica.
+
+F-085 Inspección hidráulica.
+
+F-086 Inspección sanitaria.
+
+F-087 Inspección ambiental.
+
+SECCIÓN K
+
+CORRESPONDENCIA
+
+F-088 Registro de documentos recibidos.
+
+F-089 Registro de documentos enviados.
+
+F-090 Control de archivo.
+
+F-091 Radicación de PQRS.
+
+SECCIÓN L
+
+DIRECTORIOS
+
+F-092 Directorio de propietarios.
+
+F-093 Directorio de arrendatarios.
+
+F-094 Directorio de proveedores.
+
+F-095 Directorio de contratistas.
+
+F-096 Directorio de organismos de emergencia.
+
+SECCIÓN M
+
+CHECKLISTS
+
+F-097 Checklist de entrega.
+
+F-098 Checklist de devolución.
+
+F-099 Checklist de inspección.
+
+F-100 Checklist de mantenimiento.
+
+F-101 Checklist de limpieza.
+
+F-102 Checklist de seguridad.
+
+F-103 Checklist de apertura.
+
+F-104 Checklist de cierre.
+
+SECCIÓN N
+
+MATRICES
+
+F-105 Matriz de riesgos.
+
+F-106 Matriz legal.
+
+F-107 Matriz documental.
+
+F-108 Matriz de activos.
+
+F-109 Matriz de inspecciones.
+
+F-110 Matriz de seguimiento de acciones.
+
+SECCIÓN O
+
+INDICADORES DE GESTIÓN (KPIs)
+
+F-111 Indicadores de mantenimiento.
+
+F-112 Indicadores de PQRS.
+
+F-113 Indicadores de tiempos de respuesta.
+
+F-114 Indicadores de seguridad.
+
+F-115 Indicadores de convivencia.
+
+F-116 Indicadores de satisfacción de propietarios.
+
+F-117 Indicadores de satisfacción de arrendatarios.
+
+F-118 Indicadores de ocupación.
+
+F-119 Indicadores de cartera y cumplimiento contractual.
+
+F-120 Indicadores ambientales.
+
+CAPÍTULO III
+
+CONTENIDO MÍNIMO DE LOS FORMATOS
+
+Todos los formatos deberán contener, cuando aplique:
+
+- Código del formato.
+- Nombre del documento.
+- Versión.
+- Fecha de emisión.
+- Fecha de actualización.
+- Número de página.
+- Responsable del diligenciamiento.
+- Identificación del inmueble.
+- Unidad relacionada.
+- Datos del propietario o usuario.
+- Descripción de la actuación.
+- Observaciones.
+- Evidencia fotográfica (cuando aplique).
+- Firmas físicas o electrónicas.
+- Anexos.
+- Radicado interno.
+- Estado del trámite.
+
+CAPÍTULO IV
+
+DIGITALIZACIÓN DOCUMENTAL
+
+Artículo 264. Gestión documental electrónica
+
+La administración podrá implementar sistemas digitales para el manejo de todos los
+formatos, registros y expedientes, garantizando:
+
+- Integridad de la información.
+- Disponibilidad.
+- Confidencialidad.
+- Trazabilidad.
+- Copias de seguridad.
+- Control de versiones.
+- Firma electrónica o digital cuando aplique.
+
+Artículo 265. Conservación de expedientes
+
+Los expedientes físicos o electrónicos deberán mantenerse organizados conforme a las
+Tablas de Retención Documental y a las políticas de archivo adoptadas por la administración.
+
+CAPÍTULO V
+
+ANEXOS TÉCNICOS COMPLEMENTARIOS
+
+Hacen parte del sistema documental, entre otros, los siguientes anexos:
+
+- Manual de procesos administrativos.
+- Manual de mantenimiento.
+- Plan de Emergencias y Contingencias.
+- Plan de Gestión Integral de Residuos.
+- Plan de Seguridad Física.
+- Plan de Videovigilancia.
+- Política de Protección de Datos Personales.
+- Programa de Seguridad y Salud en el Trabajo (cuando aplique).
+- Manual de inspecciones.
+- Manual de inventarios.
+- Manual de contratación de proveedores.
+- Procedimiento de atención de PQRS.
+- Procedimiento disciplinario.
+- Plan anual de mantenimiento.
+- Matriz legal actualizada.
+- Directorio de autoridades competentes.
+
+CAPÍTULO VI
+
+DISPOSICIONES FINALES
+
+Artículo 266. Carácter vinculante
+
+Todos los formatos, registros, matrices y anexos aprobados por la administración constituyen
+documentos oficiales del Sistema de Administración del Inmueble y deberán ser utilizados de
+manera obligatoria en los procedimientos descritos en este Manual.
+
+Artículo 267. Actualización y mejora continua
+
+La administración realizará revisiones periódicas de los anexos con el fin de incorporar
+cambios normativos, tecnológicos y operativos, asegurando la mejora continua del sistema
+documental y la adecuada gestión del inmueble.
