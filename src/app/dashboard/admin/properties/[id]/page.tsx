@@ -7,6 +7,7 @@ import { LocationMap } from '+/components/Map'
 import { getPropertyWithUnits } from '+/actions/property'
 import PropertyActions from './_/PropertyActions'
 import PropertyUnits from './_/PropertyUnits'
+import PropertyRules from './_/PropertyRules'
 import type { PropertyStatus, PropertyType } from '+/generated/prisma/client'
 import { toPropertyFormState } from '../_/propertyFormUtils'
 
@@ -160,6 +161,16 @@ export default async function AdminPropertyPage({ params }: { params: Promise<{ 
           </section>
 
           <aside className="space-y-6">
+            <PropertyRules
+              propertyId={property.id}
+              initialRules={{
+                applicationExpiryDays: property.applicationExpiryDays,
+                requiresManualAcceptance: property.requiresManualAcceptance,
+                casesEnabled: property.casesEnabled,
+                emergencyInfo: property.emergencyInfo,
+              }}
+            />
+
             <div className="rounded-xl border border-gray-200 p-6 bg-white shadow-sm">
               <h2 className="text-lg font-semibold text-gray-900 mb-3">Exterior</h2>
               <div className="space-y-3 text-sm">

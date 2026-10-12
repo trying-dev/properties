@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { Home, Search, Heart, User, Building2, MessageSquare, FileText, BookOpenCheck } from 'lucide-react'
+import { Home, Search, Heart, User, Building2, MessageSquare, FileText, BookOpenCheck, LifeBuoy } from 'lucide-react'
 
 import { getUserTenant, type UserTenant } from '+/actions/user'
 import { getTenantProcessesAction } from '+/actions/processes'
@@ -70,6 +70,14 @@ export default function TenantDashboard() {
       description: manualAccepted === false ? 'Pendiente de aceptar' : 'Normas de uso y convivencia',
       onClick: () => router.push('/manual'),
       badge: manualAccepted === false ? '!' : null,
+    },
+    {
+      id: 'cases',
+      icon: LifeBuoy,
+      title: 'Reportes y solicitudes',
+      description: 'PQRS, problemas de tu unidad y datos de emergencia',
+      onClick: () => router.push('/dashboard/tenant/cases'),
+      badge: null,
     },
     {
       id: 'profile',

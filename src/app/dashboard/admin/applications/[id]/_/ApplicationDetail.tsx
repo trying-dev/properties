@@ -10,6 +10,7 @@ import type { ProcessDetail } from '+/actions/processes'
 import type { ProcessReviewBundle } from '+/actions/application-review'
 
 import DecisionPanel from './DecisionPanel'
+import ContractPanel from './ContractPanel'
 import ReviewItemCard, { type ReviewItem, type ReviewTarget } from './ReviewItemCard'
 
 type ProcessPayload = {
@@ -165,6 +166,8 @@ export default function ApplicationDetail({ detail, bundle, onChanged }: Applica
         notes={detail.notes}
         onChanged={onChanged}
       />
+
+      <ContractPanel processId={detail.id} status={detail.status} onChanged={onChanged} />
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         <Section icon={User} title="Inquilino">

@@ -2,12 +2,13 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { AlertTriangle, BellRing, BookOpenCheck, Building2, ClipboardCheck, CreditCard, FilePlus, FileText, FolderArchive, Gauge, Layers, MessageCircle, Receipt, ShieldAlert, ShieldCheck, UserCog, Users, Wallet, Wrench } from 'lucide-react'
+import { AlertTriangle, BellRing, BookOpenCheck, Building2, ClipboardCheck, CreditCard, FilePlus, FileText, FolderArchive, Gauge, Layers, LifeBuoy, MessageCircle, Receipt, ShieldAlert, ShieldCheck, UserCog, Users, Wallet, Wrench } from 'lucide-react'
 
 import { getProperties } from '+/actions/property'
 import { getPendingPaymentsCount } from '+/actions/payments'
 import { getUnitsCount } from '+/actions/units'
 import { getPendingApplicationsCount } from '+/actions/processes'
+import { getOpenCasesCountAction } from '+/actions/cases'
 import Header from '+/components/Header'
 
 type MenuOption = {
@@ -26,22 +27,25 @@ export default function AdminDashboard() {
   const [unitsCount, setUnitsCount] = useState<number | null>(null)
   const [pendingPaymentsCount, setPendingPaymentsCount] = useState<number | null>(null)
   const [pendingApplicationsCount, setPendingApplicationsCount] = useState<number | null>(null)
+  const [openCasesCount, setOpenCasesCount] = useState<number | null>(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     let mounted = true
     const load = async () => {
-      const [properties, units, payments, applications] = await Promise.allSettled([
+      const [properties, units, payments, applications, cases] = await Promise.allSettled([
         getProperties(),
         getUnitsCount(),
         getPendingPaymentsCount(),
         getPendingApplicationsCount(),
+        getOpenCasesCountAction(),
       ])
       if (!mounted) return
       if (properties.status === 'fulfilled') setPropertiesCount(properties.value.length)
       if (units.status === 'fulfilled') setUnitsCount(units.value)
       if (payments.status === 'fulfilled') setPendingPaymentsCount(payments.value)
       if (applications.status === 'fulfilled') setPendingApplicationsCount(applications.value)
+      if (cases.status === 'fulfilled') setOpenCasesCount(cases.value)
       setLoading(false)
     }
     void load()
@@ -194,6 +198,15 @@ export default function AdminDashboard() {
       href: '/dashboard/admin/manual',
       badge: null,
       hasBadge: false,
+    },
+    {
+      id: 'cases',
+      icon: LifeBuoy,
+      title: 'PQRS y reportes',
+      description: 'Casos de los inquilinos por atender',
+      href: '/dashboard/admin/cases',
+      badge: openCasesCount,
+      hasBadge: true,
     },
     {
       id: 'documents',

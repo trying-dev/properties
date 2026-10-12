@@ -5,14 +5,14 @@ Una línea por flujo, con flechas. Para el detalle de cada uno: flows (proceso d
 
 Leyenda: ✅ funciona · ⚠️ funciona con una limitación · ❌ falta construir
 
-CUÁNTOS HAY: 21
+CUÁNTOS HAY: 24
 ---------------
 
   Grupo                                      |  Flujos  |  Estado
   -------------------------------------------+----------+------------------------
-  A. Arriendo (de la solicitud al contrato)  |  6       |  5 ✅/⚠️ · 1 ❌ parcial
+  A. Arriendo (de la solicitud al contrato)  |  7       |  6 ✅ · 1 ⚠️
   B. Dinero                                  |  4       |  4 ✅
-  C. Operación del inmueble                  |  6       |  5 ✅ · 1 ⚠️
+  C. Operación del inmueble                  |  8       |  7 ✅ · 1 ⚠️
   D. Cuenta y acceso                         |  4       |  4 ✅
   E. Catálogo                                |  1       |  1 ✅
 
@@ -39,9 +39,12 @@ Si entra por la app: inicia sesión → pop-up "tu solicitud tiene un nuevo esta
 Inquilino lee /manual → acepta → queda registrado (quién, cuándo, versión)
 Regla: admin aprueba → ¿aceptó el manual? → no: bloquea + recordatorio · sí: aprueba
 
-6. Contrato ❌ (solo la primera parte existe)
-Hoy: INICIADO y ahí se queda.
-Falta: APROBADO → BORRADOR (admin fija fechas y condiciones) → PENDIENTE DE FIRMA (exige manual) → ACTIVO (unidad OCUPADA, empiezan los pagos) · en cualquier punto → CANCELADO (libera la unidad)
+6. Contrato ✅
+APROBADO → admin fija condiciones (canon, depósito, comisión, fechas) → BORRADOR → ENVIAR A FIRMA (exige manual si la propiedad lo pide) → PENDIENTE DE FIRMA → admin registra firma en papel → ACTIVO (unidad OCUPADA, empiezan los pagos) · en cualquier punto antes de firmar → CANCELADO (libera la unidad)
+Al activarse, las demás solicitudes sobre la misma unidad se cancelan y reciben un correo para ver otras unidades.
+
+6b. Vencimiento por falta de definición ✅
+Solicitud sin actividad durante el plazo de la propiedad (14 días por defecto) → CANCELADA + aviso por app y correo → la unidad vuelve a VACANTE si nadie más la reclama · corre en el cron diario de alertas
 
 ------------------------------------------------------------
 
@@ -85,6 +88,13 @@ Póliza: ACTIVA → VENCIDA (o CANCELADA) → alerta a 30 días
 16. Alertas de vencimientos ✅
 Cron diario → revisa pólizas, seguridad, documentos, mantenimiento preventivo y predial → recordatorio al admin · sin repetir el mismo aviso
 
+17b. PQRS y reporte de problemas ✅ (opt-in por propiedad)
+Propiedad lo habilita en sus reglas → inquilino con contrato activo radica caso (petición, queja, reclamo, sugerencia o problema) → radicado PQRS-AAAA-0001 → admin recibe aviso → NUEVO → EN ATENCIÓN → RESUELTO o CERRADO con respuesta → inquilino recibe aviso
+El botón "Reportar" de la unidad usa este mismo módulo. Si la propiedad no lo habilitó, sigue enviando un aviso directo al administrador, sin radicado.
+
+17c. Ficha de emergencia ✅ (opt-in por propiedad)
+Admin escribe teléfonos, rutas y punto de encuentro en las reglas de la propiedad → el inquilino lo ve en "Reportes y solicitudes", junto a extintores, alarmas y detectores activos del módulo de seguridad
+
 ------------------------------------------------------------
 
 D. CUENTA Y ACCESO
@@ -123,4 +133,4 @@ LO QUE UNE LOS FLUJOS
                                                           └─ unidad OCUPADA (21)         │
                                           Mantenimiento (12) y Predial (15) ─ descuentan ┘
 
-El eslabón roto es el 6: sin contrato activo no hay pagos, y sin pagos no hay liquidación.
+El contrato (6) es el eslabón que activa pagos y liquidación; ya está construido con firma en papel.

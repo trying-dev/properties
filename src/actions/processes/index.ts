@@ -301,9 +301,16 @@ export const deleteTenantProcessAction = async (processId: string, tenantId: str
 
 export const getAdminProcessesAction = async () => {
   try {
+    // Las aprobadas siguen visibles mientras su contrato no esté activo (falta fijar condiciones o firmar).
     const processes = await prisma.process.findMany({
       where: {
-        status: { in: [ProcessStatus.IN_PROGRESS, ProcessStatus.IN_EVALUATION, ProcessStatus.WAITING_FOR_FEEDBACK] },
+        OR: [
+          { status: { in: [ProcessStatus.IN_PROGRESS, ProcessStatus.IN_EVALUATION, ProcessStatus.WAITING_FOR_FEEDBACK] } },
+          {
+            status: ProcessStatus.APPROVED,
+            OR: [{ contractId: null }, { contract: { status: { in: ['INITIATED', 'UNDER_REVIEW', 'DOCUMENTATION', 'APPROVED', 'DRAFT', 'PENDING'] } } }],
+          },
+        ],
       },
       select: {
         id: true,

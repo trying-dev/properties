@@ -289,6 +289,7 @@ enum ProcessStatus {
   WAITING_FOR_FEEDBACK
   APPROVED
   DISAPPROVED
+  CANCELLED // Cancelada por el sistema (sin definición o unidad ya no disponible) o por el admin
 }
 
 model ProcessDocument {
@@ -428,6 +429,12 @@ model Property {
   // Estado y disponibilidad
   status PropertyStatus @default(ACTIVE)
 
+  // Reglas configurables por propiedad
+  applicationExpiryDays    Int     @default(14) // Días sin actividad tras los cuales una solicitud se cancela
+  requiresManualAcceptance Boolean @default(true) // Exige manual de convivencia aceptado para aprobar y firmar
+  casesEnabled             Boolean @default(false) // Habilita PQRS y reportes de problemas de los inquilinos
+  emergencyInfo            String? // Teléfonos, rutas y puntos de encuentro; si existe, se muestra al inquilino
+
   admins Admin[]          @relation("PropertyAdmins")
   units  Unit[]
   owners   PropertyOwner[] // Dueños con % de participación
@@ -436,6 +443,7 @@ model Property {
   meters   Meter[] // Medidores de servicios
   devices  SecurityDevice[] // Dispositivos de seguridad
   documents PropertyDocument[] // Documentación legal
+  cases     TenantCase[] // PQRS y reportes
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -526,6 +534,7 @@ model Unit {
   inspections  Inspection[]
   maintenances Maintenance[]
   meters        Meter[]
+  cases         TenantCase[]
   devices       SecurityDevice[]
   documents     PropertyDocument[]
   notifications Notification[]
@@ -728,6 +737,7 @@ model Tenant {
   contracts     Contract[] // Contratos donde es el inquilino
   processes     Process[]      @relation("ProcessTenant")
   notifications Notification[]
+  cases         TenantCase[]
 
   registrationToken        String?
   registrationTokenExpires DateTime?
@@ -1286,4 +1296,56 @@ model ManualAcceptance {
   @@index([userId])
   @@index([manualCode, manualVersion])
   @@map("manual_acceptances")
+}
+
+// ========================================
+// PQRS y reportes de problemas del inquilino
+// ========================================
+
+enum CaseKind {
+  PETITION // Petición
+  COMPLAINT // Queja
+  CLAIM // Reclamo
+  SUGGESTION // Sugerencia
+  PROBLEM // Reporte de un problema en la unidad
+}
+
+enum CaseStatus {
+  OPEN // Nuevo
+  IN_PROGRESS // En atención
+  RESOLVED // Resuelto
+  CLOSED // Cerrado
+}
+
+model TenantCase {
+  id String @id @default(cuid())
+
+  number String @unique // Radicado, ej. PQRS-2026-0001
+
+  kind   CaseKind
+  status CaseStatus @default(OPEN)
+
+  subject     String
+  description String
+
+  // Respuesta del administrador
+  response      String?
+  respondedAt   DateTime?
+  respondedById String?
+
+  tenantId   String
+  propertyId String
+  unitId     String?
+
+  tenant   Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  property Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  unit     Unit?    @relation(fields: [unitId], references: [id], onDelete: SetNull)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([tenantId, status])
+  @@index([propertyId, status])
+  @@index([unitId])
+  @@map("tenant_cases")
 }

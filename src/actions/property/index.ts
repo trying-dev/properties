@@ -1,5 +1,6 @@
 'use server'
 
+import { revalidatePath } from 'next/cache'
 import { Prisma, ProcessStatus, PropertyType, UnitStatus } from '+/generated/prisma/client'
 import { auth } from '+/lib/auth'
 import { getAdminScope, getCurrentAdminScope, propertyAccessFilter } from '+/lib/adminScope'
@@ -390,6 +391,48 @@ export const updatePropertyAction = async (propertyId: string, input: CreateProp
   } catch (error) {
     console.error('Error updating property:', error)
     return { success: false, error: 'No se pudo actualizar la propiedad' }
+  }
+}
+
+export type PropertyRulesInput = {
+  applicationExpiryDays: number
+  requiresManualAcceptance: boolean
+  casesEnabled: boolean
+  emergencyInfo?: string | null
+}
+
+// Reglas de operación configurables por propiedad (plazo de solicitudes, requisito del manual).
+export const updatePropertyRulesAction = async (propertyId: string, input: PropertyRulesInput) => {
+  try {
+    const scope = await getCurrentAdminScope()
+    if (!scope) return { success: false, error: 'No autenticado' }
+
+    const days = Math.trunc(input.applicationExpiryDays)
+    if (!Number.isFinite(days) || days < 1 || days > 90) {
+      return { success: false, error: 'El plazo debe estar entre 1 y 90 días' }
+    }
+
+    const property = await prisma.property.findFirst({
+      where: { id: propertyId, ...propertyAccessFilter(scope) },
+      select: { id: true },
+    })
+    if (!property) return { success: false, error: 'Propiedad no encontrada' }
+
+    await prisma.property.update({
+      where: { id: propertyId },
+      data: {
+        applicationExpiryDays: days,
+        requiresManualAcceptance: Boolean(input.requiresManualAcceptance),
+        casesEnabled: Boolean(input.casesEnabled),
+        emergencyInfo: input.emergencyInfo?.trim() || null,
+      },
+    })
+
+    revalidatePath(`/dashboard/admin/properties/${propertyId}`)
+    return { success: true }
+  } catch (error) {
+    console.error('Error updating property rules:', error)
+    return { success: false, error: 'No se pudieron guardar las reglas' }
   }
 }
 

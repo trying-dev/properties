@@ -216,37 +216,26 @@ Cancelaciones posibles en cualquier estado: CANCELLED, REJECTED
    - Unidad cambia a OCCUPIED
    - Se generan los pagos mensuales automaticamente
 
-2.3 Estado de implementacion del tramo contractual
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+2.3 Tramo contractual (implementado)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-La descripción 2.1 y 2.2 es el diseño objetivo. Hoy en el código:
+Ubicacion: seccion "Contrato" en el detalle de la solicitud del admin (ContractPanel). Acciones en src/actions/contracts/index.ts.
 
-  Paso                                            |  Estado
-  ------------------------------------------------+------------------------------------------------
-  Crear contrato INITIATED y reservar unidad      |  Implementado. startDate/endDate quedan como
-  (initializeContract)                            |  placeholder (hoy).
+  Paso                                 |  Accion
+  -------------------------------------+------------------------------------------------------
+  APPROVED → DRAFT                     |  saveContractTermsAction. Crea el contrato si la
+                                       |  solicitud nacio sin uno; reserva la unidad.
+  DRAFT → PENDING                      |  sendContractToSignatureAction. Exige manual aceptado
+                                       |  si Property.requiresManualAcceptance.
+  PENDING → ACTIVE                     |  registerContractSignatureAction (firma en papel):
+                                       |  signedAt, activatedAt, unidad OCCUPIED, cancela
+                                       |  solicitudes en competencia, genera el primer pago.
+  Cualquier paso sin firmar → CANCELLED|  cancelContractAction. Libera la unidad si nadie mas
+                                       |  la reclama.
 
-  Aprobar proceso (setProcessDecisionAction)      |  Implementado, con regla del manual. No toca el
-                                                  |  contrato.
+Vencimiento: expireStaleApplications (src/lib/applications/closure.ts) corre en /api/cron/alerts. Cancela solicitudes sin actividad durante Property.applicationExpiryDays (14 por defecto), avisa por app y correo, y libera la unidad.
 
-  Pasar a APPROVED → DRAFT y fijar condiciones    |  Falta (sin pantalla ni acción).
-  (fechas, canon, depósito, comisión)             |
-
-  Pasar a PENDING (pendiente de firma)            |  Falta. Debe volver a verificar
-                                                  |  hasAcceptedManual().
-
-  Registrar firma (signedAt) y activar            |  Falta. Hoy solo los seeds crean contratos
-  (activatedAt, ACTIVE, unidad OCCUPIED)          |  ACTIVE.
-
-  Subir contrato firmado (ContractDocument)       |  Falta (tabla existe; sin UI ni storage de
-                                                  |  archivos).
-
-  Cancelar/rechazar contrato y liberar la unidad  |  Falta.
-
-Consecuencia: sin este tramo, un contrato real nunca llega a ACTIVE, así que el cron no genera pagos y no hay liquidaciones al propietario.
-
-Propuesta acordada (pendiente de construir): sección "Contrato" en el detalle de la solicitud del admin:
-APPROVED → DRAFT (admin fija condiciones) → PENDING (exige manual aceptado) → ACTIVE (registra firma, unidad OCCUPIED, empiezan los pagos), con cancelación que libera la unidad. Decisión abierta: firma en papel (admin marca "firmado") o digital.
+Pendiente: subir el PDF firmado (depende del storage de archivos) y firma digital.
 
 ------------------------------------------------------------
 

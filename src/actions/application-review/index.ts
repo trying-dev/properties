@@ -569,7 +569,7 @@ export const setProcessDecisionAction = async (input: SetProcessDecisionInput) =
         id: true,
         tenantId: true,
         tenant: { select: { userId: true, user: { select: { email: true, name: true, lastName: true } } } },
-        unit: { select: { unitNumber: true, property: { select: { name: true } } } },
+        unit: { select: { unitNumber: true, property: { select: { name: true, requiresManualAcceptance: true } } } },
       },
     })
 
@@ -578,7 +578,8 @@ export const setProcessDecisionAction = async (input: SetProcessDecisionInput) =
     const isApproved = input.status === ProcessStatus.APPROVED
 
     // Requisito: el inquilino debe haber aceptado el Manual de Convivencia vigente antes de aprobar.
-    if (isApproved && process.tenant?.userId && !(await hasAcceptedManual(process.tenant.userId))) {
+    const requiresManual = process.unit?.property.requiresManualAcceptance ?? true
+    if (isApproved && requiresManual && process.tenant?.userId && !(await hasAcceptedManual(process.tenant.userId))) {
       if (process.tenantId) {
         await sendSystemNotificationAction({
           tenantId: process.tenantId,

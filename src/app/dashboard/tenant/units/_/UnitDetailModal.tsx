@@ -3,11 +3,11 @@
 import { useMemo, useRef, useState } from 'react'
 import Link from 'next/link'
 import { Bell, CheckCircle, Clock, FileUp, History, MessageSquarePlus, Paperclip, Send, X } from 'lucide-react'
-import { PaymentStatus, PaymentType, NotificationType } from '+/generated/prisma/enums'
+import { PaymentStatus, PaymentType } from '+/generated/prisma/enums'
 import type { UserTenant } from '+/actions/user'
 import type { TenantNotificationItem } from '+/actions/notifications'
 import { reportPaymentAction } from '+/actions/payments'
-import { sendNotificationAction } from '+/actions/notifications'
+import { reportUnitProblemAction } from '+/actions/cases'
 import { markNotificationReadAction } from '+/actions/notifications'
 
 type ContractRow = NonNullable<UserTenant['tenant']>['contracts'][number]
@@ -94,6 +94,7 @@ export default function UnitDetailModal({ contract, notifications, initialTab = 
   // Reportar novedad
   const [reportTitle, setReportTitle] = useState('')
   const [reportBody, setReportBody] = useState('')
+  const [reportedNumber, setReportedNumber] = useState<string | null>(null)
 
   const handlePickFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -127,19 +128,23 @@ export default function UnitDetailModal({ contract, notifications, initialTab = 
     setBusy(true)
     setError(null)
     try {
-      const result = await sendNotificationAction({
+      const result = await reportUnitProblemAction({
         unitId: unit.id,
-        title: reportTitle.trim() || 'Novedad de la unidad',
-        body: reportBody.trim(),
-        type: NotificationType.TENANT_REPORT,
+        title: reportTitle,
+        body: reportBody,
       })
       if (!result.success) {
         setError(result.error ?? 'No se pudo enviar el reporte')
         return
       }
+      const radicado = result.data?.number ?? null
       setReportTitle('')
       setReportBody('')
-      setTab('notificaciones')
+      if (radicado) {
+        setReportedNumber(radicado)
+      } else {
+        setTab('notificaciones')
+      }
       await onReload()
     } finally {
       setBusy(false)
@@ -329,6 +334,14 @@ export default function UnitDetailModal({ contract, notifications, initialTab = 
           {tab === 'reportar' && (
             <div className="space-y-3">
               <p className="text-sm text-gray-500">Envía una novedad al administrador de tu unidad.</p>
+              {reportedNumber && (
+                <div className="rounded-lg border border-emerald-200 bg-emerald-50 p-3 text-sm text-emerald-700">
+                  Reporte radicado con el número <span className="font-semibold">{reportedNumber}</span>.{' '}
+                  <Link href="/dashboard/tenant/cases" className="font-semibold underline">
+                    Ver mis casos
+                  </Link>
+                </div>
+              )}
               <input
                 type="text"
                 value={reportTitle}

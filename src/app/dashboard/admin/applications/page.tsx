@@ -53,6 +53,7 @@ export default function AdminApplicationsPage() {
       WAITING_FOR_FEEDBACK: 0,
       APPROVED: 0,
       DISAPPROVED: 0,
+      CANCELLED: 0,
     }
     for (const p of processes) base[p.status] += 1
     return base
