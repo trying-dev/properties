@@ -5,14 +5,14 @@ Una línea por flujo, con flechas. Para el detalle de cada uno: flows (proceso d
 
 Leyenda: ✅ funciona · ⚠️ funciona con una limitación · ❌ falta construir
 
-CUÁNTOS HAY: 24
+CUÁNTOS HAY: 26
 ---------------
 
   Grupo                                      |  Flujos  |  Estado
   -------------------------------------------+----------+------------------------
   A. Arriendo (de la solicitud al contrato)  |  7       |  6 ✅ · 1 ⚠️
   B. Dinero                                  |  4       |  4 ✅
-  C. Operación del inmueble                  |  8       |  7 ✅ · 1 ⚠️
+  C. Operación del inmueble                  |  10      |  9 ✅ · 1 ⚠️
   D. Cuenta y acceso                         |  4       |  4 ✅
   E. Catálogo                                |  1       |  1 ✅
 
@@ -95,6 +95,16 @@ El botón "Reportar" de la unidad usa este mismo módulo. Si la propiedad no lo 
 17c. Ficha de emergencia ✅ (opt-in por propiedad)
 Admin escribe teléfonos, rutas y punto de encuentro en las reglas de la propiedad → el inquilino lo ve en "Reportes y solicitudes", junto a extintores, alarmas y detectores activos del módulo de seguridad
 
+17d. Régimen disciplinario ✅ (opt-in por propiedad, sin montos)
+Admin abre procedimiento con gravedad, hechos y artículo → NOTIFICADA (plazo de 5 días) → inquilino presenta descargos → CON DESCARGOS → admin emite decisión motivada (llamado de atención, medida correctiva o archivo) → DECIDIDA · la decisión exige descargos recibidos o plazo vencido
+Limitación: recursos de reposición y apelación (arts. 232 y 233) y seguimiento de cumplimiento aún no existen.
+
+17e. Control de accesos ✅ (opt-in por propiedad)
+Visitante: inquilino lo registra → AUTORIZADA al instante
+Mudanza, obra, contratista o evento: inquilino solicita → POR AUTORIZAR → admin autoriza o rechaza con motivo → aviso al inquilino
+Paquetería: admin registra paquete por unidad → aviso al inquilino con contrato activo → EN ADMINISTRACIÓN → ENTREGADO
+Llaves y dispositivos: admin registra entrega (llave, tarjeta o control) → ENTREGADA → DEVUELTA o PERDIDA
+
 ------------------------------------------------------------
 
 D. CUENTA Y ACCESO
@@ -102,6 +112,7 @@ D. CUENTA Y ACCESO
 
 17. Registro directo ✅
 Formulario → código de 6 dígitos al correo → verifica → puede iniciar sesión
+Registro con token: lee el manual (el checkbox se habilita al abrirlo) y lo acepta antes de crear la contraseña; el servidor lo exige si la propiedad lo pide y guarda quién, cuándo, versión e IP
 
 18. Inicio de sesión ✅
 Email y contraseña → sesión de 30 días → destino por rol (o al enlace que traía, si venía de un correo)

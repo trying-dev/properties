@@ -167,6 +167,8 @@ export default async function AdminPropertyPage({ params }: { params: Promise<{ 
                 applicationExpiryDays: property.applicationExpiryDays,
                 requiresManualAcceptance: property.requiresManualAcceptance,
                 casesEnabled: property.casesEnabled,
+                disciplineEnabled: property.disciplineEnabled,
+                accessControlEnabled: property.accessControlEnabled,
                 emergencyInfo: property.emergencyInfo,
               }}
             />

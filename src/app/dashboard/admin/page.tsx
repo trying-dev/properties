@@ -2,13 +2,14 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { AlertTriangle, BellRing, BookOpenCheck, Building2, ClipboardCheck, CreditCard, FilePlus, FileText, FolderArchive, Gauge, Layers, LifeBuoy, MessageCircle, Receipt, ShieldAlert, ShieldCheck, UserCog, Users, Wallet, Wrench } from 'lucide-react'
+import { AlertTriangle, BellRing, BookOpenCheck, Building2, ClipboardCheck, CreditCard, FilePlus, FileText, FolderArchive, DoorOpen, Gauge, Gavel, Layers, LifeBuoy, MessageCircle, Receipt, ShieldAlert, ShieldCheck, UserCog, Users, Wallet, Wrench } from 'lucide-react'
 
 import { getProperties } from '+/actions/property'
 import { getPendingPaymentsCount } from '+/actions/payments'
 import { getUnitsCount } from '+/actions/units'
 import { getPendingApplicationsCount } from '+/actions/processes'
 import { getOpenCasesCountAction } from '+/actions/cases'
+import { getPendingAccessRequestsCountAction } from '+/actions/access'
 import Header from '+/components/Header'
 
 type MenuOption = {
@@ -28,17 +29,19 @@ export default function AdminDashboard() {
   const [pendingPaymentsCount, setPendingPaymentsCount] = useState<number | null>(null)
   const [pendingApplicationsCount, setPendingApplicationsCount] = useState<number | null>(null)
   const [openCasesCount, setOpenCasesCount] = useState<number | null>(null)
+  const [pendingAccessCount, setPendingAccessCount] = useState<number | null>(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     let mounted = true
     const load = async () => {
-      const [properties, units, payments, applications, cases] = await Promise.allSettled([
+      const [properties, units, payments, applications, cases, access] = await Promise.allSettled([
         getProperties(),
         getUnitsCount(),
         getPendingPaymentsCount(),
         getPendingApplicationsCount(),
         getOpenCasesCountAction(),
+        getPendingAccessRequestsCountAction(),
       ])
       if (!mounted) return
       if (properties.status === 'fulfilled') setPropertiesCount(properties.value.length)
@@ -46,6 +49,7 @@ export default function AdminDashboard() {
       if (payments.status === 'fulfilled') setPendingPaymentsCount(payments.value)
       if (applications.status === 'fulfilled') setPendingApplicationsCount(applications.value)
       if (cases.status === 'fulfilled') setOpenCasesCount(cases.value)
+      if (access.status === 'fulfilled') setPendingAccessCount(access.value)
       setLoading(false)
     }
     void load()
@@ -207,6 +211,24 @@ export default function AdminDashboard() {
       href: '/dashboard/admin/cases',
       badge: openCasesCount,
       hasBadge: true,
+    },
+    {
+      id: 'access',
+      icon: DoorOpen,
+      title: 'Control de accesos',
+      description: 'Autorizaciones, visitantes, paquetería y llaves',
+      href: '/dashboard/admin/access',
+      badge: pendingAccessCount,
+      hasBadge: true,
+    },
+    {
+      id: 'discipline',
+      icon: Gavel,
+      title: 'Régimen disciplinario',
+      description: 'Notificación, descargos y decisión motivada',
+      href: '/dashboard/admin/discipline',
+      badge: null,
+      hasBadge: false,
     },
     {
       id: 'documents',

@@ -398,6 +398,8 @@ export type PropertyRulesInput = {
   applicationExpiryDays: number
   requiresManualAcceptance: boolean
   casesEnabled: boolean
+  disciplineEnabled: boolean
+  accessControlEnabled: boolean
   emergencyInfo?: string | null
 }
 
@@ -424,6 +426,8 @@ export const updatePropertyRulesAction = async (propertyId: string, input: Prope
         applicationExpiryDays: days,
         requiresManualAcceptance: Boolean(input.requiresManualAcceptance),
         casesEnabled: Boolean(input.casesEnabled),
+        disciplineEnabled: Boolean(input.disciplineEnabled),
+        accessControlEnabled: Boolean(input.accessControlEnabled),
         emergencyInfo: input.emergencyInfo?.trim() || null,
       },
     })

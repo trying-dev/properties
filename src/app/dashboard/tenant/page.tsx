@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { Home, Search, Heart, User, Building2, MessageSquare, FileText, BookOpenCheck, LifeBuoy } from 'lucide-react'
+import { Home, Search, Heart, User, Building2, MessageSquare, FileText, BookOpenCheck, DoorOpen, Gavel, LifeBuoy } from 'lucide-react'
 
 import { getUserTenant, type UserTenant } from '+/actions/user'
 import { getTenantProcessesAction } from '+/actions/processes'
@@ -77,6 +77,22 @@ export default function TenantDashboard() {
       title: 'Reportes y solicitudes',
       description: 'PQRS, problemas de tu unidad y datos de emergencia',
       onClick: () => router.push('/dashboard/tenant/cases'),
+      badge: null,
+    },
+    {
+      id: 'access',
+      icon: DoorOpen,
+      title: 'Accesos y paquetería',
+      description: 'Visitantes, autorizaciones y paquetes en administración',
+      onClick: () => router.push('/dashboard/tenant/access'),
+      badge: null,
+    },
+    {
+      id: 'discipline',
+      icon: Gavel,
+      title: 'Notificaciones disciplinarias',
+      description: 'Procedimientos, descargos y decisiones',
+      onClick: () => router.push('/dashboard/tenant/discipline'),
       badge: null,
     },
     {

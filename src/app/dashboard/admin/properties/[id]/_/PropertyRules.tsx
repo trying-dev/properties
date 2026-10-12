@@ -16,6 +16,8 @@ export default function PropertyRules({ propertyId, initialRules }: PropertyRule
   const [days, setDays] = useState(String(initialRules.applicationExpiryDays))
   const [requiresManual, setRequiresManual] = useState(initialRules.requiresManualAcceptance)
   const [casesEnabled, setCasesEnabled] = useState(initialRules.casesEnabled)
+  const [disciplineEnabled, setDisciplineEnabled] = useState(initialRules.disciplineEnabled)
+  const [accessControlEnabled, setAccessControlEnabled] = useState(initialRules.accessControlEnabled)
   const [emergencyInfo, setEmergencyInfo] = useState(initialRules.emergencyInfo ?? '')
   const [isSaving, setIsSaving] = useState(false)
   const [message, setMessage] = useState<{ kind: 'ok' | 'error'; text: string } | null>(null)
@@ -24,6 +26,8 @@ export default function PropertyRules({ propertyId, initialRules }: PropertyRule
     Number(days) !== initialRules.applicationExpiryDays ||
     requiresManual !== initialRules.requiresManualAcceptance ||
     casesEnabled !== initialRules.casesEnabled ||
+    disciplineEnabled !== initialRules.disciplineEnabled ||
+    accessControlEnabled !== initialRules.accessControlEnabled ||
     emergencyInfo.trim() !== (initialRules.emergencyInfo ?? '').trim()
 
   const handleSave = async () => {
@@ -33,6 +37,8 @@ export default function PropertyRules({ propertyId, initialRules }: PropertyRule
       applicationExpiryDays: Number(days),
       requiresManualAcceptance: requiresManual,
       casesEnabled,
+      disciplineEnabled,
+      accessControlEnabled,
       emergencyInfo,
     })
     setIsSaving(false)
@@ -88,6 +94,32 @@ export default function PropertyRules({ propertyId, initialRules }: PropertyRule
           <span>
             <span className="font-medium text-gray-900">Habilitar PQRS y reporte de problemas</span>
             <span className="block text-gray-500 mt-0.5">Los inquilinos con contrato activo radican casos y el administrador responde.</span>
+          </span>
+        </label>
+
+        <label className="flex items-start gap-3">
+          <input
+            type="checkbox"
+            checked={disciplineEnabled}
+            onChange={(event) => setDisciplineEnabled(event.target.checked)}
+            className="mt-1 h-4 w-4 rounded border-gray-300"
+          />
+          <span>
+            <span className="font-medium text-gray-900">Habilitar régimen disciplinario</span>
+            <span className="block text-gray-500 mt-0.5">El administrador abre procedimientos con notificación, descargos del inquilino y decisión motivada.</span>
+          </span>
+        </label>
+
+        <label className="flex items-start gap-3">
+          <input
+            type="checkbox"
+            checked={accessControlEnabled}
+            onChange={(event) => setAccessControlEnabled(event.target.checked)}
+            className="mt-1 h-4 w-4 rounded border-gray-300"
+          />
+          <span>
+            <span className="font-medium text-gray-900">Habilitar control de accesos</span>
+            <span className="block text-gray-500 mt-0.5">Autorizaciones (mudanza, obra, contratista, evento), visitantes, paquetería y registro de llaves.</span>
           </span>
         </label>
 

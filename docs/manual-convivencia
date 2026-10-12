@@ -50,7 +50,7 @@ Y una tercera, que es la regla de negocio importante:
 Inquilino
 ~~~~~~~~~
 
-1. Recibe el correo de invitación y se registra con el token.
+1. Recibe el correo de invitación y se registra con el token. Antes de crear la contraseña lee y acepta el manual si la propiedad lo exige.
 2. Completa el wizard de aplicación (perfil, datos, documentos, garantía).
 3. Lee y acepta el manual en /manual (checkbox + botón "Aceptar manual").
    - Puede hacerlo en cualquier momento: no hay que esperar a que el admin lo pida.
@@ -100,28 +100,27 @@ Quien mantiene el manual (responsable documental)
 
   Pendiente                                    |  Detalle
   ---------------------------------------------+----------------------------------------------------
-  Bloqueo en la firma/activación del contrato  |  En el código actual ninguna pantalla pasa un
-                                               |  contrato a ACTIVE (solo lo hacen los seeds). El
-                                               |  bloqueo está en la aprobación, que es el último
-                                               |  paso real. Cuando exista la firma, debe reutilizar
-                                               |  hasAcceptedManual(). Ver flows §2.
+  Migración a producción                       |  Las tablas y campos nuevos (manual, contratos,
+                                               |  casos, disciplina, accesos y reglas por
+                                               |  propiedad) solo están en la base local (sqlite).
+                                               |  Falta pnpm db:push:prod.
 
-  Aceptación en el registro con token          |  El checkbox agreeTerms del registro acepta los
-                                               |  términos generales, no el manual. Registrarlo ahí
-                                               |  sin mostrarlo sería débil legalmente.
+  Recursos disciplinarios                      |  Reposición y apelación (arts. 232 y 233) y
+                                               |  seguimiento de cumplimiento. Existen notificación,
+                                               |  descargos y decisión motivada, sin montos.
 
-  Migración a producción                       |  La tabla manual_acceptances solo se aplicó a la
-                                               |  base local (sqlite). Falta pnpm db:push:prod.
+  Notificación disciplinaria por correo        |  Hoy llega solo por la app.
 
-  Régimen disciplinario                        |  El manual lo define (Tomo IX) pero la app no tiene
-                                               |  casos disciplinarios, descargos ni recursos
-                                               |  todavía.
+  Manual distinto por propiedad                |  Cada propiedad decide si lo exige. El contenido es
+                                               |  un único manual para todas.
 
-  PQRS, autorizaciones y registros             |  Tomos V, VIII y X: solo publicados como texto; sin
-                                               |  módulo.
+  Autorizaciones de emergencia y simulacros    |  Tomo VII y formatos F-067 a F-073. Hay ficha de
+                                               |  emergencia y dispositivos de seguridad, sin
+                                               |  simulacros ni rutas gráficas.
 
-  Manual distinto por propiedad                |  Hoy hay un único manual para todas las
-                                               |  propiedades.
+  Formatos F-001 a F-120                       |  Exportes como acta de entrega y reporte de daños.
+
+Ya construido desde la primera versión de este documento: bloqueo en la firma y activación del contrato, aceptación en el registro con token, PQRS y reporte de problemas, régimen disciplinario liviano, y control de accesos (autorizaciones, visitantes, paquetería y llaves). Los módulos se activan por propiedad en sus reglas.
 
 ------------------------------------------------------------
 
@@ -204,10 +203,17 @@ El seed es idempotente (no duplica si ya existe el par inquilino + unidad). Los 
 
 ------------------------------------------------------------
 
-9. DECISIONES PENDIENTES DE NEGOCIO
------------------------------------
+9. DECISIONES DE NEGOCIO
+------------------------
 
-1. ¿La firma del contrato será en papel (el admin marca "firmado") o digital?
-2. ¿La aceptación del manual también será requisito para entrar al dashboard, o solo para aprobar/activar?
-3. ¿Las multas están en los contratos de arrendamiento, o solo la reparación de daños? Define si el régimen disciplinario lleva montos.
-4. ¿Cada propiedad puede tener su propio manual (horarios, mascotas) o es uno solo?
+Resueltas
+
+1. La firma del contrato es en papel; el administrador registra la fecha.
+2. Cada propiedad configura si exige el manual aceptado (aprobar, firmar y registro).
+3. Los módulos de PQRS, disciplina y accesos son opcionales por propiedad.
+
+Pendientes
+
+1. ¿La aceptación del manual también será requisito para entrar al dashboard, o solo para aprobar, firmar y registrarse?
+2. ¿Las multas están en los contratos de arrendamiento, o solo la reparación de daños? Define si el régimen disciplinario lleva montos.
+3. ¿Cada propiedad necesita contenido propio del manual (horarios, mascotas) o basta con uno solo?

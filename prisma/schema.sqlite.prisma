@@ -434,16 +434,22 @@ model Property {
   requiresManualAcceptance Boolean @default(true) // Exige manual de convivencia aceptado para aprobar y firmar
   casesEnabled             Boolean @default(false) // Habilita PQRS y reportes de problemas de los inquilinos
   emergencyInfo            String? // Teléfonos, rutas y puntos de encuentro; si existe, se muestra al inquilino
+  disciplineEnabled        Boolean @default(false) // Habilita el régimen disciplinario liviano
+  accessControlEnabled     Boolean @default(false) // Habilita autorizaciones, visitantes, paquetería y llaves
 
-  admins    Admin[]            @relation("PropertyAdmins")
-  units     Unit[]
-  owners    PropertyOwner[] // Dueños con % de participación
-  taxes     PropertyTax[] // Predial (impuesto anual)
-  policies  InsurancePolicy[] // Pólizas de seguro
-  meters    Meter[] // Medidores de servicios
-  devices   SecurityDevice[] // Dispositivos de seguridad
-  documents PropertyDocument[] // Documentación legal
-  cases     TenantCase[] // PQRS y reportes
+  admins            Admin[]            @relation("PropertyAdmins")
+  units             Unit[]
+  owners            PropertyOwner[] // Dueños con % de participación
+  taxes             PropertyTax[] // Predial (impuesto anual)
+  policies          InsurancePolicy[] // Pólizas de seguro
+  meters            Meter[] // Medidores de servicios
+  devices           SecurityDevice[] // Dispositivos de seguridad
+  documents         PropertyDocument[] // Documentación legal
+  cases             TenantCase[] // PQRS y reportes
+  disciplinaryCases DisciplinaryCase[]
+  accessRequests    AccessRequest[]
+  packages          PackageRecord[]
+  keyRecords        KeyRecord[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -531,13 +537,17 @@ model Unit {
   contracts Contract[]
   processes Process[]  @relation("ProcessUnit")
 
-  inspections   Inspection[]
-  maintenances  Maintenance[]
-  meters        Meter[]
-  cases         TenantCase[]
-  devices       SecurityDevice[]
-  documents     PropertyDocument[]
-  notifications Notification[]
+  inspections       Inspection[]
+  maintenances      Maintenance[]
+  meters            Meter[]
+  cases             TenantCase[]
+  disciplinaryCases DisciplinaryCase[]
+  accessRequests    AccessRequest[]
+  packages          PackageRecord[]
+  keyRecords        KeyRecord[]
+  devices           SecurityDevice[]
+  documents         PropertyDocument[]
+  notifications     Notification[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -628,8 +638,8 @@ model User {
   sessions Session[]
   accounts Account[]
 
-  additionalContracts      Contract[]        @relation("AdditionalResidents") // Contratos donde es residente adicional
-  uploadedProcessDocuments ProcessDocument[] @relation("ProcessDocumentUploader")
+  additionalContracts      Contract[]         @relation("AdditionalResidents") // Contratos donde es residente adicional
+  uploadedProcessDocuments ProcessDocument[]  @relation("ProcessDocumentUploader")
   manualAcceptances        ManualAcceptance[]
 
   @@index([email])
@@ -733,11 +743,14 @@ model Tenant {
   // Referencias
   references Reference[]
 
-  user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
-  contracts     Contract[] // Contratos donde es el inquilino
-  processes     Process[]      @relation("ProcessTenant")
-  notifications Notification[]
-  cases         TenantCase[]
+  user              User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  contracts         Contract[] // Contratos donde es el inquilino
+  processes         Process[]          @relation("ProcessTenant")
+  notifications     Notification[]
+  cases             TenantCase[]
+  disciplinaryCases DisciplinaryCase[]
+  accessRequests    AccessRequest[]
+  packages          PackageRecord[]
 
   registrationToken        String?
   registrationTokenExpires DateTime?
@@ -1282,7 +1295,7 @@ model Verification {
 model ManualAcceptance {
   id String @id @default(cuid())
 
-  userId String
+  userId        String
   manualCode    String // "MC-001"
   manualVersion String // "1.0"
 
@@ -1348,4 +1361,195 @@ model TenantCase {
   @@index([propertyId, status])
   @@index([unitId])
   @@map("tenant_cases")
+}
+
+// ========================================
+// RÉGIMEN DISCIPLINARIO (liviano, sin montos)
+// ========================================
+
+enum FaultSeverity {
+  VERY_LIGHT // Muy leve (art. 219)
+  LIGHT // Leve (art. 220)
+  MODERATE // Moderada (art. 221)
+  SERIOUS // Grave (art. 222)
+  VERY_SERIOUS // Muy grave (art. 223)
+}
+
+enum DisciplineStatus {
+  NOTIFIED // Notificada; corre el plazo de descargos
+  DEFENSE_RECEIVED // El inquilino presentó descargos
+  DECIDED // Decisión motivada emitida
+}
+
+enum DisciplineOutcome {
+  WARNING // Llamado de atención
+  CORRECTIVE_MEASURE // Medida correctiva
+  DISMISSED // Archivada sin sanción
+}
+
+model DisciplinaryCase {
+  id String @id @default(cuid())
+
+  number String @unique // Expediente, ej. DISC-2026-0001
+
+  severity    FaultSeverity
+  status      DisciplineStatus @default(NOTIFIED)
+  description String // Hechos
+  manualRef   String? // Artículo del manual presuntamente infringido
+  occurredAt  DateTime
+
+  notifiedAt      DateTime @default(now())
+  defenseDeadline DateTime // Fin del plazo para presentar descargos
+
+  // Descargos del inquilino
+  defense   String?
+  defenseAt DateTime?
+
+  // Decisión motivada del administrador
+  outcome     DisciplineOutcome?
+  decision    String?
+  decidedAt   DateTime?
+  decidedById String?
+
+  createdById String
+
+  tenantId   String
+  propertyId String
+  unitId     String?
+
+  tenant   Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  property Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  unit     Unit?    @relation(fields: [unitId], references: [id], onDelete: SetNull)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([tenantId, status])
+  @@index([propertyId, status])
+  @@index([unitId])
+  @@map("disciplinary_cases")
+}
+
+// ========================================
+// CONTROL DE ACCESOS: autorizaciones, visitantes, paquetería y llaves
+// ========================================
+
+enum AccessRequestKind {
+  VISIT // Visitante (se registra, aprobación automática)
+  MOVE // Mudanza
+  WORKS // Remodelación u obra
+  CONTRACTOR // Ingreso de contratista o proveedor
+  EVENT // Evento en la unidad o zona común
+}
+
+enum AccessRequestStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  CANCELLED
+}
+
+model AccessRequest {
+  id String @id @default(cuid())
+
+  kind   AccessRequestKind
+  status AccessRequestStatus @default(PENDING)
+
+  personName  String? // Visitante o contratista
+  personId    String? // Documento de identidad
+  details     String // Qué se hará o motivo
+  scheduledAt DateTime
+  untilAt     DateTime?
+
+  decisionNote String?
+  decidedAt    DateTime?
+  decidedById  String?
+
+  tenantId   String
+  propertyId String
+  unitId     String?
+
+  tenant   Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  property Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  unit     Unit?    @relation(fields: [unitId], references: [id], onDelete: SetNull)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([tenantId, status])
+  @@index([propertyId, status, scheduledAt])
+  @@index([unitId])
+  @@map("access_requests")
+}
+
+enum PackageStatus {
+  RECEIVED // En portería o administración
+  DELIVERED // Entregado al residente
+}
+
+model PackageRecord {
+  id String @id @default(cuid())
+
+  status      PackageStatus @default(RECEIVED)
+  description String
+  carrier     String? // Transportadora, domicilio o remitente
+
+  receivedAt   DateTime  @default(now())
+  deliveredAt  DateTime?
+  receivedById String?
+
+  propertyId String
+  unitId     String
+  tenantId   String? // Inquilino con contrato activo al recibirlo
+
+  property Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  unit     Unit     @relation(fields: [unitId], references: [id], onDelete: Cascade)
+  tenant   Tenant?  @relation(fields: [tenantId], references: [id], onDelete: SetNull)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([propertyId, status])
+  @@index([unitId, status])
+  @@index([tenantId])
+  @@map("package_records")
+}
+
+enum AccessDeviceKind {
+  KEY
+  CARD
+  REMOTE
+}
+
+enum AccessDeviceStatus {
+  DELIVERED
+  RETURNED
+  LOST
+}
+
+model KeyRecord {
+  id String @id @default(cuid())
+
+  kind     AccessDeviceKind   @default(KEY)
+  status   AccessDeviceStatus @default(DELIVERED)
+  label    String // Ej. "Llave principal", "Control portón"
+  quantity Int                @default(1)
+  holder   String // Quién la tiene
+  notes    String?
+
+  issuedAt   DateTime  @default(now())
+  returnedAt DateTime?
+
+  propertyId String
+  unitId     String?
+
+  property Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  unit     Unit?    @relation(fields: [unitId], references: [id], onDelete: SetNull)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([propertyId, status])
+  @@index([unitId])
+  @@map("key_records")
 }
