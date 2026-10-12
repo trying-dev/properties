@@ -1,0 +1,126 @@
+FLUJOS DE LA APP, DE UN VISTAZO
+===============================
+
+Una línea por flujo, con flechas. Para el detalle de cada uno: flows (proceso de arriendo, contratos, pagos) y planificacion/plan-owner-y-modulos (dueños y módulos).
+
+Leyenda: ✅ funciona · ⚠️ funciona con una limitación · ❌ falta construir
+
+CUÁNTOS HAY: 21
+---------------
+
+  Grupo                                      |  Flujos  |  Estado
+  -------------------------------------------+----------+------------------------
+  A. Arriendo (de la solicitud al contrato)  |  6       |  5 ✅/⚠️ · 1 ❌ parcial
+  B. Dinero                                  |  4       |  4 ✅
+  C. Operación del inmueble                  |  6       |  5 ✅ · 1 ⚠️
+  D. Cuenta y acceso                         |  4       |  4 ✅
+  E. Catálogo                                |  1       |  1 ✅
+
+------------------------------------------------------------
+
+A. ARRIENDO
+-----------
+
+1. Inicio del proceso (admin) ✅
+Admin elige unidad → elige o crea inquilino → confirma → unidad RESERVADA → contrato INICIADO → correo con token (24 h) → inquilino se registra
+
+2. Aplicación del inquilino (wizard) ⚠️
+Perfil → datos básicos → documentos → garantía → enviar → EN EVALUACIÓN
+Limitación: los archivos solo viven en el navegador; no hay storage real todavía.
+
+3. Revisión del admin ✅
+EN EVALUACIÓN → admin revisa cada ítem (aprobado / necesita ajustes / rechazado) → pide correcciones → ESPERANDO FEEDBACK + correo → inquilino responde → EN EVALUACIÓN → APROBADA o DENEGADA
+
+4. Aviso de la decisión ✅
+Admin decide → correo con estado y enlace → inquilino abre el enlace → (sin sesión: login) → ve el resultado
+Si entra por la app: inicia sesión → pop-up "tu solicitud tiene un nuevo estado" → revisa
+
+5. Manual de convivencia ✅
+Inquilino lee /manual → acepta → queda registrado (quién, cuándo, versión)
+Regla: admin aprueba → ¿aceptó el manual? → no: bloquea + recordatorio · sí: aprueba
+
+6. Contrato ❌ (solo la primera parte existe)
+Hoy: INICIADO y ahí se queda.
+Falta: APROBADO → BORRADOR (admin fija fechas y condiciones) → PENDIENTE DE FIRMA (exige manual) → ACTIVO (unidad OCUPADA, empiezan los pagos) · en cualquier punto → CANCELADO (libera la unidad)
+
+------------------------------------------------------------
+
+B. DINERO
+---------
+
+7. Pagos mensuales ✅
+Cron el día 1 → por cada contrato ACTIVO → crea pago PENDIENTE (vence el 5) · no duplica si corre dos veces
+
+8. Pago del inquilino ✅
+PENDIENTE → inquilino reporta que pagó → REPORTADO → admin confirma → PAGADO (o PARCIAL)
+
+9. Mora ✅
+Cron de alertas → pago PENDIENTE vencido pasado el período de gracia → VENCIDO + recargo → notifica al admin y al inquilino
+
+10. Liquidación al propietario ✅
+Pagos PAGADOS del mes → − comisión → − costos del dueño (mantenimiento, predial) → reparto por participación → liquidación POR PAGAR → PAGADA (o RETENIDA)
+
+------------------------------------------------------------
+
+C. OPERACIÓN DEL INMUEBLE
+-------------------------
+
+11. Inspecciones ✅
+PROGRAMADA → EN CURSO → COMPLETADA (con estado y hallazgos críticos) · o CANCELADA
+
+12. Mantenimiento ✅
+PENDIENTE → PROGRAMADO → EN EJECUCIÓN → COMPLETADO · si lo asume el dueño → se descuenta en la liquidación
+
+13. Medidores ✅
+Crear medidor → registrar lectura → consumo = lectura − anterior
+
+14. Seguridad y documentos ⚠️
+Registrar extintor / cámara / documento → fecha de próximo servicio o vencimiento → alerta a 30 días
+Limitación: los documentos se guardan como enlace pegado, sin subir archivo.
+
+15. Predial y póliza ✅
+Predial: PENDIENTE → PAGADO (o VENCIDO) → se descuenta en la liquidación
+Póliza: ACTIVA → VENCIDA (o CANCELADA) → alerta a 30 días
+
+16. Alertas de vencimientos ✅
+Cron diario → revisa pólizas, seguridad, documentos, mantenimiento preventivo y predial → recordatorio al admin · sin repetir el mismo aviso
+
+------------------------------------------------------------
+
+D. CUENTA Y ACCESO
+------------------
+
+17. Registro directo ✅
+Formulario → código de 6 dígitos al correo → verifica → puede iniciar sesión
+
+18. Inicio de sesión ✅
+Email y contraseña → sesión de 30 días → destino por rol (o al enlace que traía, si venía de un correo)
+
+19. Recuperar contraseña ✅
+Pide recuperar → correo con enlace (1 h) → nueva contraseña → inicia sesión
+
+20. Confirmación de codeudor ✅
+Inquilino indica codeudor → correo con token → codeudor confirma en la página → queda en la solicitud
+
+------------------------------------------------------------
+
+E. CATÁLOGO
+-----------
+
+21. Propiedades y unidades ✅
+Crear propiedad (ACTIVA) → crear unidad (VACANTE) → RESERVADA (en proceso) → OCUPADA (contrato activo) · también EN MANTENIMIENTO o NO DISPONIBLE
+
+------------------------------------------------------------
+
+LO QUE UNE LOS FLUJOS
+---------------------
+
+    Aplicación (2) → Revisión (3) → Decisión + aviso (4) ─┐
+                                     Manual (5) ──────────┤ exige
+                                                          ▼
+                                                  Contrato (6) ──► Pagos (7→8→9) ──► Liquidación (10)
+                                                          │                              ▲
+                                                          └─ unidad OCUPADA (21)         │
+                                          Mantenimiento (12) y Predial (15) ─ descuentan ┘
+
+El eslabón roto es el 6: sin contrato activo no hay pagos, y sin pagos no hay liquidación.
