@@ -3,33 +3,44 @@
 import { useCallback, useEffect, useState } from 'react'
 import Link from 'next/link'
 import { ArrowLeft } from 'lucide-react'
-import { DisciplineStatus } from '+/generated/prisma/enums'
+import { DisciplineOutcome, DisciplineStatus } from '+/generated/prisma/enums'
 
 import Header from '+/components/Header'
-import { getTenantDisciplinaryCasesAction, submitDefenseAction, type TenantDisciplinaryCase } from '+/actions/discipline'
-import { disciplineOutcomeLabel, disciplineStatusConfig, faultSeverityLabel } from '+/lib/disciplineLabels'
+import { fileAppealAction, getTenantDisciplinaryCasesAction, submitDefenseAction, type TenantDisciplinaryCase } from '+/actions/discipline'
+import { appealOutcomeLabel, complianceStatusLabel, disciplineOutcomeLabel, disciplineStatusConfig, faultSeverityLabel } from '+/lib/disciplineLabels'
 
 const formatDate = (value?: Date | string | null) => (value ? new Date(value).toLocaleDateString('es-CO') : '-')
 
 function DefenseCard({ item, onChanged }: { item: TenantDisciplinaryCase; onChanged: () => void }) {
   const [defense, setDefense] = useState('')
+  const [appeal, setAppeal] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [isSending, setIsSending] = useState(false)
   const [now] = useState(() => Date.now())
   const status = disciplineStatusConfig[item.status]
   const canDefend = item.status === DisciplineStatus.NOTIFIED && new Date(item.defenseDeadline).getTime() >= now
 
-  const send = async () => {
+  const canAppeal =
+    item.status === DisciplineStatus.DECIDED &&
+    item.outcome !== DisciplineOutcome.DISMISSED &&
+    !item.appealAt &&
+    item.recourseDeadline != null &&
+    new Date(item.recourseDeadline).getTime() >= now
+
+  const run = async (task: () => Promise<{ success: boolean; error?: string }>, fallback: string) => {
     setIsSending(true)
     setError(null)
-    const result = await submitDefenseAction({ caseId: item.id, defense })
+    const result = await task()
     setIsSending(false)
     if (!result.success) {
-      setError(result.error ?? 'No se pudieron enviar los descargos')
+      setError(result.error ?? fallback)
       return
     }
     onChanged()
   }
+
+  const send = () => run(() => submitDefenseAction({ caseId: item.id, defense }), 'No se pudieron enviar los descargos')
+  const sendAppeal = () => run(() => fileAppealAction({ caseId: item.id, appeal }), 'No se pudo presentar el recurso')
 
   return (
     <article className="space-y-3 rounded-lg border border-gray-200 p-5">
@@ -53,11 +64,53 @@ function DefenseCard({ item, onChanged }: { item: TenantDisciplinaryCase; onChan
         </p>
       )}
 
-      {item.status === DisciplineStatus.DECIDED && (
+      {item.outcome && item.decision && (
         <p className="rounded-lg bg-gray-50 p-3 text-sm text-gray-800">
-          <span className="font-medium">{item.outcome ? disciplineOutcomeLabel[item.outcome] : 'Decisión'} ({formatDate(item.decidedAt)}). </span>
+          <span className="font-medium">{disciplineOutcomeLabel[item.outcome]} ({formatDate(item.decidedAt)}). </span>
           {item.decision}
         </p>
+      )}
+
+      {item.appeal && (
+        <p className="rounded-lg bg-purple-50 p-3 text-sm text-gray-800">
+          <span className="font-medium">Tu recurso ({formatDate(item.appealAt)}). </span>
+          {item.appeal}
+        </p>
+      )}
+
+      {item.appealOutcome && (
+        <p className="rounded-lg bg-gray-50 p-3 text-sm text-gray-800">
+          <span className="font-medium">{appealOutcomeLabel[item.appealOutcome]} ({formatDate(item.appealDecidedAt)}). </span>
+          {item.appealDecision}
+        </p>
+      )}
+
+      {item.complianceStatus && (
+        <p className="text-xs text-gray-500">
+          Seguimiento. {complianceStatusLabel[item.complianceStatus]}
+          {item.complianceNote ? `. ${item.complianceNote}` : ''}
+        </p>
+      )}
+
+      {canAppeal && (
+        <div className="space-y-3 border-t border-gray-100 pt-3">
+          <p className="text-xs text-gray-500">Puedes interponer recurso de reposición hasta el {formatDate(item.recourseDeadline)}. Se presenta una sola vez.</p>
+          <textarea
+            value={appeal}
+            onChange={(e) => setAppeal(e.target.value)}
+            rows={4}
+            placeholder="Argumentos y pruebas que respaldan el recurso"
+            className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900"
+          />
+          {error && <p className="text-sm text-red-700">{error}</p>}
+          <button
+            onClick={sendAppeal}
+            disabled={isSending || !appeal.trim()}
+            className="rounded-lg bg-gray-900 px-4 py-2 text-sm font-semibold text-white hover:bg-gray-800 disabled:opacity-50"
+          >
+            {isSending ? 'Enviando…' : 'Presentar recurso'}
+          </button>
+        </div>
       )}
 
       {canDefend && (

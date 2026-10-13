@@ -67,6 +67,7 @@ export const registerUser = async (_prevState: RegisterActionState | undefined, 
         lastName,
         verificationCode,
         verificationCodeExpiresAt: verificationExpires,
+        termsAcceptedAt: new Date(),
         tenant: { create: {} },
       },
     })

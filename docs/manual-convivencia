@@ -25,8 +25,8 @@ Y una tercera, que es la regla de negocio importante:
 
   Parte     |  Qué hace
   ----------+---------------------------------------------------------------------------------
-  Bloquear  |  Una solicitud de arriendo no se puede aprobar si el inquilino no ha aceptado la
-            |  versión vigente del manual.
+  Bloquear  |  El contrato no se envía a firma ni se activa si el inquilino no ha aceptado la
+            |  versión vigente del manual (si la propiedad lo exige).
 
 ------------------------------------------------------------
 
@@ -50,7 +50,7 @@ Y una tercera, que es la regla de negocio importante:
 Inquilino
 ~~~~~~~~~
 
-1. Recibe el correo de invitación y se registra con el token. Antes de crear la contraseña lee y acepta el manual si la propiedad lo exige.
+1. Recibe el correo de invitación y se registra con el token. Al crear la contraseña acepta los términos y condiciones de la app.
 2. Completa el wizard de aplicación (perfil, datos, documentos, garantía).
 3. Lee y acepta el manual en /manual (checkbox + botón "Aceptar manual").
    - Puede hacerlo en cualquier momento: no hay que esperar a que el admin lo pida.
@@ -101,26 +101,22 @@ Quien mantiene el manual (responsable documental)
   Pendiente                                    |  Detalle
   ---------------------------------------------+----------------------------------------------------
   Migración a producción                       |  Las tablas y campos nuevos (manual, contratos,
-                                               |  casos, disciplina, accesos y reglas por
-                                               |  propiedad) solo están en la base local (sqlite).
-                                               |  Falta pnpm db:push:prod.
+                                               |  casos, disciplina, accesos, emergencias y reglas
+                                               |  por propiedad) solo están en la base local
+                                               |  (sqlite). Falta pnpm db:push:prod.
 
-  Recursos disciplinarios                      |  Reposición y apelación (arts. 232 y 233) y
-                                               |  seguimiento de cumplimiento. Existen notificación,
-                                               |  descargos y decisión motivada, sin montos.
-
-  Notificación disciplinaria por correo        |  Hoy llega solo por la app.
+  Apelación ante un superior                   |  Art. 233. La plataforma solo modela la reposición
+                                               |  ante la misma autoridad.
 
   Manual distinto por propiedad                |  Cada propiedad decide si lo exige. El contenido es
                                                |  un único manual para todas.
 
-  Autorizaciones de emergencia y simulacros    |  Tomo VII y formatos F-067 a F-073. Hay ficha de
-                                               |  emergencia y dispositivos de seguridad, sin
-                                               |  simulacros ni rutas gráficas.
+  Plano de evacuación gráfico                  |  Se registra como enlace a una imagen. Sin editor
+                                               |  ni subida de archivos.
 
-  Formatos F-001 a F-120                       |  Exportes como acta de entrega y reporte de daños.
+  Formatos F-001 a F-120                       |  Hay F-016, F-017, F-058 y F-091. Faltan los demás.
 
-Ya construido desde la primera versión de este documento: bloqueo en la firma y activación del contrato, aceptación en el registro con token, PQRS y reporte de problemas, régimen disciplinario liviano, y control de accesos (autorizaciones, visitantes, paquetería y llaves). Los módulos se activan por propiedad en sus reglas.
+Ya construido: bloqueo en la firma y activación del contrato, PQRS y reporte de problemas, régimen disciplinario con reposición, seguimiento y cierre, aviso disciplinario por correo, control de accesos, rutas de evacuación y simulacros. Los módulos se activan por propiedad en sus reglas.
 
 ------------------------------------------------------------
 
@@ -209,11 +205,11 @@ El seed es idempotente (no duplica si ya existe el par inquilino + unidad). Los 
 Resueltas
 
 1. La firma del contrato es en papel; el administrador registra la fecha.
-2. Cada propiedad configura si exige el manual aceptado (aprobar, firmar y registro).
-3. Los módulos de PQRS, disciplina y accesos son opcionales por propiedad.
+2. El manual de convivencia se exige solo para la firma del contrato, y cada propiedad decide si lo pide.
+3. Para usar la app basta con aceptar los términos y condiciones al registrarse; el manual no bloquea el acceso al dashboard.
+4. Los módulos de PQRS, disciplina, accesos y emergencias son opcionales por propiedad.
+5. Se mantiene un solo manual para todas las propiedades, porque hoy comparten las mismas reglas. Si una propiedad pide reglas distintas, se agrega contenido propio.
 
 Pendientes
 
-1. ¿La aceptación del manual también será requisito para entrar al dashboard, o solo para aprobar, firmar y registrarse?
-2. ¿Las multas están en los contratos de arrendamiento, o solo la reparación de daños? Define si el régimen disciplinario lleva montos.
-3. ¿Cada propiedad necesita contenido propio del manual (horarios, mascotas) o basta con uno solo?
+1. Las multas en dinero dependen de que el contrato de arrendamiento incluya una cláusula penal y el manual como anexo. Mientras no exista, la disciplina queda sin montos. Requiere revisión jurídica.

@@ -1,9 +1,6 @@
 'use server'
 
-import { headers } from 'next/headers'
-import { ContractStatus } from '+/generated/prisma/client'
 import { signInWithCredentials } from '+/lib/auth'
-import { MANUAL_CODE, MANUAL_VERSION } from '+/lib/manual'
 import { hashPassword, setCredentialPassword } from '+/lib/credentials'
 import { prisma } from '+/lib/prisma'
 
@@ -19,25 +16,6 @@ const findTenantByToken = async (token: string) =>
       user: { select: { name: true, lastName: true, email: true } },
     },
   })
-
-// El manual se exige en el registro si alguna propiedad con proceso abierto del inquilino lo pide.
-// Sin procesos abiertos se aplica la regla por defecto (exigirlo).
-const tenantRequiresManual = async (tenantId: string) => {
-  const openStatuses: ContractStatus[] = [
-    ContractStatus.INITIATED,
-    ContractStatus.UNDER_REVIEW,
-    ContractStatus.DOCUMENTATION,
-    ContractStatus.APPROVED,
-    ContractStatus.DRAFT,
-    ContractStatus.PENDING,
-  ]
-  const contracts = await prisma.contract.findMany({
-    where: { tenantId, status: { in: openStatuses } },
-    select: { unit: { select: { property: { select: { requiresManualAcceptance: true } } } } },
-  })
-  if (contracts.length === 0) return true
-  return contracts.some((contract) => contract.unit.property.requiresManualAcceptance)
-}
 
 export const validateRegistrationToken = async (token: string) => {
   try {
@@ -59,11 +37,6 @@ export const validateRegistrationToken = async (token: string) => {
     return {
       success: true,
       tenant: tenant,
-      manual: {
-        required: await tenantRequiresManual(tenant.id),
-        code: MANUAL_CODE,
-        version: MANUAL_VERSION,
-      },
     }
   } catch (error) {
     console.error('Error en validateRegistrationToken:', error)
@@ -78,12 +51,10 @@ export const completeUserRegistration = async ({
   token,
   password,
   agreeTerms,
-  acceptManual,
 }: {
   token: string
   password: string
   agreeTerms: boolean
-  acceptManual?: boolean
 }) => {
   try {
     // Validaciones básicas
@@ -135,31 +106,11 @@ export const completeUserRegistration = async ({
       }
     }
 
-    // El servidor decide: si la propiedad exige el manual, el formulario no se completa sin aceptarlo.
-    const manualRequired = await tenantRequiresManual(tenant.id)
-    if (manualRequired && !acceptManual) {
-      return {
-        success: false,
-        error: 'Debes leer y aceptar el Manual de Convivencia para completar el registro',
-      }
-    }
-
     const hashedPassword = await hashPassword(password)
-
-    const requestHeaders = await headers()
-    const ipAddress = requestHeaders.get('x-forwarded-for')?.split(',')[0]?.trim() ?? requestHeaders.get('x-real-ip') ?? null
-    const userAgent = requestHeaders.get('user-agent')
 
     await prisma.$transaction(async (tx) => {
       await setCredentialPassword(tenant.userId, hashedPassword, tx)
-      if (acceptManual) {
-        // Idempotente: si ya había aceptado esta versión se conserva la fecha original.
-        await tx.manualAcceptance.upsert({
-          where: { userId_manualCode_manualVersion: { userId: tenant.userId, manualCode: MANUAL_CODE, manualVersion: MANUAL_VERSION } },
-          create: { userId: tenant.userId, manualCode: MANUAL_CODE, manualVersion: MANUAL_VERSION, ipAddress, userAgent },
-          update: {},
-        })
-      }
+      await tx.user.update({ where: { id: tenant.userId }, data: { termsAcceptedAt: new Date() } })
       await tx.tenant.update({
         where: { id: tenant.id },
         data: { registrationToken: null, registrationTokenExpires: null },

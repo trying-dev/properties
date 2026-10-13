@@ -79,8 +79,8 @@ export default function PropertyRules({ propertyId, initialRules }: PropertyRule
             className="mt-1 h-4 w-4 rounded border-gray-300"
           />
           <span>
-            <span className="font-medium text-gray-900">Exigir Manual de Convivencia aceptado</span>
-            <span className="block text-gray-500 mt-0.5">Requisito para aprobar la solicitud, enviar el contrato a firma y activarlo.</span>
+            <span className="font-medium text-gray-900">Exigir Manual de Convivencia para firmar</span>
+            <span className="block text-gray-500 mt-0.5">El inquilino debe aceptarlo antes de que el contrato se envíe a firma y se active.</span>
           </span>
         </label>
 

@@ -450,6 +450,8 @@ model Property {
   accessRequests    AccessRequest[]
   packages          PackageRecord[]
   keyRecords        KeyRecord[]
+  drills            DrillRecord[]
+  evacuationRoutes  EvacuationRoute[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -584,6 +586,7 @@ model User {
   isEmailVerified Boolean   @default(false) // Requerido por Better Auth (emailVerified es booleano)
   phone           String?
   phoneVerified   DateTime?
+  termsAcceptedAt DateTime? // Aceptación de términos y condiciones de uso de la app
   password        String? // Hash de la contraseña (bcrypt)
 
   resetPasswordToken        String?
@@ -1379,6 +1382,20 @@ enum DisciplineStatus {
   NOTIFIED // Notificada; corre el plazo de descargos
   DEFENSE_RECEIVED // El inquilino presentó descargos
   DECIDED // Decisión motivada emitida
+  APPEALED // Recurso de reposición presentado
+  CLOSED // Expediente cerrado y archivado
+}
+
+enum AppealOutcome {
+  UPHELD // Decisión confirmada
+  MODIFIED // Decisión modificada
+  REVOKED // Decisión revocada
+}
+
+enum ComplianceStatus {
+  PENDING // Por verificar
+  COMPLIED // Cumplida
+  NOT_COMPLIED // Incumplida
 }
 
 enum DisciplineOutcome {
@@ -1410,6 +1427,20 @@ model DisciplinaryCase {
   decision    String?
   decidedAt   DateTime?
   decidedById String?
+
+  // Reposición (art. 232): una sola vez, dentro del plazo posterior a la decisión
+  recourseDeadline DateTime?
+  appeal           String?
+  appealAt         DateTime?
+  appealOutcome    AppealOutcome?
+  appealDecision   String?
+  appealDecidedAt  DateTime?
+
+  // Seguimiento (art. 234) y cierre (art. 235)
+  complianceStatus    ComplianceStatus?
+  complianceNote      String?
+  complianceCheckedAt DateTime?
+  closedAt            DateTime?
 
   createdById String
 
@@ -1552,4 +1583,55 @@ model KeyRecord {
   @@index([propertyId, status])
   @@index([unitId])
   @@map("key_records")
+}
+
+// ========================================
+// EMERGENCIAS: simulacros y rutas de evacuación (Tomo VII)
+// ========================================
+
+enum DrillScenario {
+  FIRE
+  EARTHQUAKE
+  FLOOD
+  OTHER
+}
+
+model DrillRecord {
+  id String @id @default(cuid())
+
+  propertyId      String
+  scenario        DrillScenario
+  heldAt          DateTime
+  participants    Int           @default(0)
+  durationMinutes Int?
+  evaluation      String? // Resultado y observaciones (art. 175)
+  improvements    String? // Acciones de mejora
+  createdById     String
+
+  property Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([propertyId, heldAt])
+  @@map("drill_records")
+}
+
+model EvacuationRoute {
+  id String @id @default(cuid())
+
+  propertyId   String
+  name         String // Ej. "Piso 2" o "Torre A"
+  steps        String // Recorrido paso a paso
+  meetingPoint String?
+  planUrl      String? // Imagen del plano (URL pegable, sin storage propio todavía)
+  active       Boolean @default(true)
+
+  property Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([propertyId, active])
+  @@map("evacuation_routes")
 }

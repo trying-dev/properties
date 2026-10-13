@@ -58,6 +58,12 @@ export const getTenantCaseContextAction = async () => {
                   where: { active: true, type: { in: EMERGENCY_DEVICE_TYPES } },
                   select: { id: true, type: true, location: true },
                 },
+                evacuationRoutes: {
+                  where: { active: true },
+                  orderBy: { name: 'asc' },
+                  select: { id: true, name: true, steps: true, meetingPoint: true, planUrl: true },
+                },
+                drills: { orderBy: { heldAt: 'desc' }, take: 1, select: { heldAt: true, scenario: true } },
               },
             },
           },
@@ -75,12 +81,14 @@ export const getTenantCaseContextAction = async () => {
           .filter((unit) => unit.property.casesEnabled)
           .map((unit) => ({ id: unit.id, unitNumber: unit.unitNumber, propertyName: unit.property.name })),
         emergency: [...propertiesById.values()]
-          .filter((property) => property.emergencyInfo?.trim() || property.devices.length > 0)
+          .filter((property) => property.emergencyInfo?.trim() || property.devices.length > 0 || property.evacuationRoutes.length > 0)
           .map((property) => ({
             propertyId: property.id,
             propertyName: property.name,
             info: property.emergencyInfo?.trim() ?? null,
             devices: property.devices,
+            routes: property.evacuationRoutes,
+            lastDrill: property.drills[0] ?? null,
           })),
       },
     }

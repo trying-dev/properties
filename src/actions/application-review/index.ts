@@ -15,7 +15,6 @@ import { sendSystemNotificationAction } from '+/actions/notifications'
 import { auth } from '+/lib/auth'
 import { resolveEmailTargets } from '+/lib/email'
 import { prisma } from '+/lib/prisma'
-import { hasAcceptedManual } from '+/lib/manualAcceptance'
 
 type SessionContext = {
   userId: string
@@ -569,7 +568,7 @@ export const setProcessDecisionAction = async (input: SetProcessDecisionInput) =
         id: true,
         tenantId: true,
         tenant: { select: { userId: true, user: { select: { email: true, name: true, lastName: true } } } },
-        unit: { select: { unitNumber: true, property: { select: { name: true, requiresManualAcceptance: true } } } },
+        unit: { select: { unitNumber: true, property: { select: { name: true } } } },
       },
     })
 
@@ -577,23 +576,6 @@ export const setProcessDecisionAction = async (input: SetProcessDecisionInput) =
 
     const isApproved = input.status === ProcessStatus.APPROVED
 
-    // Requisito: el inquilino debe haber aceptado el Manual de Convivencia vigente antes de aprobar.
-    const requiresManual = process.unit?.property.requiresManualAcceptance ?? true
-    if (isApproved && requiresManual && process.tenant?.userId && !(await hasAcceptedManual(process.tenant.userId))) {
-      if (process.tenantId) {
-        await sendSystemNotificationAction({
-          tenantId: process.tenantId,
-          type: NotificationType.REMINDER,
-          title: 'Acepta el Manual de Convivencia',
-          body: 'Para aprobar tu solicitud necesitamos que leas y aceptes el Manual de Convivencia.',
-          link: '/manual',
-        })
-      }
-      return {
-        success: false,
-        error: 'El inquilino aún no ha aceptado el Manual de Convivencia. Se le envió un recordatorio; podrás aprobar cuando lo acepte.',
-      }
-    }
     const conditions = trimOrNull(input.conditions)
 
     await prisma.process.update({

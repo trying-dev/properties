@@ -5,14 +5,14 @@ Una línea por flujo, con flechas. Para el detalle de cada uno: flows (proceso d
 
 Leyenda: ✅ funciona · ⚠️ funciona con una limitación · ❌ falta construir
 
-CUÁNTOS HAY: 26
+CUÁNTOS HAY: 27
 ---------------
 
   Grupo                                      |  Flujos  |  Estado
   -------------------------------------------+----------+------------------------
   A. Arriendo (de la solicitud al contrato)  |  7       |  6 ✅ · 1 ⚠️
   B. Dinero                                  |  4       |  4 ✅
-  C. Operación del inmueble                  |  10      |  9 ✅ · 1 ⚠️
+  C. Operación del inmueble                  |  11      |  10 ✅ · 1 ⚠️
   D. Cuenta y acceso                         |  4       |  4 ✅
   E. Catálogo                                |  1       |  1 ✅
 
@@ -37,7 +37,7 @@ Si entra por la app: inicia sesión → pop-up "tu solicitud tiene un nuevo esta
 
 5. Manual de convivencia ✅
 Inquilino lee /manual → acepta → queda registrado (quién, cuándo, versión)
-Regla: admin aprueba → ¿aceptó el manual? → no: bloquea + recordatorio · sí: aprueba
+Regla: el manual se exige para enviar el contrato a firma y activarlo (si la propiedad lo pide). Aprobar la solicitud no lo exige
 
 6. Contrato ✅
 APROBADO → admin fija condiciones (canon, depósito, comisión, fechas) → BORRADOR → ENVIAR A FIRMA (exige manual si la propiedad lo pide) → PENDIENTE DE FIRMA → admin registra firma en papel → ACTIVO (unidad OCUPADA, empiezan los pagos) · en cualquier punto antes de firmar → CANCELADO (libera la unidad)
@@ -93,11 +93,21 @@ Propiedad lo habilita en sus reglas → inquilino con contrato activo radica cas
 El botón "Reportar" de la unidad usa este mismo módulo. Si la propiedad no lo habilitó, sigue enviando un aviso directo al administrador, sin radicado.
 
 17c. Ficha de emergencia ✅ (opt-in por propiedad)
-Admin escribe teléfonos, rutas y punto de encuentro en las reglas de la propiedad → el inquilino lo ve en "Reportes y solicitudes", junto a extintores, alarmas y detectores activos del módulo de seguridad
+Admin escribe teléfonos y punto de encuentro en las reglas de la propiedad, y registra rutas de evacuación (recorrido, punto de encuentro y enlace a la imagen del plano) → el inquilino lo ve en "Reportes y solicitudes", junto a extintores, alarmas, detectores activos y fecha del último simulacro
+Simulacros: admin registra escenario, fecha, participantes, evaluación y mejoras en /dashboard/admin/emergencies
+Limitación: el plano es un enlace a una imagen, sin editor gráfico ni subida de archivos.
+
+17f. Formatos imprimibles ✅
+Admin abre /dashboard/admin/formats → elige contrato, mantenimiento o caso → hoja lista para imprimir o guardar como PDF
+Disponibles: F-016 acta de entrega, F-017 acta de devolución, F-058 reporte de daños, F-091 radicación de PQRS
+Pendiente: el resto de F-001 a F-120, que se agregan sobre datos que ya existen
 
 17d. Régimen disciplinario ✅ (opt-in por propiedad, sin montos)
-Admin abre procedimiento con gravedad, hechos y artículo → NOTIFICADA (plazo de 5 días) → inquilino presenta descargos → CON DESCARGOS → admin emite decisión motivada (llamado de atención, medida correctiva o archivo) → DECIDIDA · la decisión exige descargos recibidos o plazo vencido
-Limitación: recursos de reposición y apelación (arts. 232 y 233) y seguimiento de cumplimiento aún no existen.
+Admin abre procedimiento con gravedad, hechos y artículo → NOTIFICADA (app y correo, plazo de 5 días) → inquilino presenta descargos → CON DESCARGOS → admin emite decisión motivada (llamado de atención, medida correctiva o archivo) → DECIDIDA (app y correo, 5 días para reposición)
+Reposición: inquilino interpone una sola vez → CON RECURSO → admin confirma, modifica o revoca con motivación → DECIDIDA
+Seguimiento: medida correctiva → admin verifica CUMPLIDA o INCUMPLIDA → admin cierra el expediente → CERRADA
+La decisión exige descargos recibidos o plazo vencido. El cierre exige plazo de reposición agotado y cumplimiento verificado.
+Limitación: la apelación ante un superior (art. 233) no existe porque la plataforma no modela esa instancia.
 
 17e. Control de accesos ✅ (opt-in por propiedad)
 Visitante: inquilino lo registra → AUTORIZADA al instante
@@ -112,7 +122,7 @@ D. CUENTA Y ACCESO
 
 17. Registro directo ✅
 Formulario → código de 6 dígitos al correo → verifica → puede iniciar sesión
-Registro con token: lee el manual (el checkbox se habilita al abrirlo) y lo acepta antes de crear la contraseña; el servidor lo exige si la propiedad lo pide y guarda quién, cuándo, versión e IP
+Términos y condiciones de la app: se aceptan al registrarse (directo o con token) y se guarda la fecha. El manual de convivencia solo se exige para la firma del contrato
 
 18. Inicio de sesión ✅
 Email y contraseña → sesión de 30 días → destino por rol (o al enlace que traía, si venía de un correo)

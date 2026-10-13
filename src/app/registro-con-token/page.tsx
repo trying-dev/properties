@@ -10,16 +10,13 @@ function RegisterWithTokenContent() {
   const searchParams = useSearchParams()
   const token = searchParams.get('token')
 
-  const [formData, setFormData] = useState({ password: '', confirmPassword: '', agreeTerms: false, acceptManual: false })
+  const [formData, setFormData] = useState({ password: '', confirmPassword: '', agreeTerms: false })
 
   const [validationState, setValidationState] = useState({
     tokenValid: undefined as boolean | undefined,
     tokenChecking: true,
     tenant: undefined as TenantValidationRegistrationToken | undefined,
-    manualRequired: true,
-    manualVersion: '',
   })
-  const [hasOpenedManual, setHasOpenedManual] = useState(false)
 
   const [uiState, setUiState] = useState({
     showPassword: false,
@@ -45,8 +42,6 @@ function RegisterWithTokenContent() {
             tokenValid: true,
             tokenChecking: false,
             tenant: response.tenant,
-            manualRequired: response.manual?.required ?? true,
-            manualVersion: response.manual?.version ?? '',
           })
         } else {
           setValidationState((prev) => ({
@@ -100,11 +95,6 @@ function RegisterWithTokenContent() {
       return false
     }
 
-    if (validationState.manualRequired && !formData.acceptManual) {
-      setUiState((prev) => ({ ...prev, error: 'Debes leer y aceptar el Manual de Convivencia' }))
-      return false
-    }
-
     if (formData.password.length < 8) {
       setUiState((prev) => ({ ...prev, error: 'La contraseña debe tener al menos 8 caracteres' }))
       return false
@@ -136,7 +126,6 @@ function RegisterWithTokenContent() {
         token: token!,
         password: formData.password,
         agreeTerms: formData.agreeTerms,
-        acceptManual: validationState.manualRequired ? formData.acceptManual : false,
       })
 
       if (result.success) {
@@ -354,39 +343,6 @@ function RegisterWithTokenContent() {
             </label>
           </div>
 
-          {/* Manual de convivencia */}
-          {validationState.manualRequired && (
-            <div className="rounded-lg border border-gray-200 bg-gray-50 p-4">
-              <p className="text-sm text-gray-700 mb-3">
-                Antes de completar el registro necesitas leer el Manual de Convivencia
-                {validationState.manualVersion ? ` (versión ${validationState.manualVersion})` : ''}.
-              </p>
-              <a
-                href="/manual"
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={() => setHasOpenedManual(true)}
-                className="inline-flex text-sm font-semibold text-green-700 hover:underline"
-              >
-                Leer el manual
-              </a>
-              <div className="mt-4 flex items-start gap-3">
-                <input
-                  type="checkbox"
-                  id="manual"
-                  checked={formData.acceptManual}
-                  onChange={(e) => setFormData((prev) => ({ ...prev, acceptManual: e.target.checked }))}
-                  className="mt-1 w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500 cursor-pointer disabled:cursor-not-allowed"
-                  disabled={uiState.isSubmitting || !hasOpenedManual}
-                />
-                <label htmlFor="manual" className={`text-sm ${hasOpenedManual ? 'text-gray-700 cursor-pointer' : 'text-gray-400'}`}>
-                  He leído y acepto el Manual de Convivencia.
-                  {!hasOpenedManual && <span className="block text-xs">Se habilita después de abrir el manual.</span>}
-                </label>
-              </div>
-            </div>
-          )}
-
           {/* Submit button */}
           <button
             onClick={handleSubmit}
@@ -395,8 +351,7 @@ function RegisterWithTokenContent() {
               !formData.password ||
               !formData.confirmPassword ||
               formData.password !== formData.confirmPassword ||
-              !formData.agreeTerms ||
-              (validationState.manualRequired && !formData.acceptManual)
+              !formData.agreeTerms
             }
             className="w-full bg-green-600 text-white py-3 px-4 rounded-lg font-medium hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition duration-200 flex items-center justify-center"
           >

@@ -138,6 +138,20 @@ export default function TenantCasesPage() {
                   <div key={item.propertyId} className="space-y-2 text-sm text-gray-800">
                     {context.emergency.length > 1 && <p className="font-semibold">{item.propertyName}</p>}
                     {item.info && <p className="whitespace-pre-line">{item.info}</p>}
+                    {item.routes.map((route) => (
+                      <div key={route.id} className="rounded-lg border border-red-100 bg-white p-3">
+                        <p className="font-semibold">Ruta de evacuación. {route.name}</p>
+                        <p className="mt-1 whitespace-pre-line text-gray-700">{route.steps}</p>
+                        {route.meetingPoint && <p className="mt-1 text-gray-700">Punto de encuentro. {route.meetingPoint}</p>}
+                        {route.planUrl && (
+                          // eslint-disable-next-line @next/next/no-img-element -- enlace externo pegado por el administrador
+                          <img src={route.planUrl} alt={`Plano de evacuación ${route.name}`} className="mt-2 max-h-72 w-full rounded border border-gray-200 object-contain" />
+                        )}
+                      </div>
+                    ))}
+                    {item.lastDrill && (
+                      <p className="text-xs text-gray-500">Último simulacro. {new Date(item.lastDrill.heldAt).toLocaleDateString('es-CO')}</p>
+                    )}
                     {item.devices.length > 0 && (
                       <ul className="list-inside list-disc text-gray-700">
                         {item.devices.map((device) => (

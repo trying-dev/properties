@@ -3,17 +3,20 @@
 import { useCallback, useEffect, useState } from 'react'
 import Link from 'next/link'
 import { ArrowLeft } from 'lucide-react'
-import { DisciplineOutcome, DisciplineStatus, FaultSeverity } from '+/generated/prisma/enums'
+import { AppealOutcome, ComplianceStatus, DisciplineOutcome, DisciplineStatus, FaultSeverity } from '+/generated/prisma/enums'
 
 import Header from '+/components/Header'
 import {
+  closeDisciplinaryCaseAction,
   createDisciplinaryCaseAction,
   decideDisciplinaryCaseAction,
   getAdminDisciplinaryCasesAction,
   getDisciplineOptionsAction,
+  resolveAppealAction,
+  verifyComplianceAction,
   type AdminDisciplinaryCase,
 } from '+/actions/discipline'
-import { disciplineOutcomeLabel, disciplineStatusConfig, faultSeverityLabel } from '+/lib/disciplineLabels'
+import { appealOutcomeLabel, complianceStatusLabel, disciplineOutcomeLabel, disciplineStatusConfig, faultSeverityLabel } from '+/lib/disciplineLabels'
 
 const inputClass = 'w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900'
 const formatDate = (value?: Date | string | null) => (value ? new Date(value).toLocaleDateString('es-CO') : '-')
@@ -23,6 +26,10 @@ function CaseCard({ item, onChanged }: { item: AdminDisciplinaryCase; onChanged:
   const [decision, setDecision] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [isSaving, setIsSaving] = useState(false)
+  const [appealOutcome, setAppealOutcome] = useState<AppealOutcome>(AppealOutcome.UPHELD)
+  const [appealDecision, setAppealDecision] = useState('')
+  const [newOutcome, setNewOutcome] = useState<DisciplineOutcome>(DisciplineOutcome.WARNING)
+  const [complianceNote, setComplianceNote] = useState('')
 
   const status = disciplineStatusConfig[item.status]
   const tenantName = [item.tenant.user.name, item.tenant.user.lastName].filter(Boolean).join(' ') || item.tenant.user.email
@@ -30,17 +37,19 @@ function CaseCard({ item, onChanged }: { item: AdminDisciplinaryCase; onChanged:
   const deadlinePassed = new Date(item.defenseDeadline).getTime() < now
   const canDecide = item.status === DisciplineStatus.DEFENSE_RECEIVED || (item.status === DisciplineStatus.NOTIFIED && deadlinePassed)
 
-  const decide = async () => {
+  const run = async (task: () => Promise<{ success: boolean; error?: string }>) => {
     setIsSaving(true)
     setError(null)
-    const result = await decideDisciplinaryCaseAction({ caseId: item.id, outcome, decision })
+    const result = await task()
     setIsSaving(false)
     if (!result.success) {
-      setError(result.error ?? 'No se pudo registrar la decisión')
+      setError(result.error ?? 'No se pudo completar la acción')
       return
     }
     onChanged()
   }
+
+  const decide = () => run(() => decideDisciplinaryCaseAction({ caseId: item.id, outcome, decision }))
 
   return (
     <article className="space-y-3 rounded-lg border border-gray-200 p-5">
@@ -68,39 +77,132 @@ function CaseCard({ item, onChanged }: { item: AdminDisciplinaryCase; onChanged:
         )
       )}
 
-      {item.status === DisciplineStatus.DECIDED ? (
+      {item.outcome && item.status !== DisciplineStatus.NOTIFIED && item.status !== DisciplineStatus.DEFENSE_RECEIVED && (
         <p className="rounded-lg bg-gray-50 p-3 text-sm text-gray-800">
-          <span className="font-medium">{item.outcome ? disciplineOutcomeLabel[item.outcome] : 'Decisión'} ({formatDate(item.decidedAt)}). </span>
+          <span className="font-medium">{disciplineOutcomeLabel[item.outcome]} ({formatDate(item.decidedAt)}). </span>
           {item.decision}
         </p>
-      ) : (
-        canDecide && (
-          <div className="space-y-3 border-t border-gray-100 pt-3">
-            <select value={outcome} onChange={(e) => setOutcome(e.target.value as DisciplineOutcome)} className={`${inputClass} sm:w-64`}>
-              {Object.entries(disciplineOutcomeLabel).map(([value, label]) => (
+      )}
+
+      {item.appeal && (
+        <p className="rounded-lg bg-purple-50 p-3 text-sm text-gray-800">
+          <span className="font-medium">Recurso de reposición ({formatDate(item.appealAt)}). </span>
+          {item.appeal}
+        </p>
+      )}
+
+      {item.appealOutcome && (
+        <p className="rounded-lg bg-gray-50 p-3 text-sm text-gray-800">
+          <span className="font-medium">{appealOutcomeLabel[item.appealOutcome]} ({formatDate(item.appealDecidedAt)}). </span>
+          {item.appealDecision}
+        </p>
+      )}
+
+      {item.complianceStatus && item.complianceStatus !== ComplianceStatus.PENDING && (
+        <p className="text-xs text-gray-500">
+          Cumplimiento. {complianceStatusLabel[item.complianceStatus]} ({formatDate(item.complianceCheckedAt)}){item.complianceNote ? `. ${item.complianceNote}` : ''}
+        </p>
+      )}
+
+      {item.status === DisciplineStatus.CLOSED && <p className="text-xs text-gray-500">Expediente cerrado el {formatDate(item.closedAt)}.</p>}
+
+      {(item.status === DisciplineStatus.NOTIFIED || item.status === DisciplineStatus.DEFENSE_RECEIVED) && canDecide && (
+        <div className="space-y-3 border-t border-gray-100 pt-3">
+          <select value={outcome} onChange={(e) => setOutcome(e.target.value as DisciplineOutcome)} className={`${inputClass} sm:w-64`}>
+            {Object.entries(disciplineOutcomeLabel).map(([value, label]) => (
+              <option key={value} value={value}>
+                {label}
+              </option>
+            ))}
+          </select>
+          <textarea
+            value={decision}
+            onChange={(e) => setDecision(e.target.value)}
+            rows={3}
+            placeholder="Decisión motivada: hechos probados, valoración de los descargos y fundamento"
+            className={inputClass}
+          />
+          <button
+            onClick={decide}
+            disabled={isSaving || !decision.trim()}
+            className="rounded-lg bg-gray-900 px-4 py-2 text-sm font-semibold text-white hover:bg-gray-800 disabled:opacity-50"
+          >
+            {isSaving ? 'Guardando…' : 'Emitir decisión'}
+          </button>
+        </div>
+      )}
+
+      {item.status === DisciplineStatus.APPEALED && (
+        <div className="space-y-3 border-t border-gray-100 pt-3">
+          <div className="flex flex-wrap gap-3">
+            <select value={appealOutcome} onChange={(e) => setAppealOutcome(e.target.value as AppealOutcome)} className={`${inputClass} sm:w-56`}>
+              {Object.entries(appealOutcomeLabel).map(([value, label]) => (
                 <option key={value} value={value}>
                   {label}
                 </option>
               ))}
             </select>
-            <textarea
-              value={decision}
-              onChange={(e) => setDecision(e.target.value)}
-              rows={3}
-              placeholder="Decisión motivada: hechos probados, valoración de los descargos y fundamento"
-              className={inputClass}
-            />
-            {error && <p className="text-sm text-red-700">{error}</p>}
-            <button
-              onClick={decide}
-              disabled={isSaving || !decision.trim()}
-              className="rounded-lg bg-gray-900 px-4 py-2 text-sm font-semibold text-white hover:bg-gray-800 disabled:opacity-50"
-            >
-              {isSaving ? 'Guardando…' : 'Emitir decisión'}
-            </button>
+            {appealOutcome === AppealOutcome.MODIFIED && (
+              <select value={newOutcome} onChange={(e) => setNewOutcome(e.target.value as DisciplineOutcome)} className={`${inputClass} sm:w-64`}>
+                {Object.entries(disciplineOutcomeLabel).map(([value, label]) => (
+                  <option key={value} value={value}>
+                    {label}
+                  </option>
+                ))}
+              </select>
+            )}
           </div>
-        )
+          <textarea
+            value={appealDecision}
+            onChange={(e) => setAppealDecision(e.target.value)}
+            rows={3}
+            placeholder="Resolución motivada del recurso"
+            className={inputClass}
+          />
+          <button
+            onClick={() =>
+              run(() => resolveAppealAction({ caseId: item.id, appealOutcome, appealDecision, newOutcome: appealOutcome === AppealOutcome.MODIFIED ? newOutcome : null }))
+            }
+            disabled={isSaving || !appealDecision.trim()}
+            className="rounded-lg bg-gray-900 px-4 py-2 text-sm font-semibold text-white hover:bg-gray-800 disabled:opacity-50"
+          >
+            {isSaving ? 'Guardando…' : 'Resolver recurso'}
+          </button>
+        </div>
       )}
+
+      {item.status === DisciplineStatus.DECIDED && (
+        <div className="space-y-3 border-t border-gray-100 pt-3">
+          {item.outcome === DisciplineOutcome.CORRECTIVE_MEASURE && item.complianceStatus === ComplianceStatus.PENDING && (
+            <div className="flex flex-wrap items-center gap-2">
+              <input value={complianceNote} onChange={(e) => setComplianceNote(e.target.value)} placeholder="Constancia de la verificación" className={`${inputClass} sm:max-w-sm`} />
+              <button
+                disabled={isSaving}
+                onClick={() => run(() => verifyComplianceAction({ caseId: item.id, status: ComplianceStatus.COMPLIED, note: complianceNote }))}
+                className="rounded-lg bg-emerald-600 px-3 py-2 text-sm font-semibold text-white hover:bg-emerald-700 disabled:opacity-50"
+              >
+                Cumplida
+              </button>
+              <button
+                disabled={isSaving}
+                onClick={() => run(() => verifyComplianceAction({ caseId: item.id, status: ComplianceStatus.NOT_COMPLIED, note: complianceNote }))}
+                className="rounded-lg border border-red-300 px-3 py-2 text-sm font-semibold text-red-700 hover:bg-red-50 disabled:opacity-50"
+              >
+                Incumplida
+              </button>
+            </div>
+          )}
+          <button
+            disabled={isSaving}
+            onClick={() => run(() => closeDisciplinaryCaseAction(item.id))}
+            className="rounded-lg border border-gray-300 px-3 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-50 disabled:opacity-50"
+          >
+            Cerrar expediente
+          </button>
+        </div>
+      )}
+
+      {error && <p className="text-sm text-red-700">{error}</p>}
     </article>
   )
 }
